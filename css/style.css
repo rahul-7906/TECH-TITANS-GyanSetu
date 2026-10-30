@@ -1,0 +1,35 @@
+/* Page background: soft green wash like the reference */
+body {
+  background:
+    radial-gradient(900px 500px at -10% 10%, rgba(185,240,68,0.22), transparent 60%),
+    radial-gradient(800px 500px at 110% 40%, rgba(185,240,68,0.16), transparent 60%),
+    #EEF6E4;
+}
+
+/* Floating motion for the hero illustration */
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+.float-slow { animation: floaty 6s ease-in-out infinite; }
+
+/* Slow rotation for the orbit ring and gear */
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.spin-slow { animation: spin-slow 28s linear infinite; transform-origin: center; transform-box: fill-box; }
+
+/* Pulsing live dot */
+@keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(185,240,68,0.7); } 100% { box-shadow: 0 0 0 14px rgba(185,240,68,0); } }
+.live-dot { animation: pulseRing 1.6s infinite; }
+
+/* Arrow circles slide slightly on hover */
+.arrow-circle { transition: transform 0.25s ease; }
+.btn-pill:hover .arrow-circle, .card-hover:hover .arrow-circle { transform: translateX(3px); }
+
+/* Grid texture used on dark banners */
+.grid-tex {
+  background-image: linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-slow, .spin-slow, .live-dot { animation: none; }
+  html { scroll-behavior: auto; }
+}

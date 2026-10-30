@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GyanSetu | Peer-to-Peer Student Mentorship</title>
+  <meta name="description" content="GyanSetu connects campus peers for fast 15-minute micro-mentorship sessions. Earn credits by teaching, spend them by learning." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN (no build step needed) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.config.js"></script>
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body class="font-sans text-ink antialiased">
+
+  <!-- Big rounded white "sheet" that holds the whole page, like the reference -->
+  <div class="mx-auto my-4 max-w-6xl overflow-hidden rounded-[2rem] border border-white bg-white/90 shadow-soft sm:my-8">
+
+    <!-- =====================================================
+         1. HEADER / NAVBAR
+         ===================================================== -->
+    <header class="relative z-20">
+      <nav class="flex items-center justify-between px-5 py-5 sm:px-8">
+
+        <!-- Brand logo: lime badge with graduation cap -->
+        <a href="#top" class="flex items-center gap-2.5" aria-label="GyanSetu home">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-lime-brand to-leaf text-ink shadow-card">
+            <i data-lucide="graduation-cap" class="h-5 w-5"></i>
+          </span>
+          <span class="text-xl font-extrabold tracking-tight">GyanSetu</span>
+        </a>
+
+        <!-- Desktop links -->
+        <ul class="hidden items-center gap-7 text-[13px] font-semibold text-slate-700 lg:flex">
+          <li><a href="#how-it-works" class="transition hover:text-leaf">How It Works</a></li>
+          <li><a href="#mentors" class="transition hover:text-leaf">Find a Mentor</a></li>
+          <li><a href="#duels" class="transition hover:text-leaf">Skill Duels</a></li>
+          <li><a href="#ledger" class="transition hover:text-leaf">Credit Ledger</a></li>
+          <li><a href="#community" class="transition hover:text-leaf">Community</a></li>
+          <li>
+            <a href="room.html" class="inline-flex items-center gap-1.5 rounded-full bg-lime-brand/20 px-3 py-1 text-xs font-extrabold text-leaf transition hover:bg-lime-brand hover:text-ink">
+              <span class="h-1.5 w-1.5 rounded-full bg-leaf animate-pulse"></span> Live Collab
+            </a>
+          </li>
+        </ul>
+
+        <!-- Right CTA: dark pill with lime arrow circle -->
+        <a href="#book" class="btn-pill group hidden items-center gap-3 rounded-full bg-ink py-1.5 pl-5 pr-1.5 text-xs font-bold text-white transition hover:bg-forest lg:inline-flex">
+          Book a 15-Min Session
+          <span class="arrow-circle flex h-7 w-7 items-center justify-center rounded-full bg-lime-brand text-ink">
+            <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>
+          </span>
+        </a>
+
+        <!-- Mobile menu button -->
+        <button id="menu-btn" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white lg:hidden" aria-label="Toggle menu" aria-expanded="false">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </nav>
+
+      <!-- Mobile dropdown -->
+      <div id="mobile-menu" class="hidden border-t border-slate-100 bg-white px-5 pb-5 lg:hidden">
+        <ul class="flex flex-col gap-1 py-3 text-sm font-semibold text-slate-700">
+          <li><a href="#how-it-works" class="block rounded-xl px-3 py-2.5 hover:bg-mist">How It Works</a></li>
+          <li><a href="#mentors" class="block rounded-xl px-3 py-2.5 hover:bg-mist">Find a Mentor</a></li>
+          <li><a href="#duels" class="block rounded-xl px-3 py-2.5 hover:bg-mist">Skill Duels</a></li>
+          <li><a href="#ledger" class="block rounded-xl px-3 py-2.5 hover:bg-mist">Credit Ledger</a></li>
+          <li><a href="#community" class="block rounded-xl px-3 py-2.5 hover:bg-mist">Community</a></li>
+          <li><a href="room.html" class="block rounded-xl px-3 py-2.5 font-extrabold text-leaf hover:bg-mist">⚡ Live Collab Room</a></li>
+        </ul>
+        <a href="#book" class="mt-2 flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white">
+          Book a 15-Min Session <i data-lucide="arrow-right" class="h-4 w-4 text-lime-brand"></i>
+        </a>
+      </div>
+    </header>
+
+    <main id="top">
+
+      <!-- =====================================================
+           2. HERO SECTION
+           ===================================================== -->
+      <section class="relative px-5 pb-10 pt-6 sm:px-8 lg:pt-10">
+        <div class="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+
+          <!-- Left: text -->
+          <div>
+            <span class="inline-flex items-center gap-1.5 rounded-md border border-lime-brand/70 bg-lime-brand/15 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-leaf">
+              🚀 Revolutionizing Campus Learning
+            </span>
+
+            <h1 class="mt-5 text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.4rem]">
+              Master Any Subject<br class="hidden sm:block" />
+              with Peer-to-Peer<br class="hidden sm:block" />
+              <span class="relative inline-block text-leaf">
+                Mentorship
+                <!-- hand-drawn style underline -->
+                <svg class="absolute -bottom-2 left-0 w-full" viewBox="0 0 320 14" fill="none" aria-hidden="true">
+                  <path d="M3 10 C 90 2, 220 2, 317 8" stroke="#B9F044" stroke-width="5" stroke-linecap="round"/>
+                  <path d="M20 12 C 110 6, 210 6, 300 11" stroke="#B9F044" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
+                </svg>
+              </span>
+            </h1>
+
+            <p class="mt-7 max-w-md text-sm leading-7 text-slate-600">
+              Connect with verified campus peers for fast 15-minute micro-learning sessions. Earn knowledge credits, clear semester doubts, and level up together.
+            </p>
+
+            <!-- Dual CTAs -->
+            <div class="mt-8 flex flex-wrap items-center gap-3">
+              <a href="#mentors" class="btn-pill inline-flex items-center gap-3 rounded-xl bg-ink py-2 pl-5 pr-2 text-xs font-bold text-white shadow-card transition hover:bg-forest">
+                Find a Peer Mentor
+                <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-lime-brand text-ink">
+                  <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                </span>
+              </a>
+              <a href="#how-it-works" class="btn-pill inline-flex items-center gap-3 rounded-xl border border-slate-200 bg-white py-2 pl-5 pr-2 text-xs font-bold text-ink shadow-card transition hover:border-leaf">
+                Explore Topics
+                <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full border border-lime-brand text-leaf">
+                  <i data-lucide="chevron-right" class="h-4 w-4"></i>
+                </span>
+              </a>
+              <a href="room.html" class="btn-pill inline-flex items-center gap-3 rounded-xl border border-lime-brand/60 bg-lime-brand/10 py-2 pl-5 pr-2 text-xs font-bold text-leaf shadow-card transition hover:bg-lime-brand hover:text-ink">
+                ⚡ Start Live Collab
+                <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-leaf text-white">
+                  <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                </span>
+              </a>
+            </div>
+
+            <!-- Mentor mini-card (mock) with floating milestone chips -->
+            <div class="relative mt-10 max-w-sm">
+              <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-soft">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-forest to-leaf text-sm font-extrabold text-white">AS</div>
+                  <div class="min-w-0">
+                    <p class="flex items-center gap-1 text-sm font-extrabold">Aarav S. <i data-lucide="badge-check" class="h-4 w-4 text-leaf"></i></p>
+                    <p class="mt-1 inline-flex items-center gap-1.5 rounded-full bg-lime-brand/30 px-2.5 py-0.5 text-[11px] font-bold text-forest">
+                      <i data-lucide="code-2" class="h-3 w-3"></i> DSA in C++ • 4.9★
+                    </p>
+                  </div>
+                  <span class="ml-auto inline-flex items-center gap-1.5 rounded-full bg-mist px-2.5 py-1 text-[10px] font-bold text-leaf">
+                    <span class="live-dot h-1.5 w-1.5 rounded-full bg-leaf"></span> Live
+                  </span>
+                </div>
+              </div>
+              <div class="mt-3 flex flex-wrap gap-2">
+                <span class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold shadow-card">🔥 Streak: 5 Days</span>
+                <span class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold shadow-card">🪙 Credits: <span class="text-leaf">+150</span></span>
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-[11px] font-bold text-white shadow-card">✅ Doubt Solved in 12m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: hero illustration with orbit nodes -->
+          <div class="relative mx-auto h-[420px] w-full max-w-[520px] sm:h-[460px]">
+
+            <!-- Dashed orbit curve connecting the nodes -->
+            <svg class="absolute inset-0 h-full w-full" viewBox="0 0 520 460" fill="none" aria-hidden="true">
+              <path d="M388 40 C 470 110, 490 200, 462 270 S 400 380, 372 420" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="4 5" opacity=".7"/>
+            </svg>
+
+            <!-- Main illustration: graduation cap on books -->
+            <div class="float-slow absolute left-0 top-6 h-[360px] w-[360px] sm:h-[400px] sm:w-[400px]">
+              <svg viewBox="0 0 400 400" class="h-full w-full" fill="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="capTop" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#14532D"/><stop offset="1" stop-color="#0B1F17"/>
+                  </linearGradient>
+                  <linearGradient id="capSideL" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#064E3B"/><stop offset="1" stop-color="#0B3B2C"/>
+                  </linearGradient>
+                  <linearGradient id="capSideR" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#0B3B2C"/><stop offset="1" stop-color="#14532D"/>
+                  </linearGradient>
+                  <linearGradient id="blob" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#DCF5C4"/><stop offset="1" stop-color="#EAF7DD"/>
+                  </linearGradient>
+                  <linearGradient id="bookLime" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#B9F044"/><stop offset="1" stop-color="#8FD420"/>
+                  </linearGradient>
+                  <radialGradient id="glowC" cx=".5" cy=".5" r=".5">
+                    <stop offset="0" stop-color="#B9F044" stop-opacity=".55"/><stop offset="1" stop-color="#B9F044" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+
+                <!-- soft background blob + glow -->
+                <path d="M70 210 C 40 120, 130 50, 230 62 S 380 130, 350 250 S 230 370, 140 330 S 90 270, 70 210Z" fill="url(#blob)"/>
+                <circle cx="200" cy="200" r="150" fill="url(#glowC)"/>
+
+                <!-- orbit ring -->
+                <g class="spin-slow">
+                  <ellipse cx="200" cy="215" rx="165" ry="62" stroke="#B9F044" stroke-width="2.5" transform="rotate(-18 200 215)" opacity=".9"/>
+                  <circle cx="352" cy="190" r="6" fill="#B9F044"/>
+                </g>
+
+                <!-- books -->
+                <rect x="95" y="288" width="210" height="34" rx="10" fill="#FFFFFF" stroke="#D5EAB8" stroke-width="2"/>
+                <rect x="108" y="296" width="150" height="6" rx="3" fill="#B9F044"/>
+                <rect x="108" y="308" width="100" height="5" rx="2.5" fill="#E2E8F0"/>
+                <rect x="120" y="258" width="180" height="32" rx="10" fill="url(#bookLime)"/>
+                <rect x="134" y="268" width="90" height="6" rx="3" fill="#0B1F17" opacity=".75"/>
+                <rect x="134" y="279" width="60" height="5" rx="2.5" fill="#0B1F17" opacity=".35"/>
+
+                <!-- cap: skull part -->
+                <path d="M128 188 L128 238 Q200 282 272 238 L272 188 L200 214 Z" fill="url(#capSideL)"/>
+                <path d="M128 238 Q200 282 272 238" stroke="#B9F044" stroke-width="3" fill="none" opacity=".8"/>
+
+                <!-- cap: board (diamond top with thickness) -->
+                <polygon points="60,150 200,206 200,226 60,170" fill="url(#capSideL)"/>
+                <polygon points="200,206 340,150 340,170 200,226" fill="url(#capSideR)"/>
+                <polygon points="200,92 340,150 200,206 60,150" fill="url(#capTop)"/>
+                <polygon points="200,92 340,150 200,206 60,150" stroke="#B9F044" stroke-width="3" stroke-linejoin="round"/>
+                <polygon points="200,112 296,150 200,188 104,150" fill="#FFFFFF" opacity=".08"/>
+
+                <!-- button + tassel -->
+                <ellipse cx="200" cy="150" rx="13" ry="7" fill="#B9F044"/>
+                <path d="M200 150 L330 158 L330 215" stroke="#B9F044" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="330" cy="222" r="9" fill="#B9F044"/>
+                <path d="M324 228 L322 246 M330 230 L330 250 M336 228 L338 246" stroke="#B9F044" stroke-width="3" stroke-linecap="round"/>
+
+                <!-- sparkles -->
+                <circle cx="92" cy="118" r="5" fill="#B9F044"/>
+                <circle cx="318" cy="84" r="4" fill="#B9F044" opacity=".8"/>
+                <path d="M62 250 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4z" fill="#B9F044" opacity=".9"/>
+              </svg>
+            </div>
+
+            <!-- Orbit nodes (circle icon + label), positioned along the dashed curve -->
+            <div class="absolute right-[18%] top-2 flex items-center gap-2">
+              <span class="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-white shadow-soft"><i data-lucide="message-circle" class="h-5 w-5"></i></span>
+              <span class="text-[11px] font-bold">Ask</span>
+            </div>
+            <div class="absolute right-0 top-[27%] flex items-center gap-2">
+              <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-lime-brand to-leaf text-ink shadow-soft"><i data-lucide="trending-up" class="h-5 w-5"></i></span>
+              <span class="text-[11px] font-bold">Learn</span>
+            </div>
+            <div class="absolute right-[3%] top-[52%] flex items-center gap-2">
+              <span class="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-lime-brand shadow-soft"><i data-lucide="coins" class="h-5 w-5"></i></span>
+              <span class="text-[11px] font-bold">Earn</span>
+            </div>
+            <div class="absolute bottom-3 right-[16%] flex items-center gap-2">
+              <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-lime-brand to-leaf text-ink shadow-soft"><i data-lucide="trophy" class="h-5 w-5"></i></span>
+              <span class="text-[11px] font-bold">Level Up</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust bar: rounded white strip with simple text badges (no real logos) -->
+        <div class="mt-12 rounded-2xl border border-slate-100 bg-white px-4 py-5 shadow-soft sm:px-8">
+          <p class="mb-4 text-center text-[10px] font-extrabold uppercase tracking-[0.25em] text-slate-400">Built for campus tech communities</p>
+          <div class="grid grid-cols-2 items-center gap-4 text-center text-slate-500 sm:grid-cols-4">
+            <span class="text-lg font-extrabold tracking-tight">ACM Chapter</span>
+            <span class="text-lg font-extrabold italic tracking-tight">CodeChef Campus</span>
+            <span class="text-lg font-extrabold tracking-tight">GDSC</span>
+            <span class="text-lg font-extrabold uppercase tracking-tight">Cisco NetAcad</span>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- =====================================================
+           3. FEATURE / SERVICE CARDS
+           ===================================================== -->
+      <section id="how-it-works" class="px-5 py-12 sm:px-8 lg:py-16">
+        <div class="mx-auto max-w-2xl text-center">
+          <p class="text-[10px] font-extrabold uppercase tracking-[0.25em] text-leaf">How GyanSetu Empowers Students</p>
+          <h2 class="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl">Tools to Learn Faster, Together</h2>
+          <p class="mx-auto mt-3 max-w-sm text-sm leading-6 text-slate-600">Everything you need to ask, learn, earn and compete, all in one campus platform.</p>
+        </div>
+
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+          <!-- Card 1: Rapid Doubts -->
+          <article id="mentors" class="card-hover group flex flex-col rounded-3xl border border-slate-100 bg-gradient-to-br from-mist to-white p-5 shadow-card transition duration-300 hover:-translate-y-1.5 hover:shadow-soft">
+            <div class="flex h-28 items-center justify-center">
+              <svg viewBox="0 0 120 100" class="h-full" fill="none" aria-hidden="true">
+                <circle cx="56" cy="48" r="34" fill="#F0FCD9" stroke="#B9F044" stroke-width="7"/>
+                <circle cx="56" cy="48" r="24" fill="#FFFFFF"/>
+                <path d="M56 33 V49 L67 56" stroke="#0B1F17" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <polygon points="94,50 82,70 90,70 86,88 100,64 92,64" fill="#2F6F11"/>
+                <rect x="14" y="78" width="8" height="12" rx="2" fill="#B9F044"/>
+                <rect x="26" y="70" width="8" height="20" rx="2" fill="#8FD420"/>
+              </svg>
+            </div>
+            <h3 class="mt-4 text-[15px] font-extrabold leading-snug">15-Min Rapid Doubts</h3>
+            <p class="mt-2 flex-1 text-xs leading-5 text-slate-600">Quick 1-on-1 peer sessions for urgent code errors or exam concepts.</p>
+            <div class="mt-5 flex items-center justify-between">
+              <a href="#" class="text-xs font-bold">Learn more</a>
+              <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-leaf text-white"><i data-lucide="arrow-right" class="h-4 w-4"></i></span>
+            </div>
+          </article>
+
+          <!-- Card 2: Live Collaborative Sync -->
+          <article class="card-hover group flex flex-col rounded-3xl border border-slate-100 bg-gradient-to-br from-white to-mist p-5 shadow-card transition duration-300 hover:-translate-y-1.5 hover:shadow-soft">
+            <div class="flex h-28 items-center justify-center">
+              <svg viewBox="0 0 140 100" class="h-full" fill="none" aria-hidden="true">
+                <rect x="10" y="14" width="100" height="68" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+                <rect x="10" y="14" width="100" height="16" rx="9" fill="#0B1F17"/>
+                <circle cx="22" cy="22" r="2.5" fill="#B9F044"/><circle cx="31" cy="22" r="2.5" fill="#64748B"/><circle cx="40" cy="22" r="2.5" fill="#64748B"/>
+                <rect x="20" y="40" width="42" height="5" rx="2.5" fill="#B9F044"/>
+                <rect x="20" y="51" width="64" height="5" rx="2.5" fill="#CBD5E1"/>
+                <rect x="30" y="62" width="48" height="5" rx="2.5" fill="#94A3B8"/>
+                <rect x="20" y="72" width="30" height="5" rx="2.5" fill="#CBD5E1"/>
+                <path d="M96 52 L96 82 L104 75 L111 90 L117 87 L110 73 L121 73 Z" fill="#B9F044" stroke="#2F6F11" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="mt-4 text-[15px] font-extrabold leading-snug">Live Collaborative Sync</h3>
+            <p class="mt-2 flex-1 text-xs leading-5 text-slate-600">Dual-window shared code editor and interactive whiteboard.</p>
+            <div class="mt-5 flex items-center justify-between">
+              <a href="#" class="text-xs font-bold">Learn more</a>
+              <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-leaf text-white"><i data-lucide="arrow-right" class="h-4 w-4"></i></span>
+            </div>
+          </article>
+
+          <!-- Card 3: Passbook & Credit Ledger -->
+          <article id="ledger" class="card-hover group flex flex-col rounded-3xl border border-slate-100 bg-gradient-to-br from-mist to-white p-5 shadow-card transition duration-300 hover:-translate-y-1.5 hover:shadow-soft">
+            <div class="flex h-28 items-center justify-center">
+              <svg viewBox="0 0 140 100" class="h-full" fill="none" aria-hidden="true">
+                <rect x="22" y="12" width="70" height="78" rx="9" fill="#064E3B"/>
+                <rect x="30" y="12" width="62" height="78" rx="7" fill="#0B1F17"/>
+                <rect x="40" y="26" width="38" height="5" rx="2.5" fill="#B9F044"/>
+                <rect x="40" y="38" width="30" height="4" rx="2" fill="#475569"/>
+                <rect x="40" y="48" width="34" height="4" rx="2" fill="#475569"/>
+                <rect x="40" y="58" width="24" height="4" rx="2" fill="#475569"/>
+                <ellipse cx="98" cy="78" rx="22" ry="8" fill="#8FD420"/>
+                <rect x="76" y="62" width="44" height="16" fill="#8FD420"/>
+                <ellipse cx="98" cy="62" rx="22" ry="8" fill="#B9F044"/>
+                <ellipse cx="98" cy="48" rx="22" ry="8" fill="#8FD420"/>
+                <rect x="76" y="32" width="44" height="16" fill="#8FD420"/>
+                <ellipse cx="98" cy="32" rx="22" ry="8" fill="#B9F044"/>
+                <path d="M92 32 h12 M98 28 v8" stroke="#2F6F11" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="mt-4 text-[15px] font-extrabold leading-snug">Passbook &amp; Credit Ledger</h3>
+            <p class="mt-2 flex-1 text-xs leading-5 text-slate-600">Secure double-entry coin system; earn by teaching, spend by learning.</p>
+            <div class="mt-5 flex items-center justify-between">
+              <a href="#" class="text-xs font-bold">Learn more</a>
+              <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-leaf text-white"><i data-lucide="arrow-right" class="h-4 w-4"></i></span>
+            </div>
+          </article>
+
+          <!-- Card 4: Competitive Skill Duels -->
+          <article id="duels" class="card-hover group flex flex-col rounded-3xl border border-slate-100 bg-gradient-to-br from-white to-mist p-5 shadow-card transition duration-300 hover:-translate-y-1.5 hover:shadow-soft">
+            <div class="flex h-28 items-center justify-center">
+              <svg viewBox="0 0 140 100" class="h-full" fill="none" aria-hidden="true">
+                <rect x="20" y="62" width="30" height="28" rx="5" fill="#8FD420"/>
+                <rect x="55" y="44" width="30" height="46" rx="5" fill="#0B1F17"/>
+                <rect x="90" y="70" width="30" height="20" rx="5" fill="#B9F044"/>
+                <text x="35" y="82" text-anchor="middle" font-size="13" font-weight="800" fill="#0B1F17" font-family="sans-serif">2</text>
+                <text x="70" y="70" text-anchor="middle" font-size="15" font-weight="800" fill="#B9F044" font-family="sans-serif">1</text>
+                <text x="105" y="84" text-anchor="middle" font-size="12" font-weight="800" fill="#0B1F17" font-family="sans-serif">3</text>
+                <path d="M60 14 h20 v14 a10 10 0 0 1 -20 0z" fill="#B9F044" stroke="#2F6F11" stroke-width="2"/>
+                <path d="M60 18 h-7 v6 a7 7 0 0 0 7 7 M80 18 h7 v6 a7 7 0 0 1 -7 7" stroke="#2F6F11" stroke-width="2" fill="none"/>
+                <rect x="66" y="38" width="8" height="5" fill="#2F6F11"/>
+                <circle cx="116" cy="22" r="4" fill="#B9F044"/><circle cx="22" cy="30" r="3" fill="#B9F044" opacity=".8"/>
+              </svg>
+            </div>
+            <h3 class="mt-4 text-[15px] font-extrabold leading-snug">Competitive Skill Duels</h3>
+            <p class="mt-2 flex-1 text-xs leading-5 text-slate-600">Gaming-inspired leaderboard, streak badges, and weekly peer battles.</p>
+            <div class="mt-5 flex items-center justify-between">
+              <a href="#" class="text-xs font-bold">Learn more</a>
+              <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-leaf text-white"><i data-lucide="arrow-right" class="h-4 w-4"></i></span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+
+      <!-- =====================================================
+           4. DARK CONTRAST CALLOUT BANNER
+           ===================================================== -->
+      <section id="book" class="px-5 sm:px-8">
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#06130E] via-[#0B2A1E] to-[#14532D] px-6 py-10 sm:px-10 lg:py-12">
+          <div class="grid-tex absolute inset-0 opacity-60 [mask-image:linear-gradient(to_right,transparent,black_60%)]"></div>
+          <div class="absolute -right-10 top-0 h-64 w-64 rounded-full bg-lime-brand/25 blur-3xl"></div>
+
+          <div class="relative grid items-center gap-8 md:grid-cols-[1.2fr_1fr]">
+
+            <!-- Left: text + lime pill button -->
+            <div>
+              <h2 class="text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-3xl">
+                Stuck on a Semester Bug? Don't Wait for Office Hours.
+              </h2>
+              <p class="mt-3 max-w-sm text-xs leading-6 text-emerald-100/75">
+                A peer who cleared the same problem last semester is one click away.
+              </p>
+              <a href="#" class="btn-pill mt-6 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-lime-brand to-[#8FD420] py-1.5 pl-5 pr-1.5 text-xs font-extrabold text-ink shadow-glow transition hover:brightness-110">
+                Request Live Help Now
+                <span class="arrow-circle flex h-7 w-7 items-center justify-center rounded-full bg-ink text-lime-brand"><i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></span>
+              </a>
+            </div>
+
+            <!-- Right: glowing lightbulb + live badge -->
+            <div class="relative mx-auto flex h-48 w-full max-w-xs items-center justify-center">
+              <div class="absolute h-44 w-44 rounded-full bg-lime-brand/30 blur-2xl"></div>
+              <svg viewBox="0 0 200 200" class="relative h-full" fill="none" aria-hidden="true">
+                <defs>
+                  <radialGradient id="bulb" cx=".5" cy=".4" r=".6">
+                    <stop offset="0" stop-color="#F7FFD6"/><stop offset=".6" stop-color="#D5F56B"/><stop offset="1" stop-color="#8FD420"/>
+                  </radialGradient>
+                </defs>
+                <g class="spin-slow">
+                  <ellipse cx="100" cy="100" rx="88" ry="30" stroke="#B9F044" stroke-width="1.5" opacity=".7" transform="rotate(-20 100 100)"/>
+                  <circle cx="176" cy="78" r="4" fill="#B9F044"/>
+                </g>
+                <path d="M100 26 a46 46 0 0 1 26 84 c-6 5 -8 10 -8 18 h-36 c0 -8 -2 -13 -8 -18 A46 46 0 0 1 100 26z" fill="url(#bulb)"/>
+                <path d="M84 70 q16 -20 32 0 M100 54 v40" stroke="#6B8E23" stroke-width="2" opacity=".6" stroke-linecap="round"/>
+                <rect x="82" y="130" width="36" height="8" rx="3" fill="#CBD5E1"/>
+                <rect x="85" y="140" width="30" height="8" rx="3" fill="#94A3B8"/>
+                <rect x="90" y="150" width="20" height="7" rx="3" fill="#64748B"/>
+                <!-- gear -->
+                <g class="spin-slow" opacity=".95">
+                  <circle cx="156" cy="146" r="17" fill="#14532D" stroke="#B9F044" stroke-width="2"/>
+                  <circle cx="156" cy="146" r="6" fill="#0B1F17" stroke="#B9F044" stroke-width="2"/>
+                  <path d="M156 124 v6 M156 162 v6 M134 146 h6 M172 146 h6 M140 130 l4 4 M168 158 l4 4 M172 130 l-4 4 M144 158 l-4 4" stroke="#B9F044" stroke-width="3.5" stroke-linecap="round"/>
+                </g>
+              </svg>
+              <!-- Live mentors badge -->
+              <div class="absolute -bottom-3 left-0 rounded-2xl border border-lime-brand/40 bg-black/40 px-4 py-2.5 text-white backdrop-blur-md sm:-left-4">
+                <p class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-lime-brand">
+                  <span class="live-dot h-2 w-2 rounded-full bg-lime-brand"></span> Active Mentors Online: 24
+                </p>
+                <p class="mt-1 text-[11px] text-emerald-100/70">Next free slot in <span id="countdown" class="font-mono font-bold text-lime-brand">02:00</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- =====================================================
+           5. SOCIAL PROOF / METRICS (dark 3-column card)
+           ===================================================== -->
+      <section id="community" class="px-5 py-12 sm:px-8 lg:py-16">
+        <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <p class="text-[10px] font-extrabold uppercase tracking-[0.25em] text-leaf">Proof of Impact</p>
+            <h2 class="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Real Impact Across Campus</h2>
+          </div>
+          <p class="max-w-[16rem] text-xs leading-5 text-slate-600">See how peer mentoring is clearing doubts and building trust, one session at a time.</p>
+        </div>
+
+        <div class="mt-6 grid overflow-hidden rounded-3xl bg-gradient-to-br from-[#06130E] to-[#0B2A1E] text-white shadow-soft md:grid-cols-3">
+
+          <!-- Metric 1 -->
+          <div class="border-b border-white/10 p-7 md:border-b-0 md:border-r">
+            <p class="flex items-center gap-2 text-xs font-bold">
+              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-lime-brand/20 text-lime-brand"><i data-lucide="trending-up" class="h-4 w-4"></i></span>
+              Doubt Resolution Rate
+            </p>
+            <p class="mt-4 text-4xl font-extrabold text-lime-brand">+94%</p>
+            <p class="mt-2 text-xs leading-5 text-slate-300">Average session duration under 18 mins</p>
+            <a href="#" class="mt-5 inline-flex items-center gap-2 text-[11px] font-bold">Learn more
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-lime-brand text-ink"><i data-lucide="arrow-right" class="h-3 w-3"></i></span>
+            </a>
+          </div>
+
+          <!-- Metric 2 -->
+          <div class="border-b border-white/10 p-7 md:border-b-0 md:border-r">
+            <p class="flex items-center gap-2 text-xs font-bold">
+              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-lime-brand/20 text-lime-brand"><i data-lucide="repeat" class="h-4 w-4"></i></span>
+              Credits Exchanged
+            </p>
+            <p class="mt-4 text-4xl font-extrabold text-lime-brand">1,200+</p>
+            <p class="mt-2 text-xs leading-5 text-slate-300">100% transparent audit ledger</p>
+            <a href="#" class="mt-5 inline-flex items-center gap-2 text-[11px] font-bold">Learn more
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-lime-brand text-ink"><i data-lucide="arrow-right" class="h-3 w-3"></i></span>
+            </a>
+          </div>
+
+          <!-- Metric 3 -->
+          <div class="p-7">
+            <p class="flex items-center gap-2 text-xs font-bold">
+              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-lime-brand/20 text-lime-brand"><i data-lucide="shield-check" class="h-4 w-4"></i></span>
+              Hallucination
+            </p>
+            <p class="mt-4 text-4xl font-extrabold text-lime-brand">Zero</p>
+            <p class="mt-2 text-xs leading-5 text-slate-300">Peer-verified, real student code reviews</p>
+            <a href="#" class="mt-5 inline-flex items-center gap-2 text-[11px] font-bold">Learn more
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-lime-brand text-ink"><i data-lucide="arrow-right" class="h-3 w-3"></i></span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Light green CTA strip -->
+        <div class="mt-5 flex flex-col items-start justify-between gap-4 rounded-2xl bg-gradient-to-r from-lime-brand/40 via-mist to-white px-5 py-4 sm:flex-row sm:items-center">
+          <div class="flex items-center gap-3">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ink text-lime-brand"><i data-lucide="rocket" class="h-5 w-5"></i></span>
+            <div>
+              <p class="text-sm font-extrabold">Ready to clear your next doubt in 15 minutes?</p>
+              <p class="text-xs text-slate-600">Join GyanSetu and turn what you know into credits.</p>
+            </div>
+          </div>
+          <a href="#book" class="btn-pill inline-flex items-center gap-3 rounded-xl bg-ink px-5 py-2.5 text-xs font-bold text-white transition hover:bg-forest">
+            Let's Talk <span class="arrow-circle flex h-5 w-5 items-center justify-center rounded-full bg-lime-brand text-ink"><i data-lucide="arrow-right" class="h-3 w-3"></i></span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+
+    <!-- =====================================================
+         6. FOOTER
+         ===================================================== -->
+    <footer class="border-t border-slate-100 px-5 py-8 sm:px-8">
+      <div class="flex flex-col items-center justify-between gap-6 lg:flex-row">
+        <a href="#top" class="flex items-center gap-2.5">
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-lime-brand to-leaf text-ink">
+            <i data-lucide="graduation-cap" class="h-4 w-4"></i>
+          </span>
+          <span class="text-lg font-extrabold tracking-tight">GyanSetu</span>
+        </a>
+
+        <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600">
+          <li><a href="#how-it-works" class="hover:text-leaf">How It Works</a></li>
+          <li><a href="#mentors" class="hover:text-leaf">Find a Mentor</a></li>
+          <li><a href="#duels" class="hover:text-leaf">Skill Duels</a></li>
+          <li><a href="#ledger" class="hover:text-leaf">Credit Ledger</a></li>
+          <li><a href="#community" class="hover:text-leaf">Community</a></li>
+        </ul>
+
+        <div class="flex gap-2.5">
+          <a href="#" aria-label="Email" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-ink shadow-card transition hover:bg-ink hover:text-lime-brand"><i data-lucide="mail" class="h-4 w-4"></i></a>
+          <a href="#" aria-label="Community chat" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-ink shadow-card transition hover:bg-ink hover:text-lime-brand"><i data-lucide="message-circle" class="h-4 w-4"></i></a>
+          <a href="#" aria-label="Website" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-ink shadow-card transition hover:bg-ink hover:text-lime-brand"><i data-lucide="globe" class="h-4 w-4"></i></a>
+          <a href="#" aria-label="Share" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-ink shadow-card transition hover:bg-ink hover:text-lime-brand"><i data-lucide="share-2" class="h-4 w-4"></i></a>
+        </div>
+      </div>
+
+      <div class="mt-6 border-t border-slate-100 pt-5 text-[11px] leading-5 text-slate-400">
+        <p><strong class="text-slate-500">Disclaimer:</strong> GyanSetu is a hackathon prototype built by students. All profiles, names and figures on this page are sample data for demonstration. Club and community names describe the audience we are building for and do not imply any partnership or endorsement.</p>
+        <p class="mt-2">&copy; 2026 GyanSetu. Built for INNOVISTA.</p>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- Lucide icons + app logic -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GyanSetu | Live Collaboration Room</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.config.js"></script>
+
+  <!-- CodeMirror: syntax-highlighted code editor in the browser -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" />
+
+  <!-- Room styles -->
+  <link rel="stylesheet" href="css/room.css" />
+</head>
+
+<body class="font-sans antialiased bg-[#0B1F17] text-white min-h-screen flex flex-col">
+
+  <!-- ── TOP BAR ── -->
+  <header class="flex items-center justify-between px-5 py-3 border-b border-white/10 bg-[#06130E]">
+    <a href="index.html" class="flex items-center gap-2 text-sm font-bold text-lime-brand hover:opacity-80 transition">
+      <i data-lucide="arrow-left" class="h-4 w-4"></i> GyanSetu
+    </a>
+
+    <div class="flex items-center gap-2">
+      <span class="live-indicator"></span>
+      <span id="room-label" class="text-xs font-semibold text-slate-300">Room: —</span>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <!-- Peer count badge -->
+      <span id="peer-badge" class="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-bold">
+        <i data-lucide="users" class="h-3.5 w-3.5 text-lime-brand"></i>
+        <span id="peer-count">1</span> online
+      </span>
+      <!-- Leave button -->
+      <button id="leave-btn" class="rounded-full bg-red-900/60 px-3 py-1 text-xs font-bold text-red-300 hover:bg-red-800 transition">
+        Leave Room
+      </button>
+    </div>
+  </header>
+
+  <!-- ── JOIN OVERLAY (shown until user enters name + room ID) ── -->
+  <div id="join-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-[#06130E]/95 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-[#0B2A1E] p-8 shadow-2xl">
+
+      <!-- Logo -->
+      <div class="mb-6 flex items-center gap-2.5">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11] text-[#0B1F17]">
+          <i data-lucide="zap" class="h-5 w-5"></i>
+        </span>
+        <span class="text-lg font-extrabold tracking-tight">Live Collab Room</span>
+      </div>
+
+      <p class="mb-5 text-xs leading-5 text-slate-400">
+        Enter your name and a Room ID. Anyone who types the <strong class="text-white">same Room ID</strong> joins your session instantly.
+      </p>
+
+      <label class="block mb-3">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Your Name</span>
+        <input id="input-name" type="text" placeholder="e.g. Aarav" maxlength="20"
+          class="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm placeholder-slate-600 outline-none focus:border-[#B9F044] focus:ring-1 focus:ring-[#B9F044]" />
+      </label>
+
+      <label class="block mb-5">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Room ID</span>
+        <div class="mt-1.5 flex gap-2">
+          <input id="input-room" type="text" placeholder="e.g. dsa-tree-doubts" maxlength="30"
+            class="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm placeholder-slate-600 outline-none focus:border-[#B9F044] focus:ring-1 focus:ring-[#B9F044]" />
+          <button id="random-room-btn" title="Generate random ID"
+            class="rounded-xl border border-white/10 bg-white/5 px-3 text-xs text-slate-400 hover:text-white transition">
+            <i data-lucide="shuffle" class="h-4 w-4"></i>
+          </button>
+        </div>
+      </label>
+
+      <button id="join-btn"
+        class="w-full rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-3 text-sm font-extrabold text-[#0B1F17] transition hover:brightness-110 active:scale-95">
+        Join Room →
+      </button>
+
+      <p id="join-error" class="mt-3 hidden text-center text-xs text-red-400">Please fill in both fields.</p>
+    </div>
+  </div>
+
+  <!-- ── MAIN WORKSPACE ── -->
+  <div class="flex flex-1 overflow-hidden" id="workspace" style="display:none!important">
+
+    <!-- LEFT: Code Editor Panel -->
+    <div class="flex flex-col border-r border-white/10" style="width:55%">
+
+      <!-- Editor toolbar -->
+      <div class="flex items-center justify-between border-b border-white/10 bg-[#06130E] px-4 py-2">
+        <div class="flex items-center gap-2">
+          <i data-lucide="code-2" class="h-4 w-4 text-[#B9F044]"></i>
+          <span class="text-xs font-bold">Shared Code Editor</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <select id="lang-select"
+            class="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-slate-300 outline-none cursor-pointer">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="clike">C / C++</option>
+            <option value="java">Java</option>
+          </select>
+          <button id="copy-code-btn" title="Copy code"
+            class="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-slate-300 hover:text-white transition">
+            <i data-lucide="copy" class="h-3.5 w-3.5"></i>
+          </button>
+          <button id="clear-code-btn" title="Clear editor"
+            class="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-red-400 hover:text-red-300 transition">
+            <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- CodeMirror mounts here -->
+      <div id="editor-wrap" class="flex-1 overflow-auto"></div>
+
+      <!-- Typing indicator -->
+      <div id="typing-indicator" class="h-6 px-4 text-[11px] text-slate-500 italic"></div>
+    </div>
+
+    <!-- RIGHT: Whiteboard + Chat -->
+    <div class="flex flex-col flex-1 overflow-hidden">
+
+      <!-- Tab bar -->
+      <div class="flex border-b border-white/10 bg-[#06130E]">
+        <button data-tab="whiteboard" class="tab-btn active-tab px-5 py-2.5 text-xs font-bold">
+          <i data-lucide="pen-line" class="inline h-3.5 w-3.5 mr-1"></i>Whiteboard
+        </button>
+        <button data-tab="chat" class="tab-btn px-5 py-2.5 text-xs font-bold text-slate-400">
+          <i data-lucide="message-circle" class="inline h-3.5 w-3.5 mr-1"></i>Chat
+          <span id="chat-badge" class="hidden ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#B9F044] text-[9px] font-extrabold text-[#0B1F17]"></span>
+        </button>
+      </div>
+
+      <!-- WHITEBOARD TAB -->
+      <div id="tab-whiteboard" class="tab-panel flex-1 flex flex-col overflow-hidden">
+        <!-- Whiteboard toolbar -->
+        <div class="flex flex-wrap items-center gap-2 border-b border-white/10 bg-[#06130E] px-3 py-2">
+          <!-- Tool buttons -->
+          <button data-tool="pen"   class="wb-tool active-tool" title="Pen"><i data-lucide="pen"        class="h-4 w-4"></i></button>
+          <button data-tool="line"  class="wb-tool" title="Line"><i data-lucide="minus"      class="h-4 w-4"></i></button>
+          <button data-tool="rect"  class="wb-tool" title="Rectangle"><i data-lucide="square"      class="h-4 w-4"></i></button>
+          <button data-tool="circle" class="wb-tool" title="Circle"><i data-lucide="circle"     class="h-4 w-4"></i></button>
+          <button data-tool="text"  class="wb-tool" title="Text"><i data-lucide="type"        class="h-4 w-4"></i></button>
+          <button data-tool="eraser" class="wb-tool" title="Eraser"><i data-lucide="eraser"      class="h-4 w-4"></i></button>
+
+          <div class="h-5 w-px bg-white/10"></div>
+
+          <!-- Colour picker -->
+          <label title="Colour" class="cursor-pointer">
+            <input type="color" id="wb-color" value="#B9F044" class="h-6 w-6 cursor-pointer rounded border-0 bg-transparent p-0" />
+          </label>
+
+          <!-- Stroke width -->
+          <input type="range" id="wb-size" min="1" max="24" value="3" class="w-20 accent-[#B9F044]" title="Stroke width" />
+
+          <div class="h-5 w-px bg-white/10"></div>
+
+          <button id="wb-undo" title="Undo" class="wb-action"><i data-lucide="undo-2" class="h-4 w-4"></i></button>
+          <button id="wb-redo" title="Redo" class="wb-action"><i data-lucide="redo-2" class="h-4 w-4"></i></button>
+          <button id="wb-clear" title="Clear board" class="wb-action text-red-400"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+          <button id="wb-download" title="Download as PNG" class="wb-action"><i data-lucide="download" class="h-4 w-4"></i></button>
+        </div>
+
+        <!-- Canvas — JS draws here -->
+        <canvas id="wb-canvas" class="flex-1 touch-none cursor-crosshair bg-white"></canvas>
+      </div>
+
+      <!-- CHAT TAB -->
+      <div id="tab-chat" class="tab-panel hidden flex-1 flex flex-col overflow-hidden">
+        <div id="chat-messages" class="flex-1 overflow-y-auto px-4 py-3 space-y-2"></div>
+        <div class="flex gap-2 border-t border-white/10 p-3">
+          <input id="chat-input" type="text" placeholder="Type a message…" maxlength="300"
+            class="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm placeholder-slate-600 outline-none focus:border-[#B9F044]" />
+          <button id="chat-send"
+            class="rounded-xl bg-[#B9F044] px-4 py-2 text-xs font-extrabold text-[#0B1F17] hover:brightness-110 transition">
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCRIPTS ── -->
+  <!-- CodeMirror core + modes -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+
+  <!-- Socket.io client — connects to the free public demo server -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Room logic -->
+  <script src="js/room.js"></script>
+</body>
+</html>
