@@ -1,48 +1,58 @@
 /**
  * room.js — GyanSetu Live Collaboration Room
+ * Backend: Supabase Realtime (Broadcast) + Supabase Database (state persistence)
  *
- * HOW IT WORKS (beginner-friendly):
- * ──────────────────────────────────
- * We use PeerJS, which is built on top of WebRTC — the same
- * technology browsers use for video calls.
+ * HOW IT WORKS (plain English):
+ * ─────────────────────────────
+ * Two Supabase features work together:
  *
- * Think of it like a walkie-talkie network:
- *   1. The FIRST person to open a room gets assigned a "host ID"
- *      (which is just the Room ID you typed, e.g. "dsa-tree-467").
- *      Their browser becomes the host.
+ * 1. REALTIME BROADCAST — instant messaging between live peers.
+ *    Every keystroke / drawing stroke / chat message is sent through
+ *    a named channel. Anyone subscribed gets it in <100ms.
  *
- *   2. Every SECOND person types the same Room ID and their browser
- *      dials the host directly — peer-to-peer, browser to browser.
- *      The host also connects back so everyone is in a full mesh.
- *
- *   3. After that, every time you type code, draw on the board, or
- *      send a chat message, your browser sends a tiny JSON packet
- *      directly to every other connected peer. No server is involved
- *      at all after the initial handshake.
- *
- * The free 0.peerjs.com broker server is only used for 1–2 seconds
- * at the start to help peers find each other (like a phone directory).
- * After that the connection is completely direct.
+ * 2. DATABASE (room_state table) — stores the latest code + whiteboard
+ *    image for each room. When a NEW person joins, they load the saved
+ *    state from the database so they see what was already there.
+ *    The state is saved automatically every few seconds while you work.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
 
   lucide.createIcons();
 
-  // ═══════════════════════════════════════════════════════════
+  // ── Guard: make sure the config was filled in ──────────────────────────────
+  // NOTE: must use typeof to safely check — const/let don't attach to window
+  const _url  = (typeof SUPABASE_URL  !== 'undefined') ? SUPABASE_URL  : '';
+  const _key  = (typeof SUPABASE_ANON !== 'undefined') ? SUPABASE_ANON : '';
+  const _urlOk = _url.startsWith('https://') && !_url.includes('PASTE');
+  const _keyOk = _key.startsWith('eyJ')      && !_key.includes('PASTE');
+  if (!_urlOk || !_keyOk) {
+    document.getElementById('join-btn').disabled = true;
+    document.getElementById('join-error').textContent =
+      !_urlOk ? '⚙️ SUPABASE_URL is missing — check js/supabase-config.js'
+              : '⚙️ SUPABASE_ANON key is wrong — must start with eyJ...';
+    document.getElementById('join-error').classList.remove('hidden');
+    return;
+  }
+
+  // ── Supabase client ────────────────────────────────────────────────────────
+  const supabase = window.supabase.createClient(_url, _key);
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // SHARED STATE
-  // ═══════════════════════════════════════════════════════════
-  let myName   = '';
-  let myRoom   = '';
-  let myColor  = randomColor();
-  let myPeer   = null;          // our PeerJS instance
-  let myPeerId = '';            // our unique peer ID on the PeerJS network
-
-  // Map of peerId → DataConnection (one per connected peer)
-  const connections = {};
-
-  let cmEditor = null;
+  // ═══════════════════════════════════════════════════════════════════════════
+  let myName    = '';
+  let myRoom    = '';
+  let myId      = crypto.randomUUID();   // unique ID for this browser tab
+  let myColor   = randomColor();
+  let channel   = null;   // the Supabase Realtime channel
+  let cmEditor  = null;
   let suppressCodeSync = false;
+  let onlineCount = 1;
+
+  // Debounce timers for saving state to the DB
+  let saveCodeTimer   = null;
+  let saveCanvasTimer = null;
 
   const wb = {
     canvas: null, ctx: null,
@@ -52,19 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
     history: [], redoStack: [],
   };
 
-  const peerCursors = {};   // peerId → { name, color, el }
+  const peerCursors = {};  // peerId → DOM element
 
-  // ═══════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════════════
   // 1. JOIN OVERLAY
-  // ═══════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════════════
   const joinOverlay   = document.getElementById('join-overlay');
   const workspace     = document.getElementById('workspace');
   const inputName     = document.getElementById('input-name');
   const inputRoom     = document.getElementById('input-room');
   const joinBtn       = document.getElementById('join-btn');
-  const joinError     = document.getElementById('join-error');
   const randomRoomBtn = document.getElementById('random-room-btn');
 
+  // Pre-fill room from URL ?room=xxx
   const urlRoom = new URLSearchParams(window.location.search).get('room');
   if (urlRoom) inputRoom.value = urlRoom;
 
@@ -81,293 +91,191 @@ document.addEventListener('DOMContentLoaded', () => {
   function tryJoin() {
     myName = inputName.value.trim();
     myRoom = inputRoom.value.trim().toLowerCase().replace(/\s+/g, '-');
-    if (!myName || !myRoom) {
-      showJoinError('Please fill in both fields.');
-      return;
-    }
+    if (!myName || !myRoom) { showJoinError('Please fill in both fields.'); return; }
     joinBtn.textContent = 'Connecting…';
     joinBtn.disabled = true;
-    joinError.classList.add('hidden');
-    initPeer();
+    joinError().classList.add('hidden');
+    initSupabase();
   }
 
   function showJoinError(msg) {
-    joinError.textContent = msg;
-    joinError.classList.remove('hidden');
+    const el = joinError();
+    el.textContent = msg;
+    el.classList.remove('hidden');
     joinBtn.textContent = 'Join Room →';
     joinBtn.disabled = false;
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // 2. PEERJS — WebRTC backbone
-  // ═══════════════════════════════════════════════════════════
+  function joinError() { return document.getElementById('join-error'); }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 2. SUPABASE REALTIME
+  // ═══════════════════════════════════════════════════════════════════════════
   /**
-   * PeerJS gives every browser tab a unique ID on a global network.
-   * We use "gyansetu-<roomId>-host" as the host's fixed ID.
-   * The first peer who successfully registers that ID becomes the host.
-   * Everyone else connects to that ID.
+   * Supabase Realtime "Broadcast" works like this:
+   *   - We subscribe to a channel named after the room ID.
+   *   - We call channel.send({ type:'broadcast', event:'...', payload:{...} })
+   *     to send a message.
+   *   - Every other subscriber gets an 'event' callback instantly.
    *
-   * Message types we send over the data channel:
-   *   hello          → { name, color }           (first handshake)
-   *   code-change    → { code, lang }             (editor update)
-   *   typing         → { name }                   (typing indicator)
-   *   wb-stroke      → { ...strokeData }          (whiteboard paint)
-   *   wb-clear       → {}                         (clear board)
-   *   cursor         → { name, color, x, y }      (mouse position 0-1)
-   *   chat           → { name, color, text }       (chat message)
-   *   peer-list      → { peers: [{id,name,color}] } (host → new joiner)
-   *   sync-state     → { code, lang, canvas }     (host sends full state to new joiner)
+   * "Presence" tracks who is online in the channel right now.
+   * We use it to show the peer count badge.
    */
-
-  const HOST_ID_PREFIX = 'gyansetu-room-';
-
-  function initPeer() {
-    // Create our PeerJS instance with a random unique ID
-    myPeer = new Peer(undefined, {
-      host: '0.peerjs.com',
-      port: 443,
-      path: '/',
-      secure: true,
-      debug: 0,
+  function initSupabase() {
+    // Channel name = the room ID (everyone with the same ID joins the same channel)
+    channel = supabase.channel(`gyansetu-room-${myRoom}`, {
       config: {
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' },
-        ]
+        broadcast : { self: false },   // don't echo our own messages back to us
+        presence  : { key: myId },
       }
     });
 
-    myPeer.on('open', id => {
-      myPeerId = id;
-      // Try to become the host by connecting as a guest first
-      tryConnectAsGuest();
+    // ── Listen for events from other peers ──────────────────────────────────
+
+    channel.on('broadcast', { event: 'code-change' }, ({ payload }) => {
+      suppressCodeSync = true;
+      if (cmEditor && cmEditor.getValue() !== payload.code) cmEditor.setValue(payload.code);
+      if (payload.lang) setEditorLang(payload.lang);
+      suppressCodeSync = false;
     });
 
-    myPeer.on('error', err => {
-      // If nobody claimed the host slot and we get "peer-unavailable", we become host
-      if (err.type === 'peer-unavailable') {
-        // The host doesn't exist yet — we become the host
-        becomeHost();
-      } else {
-        showJoinError('⚠️ Connection error: ' + err.message + '. Try again.');
-        console.error('PeerJS error:', err);
+    channel.on('broadcast', { event: 'typing' }, ({ payload }) => {
+      showTypingIndicator(`${payload.name} is typing…`);
+    });
+
+    channel.on('broadcast', { event: 'wb-stroke' }, ({ payload }) => {
+      drawRemoteStroke(payload.stroke);
+    });
+
+    channel.on('broadcast', { event: 'wb-clear' }, () => {
+      clearCanvas(false);
+    });
+
+    channel.on('broadcast', { event: 'cursor' }, ({ payload }) => {
+      updatePeerCursor(payload.id, payload.name, payload.color, payload.x, payload.y);
+    });
+
+    channel.on('broadcast', { event: 'chat' }, ({ payload }) => {
+      appendChatBubble(payload.name, payload.text, payload.color, false);
+    });
+
+    // ── Presence: track who is online ───────────────────────────────────────
+    channel.on('presence', { event: 'sync' }, () => {
+      const state = channel.presenceState();
+      onlineCount = Object.keys(state).length;
+      updatePeerCount(onlineCount);
+    });
+
+    channel.on('presence', { event: 'join' }, ({ newPresences }) => {
+      newPresences.forEach(p => appendSystemMsg(`${p.name || 'Someone'} joined the room`));
+    });
+
+    channel.on('presence', { event: 'leave' }, ({ leftPresences }) => {
+      leftPresences.forEach(p => {
+        appendSystemMsg(`${p.name || 'Someone'} left the room`);
+        removePeerCursor(p.id || '');
+      });
+    });
+
+    // ── Subscribe and enter the room once connected ──────────────────────────
+    channel.subscribe(async status => {
+      if (status === 'SUBSCRIBED') {
+        await channel.track({ id: myId, name: myName, color: myColor });
+        enterRoom();
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        showJoinError('⚠️ Could not connect to Supabase. Check your config in js/supabase-config.js');
       }
     });
-
-    // When a REMOTE peer connects TO us (we're the host, or mesh reconnect)
-    myPeer.on('connection', conn => {
-      setupConnection(conn, false);
-    });
   }
 
-  // ── Try connecting to the existing host ────────────────────
-  function tryConnectAsGuest() {
-    const hostId = HOST_ID_PREFIX + myRoom;
-    const conn   = myPeer.connect(hostId, {
-      reliable: true,
-      metadata: { name: myName, color: myColor },
-    });
-
-    conn.on('open', () => {
-      setupConnection(conn, true);
-      // After connecting to host, enter the room
-      enterRoom();
-    });
-
-    // The 'peer-unavailable' error fires on myPeer.on('error'), not here,
-    // so we don't need an error handler on conn itself for that case.
-  }
-
-  // ── Become the host ────────────────────────────────────────
-  function becomeHost() {
-    const hostId = HOST_ID_PREFIX + myRoom;
-    // Destroy the anonymous peer and create a new one with the fixed host ID
-    myPeer.destroy();
-
-    myPeer = new Peer(hostId, {
-      host: '0.peerjs.com',
-      port: 443,
-      path: '/',
-      secure: true,
-      debug: 0,
-      config: {
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' },
-        ]
-      }
-    });
-
-    myPeer.on('open', id => {
-      myPeerId = id;
-      enterRoom();
-    });
-
-    myPeer.on('error', err => {
-      // Another tab already claimed the host ID between our two attempts
-      if (err.type === 'unavailable-id') {
-        // That's fine — re-try as guest
-        myPeer.destroy();
-        initPeer();
-      } else {
-        showJoinError('⚠️ Connection error: ' + err.message);
-        console.error('PeerJS error:', err);
-      }
-    });
-
-    myPeer.on('connection', conn => {
-      setupConnection(conn, false);
-    });
-  }
-
-  // ── Wire up a data connection in both directions ───────────
-  function setupConnection(conn, weInitiated) {
-    conn.on('open', () => {
-      const peerId = conn.peer;
-      connections[peerId] = conn;
-      updatePeerCount(Object.keys(connections).length + 1);
-
-      // Send our hello
-      send(conn, { type: 'hello', name: myName, color: myColor });
-
-      // If WE are the host and THEY just connected, send full state
-      if (isHost() && !weInitiated) {
-        setTimeout(() => {
-          const canvas = wb.canvas ? wb.canvas.toDataURL() : null;
-          send(conn, {
-            type: 'sync-state',
-            code  : cmEditor ? cmEditor.getValue() : '',
-            lang  : getCurrentLang(),
-            canvas: canvas,
-          });
-          // Also tell them about all existing peers
-          const peerList = Object.entries(connections)
-            .filter(([id]) => id !== peerId)
-            .map(([id, c]) => ({ id, name: c._meta?.name || '?', color: c._meta?.color || '#fff' }));
-          if (peerList.length) send(conn, { type: 'peer-list', peers: peerList });
-        }, 300);
-      }
-    });
-
-    conn.on('data', data => {
-      handleMessage(conn.peer, data);
-    });
-
-    conn.on('close', () => {
-      const meta = conn._meta || {};
-      delete connections[conn.peer];
-      updatePeerCount(Object.keys(connections).length + 1);
-      appendSystemMsg(`${meta.name || 'Someone'} left the room`);
-      removePeerCursor(conn.peer);
-    });
-
-    conn.on('error', err => {
-      console.warn('Connection error with', conn.peer, err);
-    });
-  }
-
-  function isHost() {
-    return myPeerId === HOST_ID_PREFIX + myRoom;
-  }
-
-  // ── Send a JSON object over a single connection ────────────
-  function send(conn, data) {
-    try { if (conn.open) conn.send(data); } catch(e) { console.warn('send failed', e); }
-  }
-
-  // ── Broadcast to ALL connected peers ──────────────────────
-  function broadcast(data, exceptId) {
-    Object.entries(connections).forEach(([id, conn]) => {
-      if (id !== exceptId) send(conn, data);
-    });
-  }
-
-  // ═══════════════════════════════════════════════════════════
-  // 3. MESSAGE HANDLER
-  // ═══════════════════════════════════════════════════════════
-  function handleMessage(fromId, data) {
-    switch (data.type) {
-
-      case 'hello':
-        // Store metadata on the connection object for later reference
-        if (connections[fromId]) connections[fromId]._meta = { name: data.name, color: data.color };
-        appendSystemMsg(`${data.name} joined the room`);
-        updatePeerCount(Object.keys(connections).length + 1);
-        break;
-
-      case 'peer-list':
-        // Host told us about other existing peers — connect to each
-        data.peers.forEach(({ id }) => {
-          if (!connections[id] && id !== myPeerId) {
-            const conn = myPeer.connect(id, { reliable: true });
-            setupConnection(conn, true);
-          }
-        });
-        break;
-
-      case 'sync-state':
-        // Host sent us the full room state on join
-        if (data.code !== undefined && cmEditor) {
-          suppressCodeSync = true;
-          cmEditor.setValue(data.code);
-          suppressCodeSync = false;
-        }
-        if (data.lang) setEditorLang(data.lang);
-        if (data.canvas) restoreCanvasFromDataURL(data.canvas);
-        break;
-
-      case 'code-change':
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 2b. DATABASE — save and load room state for late joiners
+  // ═══════════════════════════════════════════════════════════════════════════
+  /**
+   * We keep one row per room in a table called "room_state".
+   * The row has: room_id (text), code (text), lang (text), canvas (text = base64 PNG).
+   * upsert = insert if not exists, update if exists.
+   */
+  async function loadRoomState() {
+    try {
+      const { data, error } = await supabase
+        .from('room_state')
+        .select('code, lang, canvas')
+        .eq('room_id', myRoom)
+        .maybeSingle();
+      if (error) { console.warn('Could not load room state:', error.message); return; }
+      if (!data) return;   // room is brand new, nothing to load
+      if (data.code && cmEditor) {
         suppressCodeSync = true;
-        if (cmEditor && cmEditor.getValue() !== data.code) cmEditor.setValue(data.code);
-        if (data.lang) setEditorLang(data.lang);
+        cmEditor.setValue(data.code);
         suppressCodeSync = false;
-        // Re-broadcast (mesh relay if needed, host forwards to all)
-        if (isHost()) broadcast(data, fromId);
-        break;
-
-      case 'typing':
-        showTypingIndicator(`${data.name} is typing…`);
-        if (isHost()) broadcast(data, fromId);
-        break;
-
-      case 'wb-stroke':
-        drawRemoteStroke(data);
-        if (isHost()) broadcast(data, fromId);
-        break;
-
-      case 'wb-clear':
-        clearCanvas(false);
-        if (isHost()) broadcast(data, fromId);
-        break;
-
-      case 'cursor':
-        updatePeerCursor(fromId, data.name, data.color, data.x, data.y);
-        if (isHost()) broadcast(data, fromId);
-        break;
-
-      case 'chat':
-        appendChatBubble(data.name, data.text, data.color, false);
-        if (isHost()) broadcast(data, fromId);
-        break;
-    }
+      }
+      if (data.lang) setEditorLang(data.lang);
+      if (data.canvas) restoreCanvasFromDataURL(data.canvas);
+    } catch (e) { console.warn('loadRoomState error:', e); }
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // 4. ENTER ROOM — runs once we're connected
-  // ═══════════════════════════════════════════════════════════
+  function saveCodeToDb(code, lang) {
+    clearTimeout(saveCodeTimer);
+    saveCodeTimer = setTimeout(async () => {
+      try {
+        await supabase.from('room_state').upsert(
+          { room_id: myRoom, code, lang, updated_at: new Date().toISOString() },
+          { onConflict: 'room_id' }
+        );
+      } catch (e) { console.warn('saveCodeToDb error:', e); }
+    }, 1500);  // wait 1.5s after last keystroke before saving
+  }
+
+  function saveCanvasToDb() {
+    clearTimeout(saveCanvasTimer);
+    saveCanvasTimer = setTimeout(async () => {
+      if (!wb.canvas) return;
+      try {
+        const dataURL = wb.canvas.toDataURL('image/jpeg', 0.6);  // compress: JPEG 60%
+        await supabase.from('room_state').upsert(
+          { room_id: myRoom, canvas: dataURL, updated_at: new Date().toISOString() },
+          { onConflict: 'room_id' }
+        );
+      } catch (e) { console.warn('saveCanvasToDb error:', e); }
+    }, 2000);  // wait 2s after last stroke before saving
+  }
+
+  function restoreCanvasFromDataURL(dataURL) {
+    const img = new Image();
+    img.onload = () => {
+      if (!wb.canvas) return;
+      const r = wb.canvas.getBoundingClientRect();
+      wb.ctx.drawImage(img, 0, 0, r.width, r.height);
+      pushHistory();
+    };
+    img.src = dataURL;
+  }
+
+  // ── Broadcast helper ────────────────────────────────────────────────────────
+  function broadcast(event, payload) {
+    if (!channel) return;
+    channel.send({ type: 'broadcast', event, payload });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 3. ENTER ROOM
+  // ═══════════════════════════════════════════════════════════════════════════
   function enterRoom() {
     joinOverlay.classList.add('hidden');
     workspace.style.removeProperty('display');
     document.getElementById('room-label').textContent = `Room: ${myRoom}`;
     window.history.replaceState({}, '', `?room=${encodeURIComponent(myRoom)}`);
-    updatePeerCount(Object.keys(connections).length + 1);
+    updatePeerCount(onlineCount);
     initEditor();
     initWhiteboard();
+    // Load saved state AFTER editor + canvas are ready
+    loadRoomState();
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // 5. CODE EDITOR
-  // ═══════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 4. CODE EDITOR  (CodeMirror)
+  // ═══════════════════════════════════════════════════════════════════════════
   function initEditor() {
     cmEditor = CodeMirror(document.getElementById('editor-wrap'), {
       value: '// Start coding here…\n',
@@ -385,16 +293,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let typingTimer = null;
     cmEditor.on('change', () => {
       if (suppressCodeSync) return;
-      const payload = { type: 'code-change', code: cmEditor.getValue(), lang: getCurrentLang() };
-      broadcast(payload);
+      const code = cmEditor.getValue();
+      const lang = getCurrentLang();
+      broadcast('code-change', { code, lang });
+      saveCodeToDb(code, lang);         // ← persist to DB for late joiners
       clearTimeout(typingTimer);
-      broadcast({ type: 'typing', name: myName });
+      broadcast('typing', { name: myName });
       typingTimer = setTimeout(() => showTypingIndicator(''), 2000);
     });
 
     document.getElementById('lang-select').addEventListener('change', e => {
       setEditorLang(e.target.value);
-      broadcast({ type: 'code-change', code: cmEditor.getValue(), lang: e.target.value });
+      broadcast('code-change', { code: cmEditor.getValue(), lang: e.target.value });
     });
 
     document.getElementById('copy-code-btn').addEventListener('click', () => {
@@ -404,7 +314,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('clear-code-btn').addEventListener('click', () => {
       if (!confirm('Clear the shared editor for everyone?')) return;
       cmEditor.setValue('');
-      broadcast({ type: 'code-change', code: '', lang: getCurrentLang() });
+      const lang = getCurrentLang();
+      broadcast('code-change', { code: '', lang });
+      saveCodeToDb('', lang);
     });
   }
 
@@ -414,9 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('lang-select').value = lang;
   }
 
-  function getCurrentLang() {
-    return document.getElementById('lang-select').value;
-  }
+  function getCurrentLang() { return document.getElementById('lang-select').value; }
 
   let typingMsgTimer = null;
   function showTypingIndicator(msg) {
@@ -425,23 +335,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (msg) typingMsgTimer = setTimeout(() => showTypingIndicator(''), 3000);
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // 6. WHITEBOARD
-  // ═══════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 5. WHITEBOARD  (HTML5 Canvas, pure JS)
+  // ═══════════════════════════════════════════════════════════════════════════
   function initWhiteboard() {
     wb.canvas = document.getElementById('wb-canvas');
     wb.ctx    = wb.canvas.getContext('2d');
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    wb.canvas.addEventListener('mousedown', onPointerDown);
-    wb.canvas.addEventListener('mousemove', onPointerMove);
-    wb.canvas.addEventListener('mouseup',   onPointerUp);
+    wb.canvas.addEventListener('mousedown',  onPointerDown);
+    wb.canvas.addEventListener('mousemove',  onPointerMove);
+    wb.canvas.addEventListener('mouseup',    onPointerUp);
     wb.canvas.addEventListener('mouseleave', onPointerUp);
 
     wb.canvas.addEventListener('touchstart',  e => { e.preventDefault(); onPointerDown(touchToMouse(e)); }, { passive: false });
     wb.canvas.addEventListener('touchmove',   e => { e.preventDefault(); onPointerMove(touchToMouse(e)); }, { passive: false });
-    wb.canvas.addEventListener('touchend',    e => { e.preventDefault(); onPointerUp();                  }, { passive: false });
+    wb.canvas.addEventListener('touchend',    e => { e.preventDefault(); onPointerUp(); }, { passive: false });
 
     document.querySelectorAll('.wb-tool').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -478,11 +388,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!wb.canvas) return;
     const rect   = wb.canvas.getBoundingClientRect();
     const backup = wb.canvas.toDataURL();
-    wb.canvas.width  = rect.width  * window.devicePixelRatio;
-    wb.canvas.height = rect.height * window.devicePixelRatio;
+    wb.canvas.width  = Math.floor(rect.width  * window.devicePixelRatio);
+    wb.canvas.height = Math.floor(rect.height * window.devicePixelRatio);
     wb.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
     const img = new Image();
-    img.onload = () => { const r = wb.canvas.getBoundingClientRect(); wb.ctx.drawImage(img, 0, 0, r.width, r.height); };
+    img.onload = () => { wb.ctx.drawImage(img, 0, 0, rect.width, rect.height); };
     img.src = backup;
   }
 
@@ -510,28 +420,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (wb.tool === 'text') {
       wb.drawing = false;
-      const text = prompt('Enter text to place on the board:');
+      const text = prompt('Enter text:');
       if (!text) return;
       applyStyle();
       wb.ctx.font = `${wb.size * 4 + 10}px "Plus Jakarta Sans", sans-serif`;
       wb.ctx.fillStyle = wb.color;
       wb.ctx.fillText(text, x, y);
       pushHistory();
-      broadcast({ type: 'wb-stroke', stroke: { type: 'text', text, x, y, color: wb.color, size: wb.size } });
+      broadcast('wb-stroke', { stroke: { type: 'text', text, x, y, color: wb.color, size: wb.size } });
     }
   }
 
   function onPointerMove(e) {
     const { x, y } = getXY(e);
 
-    // Broadcast cursor at ~20fps (throttle by checking a timestamp)
+    // Throttle cursor broadcasts to ~20fps
     const now = Date.now();
-    if (!onPointerMove._last || now - onPointerMove._last > 50) {
-      onPointerMove._last = now;
-      const rect = wb.canvas.getBoundingClientRect();
-      broadcast({ type: 'cursor', name: myName, color: myColor,
-                  x: (e.clientX - rect.left) / rect.width,
-                  y: (e.clientY - rect.top)  / rect.height });
+    if (!onPointerMove._t || now - onPointerMove._t > 50) {
+      onPointerMove._t = now;
+      const r = wb.canvas.getBoundingClientRect();
+      broadcast('cursor', {
+        id: myId, name: myName, color: myColor,
+        x: (e.clientX - r.left) / r.width,
+        y: (e.clientY - r.top)  / r.height,
+      });
     }
 
     if (!wb.drawing) return;
@@ -540,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (wb.tool === 'pen') {
       wb.ctx.lineTo(x, y);
       wb.ctx.stroke();
-      broadcast({ type: 'wb-stroke', stroke: { type: 'segment', x1: wb.startX, y1: wb.startY, x2: x, y2: y, color: wb.color, size: wb.size } });
+      broadcast('wb-stroke', { stroke: { type: 'segment', x1: wb.startX, y1: wb.startY, x2: x, y2: y, color: wb.color, size: wb.size } });
       wb.startX = x; wb.startY = y;
     }
 
@@ -550,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
       wb.ctx.lineTo(x, y);
       wb.ctx.stroke();
       wb.ctx.globalCompositeOperation = 'source-over';
-      broadcast({ type: 'wb-stroke', stroke: { type: 'erase', x1: wb.startX, y1: wb.startY, x2: x, y2: y, size: wb.size * 4 } });
+      broadcast('wb-stroke', { stroke: { type: 'erase', x1: wb.startX, y1: wb.startY, x2: x, y2: y, size: wb.size * 4 } });
       wb.startX = x; wb.startY = y;
     }
 
@@ -568,10 +480,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (wb.tool === 'line' || wb.tool === 'rect' || wb.tool === 'circle') {
       pushHistory();
-      broadcast({ type: 'wb-stroke', stroke: { type: wb.tool, x1: wb.startX, y1: wb.startY, x2: endX, y2: endY, color: wb.color, size: wb.size } });
+      broadcast('wb-stroke', { stroke: { type: wb.tool, x1: wb.startX, y1: wb.startY, x2: endX, y2: endY, color: wb.color, size: wb.size } });
     }
     if (wb.tool === 'pen' || wb.tool === 'eraser') pushHistory();
     wb.ctx.closePath();
+    saveCanvasToDb();   // ← persist whiteboard to DB after every stroke
   }
 
   function applyStyle() {
@@ -593,13 +506,13 @@ document.addEventListener('DOMContentLoaded', () => {
       wb.ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
     } else if (type === 'circle') {
       const rx = Math.abs(x2 - x1) / 2, ry = Math.abs(y2 - y1) / 2;
-      const cx = Math.min(x1, x2) + rx, cy = Math.min(y1, y2) + ry;
-      wb.ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); wb.ctx.stroke();
+      const cx = Math.min(x1, x2) + rx,  cy = Math.min(y1, y2) + ry;
+      wb.ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      wb.ctx.stroke();
     }
   }
 
-  function drawRemoteStroke(data) {
-    const d = data.stroke;
+  function drawRemoteStroke(d) {
     if (!d) return;
     const ctx = wb.ctx;
     ctx.globalCompositeOperation = 'source-over';
@@ -635,28 +548,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function redoWhiteboard() {
     if (!wb.redoStack.length) return;
-    const state = wb.redoStack.pop();
-    wb.history.push(state);
-    wb.ctx.putImageData(state, 0, 0);
+    const s = wb.redoStack.pop();
+    wb.history.push(s);
+    wb.ctx.putImageData(s, 0, 0);
   }
 
-  function clearCanvas(broadcast_) {
+  function clearCanvas(shouldBroadcast) {
     wb.ctx.clearRect(0, 0, wb.canvas.width, wb.canvas.height);
     wb.history = []; wb.redoStack = [];
-    if (broadcast_) broadcast({ type: 'wb-clear' });
+    if (shouldBroadcast) {
+      broadcast('wb-clear', {});
+      saveCanvasToDb();   // save the now-empty canvas to DB
+    }
   }
 
-  function restoreCanvasFromDataURL(dataURL) {
-    const img = new Image();
-    img.onload = () => {
-      const r = wb.canvas.getBoundingClientRect();
-      wb.ctx.drawImage(img, 0, 0, r.width, r.height);
-      pushHistory();
-    };
-    img.src = dataURL;
-  }
-
-  // ── Peer cursors ──────────────────────────────────────────
   function updatePeerCursor(id, name, color, rx, ry) {
     if (!wb.canvas) return;
     const rect      = wb.canvas.getBoundingClientRect();
@@ -679,9 +584,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (peerCursors[id]) { peerCursors[id].el.remove(); delete peerCursors[id]; }
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // 7. CHAT
-  // ═══════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 6. CHAT
+  // ═══════════════════════════════════════════════════════════════════════════
   const chatMessages = document.getElementById('chat-messages');
   const chatInput    = document.getElementById('chat-input');
   const chatBadge    = document.getElementById('chat-badge');
@@ -695,11 +600,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!text) return;
     chatInput.value = '';
     appendChatBubble(myName, text, myColor, true);
-    broadcast({ type: 'chat', name: myName, color: myColor, text });
+    broadcast('chat', { name: myName, color: myColor, text });
   }
 
   function appendChatBubble(name, text, color, isMine) {
-    const wrap  = document.createElement('div');
+    const wrap   = document.createElement('div');
     wrap.className = `chat-bubble flex flex-col ${isMine ? 'me' : 'peer'}`;
     const nameEl = document.createElement('div'); nameEl.className = 'name'; nameEl.textContent = isMine ? 'You' : name;
     const msgEl  = document.createElement('div'); msgEl.className  = 'msg';  msgEl.textContent  = text;
@@ -720,9 +625,9 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // 8. TABS
-  // ═══════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 7. TABS
+  // ═══════════════════════════════════════════════════════════════════════════
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
@@ -738,21 +643,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // 9. LEAVE
-  // ═══════════════════════════════════════════════════════════
-  document.getElementById('leave-btn').addEventListener('click', () => {
-    if (myPeer) myPeer.destroy();
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 8. LEAVE
+  // ═══════════════════════════════════════════════════════════════════════════
+  document.getElementById('leave-btn').addEventListener('click', async () => {
+    if (channel) await channel.unsubscribe();
     window.location.href = 'index.html';
   });
 
   window.addEventListener('beforeunload', () => {
-    if (myPeer) myPeer.destroy();
+    if (channel) channel.unsubscribe();
   });
 
-  // ═══════════════════════════════════════════════════════════
-  // 10. HELPERS
-  // ═══════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 9. HELPERS
+  // ═══════════════════════════════════════════════════════════════════════════
   function updatePeerCount(n) {
     document.getElementById('peer-count').textContent = n;
   }
