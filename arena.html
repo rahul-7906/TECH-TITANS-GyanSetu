@@ -24,27 +24,135 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
+    /* ─── Ultra-Gaming Cyber Esports Mode (Core GyanSetu Green Theme) ─── */
+    :root {
+      --cyber-lime: #B9F044;
+      --cyber-emerald: #10B981;
+      --cyber-dark-0: #020705;
+      --cyber-dark-1: #040D09;
+      --cyber-dark-2: #081B13;
+      --cyber-rival-red: #F43F5E;
+    }
+
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #030805;
+      background-image: 
+        radial-gradient(ellipse 90% 50% at 50% -10%, rgba(185, 240, 68, 0.16), transparent 70%),
+        radial-gradient(ellipse 60% 40% at 95% 45%, rgba(16, 185, 129, 0.08), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 5% 75%, rgba(244, 63, 94, 0.06), transparent 60%),
+        linear-gradient(to bottom, #040D09 0%, #020705 100%);
+      background-attachment: fixed;
+      color: #E2E8F0;
     }
+
     .font-code {
       font-family: 'JetBrains Mono', monospace;
     }
+
+    /* Ambient cyber-grid overlay */
+    .cyber-grid-overlay {
+      background-size: 38px 38px;
+      background-image: 
+        linear-gradient(to right, rgba(185, 240, 68, 0.032) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(185, 240, 68, 0.032) 1px, transparent 1px);
+    }
+
+    /* Glassmorphic Cyber Gaming Cards */
+    .esports-card {
+      background: linear-gradient(145deg, rgba(8, 27, 19, 0.94) 0%, rgba(3, 12, 8, 0.98) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(185, 240, 68, 0.25);
+      box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.8), 0 0 20px -4px rgba(185, 240, 68, 0.1);
+      position: relative;
+    }
+
+    /* Squad 1 (Team Alpha - Cyber Toxic Lime) */
+    .card-squad-alpha {
+      background: linear-gradient(145deg, rgba(12, 38, 26, 0.9) 0%, rgba(4, 15, 10, 0.96) 100%);
+      border: 2px solid rgba(185, 240, 68, 0.65);
+      box-shadow: 0 0 24px rgba(185, 240, 68, 0.18), inset 0 0 18px rgba(185, 240, 68, 0.05);
+      transition: all 0.28s ease;
+    }
+    .card-squad-alpha:hover {
+      border-color: #B9F044;
+      box-shadow: 0 0 32px rgba(185, 240, 68, 0.3), inset 0 0 24px rgba(185, 240, 68, 0.08);
+    }
+
+    /* Squad 2 (Rival Titans - Cyber Ruby Red Clash) */
+    .card-squad-rival {
+      background: linear-gradient(145deg, rgba(38, 10, 18, 0.9) 0%, rgba(15, 4, 7, 0.96) 100%);
+      border: 2px solid rgba(244, 63, 94, 0.55);
+      box-shadow: 0 0 24px rgba(244, 63, 94, 0.16), inset 0 0 18px rgba(244, 63, 94, 0.05);
+      transition: all 0.28s ease;
+    }
+    .card-squad-rival:hover {
+      border-color: #FB7185;
+      box-shadow: 0 0 32px rgba(244, 63, 94, 0.28), inset 0 0 24px rgba(244, 63, 94, 0.08);
+    }
+
+    /* Ultra-Gaming Launch Button with animated light sheen */
+    .btn-launch-esports {
+      background: linear-gradient(135deg, #B9F044 0%, #10B981 100%);
+      color: #030805;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      box-shadow: 0 0 22px rgba(185, 240, 68, 0.45), 0 4px 14px rgba(0, 0, 0, 0.6);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-launch-esports::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -80%;
+      width: 50%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+      transform: rotate(25deg);
+      transition: all 0.7s ease;
+    }
+    .btn-launch-esports:hover::after {
+      left: 130%;
+    }
+    .btn-launch-esports:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 0 32px rgba(185, 240, 68, 0.7), 0 6px 18px rgba(0, 0, 0, 0.7);
+    }
+    .btn-launch-esports:active {
+      transform: scale(0.97);
+    }
+
+    /* Racing Track Styling */
     .racing-track {
-      background: linear-gradient(180deg, #091a13 0%, #06130e 100%);
-      border: 1px solid rgba(185, 240, 68, 0.15);
+      background: linear-gradient(180deg, #061810 0%, #030C07 100%);
+      border: 1px solid rgba(185, 240, 68, 0.35);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.6);
       position: relative;
       overflow: hidden;
     }
     .track-grid {
-      background-size: 36px 36px;
+      background-size: 34px 34px;
       background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        linear-gradient(to right, rgba(185, 240, 68, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(185, 240, 68, 0.04) 1px, transparent 1px);
     }
     .lane-divider {
-      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.18) 0, rgba(255,255,255,0.18) 16px, transparent 16px, transparent 32px);
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.2) 0, rgba(255,255,255,0.2) 16px, transparent 16px, transparent 32px);
     }
+    .lane-alpha {
+      background: linear-gradient(90deg, rgba(185, 240, 68, 0.12) 0%, rgba(16, 185, 129, 0.03) 100%);
+      border: 1.5px solid rgba(185, 240, 68, 0.5);
+      box-shadow: 0 0 16px rgba(185, 240, 68, 0.12);
+    }
+    .lane-rival {
+      background: linear-gradient(90deg, rgba(244, 63, 94, 0.12) 0%, rgba(225, 29, 72, 0.03) 100%);
+      border: 1.5px solid rgba(244, 63, 94, 0.45);
+      box-shadow: 0 0 16px rgba(244, 63, 94, 0.12);
+    }
+
     .car-sprite {
       transition: left 0.65s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s ease;
     }
@@ -56,8 +164,8 @@
     }
     @keyframes nitroGlow {
       0% { filter: drop-shadow(0 0 0px #B9F044); transform: scale(1); }
-      50% { filter: drop-shadow(0 0 20px #B9F044); transform: scale(1.22) translateY(-3px); }
-      100% { filter: drop-shadow(0 0 3px #B9F044); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 24px #B9F044); transform: scale(1.25) translateY(-3px); }
+      100% { filter: drop-shadow(0 0 4px #B9F044); transform: scale(1); }
     }
     @keyframes spinout {
       0% { transform: rotate(0deg); }
@@ -74,28 +182,53 @@
     @keyframes livePulse {
       to { box-shadow: 0 0 0 12px rgba(185, 240, 68, 0); }
     }
+
+    /* Cyber Code Editor Styling */
     .CodeMirror {
       height: 250px;
       font-size: 13px;
       font-family: 'JetBrains Mono', monospace;
       line-height: 1.6;
       border-radius: 12px;
-      background: #06130E !important;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #030A07 !important;
+      border: 1px solid rgba(185, 240, 68, 0.25) !important;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.7);
     }
     .CodeMirror-gutters {
-      background: #040d09 !important;
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      background: #020704 !important;
+      border-right: 1px solid rgba(185, 240, 68, 0.15) !important;
     }
+    .CodeMirror-cursor {
+      border-left: 2px solid #B9F044 !important;
+    }
+
+    /* Interactive Tab Buttons */
     .tab-btn.active {
-      background: rgba(185, 240, 68, 0.15);
-      border-color: #B9F044;
-      color: #B9F044;
+      background: rgba(185, 240, 68, 0.18) !important;
+      border: 1px solid #B9F044 !important;
+      color: #B9F044 !important;
+      box-shadow: 0 0 14px rgba(185, 240, 68, 0.25);
+    }
+
+    /* Custom cyber scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #030805;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(185, 240, 68, 0.25);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(185, 240, 68, 0.55);
     }
   </style>
 </head>
 
-<body class="bg-[#0B1F17] text-white min-h-screen flex flex-col antialiased">
+<body class="bg-[#030805] text-white min-h-screen flex flex-col antialiased cyber-grid-overlay">
 
   <!-- ── 1. TOP BAR ── -->
   <header class="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-[#06130E]/95 px-4 py-3 backdrop-blur-md sm:px-8">
@@ -153,233 +286,250 @@
   <main class="flex-1 mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 flex flex-col gap-6">
 
     <!-- ===== SQUAD & ROOM MANAGEMENT LOBBY ===== -->
-    <section id="arena-lobby" class="rounded-3xl border border-white/10 bg-[#06130E] p-5 sm:p-7 shadow-2xl">
+    <section id="arena-lobby" class="esports-card rounded-3xl p-5 sm:p-7 shadow-2xl">
       
       <!-- Top Room Config Bar -->
       <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-5 border-b border-white/10">
         <div>
           <div class="flex items-center gap-2 mb-1">
-            <span class="rounded-full bg-[#B9F044]/15 px-3 py-0.5 text-[10px] font-extrabold text-[#B9F044] uppercase tracking-wider">Dynamic Squad Arena</span>
-            <span class="text-xs text-slate-400">&bull; Create custom rooms, invite squad peers &amp; rival teams</span>
+            <span class="rounded-full bg-[#B9F044]/15 border border-[#B9F044]/30 px-3 py-0.5 text-[10px] font-black text-[#B9F044] uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_10px_rgba(185,240,68,0.2)]">
+              <span class="h-1.5 w-1.5 rounded-full bg-[#B9F044] animate-ping"></span>
+              Ultra-Gaming Esports Arena
+            </span>
+            <span class="text-xs text-slate-400 hidden sm:inline">&bull; Real-time coding duel &amp; Super Nitro race</span>
           </div>
-          <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+          <h2 class="text-xl sm:text-2xl font-black bg-gradient-to-r from-white via-emerald-200 to-[#B9F044] bg-clip-text text-transparent flex items-center gap-2 tracking-tight">
             Campus Code Race &amp; Rival Duel
           </h2>
         </div>
 
-        <!-- Room Switcher & Peer Inviter CTA -->
+        <!-- Room Switcher & Launch CTA -->
         <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
           <!-- Room Input with Shuffle -->
-          <div class="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs">
+          <div class="flex items-center gap-1.5 rounded-xl border border-white/15 bg-black/40 px-3 py-1.5 text-xs backdrop-blur-sm">
             <span class="text-slate-400 font-semibold">Room:</span>
             <input id="input-room-code" type="text" value="turbo-dsa-42" maxlength="24" class="w-28 bg-transparent font-mono font-bold text-[#B9F044] outline-none" />
             <button onclick="generateRandomRoom()" title="Generate Random Room" class="text-slate-400 hover:text-white transition">
               <i data-lucide="shuffle" class="h-3.5 w-3.5"></i>
             </button>
-            <button onclick="changeRoom()" class="rounded-lg bg-[#B9F044] px-2.5 py-0.5 text-[10px] font-extrabold text-[#0B1F17] hover:brightness-110 transition">
-              Join/Set
+            <button onclick="changeRoom()" class="rounded-lg bg-[#B9F044] px-2.5 py-0.5 text-[10px] font-extrabold text-[#0B1F17] hover:brightness-110 transition shadow-xs">
+              Join
             </button>
           </div>
 
           <!-- Open Online Peers Inviter Modal -->
-          <button onclick="openPeerInviteModal()" class="btn-pill inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/10 px-3.5 py-2 text-xs font-extrabold text-[#B9F044] hover:bg-[#B9F044]/20 transition shadow-sm">
-            <i data-lucide="user-plus" class="h-4 w-4"></i>
-            <span>Invite Active Peers &amp; Rivals</span>
+          <button onclick="openPeerInviteModal()" class="inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2 text-xs font-bold text-white hover:border-[#B9F044] hover:text-[#B9F044] transition shadow-xs">
+            <i data-lucide="user-plus" class="h-3.5 w-3.5"></i>
+            <span>Invite Peers</span>
           </button>
 
           <!-- Launch Race Button -->
-          <button id="btn-start-race" onclick="startRaceMatch()" class="btn-pill inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-5 py-2 text-xs font-black text-[#0B1F17] transition hover:brightness-110 shadow-glow active:scale-95">
+          <button id="btn-start-race" onclick="startRaceMatch()" class="btn-launch-esports inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-xs font-black shadow-lg">
             <i data-lucide="flag" class="h-4 w-4"></i>
             <span>Launch Match 🏁</span>
           </button>
         </div>
       </div>
 
-      <!-- Topic / Quiz Room Category Selector -->
-      <div class="mt-4 pt-4 border-t border-white/10">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B9F044]/20 text-[#B9F044]">
-              <i data-lucide="book-open" class="h-3.5 w-3.5"></i>
-            </span>
-            <span class="text-xs font-black text-white uppercase tracking-wider">Quiz &amp; Battle Subject / Category:</span>
-            <span id="active-topic-badge" class="rounded-full bg-[#B9F044] px-2.5 py-0.5 text-[10px] font-black text-[#0B1F17]">
-              💻 Computer Science (Core)
-            </span>
-          </div>
-          <span class="text-[11px] text-slate-400">Questions &amp; challenges update dynamically for this room</span>
-        </div>
-
-        <!-- Domain Category Group Filter Tabs -->
-        <div class="flex flex-wrap items-center gap-1.5 mb-2.5">
-          <button type="button" onclick="filterTopicGroup('all')" id="btn-group-all" class="topic-group-btn active rounded-lg bg-[#B9F044] px-2.5 py-1 text-[10px] font-black text-[#0B1F17] transition">
-            All Domains (14)
-          </button>
-          <button type="button" onclick="filterTopicGroup('tech')" id="btn-group-tech" class="topic-group-btn rounded-lg bg-white/10 hover:bg-white/20 px-2.5 py-1 text-[10px] font-bold text-slate-300 transition">
-            💻 Tech &amp; Coding (9)
-          </button>
-          <button type="button" onclick="filterTopicGroup('science')" id="btn-group-science" class="topic-group-btn rounded-lg bg-white/10 hover:bg-white/20 px-2.5 py-1 text-[10px] font-bold text-slate-300 transition">
-            📐 Sciences &amp; Math (3)
-          </button>
-          <button type="button" onclick="filterTopicGroup('aptitude')" id="btn-group-aptitude" class="topic-group-btn rounded-lg bg-white/10 hover:bg-white/20 px-2.5 py-1 text-[10px] font-bold text-slate-300 transition">
-            🧩 Aptitude &amp; Logic (2)
-          </button>
-        </div>
-
-        <!-- Topic Pills Container -->
-        <div id="topic-pills-container" class="flex flex-wrap gap-2">
-          <!-- Dynamically populated pills -->
-        </div>
-      </div>
-
-      <!-- SQUAD SELECTION & ROOM PRESENCE STATUS -->
-      <div class="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <span class="text-xs font-bold text-slate-300">Your Active Team:</span>
-          <div class="inline-flex rounded-xl bg-black/40 p-1 border border-white/10">
-            <button id="btn-select-team1" type="button" onclick="switchMySquad('team1')" class="flex items-center gap-1.5 rounded-lg bg-[#B9F044] px-3 py-1.5 text-xs font-extrabold text-[#0B1F17] transition shadow-xs">
-              <span>🏎️ Team Alpha</span>
-              <span id="badge-my-team1" class="rounded bg-[#0B1F17] text-[#B9F044] px-1 py-0.2 text-[9px] font-black">YOU</span>
-            </button>
-            <button id="btn-select-team2" type="button" onclick="switchMySquad('team2')" class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white transition">
-              <span>🚀 Rival Titans</span>
-              <span id="badge-my-team2" class="hidden rounded bg-rose-500 text-white px-1 py-0.2 text-[9px] font-black">YOU</span>
-            </button>
+      <!-- Clean Subject / Track Bar (Replaces 14-Pill Giant Cloud) -->
+      <div class="mt-4 pt-4 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5 shrink-0">
+          <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#B9F044]/20 text-base">
+            📖
+          </span>
+          <div>
+            <p class="text-[10px] font-extrabold uppercase tracking-widest text-[#B9F044]">Quiz &amp; Battle Subject</p>
+            <p class="text-xs font-black text-white" id="active-topic-badge">💻 Computer Science (Core)</p>
           </div>
         </div>
 
-        <div class="flex items-center flex-wrap gap-2">
-          <div id="room-peers-pill" class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">
-            <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="connected-peers-label">1 Active Peer Connected</span>
+        <!-- Sleek Quick Chips & Dropdown -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Popular Quick Chips -->
+          <button type="button" data-topic="cs-general" onclick="selectTopic('cs-general')" class="quick-topic-chip rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-3 py-1.5 text-xs font-black text-[#B9F044] transition">
+            💻 Core CS &amp; DSA
+          </button>
+          <button type="button" data-topic="lang-python" onclick="selectTopic('lang-python')" class="quick-topic-chip rounded-xl border border-white/15 bg-white/5 hover:border-[#B9F044] hover:text-[#B9F044] px-3 py-1.5 text-xs font-bold text-slate-300 transition">
+            🐍 Python &amp; AI
+          </button>
+          <button type="button" data-topic="cs-systems" onclick="selectTopic('cs-systems')" class="quick-topic-chip rounded-xl border border-white/15 bg-white/5 hover:border-[#B9F044] hover:text-[#B9F044] px-3 py-1.5 text-xs font-bold text-slate-300 transition">
+            ⚡ Systems &amp; OS
+          </button>
+
+          <!-- Dropdown for All 14 Subjects -->
+          <div class="relative">
+            <select id="arena-topic-select" onchange="selectTopic(this.value)" class="rounded-xl border border-white/20 bg-[#0B2A1E] text-xs font-bold text-[#B9F044] px-3 py-1.5 outline-none hover:border-[#B9F044] cursor-pointer">
+              <optgroup label="Tech &amp; Coding">
+                <option value="cs-general">💻 Computer Science (Core)</option>
+                <option value="dsa">🌲 Data Structures &amp; Algorithms</option>
+                <option value="lang-python">🐍 Python Programming</option>
+                <option value="lang-javascript">🌐 JavaScript &amp; Web</option>
+                <option value="cs-systems">⚡ C / C++ Systems</option>
+                <option value="cs-java">☕ Java Enterprise</option>
+                <option value="cs-ai">🤖 AI &amp; Machine Learning</option>
+                <option value="cs-backend">🗄️ Web &amp; Backend Systems</option>
+                <option value="cs-security">🛡️ Cybersecurity &amp; Cryptography</option>
+              </optgroup>
+              <optgroup label="Sciences &amp; Math">
+                <option value="math">📐 Mathematics &amp; Calculus</option>
+                <option value="physics">⚛️ Physics &amp; Mechanics</option>
+                <option value="chemistry">🧪 General Science &amp; Chemistry</option>
+              </optgroup>
+              <optgroup label="Aptitude &amp; Logic">
+                <option value="aptitude">🧩 Campus Aptitude &amp; Logic</option>
+                <option value="tech-history">📜 Tech History &amp; Milestones</option>
+              </optgroup>
+            </select>
           </div>
-          <button type="button" onclick="autoBalanceSquads()" class="inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/15 px-3 py-1.5 text-xs font-black text-[#B9F044] hover:bg-[#B9F044] hover:text-[#0B1F17] transition shadow-xs" title="Auto-balance squad members evenly">
-            <i data-lucide="scale" class="h-3.5 w-3.5"></i>
-            <span>⚖️ Auto-Balance</span>
-          </button>
-          <button type="button" onclick="copyTeamInviteLink(myTeam)" class="inline-flex items-center gap-1 rounded-xl border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-extrabold text-white hover:bg-white/20 transition shadow-xs" title="Copy 1-Click Match Link for Teammate">
-            <i data-lucide="share-2" class="h-3.5 w-3.5"></i>
-            <span>Share Room</span>
-          </button>
+        </div>
+
+        <!-- Hidden elements for backward compatibility -->
+        <div class="hidden" aria-hidden="true">
+          <button id="btn-group-all"></button>
+          <button id="btn-group-tech"></button>
+          <button id="btn-group-science"></button>
+          <button id="btn-group-aptitude"></button>
+          <div id="topic-pills-container"></div>
         </div>
       </div>
 
       <!-- SQUADS & RIVALS CARD GRID -->
-      <div class="grid gap-5 mt-4 md:grid-cols-2">
-
-        <!-- SQUAD 1 (Team Alpha) -->
-        <div id="card-squad-team1" class="rounded-2xl border-2 border-[#B9F044] bg-[#B9F044]/5 p-5 relative overflow-hidden flex flex-col justify-between transition-all">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <span class="text-3xl" id="team1-avatar-preview">🏎️</span>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <input id="team1-name-input" type="text" value="Team Alpha" class="bg-transparent text-base font-black text-white border-b border-transparent hover:border-white/30 focus:border-[#B9F044] outline-none" />
-                    <span id="team1-role-badge" class="rounded-full bg-[#B9F044] px-2 py-0.5 text-[9px] font-black text-[#0B1F17]">YOUR SQUAD ⭐</span>
-                  </div>
-                  <p class="text-[11px] text-slate-300">Vehicle: <span id="team1-vehicle-label" class="text-[#B9F044] font-bold">Cyber GT Turbo</span></p>
-                </div>
-              </div>
-
-              <!-- Vehicle Emoji Selector -->
-              <div class="flex items-center gap-1 bg-white/5 rounded-lg p-1 border border-white/10">
-                <button type="button" onclick="setTeamVehicle(1, '🏎️', 'Cyber GT Turbo')" class="p-1 text-sm hover:scale-125 transition" title="Cyber GT">🏎️</button>
-                <button type="button" onclick="setTeamVehicle(1, '🚀', 'Rocket Dart')" class="p-1 text-sm hover:scale-125 transition" title="Rocket Dart">🚀</button>
-                <button type="button" onclick="setTeamVehicle(1, '⚡', 'Neon Lightning')" class="p-1 text-sm hover:scale-125 transition" title="Neon Lightning">⚡</button>
-                <button type="button" onclick="setTeamVehicle(1, '🛸', 'Hover Raider')" class="p-1 text-sm hover:scale-125 transition" title="Hover Raider">🛸</button>
-              </div>
-            </div>
-
-            <!-- Members List -->
-            <div class="mt-3">
-              <div class="flex items-center justify-between mb-2">
-                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Team Alpha Roster (Arrange Peers)</p>
-                <span class="text-[10px] text-emerald-400 font-bold" id="team1-live-count">1 Live</span>
-              </div>
-              <div id="team1-members-list" class="flex flex-wrap gap-2 min-h-[38px] p-1">
-                <!-- Dynamically populated with swap ⇄ and remove × controls -->
-              </div>
+      <div class="mt-5 rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent p-4 sm:p-5">
+        
+        <!-- Squad Switcher Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-white/10">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-300">Your Squad:</span>
+            <div class="inline-flex rounded-xl bg-black/40 p-1 border border-white/10">
+              <button id="btn-select-team1" type="button" onclick="switchMySquad('team1')" class="flex items-center gap-1.5 rounded-lg bg-[#B9F044] px-3 py-1 text-xs font-black text-[#0B1F17] transition shadow-xs">
+                <span>🏎️ Team Alpha</span>
+                <span id="badge-my-team1" class="rounded bg-[#0B1F17] text-[#B9F044] px-1 py-0.2 text-[9px] font-black">YOU</span>
+              </button>
+              <button id="btn-select-team2" type="button" onclick="switchMySquad('team2')" class="flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold text-slate-400 hover:text-white transition">
+                <span>🚀 Rival Titans</span>
+                <span id="badge-my-team2" class="hidden rounded bg-rose-500 text-white px-1 py-0.2 text-[9px] font-black">YOU</span>
+              </button>
             </div>
           </div>
 
-          <!-- Squad Actions & Peer Drafting -->
-          <div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="flex items-center flex-wrap gap-2">
-              <button type="button" onclick="openPeerInviteModal('team1')" class="text-xs font-extrabold text-[#B9F044] hover:underline flex items-center gap-1.5">
-                <i data-lucide="plus-circle" class="h-3.5 w-3.5"></i> Add Registered Peer
-              </button>
+          <div class="flex items-center flex-wrap gap-2">
+            <div id="room-peers-pill" class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">
+              <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="connected-peers-label">Room Ready</span>
             </div>
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="copyTeamInviteLink('team1')" class="text-[11px] text-slate-300 hover:text-white flex items-center gap-1" title="Copy Direct Invite Link for Team Alpha">
-                <i data-lucide="copy" class="h-3 w-3"></i> Link
+            <button type="button" onclick="autoBalanceSquads()" class="inline-flex items-center gap-1 rounded-xl border border-white/15 bg-white/5 px-2.5 py-1 text-xs font-bold text-slate-300 hover:border-[#B9F044] hover:text-[#B9F044] transition" title="Auto-balance squad members evenly">
+              <span>⚖️ Auto-Balance</span>
+            </button>
+            <button type="button" onclick="copyTeamInviteLink(myTeam)" class="inline-flex items-center gap-1 rounded-xl border border-white/15 bg-white/5 px-2.5 py-1 text-xs font-bold text-slate-300 hover:text-white transition" title="Copy Match Link">
+              <i data-lucide="share-2" class="h-3 w-3"></i>
+              <span>Share</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Symmetrical 2-Column VS Battle Cards -->
+        <div class="grid gap-4 mt-4 md:grid-cols-2 relative">
+
+          <!-- SQUAD 1 (Team Alpha - Cyber Toxic Lime) -->
+          <div id="card-squad-team1" class="card-squad-alpha rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-3xl filter drop-shadow-[0_0_8px_#B9F044]" id="team1-avatar-preview">🏎️</span>
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <input id="team1-name-input" type="text" value="Team Alpha" class="bg-transparent text-sm font-black text-white border-b border-transparent hover:border-white/30 focus:border-[#B9F044] outline-none w-28" />
+                      <span id="team1-role-badge" class="rounded-full bg-[#B9F044] px-2 py-0.2 text-[8px] font-black text-[#0B1F17] shadow-[0_0_8px_rgba(185,240,68,0.5)]">YOUR SQUAD ⭐</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400">Vehicle: <span id="team1-vehicle-label" class="text-[#B9F044] font-bold">Cyber GT Turbo</span></p>
+                  </div>
+                </div>
+
+                <!-- Vehicle Emoji Selector -->
+                <div class="flex items-center gap-1 bg-black/60 rounded-lg p-1 border border-white/10 backdrop-blur-sm">
+                  <button type="button" onclick="setTeamVehicle(1, '🏎️', 'Cyber GT Turbo')" class="p-0.5 text-xs hover:scale-125 transition" title="Cyber GT">🏎️</button>
+                  <button type="button" onclick="setTeamVehicle(1, '🚀', 'Rocket Dart')" class="p-0.5 text-xs hover:scale-125 transition" title="Rocket Dart">🚀</button>
+                  <button type="button" onclick="setTeamVehicle(1, '⚡', 'Neon Lightning')" class="p-0.5 text-xs hover:scale-125 transition" title="Neon Lightning">⚡</button>
+                  <button type="button" onclick="setTeamVehicle(1, '🛸', 'Hover Raider')" class="p-0.5 text-xs hover:scale-125 transition" title="Hover Raider">🛸</button>
+                </div>
+              </div>
+
+              <!-- Members List -->
+              <div class="mt-2">
+                <div class="flex items-center justify-between mb-1.5">
+                  <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Squad Roster</p>
+                  <span class="text-[10px] text-emerald-400 font-bold" id="team1-live-count">1 Member</span>
+                </div>
+                <div id="team1-members-list" class="flex flex-wrap gap-1.5 min-h-[38px] p-0.5">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Squad Actions -->
+            <div class="mt-4 pt-2.5 border-t border-white/10 flex items-center justify-between text-xs">
+              <button type="button" onclick="openPeerInviteModal('team1')" class="text-xs font-bold text-[#B9F044] hover:underline flex items-center gap-1">
+                <i data-lucide="plus-circle" class="h-3.5 w-3.5"></i> Add Teammate
               </button>
-              <button id="btn-join-team1" type="button" onclick="switchMySquad('team1')" class="hidden rounded-lg bg-[#B9F044]/20 border border-[#B9F044]/50 px-2 py-1 text-[10px] font-bold text-[#B9F044] hover:bg-[#B9F044] hover:text-[#0B1F17] transition">
+              <button id="btn-join-team1" type="button" onclick="switchMySquad('team1')" class="hidden text-[10px] font-bold text-slate-400 hover:text-white">
                 Switch to Alpha
               </button>
             </div>
           </div>
-        </div>
 
-        <!-- SQUAD 2 (Rivals / Team Beta) -->
-        <div id="card-squad-team2" class="rounded-2xl border-2 border-rose-500/40 bg-rose-500/5 p-5 relative overflow-hidden flex flex-col justify-between transition-all">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <span class="text-3xl" id="team2-avatar-preview">🚀</span>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <input id="team2-name-input" type="text" value="Rival Titans" class="bg-transparent text-base font-black text-white border-b border-transparent hover:border-white/30 focus:border-rose-400 outline-none" />
-                    <span id="team2-role-badge" class="rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 px-2 py-0.5 text-[9px] font-black">RIVALS ⚔️</span>
+          <!-- SQUAD 2 (Rival Titans - Cyber Ruby Red) -->
+          <div id="card-squad-team2" class="card-squad-rival rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-3xl filter drop-shadow-[0_0_8px_#F43F5E]" id="team2-avatar-preview">🚀</span>
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <input id="team2-name-input" type="text" value="Rival Titans" class="bg-transparent text-sm font-black text-white border-b border-transparent hover:border-white/30 focus:border-rose-400 outline-none w-28" />
+                      <span id="team2-role-badge" class="rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 px-2 py-0.2 text-[8px] font-black shadow-[0_0_8px_rgba(244,63,94,0.3)]">RIVALS ⚔️</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400">Vehicle: <span id="team2-vehicle-label" class="text-rose-400 font-bold">Rocket Dart</span></p>
                   </div>
-                  <p class="text-[11px] text-slate-300">Vehicle: <span id="team2-vehicle-label" class="text-rose-400 font-bold">Rocket Dart</span></p>
+                </div>
+
+                <!-- Vehicle Emoji Selector -->
+                <div class="flex items-center gap-1 bg-black/60 rounded-lg p-1 border border-white/10 backdrop-blur-sm">
+                  <button type="button" onclick="setTeamVehicle(2, '🏎️', 'Cyber GT Turbo')" class="p-0.5 text-xs hover:scale-125 transition" title="Cyber GT">🏎️</button>
+                  <button type="button" onclick="setTeamVehicle(2, '🚀', 'Rocket Dart')" class="p-0.5 text-xs hover:scale-125 transition" title="Rocket Dart">🚀</button>
+                  <button type="button" onclick="setTeamVehicle(2, '⚡', 'Neon Lightning')" class="p-0.5 text-xs hover:scale-125 transition" title="Neon Lightning">⚡</button>
+                  <button type="button" onclick="setTeamVehicle(2, '🛸', 'Hover Raider')" class="p-0.5 text-xs hover:scale-125 transition" title="Hover Raider">🛸</button>
                 </div>
               </div>
 
-              <!-- Vehicle Emoji Selector -->
-              <div class="flex items-center gap-1 bg-white/5 rounded-lg p-1 border border-white/10">
-                <button type="button" onclick="setTeamVehicle(2, '🏎️', 'Cyber GT Turbo')" class="p-1 text-sm hover:scale-125 transition" title="Cyber GT">🏎️</button>
-                <button type="button" onclick="setTeamVehicle(2, '🚀', 'Rocket Dart')" class="p-1 text-sm hover:scale-125 transition" title="Rocket Dart">🚀</button>
-                <button type="button" onclick="setTeamVehicle(2, '⚡', 'Neon Lightning')" class="p-1 text-sm hover:scale-125 transition" title="Neon Lightning">⚡</button>
-                <button type="button" onclick="setTeamVehicle(2, '🛸', 'Hover Raider')" class="p-1 text-sm hover:scale-125 transition" title="Hover Raider">🛸</button>
+              <!-- Members List -->
+              <div class="mt-2">
+                <div class="flex items-center justify-between mb-1.5">
+                  <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Rival Roster</p>
+                  <span class="text-[10px] text-rose-400 font-bold" id="team2-live-count">1 Member</span>
+                </div>
+                <div id="team2-members-list" class="flex flex-wrap gap-1.5 min-h-[38px] p-0.5">
+                  <!-- Dynamically populated -->
+                </div>
               </div>
             </div>
 
-            <!-- Members List -->
-            <div class="mt-3">
-              <div class="flex items-center justify-between mb-2">
-                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Rival Titans Roster (Arrange Peers)</p>
-                <span class="text-[10px] text-rose-400 font-bold" id="team2-live-count">1 Live</span>
-              </div>
-              <div id="team2-members-list" class="flex flex-wrap gap-2 min-h-[38px] p-1">
-                <!-- Dynamically populated with swap ⇄ and remove × controls -->
-              </div>
-            </div>
-          </div>
-
-          <!-- Squad Actions & Peer Drafting -->
-          <div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="flex items-center flex-wrap gap-2">
-              <button type="button" onclick="openPeerInviteModal('team2')" class="text-xs font-extrabold text-rose-400 hover:underline flex items-center gap-1.5">
-                <i data-lucide="swords" class="h-3.5 w-3.5"></i> Add Registered Rival
+            <!-- Squad Actions -->
+            <div class="mt-4 pt-2.5 border-t border-white/10 flex items-center justify-between text-xs">
+              <button type="button" onclick="openPeerInviteModal('team2')" class="text-xs font-bold text-rose-400 hover:underline flex items-center gap-1">
+                <i data-lucide="swords" class="h-3.5 w-3.5"></i> Add Rival
               </button>
-            </div>
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="copyTeamInviteLink('team2')" class="text-[11px] text-slate-300 hover:text-white flex items-center gap-1" title="Copy Direct Invite Link for Rival Titans">
-                <i data-lucide="copy" class="h-3 w-3"></i> Link
-              </button>
-              <button id="btn-join-team2" type="button" onclick="switchMySquad('team2')" class="rounded-lg bg-rose-500/20 border border-rose-500/50 px-2 py-1 text-[10px] font-bold text-rose-300 hover:bg-rose-500 hover:text-white transition">
+              <button id="btn-join-team2" type="button" onclick="switchMySquad('team2')" class="hidden text-[10px] font-bold text-slate-400 hover:text-white">
                 Switch to Rivals
               </button>
             </div>
           </div>
-        </div>
 
+        </div>
       </div>
     </section>
 
     <!-- ===== 3. LIVE RACING TRACK BOARD ===== -->
-    <section class="racing-track track-grid rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col gap-4">
+    <section id="racing-track-board" class="racing-track track-grid rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col gap-4" style="scroll-margin-top: 80px;">
       <div class="flex items-center justify-between text-xs font-bold text-slate-400 border-b border-white/10 pb-3">
         <span class="flex items-center gap-1.5 text-white">
           <i data-lucide="flag" class="h-3.5 w-3.5 text-[#B9F044]"></i>
@@ -395,10 +545,10 @@
 
       <!-- Lanes -->
       <div class="space-y-4">
-        <!-- Lane 1: Squad 1 (Your Team) -->
-        <div class="relative flex items-center h-16 rounded-2xl bg-white/5 border border-[#B9F044]/40 px-3">
+        <!-- Lane 1: Squad 1 (Your Team - Cyber Toxic Lime) -->
+        <div id="lane1" class="lane-alpha relative flex items-center h-16 rounded-2xl px-3 transition-all">
           <div class="w-36 sm:w-44 shrink-0 flex items-center gap-2.5 z-10">
-            <span class="text-2xl" id="lane1-emoji">🏎️</span>
+            <span class="text-2xl filter drop-shadow-[0_0_6px_#B9F044]" id="lane1-emoji">🏎️</span>
             <div>
               <p class="text-xs font-black text-white truncate" id="lane1-name">Team Alpha</p>
               <p class="text-[11px] text-[#B9F044] font-extrabold font-mono"><span id="pts-team1">0</span> / 100 pts</p>
@@ -407,19 +557,19 @@
           <div class="relative flex-1 h-full flex items-center">
             <div class="absolute left-0 right-0 h-1 lane-divider"></div>
             <!-- Car 1 -->
-            <div id="car-team1" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5">
-              <span class="text-3xl filter drop-shadow" id="car-team1-icon">🏎️</span>
-              <span class="text-[9px] font-black bg-[#B9F044] text-[#0B1F17] px-1.5 py-0.5 rounded-full font-mono uppercase">YOU</span>
+            <div id="car-team1" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5 filter drop-shadow-[0_0_8px_rgba(185,240,68,0.7)]">
+              <span class="text-3xl" id="car-team1-icon">🏎️</span>
+              <span class="text-[9px] font-black bg-[#B9F044] text-[#0B1F17] px-1.5 py-0.5 rounded-full font-mono uppercase shadow-xs">YOU</span>
             </div>
           </div>
           <!-- Finish line flag -->
           <div class="finish-banner w-3.5 h-full rounded-r-xl shrink-0 opacity-80"></div>
         </div>
 
-        <!-- Lane 2: Squad 2 (Rivals) -->
-        <div class="relative flex items-center h-16 rounded-2xl bg-white/5 border border-rose-500/30 px-3">
+        <!-- Lane 2: Squad 2 (Rivals - Cyber Ruby Red) -->
+        <div id="lane2" class="lane-rival relative flex items-center h-16 rounded-2xl px-3 transition-all">
           <div class="w-36 sm:w-44 shrink-0 flex items-center gap-2.5 z-10">
-            <span class="text-2xl" id="lane2-emoji">🚀</span>
+            <span class="text-2xl filter drop-shadow-[0_0_6px_#F43F5E]" id="lane2-emoji">🚀</span>
             <div>
               <p class="text-xs font-black text-white truncate" id="lane2-name">Rival Titans</p>
               <p class="text-[11px] text-rose-400 font-extrabold font-mono"><span id="pts-team2">0</span> / 100 pts</p>
@@ -428,9 +578,9 @@
           <div class="relative flex-1 h-full flex items-center">
             <div class="absolute left-0 right-0 h-1 lane-divider"></div>
             <!-- Car 2 -->
-            <div id="car-team2" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5">
-              <span class="text-3xl filter drop-shadow" id="car-team2-icon">🚀</span>
-              <span class="text-[9px] font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-mono uppercase">RIVAL</span>
+            <div id="car-team2" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.7)]">
+              <span class="text-3xl" id="car-team2-icon">🚀</span>
+              <span class="text-[9px] font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-mono uppercase shadow-xs">RIVAL</span>
             </div>
           </div>
           <div class="finish-banner w-3.5 h-full rounded-r-xl shrink-0 opacity-80"></div>
@@ -439,10 +589,10 @@
     </section>
 
     <!-- ===== 4. THE INTERACTIVE BATTLE STATION (CODE EDITOR + QUIZ) ===== -->
-    <section class="grid gap-6 lg:grid-cols-3">
+    <section id="battle-station-section" class="grid gap-6 lg:grid-cols-3" style="scroll-margin-top: 80px;">
 
       <!-- LEFT: Primary Coding & Sprint Station (2 Cols) -->
-      <div class="lg:col-span-2 rounded-3xl border border-white/10 bg-[#06130E] p-5 sm:p-6 shadow-2xl flex flex-col justify-between">
+      <div class="lg:col-span-2 esports-card rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col justify-between">
         <div>
           <!-- Tab Mode Header -->
           <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
@@ -616,13 +766,13 @@
       </div>
 
       <!-- RIGHT: Live Tactical Combat Ticker & Comms (1 Col) -->
-      <div class="rounded-3xl border border-white/10 bg-[#06130E] p-5 sm:p-6 shadow-2xl flex flex-col justify-between">
+      <div class="esports-card rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
             <p class="text-xs font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
               <i data-lucide="activity" class="h-3.5 w-3.5 text-[#B9F044]"></i> Realtime Combat Feed
             </p>
-            <span class="text-[9px] bg-[#B9F044]/20 text-[#B9F044] font-mono font-bold px-2 py-0.5 rounded-full">LIVE FEED</span>
+            <span class="text-[9px] bg-[#B9F044]/20 text-[#B9F044] border border-[#B9F044]/40 font-mono font-bold px-2 py-0.5 rounded-full shadow-[0_0_8px_rgba(185,240,68,0.3)]">LIVE FEED</span>
           </div>
 
           <div id="combat-feed" class="space-y-2 overflow-y-auto max-h-72 text-xs font-medium text-slate-300 pr-1">
@@ -1022,32 +1172,21 @@
     }
 
     function renderTopicPills() {
-      const container = document.getElementById('topic-pills-container');
-      if (!container) return;
-
-      const keys = Object.keys(QUIZ_TOPICS).filter(key => {
-        if (currentTopicGroup === 'all') return true;
-        const meta = QUIZ_TOPICS[key];
-        return (meta && meta.group === currentTopicGroup);
-      });
-
-      container.innerHTML = keys.map(key => {
-        const t = QUIZ_TOPICS[key];
-        const isActive = (key === currentTopic);
-        const activeClass = isActive
-          ? 'topic-pill inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-3 py-1.5 text-xs font-black text-[#B9F044] shadow-sm transition hover:scale-105'
-          : 'topic-pill inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-300 transition hover:border-white/30 hover:text-white hover:scale-105';
-
-        return `
-          <button type="button" data-topic="${key}" onclick="selectTopic('${key}')" class="${activeClass}">
-            <span>${t.icon}</span>
-            <span>${t.name}</span>
-          </button>
-        `;
-      }).join('');
-
       const activeObj = QUIZ_TOPICS[currentTopic] || QUIZ_TOPICS['cs-general'];
-      document.getElementById('active-topic-badge').textContent = `${activeObj.icon} ${activeObj.name}`;
+      const badge = document.getElementById('active-topic-badge');
+      if (badge) badge.textContent = `${activeObj.icon} ${activeObj.name}`;
+      const select = document.getElementById('arena-topic-select');
+      if (select) select.value = currentTopic;
+
+      // Update quick chips
+      document.querySelectorAll('.quick-topic-chip').forEach(btn => {
+        const k = btn.getAttribute('data-topic');
+        if (k === currentTopic) {
+          btn.className = 'quick-topic-chip rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-3 py-1.5 text-xs font-black text-[#B9F044] transition';
+        } else {
+          btn.className = 'quick-topic-chip rounded-xl border border-white/15 bg-white/5 hover:border-[#B9F044] hover:text-[#B9F044] px-3 py-1.5 text-xs font-bold text-slate-300 transition';
+        }
+      });
     }
 
     function selectTopic(topicKey) {
@@ -1061,15 +1200,20 @@
       const tObj = QUIZ_TOPICS[topicKey];
 
       // Update badge
-      document.getElementById('active-topic-badge').textContent = `${tObj.icon} ${tObj.name}`;
+      const badge = document.getElementById('active-topic-badge');
+      if (badge) badge.textContent = `${tObj.icon} ${tObj.name}`;
 
-      // Update pills
-      document.querySelectorAll('.topic-pill').forEach(btn => {
+      // Update dropdown
+      const select = document.getElementById('arena-topic-select');
+      if (select) select.value = topicKey;
+
+      // Update quick chips
+      document.querySelectorAll('.quick-topic-chip').forEach(btn => {
         const k = btn.getAttribute('data-topic');
         if (k === topicKey) {
-          btn.className = 'topic-pill inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-3 py-1.5 text-xs font-black text-[#B9F044] shadow-sm transition hover:scale-105';
+          btn.className = 'quick-topic-chip rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-3 py-1.5 text-xs font-black text-[#B9F044] transition';
         } else {
-          btn.className = 'topic-pill inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-300 transition hover:border-white/30 hover:text-white hover:scale-105';
+          btn.className = 'quick-topic-chip rounded-xl border border-white/15 bg-white/5 hover:border-[#B9F044] hover:text-[#B9F044] px-3 py-1.5 text-xs font-bold text-slate-300 transition';
         }
       });
 
@@ -1174,14 +1318,31 @@
         // Asynchronously load real registered peers for the invite modal
         loadCampusPeersForArena();
 
-        // Restore cached squad arrangements if available
+        // Initial squad roster: only logged-in user as captain, and transparent bot as rival
+        const myCaptainName = `${fullName} (👑)`;
+        TEAMS.team1.members = [myCaptainName];
+        TEAMS.team2.members = ['Campus Pacer Bot 🚀'];
+
+        // Restore cached squad arrangements if available, safely stripping mock/stale entries
         if (typeof sessionStorage !== 'undefined') {
           try {
             const cached = sessionStorage.getItem('gyansetu_arena_squads_' + currentRoom);
             if (cached) {
               const parsed = JSON.parse(cached);
-              if (Array.isArray(parsed.team1) && parsed.team1.length > 0) TEAMS.team1.members = parsed.team1;
-              if (Array.isArray(parsed.team2) && parsed.team2.length > 0) TEAMS.team2.members = parsed.team2;
+              if (Array.isArray(parsed.team1)) {
+                parsed.team1.forEach(m => {
+                  const norm = normalizeMember(m, 'team1');
+                  if (!norm.isMe && norm.name.toLowerCase() !== 'you' && norm.name.toLowerCase() !== fullName.toLowerCase() && !TEAMS.team1.members.includes(m)) {
+                    TEAMS.team1.members.push(m);
+                  }
+                });
+              }
+              if (Array.isArray(parsed.team2) && parsed.team2.length > 0) {
+                const cleanedTeam2 = parsed.team2.filter(m => !String(m).includes('Priya Verma') && !String(m).includes('Rohan Sharma'));
+                if (cleanedTeam2.length > 0) {
+                  TEAMS.team2.members = cleanedTeam2;
+                }
+              }
             }
           } catch (e) {}
         }
@@ -1813,6 +1974,23 @@
 
       addCombatLog(`🏁 Green Flag! ${TEAMS.team1.name} VS ${TEAMS.team2.name} in Room: ${currentRoom}!`);
 
+      // Switch to question paper tab if current topic is a quiz/aptitude topic
+      const tObj = QUIZ_TOPICS[currentTopic];
+      if (tObj && tObj.mode === 'quiz') {
+        switchBattleTab('quiz');
+      }
+
+      // Automatically glide down to the live racing track & question paper
+      setTimeout(() => {
+        const trackSection = document.getElementById('racing-track-board');
+        if (trackSection) {
+          trackSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          const battleStation = document.getElementById('battle-station-section');
+          if (battleStation) battleStation.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 120);
+
       if (broadcast && channel) {
         channel.send({
           type: 'broadcast',
@@ -2057,13 +2235,13 @@
 
       if (btn1 && btn2) {
         if (isTeam1) {
-          btn1.className = 'flex items-center gap-1.5 rounded-lg bg-[#B9F044] px-3 py-1.5 text-xs font-extrabold text-[#0B1F17] transition shadow-xs';
-          btn2.className = 'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white transition';
+          btn1.className = 'flex items-center gap-1.5 rounded-lg bg-[#B9F044] px-3.5 py-1 text-xs font-black text-[#0B1F17] transition shadow-[0_0_14px_rgba(185,240,68,0.45)]';
+          btn2.className = 'flex items-center gap-1.5 rounded-lg px-3.5 py-1 text-xs font-bold text-slate-400 hover:text-white transition';
           if (badge1) badge1.classList.remove('hidden');
           if (badge2) badge2.classList.add('hidden');
         } else {
-          btn2.className = 'flex items-center gap-1.5 rounded-lg bg-rose-500 px-3 py-1.5 text-xs font-extrabold text-white transition shadow-xs';
-          btn1.className = 'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white transition';
+          btn2.className = 'flex items-center gap-1.5 rounded-lg bg-rose-500 px-3.5 py-1 text-xs font-black text-white transition shadow-[0_0_14px_rgba(244,63,94,0.45)]';
+          btn1.className = 'flex items-center gap-1.5 rounded-lg px-3.5 py-1 text-xs font-bold text-slate-400 hover:text-white transition';
           if (badge2) badge2.classList.remove('hidden');
           if (badge1) badge1.classList.add('hidden');
         }
@@ -2074,13 +2252,13 @@
       const card2 = document.getElementById('card-squad-team2');
       if (card1) {
         card1.className = isTeam1
-          ? 'rounded-2xl border-2 border-[#B9F044] bg-[#B9F044]/5 p-5 relative overflow-hidden flex flex-col justify-between transition-all ring-1 ring-[#B9F044]/30'
-          : 'rounded-2xl border border-white/10 bg-white/5 p-5 relative overflow-hidden flex flex-col justify-between transition-all opacity-85';
+          ? 'card-squad-alpha rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between transition-all'
+          : 'card-squad-alpha rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between transition-all opacity-70';
       }
       if (card2) {
         card2.className = !isTeam1
-          ? 'rounded-2xl border-2 border-rose-500 bg-rose-500/10 p-5 relative overflow-hidden flex flex-col justify-between transition-all ring-1 ring-rose-500/30'
-          : 'rounded-2xl border border-white/10 bg-white/5 p-5 relative overflow-hidden flex flex-col justify-between transition-all opacity-85';
+          ? 'card-squad-rival rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between transition-all ring-2 ring-rose-400/50'
+          : 'card-squad-rival rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between transition-all opacity-70';
       }
 
       // Squad 1 Role Badge & Switch Button
@@ -2219,6 +2397,21 @@
       lucide.createIcons();
     }
 
+    function sanitizeSquadList(arr, squadKey) {
+      if (!Array.isArray(arr)) return [];
+      const seen = new Set();
+      const result = [];
+      arr.forEach(m => {
+        const norm = normalizeMember(m, squadKey);
+        const key = norm.name.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          result.push(m);
+        }
+      });
+      return result;
+    }
+
     function normalizeMember(m, squadKey) {
       if (!m) return { name: 'Player', isMe: false, isCaptain: false, isBot: false, avatar: '👤' };
       if (typeof m === 'object' && m !== null) {
@@ -2231,12 +2424,29 @@
         };
       }
       const str = String(m);
-      const isMe = str.includes('(You') || str.includes('You');
-      const isCaptain = str.includes('👑') || str.includes('Captain');
-      const isBot = str.includes('Bot') || str.includes('Adaptive');
-      const cleanName = str.replace(/\(You.*?\)/gi, '').replace(/\(Rival.*?\)/gi, '').replace(/\(Adaptive\)/gi, '').replace(/[👑👤⭐]/g, '').trim();
+      const myName = (myUser?.fullName || 'You').trim();
+      const isMe = str.includes('(You') || str.includes('(👑)') || str.toLowerCase() === 'you' || (myName && str.toLowerCase().includes(myName.toLowerCase()));
+      const isCaptain = str.includes('👑') || str.includes('Captain') || isMe;
+      const isBot = str.includes('Bot') || str.includes('Pacer');
+      
+      let cleanName = str
+        .replace(/\(You.*?\)/gi, '')
+        .replace(/\(Rival.*?\)/gi, '')
+        .replace(/\(Adaptive\)/gi, '')
+        .replace(/\(👑\)/g, '')
+        .replace(/[👑👤⭐]/g, '')
+        .trim();
+
+      if (cleanName.includes('Priya Verma') || cleanName.includes('Rival Bot')) {
+        cleanName = 'Campus Pacer Bot 🚀';
+      }
+
+      if (!cleanName || cleanName.toLowerCase() === 'you' || cleanName === '()' || cleanName === '( )') {
+        cleanName = myName || 'You';
+      }
+
       return {
-        name: cleanName || str,
+        name: cleanName,
         isMe,
         isCaptain,
         isBot,
@@ -2392,6 +2602,13 @@
     }
 
     function renderSquadRosters() {
+      TEAMS.team1.members = sanitizeSquadList(TEAMS.team1.members, 'team1');
+      TEAMS.team2.members = sanitizeSquadList(TEAMS.team2.members, 'team2');
+
+      if (!TEAMS.team2.members || TEAMS.team2.members.length === 0) {
+        TEAMS.team2.members = ['Campus Pacer Bot 🚀'];
+      }
+
       saveArenaSquads();
 
       // Render Squad 1

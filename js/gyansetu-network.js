@@ -27,13 +27,8 @@
         if (raw) {
           var parsed = JSON.parse(raw);
           var clean = (parsed || []).filter(function (c) {
-            if (!c || !c.name) return false;
-            var name = c.name.toLowerCase();
-            return !name.includes('rohan') && !name.includes('priya') && !name.includes('vikram') && !name.includes('ananya') && c.id !== 'peer_rohan' && c.id !== 'peer_priya';
+            return c && c.name && typeof c.name === 'string';
           });
-          if (clean.length !== parsed.length) {
-            localStorage.setItem(STORAGE_KEYS.CONNECTIONS, JSON.stringify(clean));
-          }
           return clean;
         }
       } catch (e) {}
@@ -118,11 +113,16 @@
       var path = window.location.pathname.replace(/\/[^/]*$/, '/arena.html');
       var link = origin + path + '?room=' + encodeURIComponent(roomCode) + '&team=' + encodeURIComponent(team) + '&peer=' + encodeURIComponent(peerName || 'Peer');
 
-      navigator.clipboard.writeText(link).then(function () {
-        alert('📨 Arena Race Invite for ' + (peerName || 'teammate') + ' copied to clipboard!\n\nRoom: ' + roomCode + '\nSquad: ' + (team === 'team1' ? 'Team Alpha' : 'Rival Titans') + '\n\nSend this direct link to play together:\n' + link);
-      }).catch(function () {
-        prompt('Copy Arena match invite link for ' + peerName + ':', link);
-      });
+      var self = this;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(function () {
+          self.showToast('🏎️ Race invite copied for ' + (peerName || 'Peer') + '! Share this link: ' + link);
+        }).catch(function () {
+          self.showToast('🏎️ Invite created: ' + link);
+        });
+      } else {
+        self.showToast('🏎️ Invite created: ' + link);
+      }
 
       GyanSetuNotifications.addNotification({
         type: 'racing',
@@ -143,11 +143,16 @@
       var path = window.location.pathname.replace(/\/[^/]*$/, '/room.html');
       var link = origin + path + '?room=' + encodeURIComponent(roomCode) + '&peer=' + encodeURIComponent(peerName || 'Peer');
 
-      navigator.clipboard.writeText(link).then(function () {
-        alert('📨 Collab Room invite link for ' + (peerName || 'classmate') + ' copied!\n\nRoom: ' + roomCode + '\n\nSend this link to start live study session:\n' + link);
-      }).catch(function () {
-        prompt('Copy room invite link for ' + peerName + ':', link);
-      });
+      var self = this;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(function () {
+          self.showToast('⚡ Live Collab invite copied for ' + (peerName || 'Peer') + '! Link: ' + link);
+        }).catch(function () {
+          self.showToast('⚡ Collab room link: ' + link);
+        });
+      } else {
+        self.showToast('⚡ Collab room link: ' + link);
+      }
     },
 
     showToast: function (msg) {
