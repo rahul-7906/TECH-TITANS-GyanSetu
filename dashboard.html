@@ -364,27 +364,87 @@
 
         <!-- ===== CREDIT LEDGER ===== -->
         <section id="ledger" class="mb-8">
-          <div class="mb-4 flex items-center justify-between">
-            <p class="section-title mb-0">Credit Ledger</p>
-            <span class="badge badge-dark"><i data-lucide="coins" class="h-3 w-3"></i> Balance: <span id="ledger-balance">0</span> credits</span>
-          </div>
-          <div class="rounded-2xl border border-slate-100 bg-white shadow-card">
-            <!-- Header row -->
-            <div class="ledger-row px-5 border-b border-slate-100">
-              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Description</p>
-              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Date</p>
-              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Amount</p>
+          <p class="section-title">Credit Ledger</p>
+
+          <!-- Balance + Stats Card -->
+          <div class="mb-5 overflow-hidden rounded-2xl bg-gradient-to-br from-[#0B1F17] via-[#0B2A1E] to-[#14532D] p-6 shadow-card">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p class="text-[11px] font-extrabold uppercase tracking-widest text-[#B9F044]/60 mb-1">Current Balance</p>
+                <p class="text-4xl font-extrabold text-white tracking-tight"><span id="ledger-balance">0</span> <span class="text-[#B9F044]">Credits</span></p>
+                <p id="ledger-level-label" class="mt-2 text-xs font-bold text-emerald-200/70">Level 1 — Learner</p>
+              </div>
+              <div class="flex flex-col items-end gap-2">
+                <div class="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5">
+                  <i data-lucide="trending-up" class="h-3.5 w-3.5 text-[#B9F044]"></i>
+                  <span class="text-[11px] font-bold text-white">+<span id="ledger-week-earned">0</span> this week</span>
+                </div>
+                <a href="#ledger" class="rounded-xl border border-white/20 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-white/10 transition">View History ↓</a>
+              </div>
             </div>
+
+            <!-- XP Progress bar -->
+            <div class="mt-5">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-bold text-emerald-200/70"><span id="ledger-xp">0</span> XP</span>
+                <span class="text-[11px] font-bold text-emerald-200/70">Next level: <span id="ledger-xp-next">500</span> XP</span>
+              </div>
+              <div class="h-1.5 w-full rounded-full bg-white/10">
+                <div id="ledger-xp-bar" class="h-1.5 rounded-full bg-gradient-to-r from-[#B9F044] to-[#8FD420] transition-all duration-700" style="width:0%"></div>
+              </div>
+            </div>
+
+            <!-- Stats row -->
+            <div class="mt-5 grid grid-cols-3 gap-3">
+              <div class="rounded-xl bg-white/8 px-3 py-2.5 text-center">
+                <p class="text-base font-extrabold text-white"><span id="ledger-total-earned">0</span></p>
+                <p class="text-[10px] text-emerald-200/60 mt-0.5">Total Earned</p>
+              </div>
+              <div class="rounded-xl bg-white/8 px-3 py-2.5 text-center">
+                <p class="text-base font-extrabold text-white"><span id="ledger-total-spent">0</span></p>
+                <p class="text-[10px] text-emerald-200/60 mt-0.5">Total Spent</p>
+              </div>
+              <div class="rounded-xl bg-white/8 px-3 py-2.5 text-center">
+                <p class="text-base font-extrabold text-white"><span id="ledger-pending">0</span></p>
+                <p class="text-[10px] text-emerald-200/60 mt-0.5">Pending</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badges -->
+          <div id="badges-section" class="mb-5 rounded-2xl border border-slate-100 bg-white p-4 shadow-card">
+            <p class="text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11] mb-3">Achievements</p>
+            <div id="badges-container" class="flex flex-wrap gap-2">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-400">
+                <i data-lucide="lock" class="h-3 w-3"></i> Complete actions to earn badges
+              </span>
+            </div>
+          </div>
+
+          <!-- Transaction History -->
+          <div class="rounded-2xl border border-slate-100 bg-white shadow-card overflow-hidden">
+            <!-- Filter bar -->
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-5 py-3">
+              <p class="text-[11px] font-extrabold uppercase tracking-widest text-slate-500">Transaction History</p>
+              <div class="flex gap-1" id="ledger-filters">
+                <button class="tab-btn active text-[11px] py-1 px-2.5" onclick="filterLedger('all',this)">All</button>
+                <button class="tab-btn text-[11px] py-1 px-2.5" onclick="filterLedger('EARN',this)">Earned</button>
+                <button class="tab-btn text-[11px] py-1 px-2.5" onclick="filterLedger('SPEND',this)">Spent</button>
+                <button class="tab-btn text-[11px] py-1 px-2.5" onclick="filterLedger('PENDING',this)">Pending</button>
+              </div>
+            </div>
+
             <!-- Empty state -->
             <div id="ledger-empty" class="px-5">
               <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="receipt" class="h-6 w-6"></i></div>
                 <p class="text-sm font-extrabold text-[#0B1F17]">No transactions yet</p>
-                <p class="text-xs text-slate-500 max-w-xs">Your credit history will appear here after your first session. New users get a free 20-credit welcome bonus on signup.</p>
+                <p class="text-xs text-slate-500 max-w-xs">Your credit history will appear here. New users get +100 Welcome Bonus on signup.</p>
               </div>
             </div>
-            <!-- Transaction rows injected by JS -->
-            <div id="ledger-rows" class="px-5 hidden"></div>
+
+            <!-- Transaction rows -->
+            <div id="ledger-rows" class="divide-y divide-slate-50 hidden"></div>
           </div>
         </section>
 
@@ -500,13 +560,61 @@
       return name.trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
     }
 
-    // ── Render user info on page ──────────────────────────────────────
+    // ── Level config ──────────────────────────────────────────────────
+    const LEVELS = [
+      { level: 1, name: 'Learner',          minXp: 0,    maxXp: 499  },
+      { level: 2, name: 'Contributor',      minXp: 500,  maxXp: 1499 },
+      { level: 3, name: 'Mentor',           minXp: 1500, maxXp: 2999 },
+      { level: 4, name: 'Knowledge Builder',minXp: 3000, maxXp: 5999 },
+      { level: 5, name: 'GyanSetu Pro',     minXp: 6000, maxXp: 99999}
+    ];
+    function getLevelInfo(xp) {
+      xp = xp || 0;
+      const l = LEVELS.slice().reverse().find(l => xp >= l.minXp) || LEVELS[0];
+      const next = LEVELS.find(n => n.level === l.level + 1);
+      const pct  = next ? Math.min(((xp - l.minXp) / (next.minXp - l.minXp)) * 100, 100) : 100;
+      return { ...l, nextXp: next ? next.minXp : l.maxXp, pct };
+    }
+
+    // ── Badge definitions ─────────────────────────────────────────────
+    const BADGE_DEFS = [
+      { key: 'first_session',   icon: '🎓', label: 'First Session',      color: 'bg-blue-50 text-blue-700'   },
+      { key: 'first_teaching',  icon: '👑', label: 'First Teaching',     color: 'bg-purple-50 text-purple-700'},
+      { key: 'note_maker',      icon: '📚', label: 'Note Maker',         color: 'bg-amber-50 text-amber-700' },
+      { key: 'helpful_mentor',  icon: '🤝', label: 'Helpful Mentor',     color: 'bg-green-50 text-green-700' },
+      { key: 'streak_7',        icon: '🔥', label: '7-Day Streak',       color: 'bg-orange-50 text-orange-700'},
+      { key: 'welcome',         icon: '🎉', label: 'Early Adopter',      color: 'bg-lime-50 text-[#2F6F11]'  },
+      { key: 'fast_solver',     icon: '⚡', label: 'Fast Solver',        color: 'bg-yellow-50 text-yellow-700'},
+      { key: 'verified_mentor', icon: '✅', label: 'Verified Mentor',    color: 'bg-teal-50 text-teal-700'   },
+    ];
+
+    // ── All ledger data (for filter) ─────────────────────────────────
+    let _allLedger = [];
+
+    // ── Notification toast ────────────────────────────────────────────
+    function showToast(msg, type = 'success') {
+      const t = document.createElement('div');
+      const colors = type === 'success'
+        ? 'bg-[#0B1F17] text-[#B9F044]'
+        : type === 'error'
+        ? 'bg-red-600 text-white'
+        : 'bg-slate-800 text-white';
+      t.className = `fixed bottom-6 right-6 z-[100] flex items-center gap-2.5 rounded-2xl ${colors} px-5 py-3 text-sm font-bold shadow-2xl transition-all`;
+      t.style.cssText += 'animation: slideUp .3s ease';
+      t.innerHTML = msg;
+      document.body.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(8px)'; setTimeout(() => t.remove(), 300); }, 3500);
+    }
+
+    // ── Render user info ──────────────────────────────────────────────
     function renderUser(profile, email) {
-      const name = profile?.full_name || email?.split('@')[0] || 'User';
-      const dept = profile?.department || 'GyanSetu Member';
+      const name    = profile?.full_name || email?.split('@')[0] || 'User';
+      const dept    = profile?.department || 'GyanSetu Member';
       const credits = profile?.credits ?? 0;
-      const role = profile?.role || 'learner';
-      const ini = initials(name);
+      const role    = profile?.role || 'learner';
+      const xp      = profile?.xp ?? 0;
+      const ini     = initials(name);
+      const lvl     = getLevelInfo(xp);
 
       // Topbar greeting
       document.getElementById('topbar-greeting').textContent = `${getGreeting()}, ${name.split(' ')[0]} 👋`;
@@ -518,9 +626,18 @@
       document.getElementById('sidebar-name').classList.remove('text-slate-400');
       document.getElementById('sidebar-dept').textContent = dept;
       document.getElementById('sidebar-credits').textContent = credits;
-      document.getElementById('ledger-balance').textContent = credits;
       document.getElementById('stat-credits').textContent = credits;
-      document.getElementById('bar-credits').style.width = Math.min(credits * 2, 100) + '%';
+      document.getElementById('bar-credits').style.width = Math.min((credits / 200) * 100, 100) + '%';
+
+      // Ledger balance + stats
+      document.getElementById('ledger-balance').textContent     = credits;
+      document.getElementById('ledger-total-earned').textContent = profile?.total_earned ?? 0;
+      document.getElementById('ledger-total-spent').textContent  = profile?.total_spent  ?? 0;
+      document.getElementById('ledger-pending').textContent      = profile?.pending_credits ?? 0;
+      document.getElementById('ledger-xp').textContent          = xp;
+      document.getElementById('ledger-xp-next').textContent     = lvl.nextXp;
+      document.getElementById('ledger-level-label').textContent = `Level ${lvl.level} — ${lvl.name}`;
+      setTimeout(() => { document.getElementById('ledger-xp-bar').style.width = lvl.pct + '%'; }, 300);
 
       // Sidebar avatar
       const sideAvatar = document.getElementById('sidebar-avatar');
@@ -538,23 +655,35 @@
       topAvatar.style.color = '#0B1F17';
 
       // Dropdown fields
-      document.getElementById('dropdown-avatar').textContent = ini;
-      document.getElementById('dropdown-name').textContent   = name;
-      document.getElementById('dropdown-email').textContent  = email || '—';
-      document.getElementById('dropdown-role-badge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
-      document.getElementById('dropdown-credits').textContent = credits;
-      document.getElementById('dropdown-streak').textContent  = profile?.streak ?? 0;
+      document.getElementById('dropdown-avatar').textContent      = ini;
+      document.getElementById('dropdown-name').textContent        = name;
+      document.getElementById('dropdown-email').textContent       = email || '—';
+      document.getElementById('dropdown-role-badge').textContent  = role.charAt(0).toUpperCase() + role.slice(1);
+      document.getElementById('dropdown-credits').textContent     = credits;
+      document.getElementById('dropdown-streak').textContent      = profile?.streak ?? 0;
+
+      // Badges
+      renderBadges(profile?.badges || []);
     }
 
-    // ── Render past sessions ──────────────────────────────────────────
+    // ── Render badges ─────────────────────────────────────────────────
+    function renderBadges(earnedKeys) {
+      const container = document.getElementById('badges-container');
+      const earned = BADGE_DEFS.filter(b => earnedKeys.includes(b.key));
+      if (earned.length === 0) return;
+      container.innerHTML = earned.map(b =>
+        `<span class="inline-flex items-center gap-1.5 rounded-full ${b.color} border border-current/20 px-3 py-1.5 text-[11px] font-bold">
+          ${b.icon} ${b.label}
+        </span>`).join('');
+    }
+
+    // ── Render sessions ───────────────────────────────────────────────
     function renderSessions(sessions) {
       if (!sessions || sessions.length === 0) return;
-
       const upcomingEl = document.getElementById('sessions-upcoming');
       const pastEl     = document.getElementById('sessions-past');
-
-      const upcoming = sessions.filter(s => s.status === 'active' || s.status === 'pending');
-      const past     = sessions.filter(s => s.status === 'completed');
+      const upcoming   = sessions.filter(s => s.status === 'active' || s.status === 'pending');
+      const past       = sessions.filter(s => s.status === 'complete' || s.status === 'completed');
 
       if (upcoming.length > 0) {
         upcomingEl.innerHTML = upcoming.map(s => `
@@ -583,71 +712,113 @@
             </div>
             <span class="badge badge-mist">+${s.credits_offered || 0}</span>
           </div>`).join('');
-
         const sessCount = past.length;
-        document.getElementById('stat-sessions').textContent = sessCount;
-        document.getElementById('bar-sessions').style.width = Math.min(sessCount * 10, 100) + '%';
-        document.getElementById('dropdown-sessions').textContent = sessCount;
+        document.getElementById('stat-sessions').textContent        = sessCount;
+        document.getElementById('bar-sessions').style.width         = Math.min(sessCount * 10, 100) + '%';
+        document.getElementById('dropdown-sessions').textContent    = sessCount;
         lucide.createIcons();
       }
     }
 
     // ── Render credit ledger ──────────────────────────────────────────
     function renderLedger(logs) {
-      if (!logs || logs.length === 0) return;
+      _allLedger = logs || [];
+      renderLedgerRows(_allLedger);
+    }
+
+    function renderLedgerRows(logs) {
+      if (!logs || logs.length === 0) {
+        document.getElementById('ledger-empty').classList.remove('hidden');
+        document.getElementById('ledger-rows').classList.add('hidden');
+        return;
+      }
       document.getElementById('ledger-empty').classList.add('hidden');
       const container = document.getElementById('ledger-rows');
       container.classList.remove('hidden');
-      container.innerHTML = logs.map(l => `
-        <div class="ledger-row">
-          <p class="text-xs font-semibold text-slate-700">${l.description || 'Transaction'}</p>
-          <p class="text-xs text-slate-400 text-right">${new Date(l.created_at).toLocaleDateString('en-IN')}</p>
-          <p class="text-xs font-extrabold text-right ${l.amount > 0 ? 'text-green-600' : 'text-red-500'}">${l.amount > 0 ? '+' : ''}${l.amount}</p>
-        </div>`).join('');
+
+      // Calculate week earned
+      const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const weekEarned = logs
+        .filter(l => l.amount > 0 && new Date(l.created_at).getTime() > oneWeekAgo)
+        .reduce((sum, l) => sum + l.amount, 0);
+      document.getElementById('ledger-week-earned').textContent = weekEarned;
+
+      container.innerHTML = logs.map(l => {
+        const isEarn    = l.amount > 0;
+        const isPending = l.status === 'PENDING';
+        const typeIcon  = isEarn ? '🟢' : '🔴';
+        const amtClass  = isPending ? 'text-amber-500' : isEarn ? 'text-green-600' : 'text-red-500';
+        const amtPrefix = isEarn ? '+' : '';
+        const statusBadge = isPending
+          ? '<span class="ml-1.5 inline-block rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-600">PENDING</span>'
+          : '';
+        const date = new Date(l.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+        return `
+          <div class="flex items-center gap-3 px-5 py-3.5 hover:bg-slate-50 transition">
+            <span class="text-base shrink-0">${typeIcon}</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-bold text-slate-700 truncate">${l.reason || 'Transaction'}${statusBadge}</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">${date} &bull; ${l.reference_type || l.type || ''}</p>
+            </div>
+            <p class="text-sm font-extrabold shrink-0 ${amtClass}">${amtPrefix}${l.amount}</p>
+          </div>`;
+      }).join('');
+    }
+
+    // ── Filter ledger ─────────────────────────────────────────────────
+    function filterLedger(filter, btn) {
+      btn.closest('#ledger-filters').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (filter === 'all') {
+        renderLedgerRows(_allLedger);
+      } else if (filter === 'PENDING') {
+        renderLedgerRows(_allLedger.filter(l => l.status === 'PENDING'));
+      } else if (filter === 'EARN') {
+        renderLedgerRows(_allLedger.filter(l => l.amount > 0 && l.status !== 'PENDING'));
+      } else if (filter === 'SPEND') {
+        renderLedgerRows(_allLedger.filter(l => l.amount < 0));
+      }
     }
 
     // ── Main load function ────────────────────────────────────────────
     async function loadDashboard() {
-      // 1. Check session
       const { data: { session } } = await sbClient.auth.getSession();
-      if (!session) {
-        window.location.href = 'login.html';
-        return;
-      }
+      if (!session) { window.location.href = 'login.html'; return; }
 
       const userId = session.user.id;
       const email  = session.user.email;
 
-      // 2. Fetch profile
+      // Fetch profile
       const { data: profile } = await sbClient
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
+        .from('profiles').select('*').eq('id', userId).single();
       renderUser(profile, email);
 
-      // 3. Fetch sessions (learner or mentor)
-      const { data: sessions } = await sbClient
-        .from('sessions')
-        .select('*')
-        .or(`learner_id.eq.${userId},mentor_id.eq.${userId}`)
-        .order('created_at', { ascending: false })
-        .limit(20);
+      // Check if welcome bonus was just received (first load)
+      if (profile && !profile.welcome_bonus_given) {
+        const { data: bonus } = await sbClient.rpc('give_welcome_bonus', { p_user_id: userId });
+        if (bonus?.success) {
+          showToast('🎉 +100 Welcome Bonus! Welcome to GyanSetu!');
+          // Refresh profile to show updated balance
+          const { data: updated } = await sbClient.from('profiles').select('*').eq('id', userId).single();
+          renderUser(updated, email);
+        }
+      }
 
+      // Fetch sessions
+      const { data: sessions } = await sbClient
+        .from('sessions').select('*')
+        .or(`learner_id.eq.${userId},mentor_id.eq.${userId}`)
+        .order('created_at', { ascending: false }).limit(20);
       renderSessions(sessions);
 
-      // 4. Fetch credit log
-      const { data: logs } = await sbClient
-        .from('credit_log')
-        .select('*')
+      // Fetch credit ledger (from new credit_ledger table)
+      const { data: ledger } = await sbClient
+        .from('credit_ledger').select('*')
         .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(15);
+        .order('created_at', { ascending: false }).limit(50);
+      renderLedger(ledger);
 
-      renderLedger(logs);
-
-      // 5. Remove skeletons
+      // Remove skeletons
       setTimeout(() => {
         ['skeleton-1','skeleton-2','skeleton-3'].forEach(id => {
           const el = document.getElementById(id);
