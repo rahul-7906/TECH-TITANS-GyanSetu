@@ -1536,6 +1536,30 @@
             addCombatLog(`🏆 +${rrReward} Competitive RR awarded! (${rrRes.newRR} RR &bull; ${rrRes.newRank.fullName})`);
           }
         }
+
+        // Record arena activity for dynamic Subject Mastery Tracking
+        if (window.GyanSetuAuth?.recordUserActivity) {
+          const subjectMap = {
+            'cs-general': 'DSA',
+            'lang-python': 'Python',
+            'lang-javascript': 'Web Dev',
+            'lang-cpp': 'Computer Networks',
+            'lang-java': 'DSA',
+            'math': 'Machine Learning',
+            'physics': 'Machine Learning',
+            'science': 'Machine Learning',
+            'gk': 'Operating Systems',
+            'aptitude': 'DSA'
+          };
+          const mappedSubject = subjectMap[currentTopic] || 'General';
+          window.GyanSetuAuth.recordUserActivity(myUser.id, {
+            type: 'ARENA_RACE_WIN',
+            subject: mappedSubject,
+            title: `Arena Race Victory (${mappedSubject})`,
+            xp: 30,
+            credits: CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE
+          });
+        }
       } else if (!isMyTeamWinner && myUser) {
         awardBox.classList.add('hidden');
         if (typeof window.recordRRTransaction === 'function') {

@@ -435,17 +435,20 @@
             const { data: prof } = await sb.from('profiles').select('*').eq('id', userObj.id).maybeSingle();
             currentProfile = prof || { id: userObj.id, full_name: userObj.email.split('@')[0], rr: 1245, xp: 680, credits: 155, streak: 12 };
           }
-          // Fetch real peers from Supabase
-          const { data: peers } = await sb.from('profiles').select('*').order('rr', { ascending: false }).limit(50);
-          if (peers && peers.length > 0) {
-            allPeers = peers;
+          // Fetch real registered peers across Supabase and local storage
+          if (window.GyanSetuAuth?.getAllRegisteredUsers) {
+            allPeers = await window.GyanSetuAuth.getAllRegisteredUsers();
           } else {
-            allPeers = window.GYANSETU_DEMO?.leaderboard || [];
+            const { data: peers } = await sb.from('profiles').select('*').order('rr', { ascending: false }).limit(50);
+            allPeers = peers || [];
           }
         } catch (e) {
-          console.warn('Network issue reading Supabase, falling back to rich demo dataset:', e);
-          allPeers = window.GYANSETU_DEMO?.leaderboard || [];
-          currentProfile = window.GYANSETU_DEMO?.profile;
+          console.warn('Network issue reading Supabase, falling back to local registered peers:', e);
+          if (window.GyanSetuAuth?.getAllRegisteredUsers) {
+            allPeers = await window.GyanSetuAuth.getAllRegisteredUsers();
+          } else {
+            allPeers = [];
+          }
         }
       }
 

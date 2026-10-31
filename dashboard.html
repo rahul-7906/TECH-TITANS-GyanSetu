@@ -366,7 +366,7 @@
     </div>
     <div class="ml-auto flex items-center gap-2 sm:gap-3">
       <span id="mentorSleep" class="max-w-[145px] text-right text-[10px] font-semibold leading-tight text-slate-600 sm:max-w-none sm:text-xs" aria-live="polite"></span>
-      <div id="topbar-avatar" class="flex h-10 w-10 items-center justify-center rounded-xl border border-[#B9F044]/50 bg-[#F4FBEA] text-sm font-extrabold text-[#2F6F11]" aria-label="Learner avatar">RM</div>
+      <div id="topbar-avatar" class="flex h-10 w-10 items-center justify-center rounded-xl border border-[#B9F044]/50 bg-[#F4FBEA] text-sm font-extrabold text-[#2F6F11]" aria-label="Learner avatar"><i data-lucide="user" class="h-4 w-4"></i></div>
     </div>
   </div>
 
@@ -534,10 +534,10 @@
               <span class="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[#2F6F11]/20 bg-white/85 px-3 py-1 text-xs font-bold text-[#2F6F11]">
                 <i data-lucide="sparkles" class="h-3.5 w-3.5 text-[#2F6F11]"></i> YOUR LEARNING SPACE
               </span>
-              <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-[#0B1F17] sm:text-4xl">Welcome back, Learner! 👋</h1>
+              <h1 id="hero-greeting" class="text-3xl font-extrabold leading-tight tracking-tight text-[#0B1F17] sm:text-4xl">Welcome back, Learner! 👋</h1>
               <p class="mt-3 text-sm font-medium text-slate-700 sm:text-base">Ready to learn together today?</p>
               <p class="mt-2 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-white/80 px-3 py-1.5 text-xs font-semibold text-slate-700">
-                <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></span>3 peers are studying now ✨
+                <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></span><span id="hero-peers-text">Campus peer network active ✨</span>
               </p>
               <div class="mt-5 flex flex-wrap items-center gap-3">
                 <a href="room.html" class="inline-flex items-center gap-2 rounded-xl bg-[#0B1F17] px-5 py-3 text-sm font-extrabold text-[#B9F044] transition duration-300 hover:scale-[1.02] hover:bg-[#064E3B] shadow-md">
@@ -548,7 +548,7 @@
                 </a>
               </div>
             </div>
-            <!-- Interactive Live Collab Session Preview Card (Matches index.html design) -->
+            <!-- Interactive Live Collab Session Preview Card (Dynamic to active user) -->
             <div class="w-full max-w-[340px] shrink-0" aria-label="Interactive Learning Workspace Preview">
               <div class="relative rounded-3xl border border-white/80 bg-white/95 p-4 shadow-[0_16px_40px_-12px_rgba(47,111,17,0.18)] backdrop-blur-md transition hover:scale-[1.01]">
                 
@@ -556,62 +556,64 @@
                 <div class="mb-3 flex items-center justify-between pb-2 border-b border-slate-100">
                   <div class="flex items-center gap-2">
                     <span class="h-2.5 w-2.5 rounded-full bg-[#B9F044] animate-pulse"></span>
-                    <span class="text-xs font-black text-[#0B1F17]">Live Pair Session</span>
+                    <span id="hero-workspace-title" class="text-xs font-black text-[#0B1F17]">Active Workspace</span>
                   </div>
                   <span class="inline-flex items-center gap-1.5 rounded-full bg-[#0B1F17] px-2.5 py-0.5 text-[10px] font-black tracking-wide text-[#B9F044]">
                     <span class="h-1.5 w-1.5 rounded-full bg-[#B9F044]"></span> 🎙️ AUDIO LIVE
                   </span>
                 </div>
 
-                <!-- Peer Mentor Info -->
+                <!-- Peer / User Info -->
                 <div class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-[#F4FBEA] p-2.5 mb-2.5">
-                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#064E3B] to-[#2F6F11] text-xs font-black text-white shadow-sm">
-                    AS
+                  <div id="hero-workspace-avatar" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#064E3B] to-[#2F6F11] text-xs font-black text-white shadow-sm">
+                    U
                   </div>
                   <div class="min-w-0 flex-1">
                     <p class="flex items-center gap-1 text-xs font-black text-[#0B1F17]">
-                      <span>Aarav Sharma</span>
+                      <span id="hero-workspace-name">Your Workspace</span>
                       <i data-lucide="badge-check" class="h-3.5 w-3.5 text-[#2F6F11]"></i>
                     </p>
-                    <p class="truncate text-[10px] text-slate-500">DSA &bull; CSE 3rd Yr &bull; 4.9 ★</p>
+                    <p id="hero-workspace-meta" class="truncate text-[10px] text-slate-500">Active Campus Peer</p>
                   </div>
-                  <span class="shrink-0 rounded-full bg-[#B9F044] px-2 py-0.5 text-[10px] font-black text-[#0B1F17]">
-                    Top Mentor
+                  <span id="hero-workspace-badge" class="shrink-0 rounded-full bg-[#B9F044] px-2 py-0.5 text-[10px] font-black text-[#0B1F17]">
+                    Live
                   </span>
                 </div>
 
-                <!-- Shared Code Window -->
+                <!-- Shared Code Window (Dynamic to Real Tasks) -->
                 <div class="overflow-hidden rounded-xl bg-[#0B1F17] p-3 text-[11px] font-mono leading-5 shadow-inner">
                   <div class="mb-2 flex items-center justify-between border-b border-white/10 pb-1.5">
                     <div class="flex items-center gap-1.5">
                       <span class="h-2 w-2 rounded-full bg-rose-500/80"></span>
                       <span class="h-2 w-2 rounded-full bg-amber-500/80"></span>
                       <span class="h-2 w-2 rounded-full bg-[#B9F044]"></span>
-                      <span class="ml-1 text-[10px] font-bold text-[#B9F044]">dsa_bfs_tree.py</span>
+                      <span id="hero-code-filename" class="ml-1 text-[10px] font-bold text-[#B9F044]">workspace_sync.py</span>
                     </div>
                     <span class="text-[9px] text-slate-400 font-mono">Syncing ⚡</span>
                   </div>
-                  <p><span class="text-[#B9F044]">def</span> <span class="text-white">bfs</span><span class="text-slate-400">(root, target):</span></p>
-                  <p class="pl-3.5"><span class="text-slate-400">queue</span> <span class="text-[#B9F044]">=</span> <span class="text-white">deque</span><span class="text-slate-400">([root])</span></p>
-                  <p class="pl-3.5"><span class="text-slate-500"># Instant peer doubt cleared ✓</span></p>
+                  <div id="hero-code-content">
+                    <p><span class="text-[#B9F044]">def</span> <span class="text-white">study_session</span><span class="text-slate-400">(peer):</span></p>
+                    <p class="pl-3.5"><span class="text-slate-400">solve_doubts</span><span class="text-[#B9F044]">(</span><span class="text-white">'DSA &amp; Web Dev'</span><span class="text-[#B9F044]">)</span></p>
+                    <p class="pl-3.5"><span class="text-slate-500"># Real-time peer sync ready ✓</span></p>
+                  </div>
                 </div>
 
                 <!-- Footer Stats -->
                 <div class="mt-2.5 grid grid-cols-2 gap-2 text-center text-xs">
                   <div class="rounded-xl border border-slate-100 bg-[#F8FAF6] p-1.5">
-                    <p class="text-[9px] font-semibold text-slate-500">Session Length</p>
-                    <p class="text-[12px] font-black text-[#0B1F17]">14:20 <span class="text-[#2F6F11]">min</span></p>
+                    <p class="text-[9px] font-semibold text-slate-500">Progress</p>
+                    <p id="hero-stat-solved" class="text-[12px] font-black text-[#0B1F17]">Ready to Learn</p>
                   </div>
                   <div class="rounded-xl border border-slate-100 bg-[#F8FAF6] p-1.5">
-                    <p class="text-[9px] font-semibold text-slate-500">Credits Earned</p>
-                    <p class="text-[12px] font-black text-amber-500 font-mono">+10 🪙</p>
+                    <p class="text-[9px] font-semibold text-slate-500">Credits Balance</p>
+                    <p id="hero-stat-credits" class="text-[12px] font-black text-amber-500 font-mono">+100 🪙</p>
                   </div>
                 </div>
 
                 <!-- Live Tag -->
                 <div class="mt-2 text-center">
                   <span class="inline-flex items-center gap-1 text-[10px] font-bold text-[#2F6F11]">
-                    <i data-lucide="check-circle-2" class="h-3 w-3"></i> 100% Verified Campus Peers
+                    <i data-lucide="check-circle-2" class="h-3 w-3"></i> 100% Real-Time Campus Peers
                   </span>
                 </div>
 
@@ -786,52 +788,33 @@
 
         <!-- ===== FIND MENTORS ===== -->
         <section id="mentors" class="mb-8">
-          <div class="mb-4 flex items-center justify-between">
-            <p class="section-title mb-0">Find Peer Mentors</p>
-            <div class="flex gap-1.5">
-              <button class="tab-btn active" onclick="filterMentors('all',this)">All</button>
-              <button class="tab-btn" onclick="filterMentors('live',this)">&#128994; Live</button>
-              <button class="tab-btn" onclick="filterMentors('top',this)">&#11088; Top Rated</button>
+          <!-- Subject Mastery & Activity Tracker (Dynamic Real-Time Tracking) -->
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p class="section-title mb-0">Your Subject Mastery &amp; Activity Tracker</p>
+              <p class="text-xs text-slate-500">Real-time progress based on your actual challenges solved, arena races &amp; study notes</p>
             </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F4FBEA] border border-[#B9F044]/40 px-3 py-1 text-[11px] font-extrabold text-[#2F6F11]">
+              <span class="h-2 w-2 rounded-full bg-[#2F6F11] animate-pulse"></span> Dynamic Activity Engine
+            </span>
           </div>
 
-          <!-- Subject filter chips -->
-          <div class="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <button class="skill-pill group" aria-label="Filter by DSA, 64 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🧩 DSA</span><span class="text-xs font-bold text-[#2F6F11]">64%</span></span>
-              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:64%"></span></span>
-            </button>
-            <button class="skill-pill group" aria-label="Filter by Python, 78 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🐍 Python</span><span class="text-xs font-bold text-[#2F6F11]">78%</span></span>
-              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:78%"></span></span>
-            </button>
-            <button class="skill-pill group" aria-label="Filter by Web Development, 82 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🎨 Web Dev</span><span class="text-xs font-bold text-[#2F6F11]">82%</span></span>
-              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:82%"></span></span>
-            </button>
-            <button class="skill-pill group" aria-label="Filter by DBMS, 56 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🗃️ DBMS</span><span class="text-xs font-bold text-[#2F6F11]">56%</span></span>
-              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:56%"></span></span>
-            </button>
-            <button class="skill-pill group" aria-label="Filter by Operating Systems, 48 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>💻 Operating Systems</span><span class="text-xs font-bold text-[#2F6F11]">48%</span></span>
-              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:48%"></span></span>
-            </button>
-            <button class="skill-pill group" aria-label="Filter by Machine Learning, 71 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🤖 Machine Learning</span><span class="text-xs font-bold text-[#2F6F11]">71%</span></span>
-              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:71%"></span></span>
-            </button>
-            <button class="skill-pill group" aria-label="Filter by Computer Networks, 59 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🌐 Computer Networks</span><span class="text-xs font-bold text-[#2F6F11]">59%</span></span>
-              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:59%"></span></span>
-            </button>
+          <!-- Dynamic Subject Grid Container (populated by renderSubjectProgress) -->
+          <div id="subject-tracker-grid" class="mb-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <!-- Rendered dynamically by renderSubjectProgress(userId, ledger) -->
+          </div>
+
+          <!-- Peer Network Section Header -->
+          <div class="mb-4 flex items-center justify-between">
+            <div>
+              <p class="section-title mb-0">Campus Peer Network &amp; Mentors</p>
+              <p class="text-xs text-slate-500">Real registered students in your campus cohort</p>
+            </div>
+            <div class="flex gap-1.5">
+              <button class="tab-btn active" onclick="filterMentors('all',this)">All Peers</button>
+              <button class="tab-btn" onclick="filterMentors('live',this)">&#128994; Online</button>
+              <button class="tab-btn" onclick="filterMentors('top',this)">&#11088; High XP</button>
+            </div>
           </div>
 
           <!-- Mentor grid — empty state until real data loads -->
@@ -905,13 +888,25 @@
             </div>
           </div>
 
-          <!-- Empty state shown when no mentors found -->
-          <div id="mentors-empty" class="hidden rounded-2xl border border-slate-100 bg-white">
-            <div class="empty-state">
-              <div class="empty-state-icon"><i data-lucide="users" class="h-6 w-6"></i></div>
-              <p class="text-sm font-extrabold text-[#0B1F17]">No mentors available right now</p>
-              <p class="text-xs text-slate-500 max-w-xs">Check back shortly or broaden your subject filter to find
-                available peers.</p>
+          <!-- Empty state shown when no other registered peers are online yet -->
+          <div id="mentors-empty" class="hidden rounded-2xl border border-slate-200/80 bg-white p-7 shadow-card text-center">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F4FBEA] text-[#2F6F11] border border-[#B9F044]/40 mb-3 shadow-inner">
+              <i data-lucide="sparkles" class="h-7 w-7 text-[#2F6F11]"></i>
+            </div>
+            <p class="text-base font-extrabold text-[#0B1F17]">You're the First Registered Peer Active in this Network! 🎓</p>
+            <p class="mx-auto mt-1.5 max-w-md text-xs leading-relaxed text-slate-500">
+              GyanSetu only displays verified real students who sign up or log in. No fake accounts! Invite a friend, or open an incognito window to register a classmate and test live peer collaboration.
+            </p>
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+              <button onclick="copyInviteLink()" class="inline-flex items-center gap-1.5 rounded-xl bg-[#0B1F17] px-4 py-2 text-xs font-extrabold text-[#B9F044] hover:bg-[#064E3B] transition shadow-sm">
+                <i data-lucide="share-2" class="h-3.5 w-3.5"></i> <span>Copy Invite Link</span>
+              </button>
+              <a href="login.html" target="_blank" class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
+                <i data-lucide="external-link" class="h-3.5 w-3.5"></i> <span>Register Peer (New Tab)</span>
+              </a>
+              <button onclick="seedDemoPeerAccount()" class="inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044] bg-[#F4FBEA] px-3.5 py-2 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044] hover:text-[#0B1F17] transition">
+                <span>+ Add Campus Peer for Demo</span>
+              </button>
             </div>
           </div>
         </section>
@@ -1426,17 +1421,38 @@
       const lvl     = getLevelInfo(xp);
 
       // Topbar greeting
-      document.getElementById('topbar-greeting').textContent = `${getGreeting()}, ${name.split(' ')[0]} 👋`;
-      document.getElementById('topbar-subtext').textContent =
+      const topGreet = document.getElementById('topbar-greeting');
+      if (topGreet) topGreet.textContent = `${getGreeting()}, ${name.split(' ')[0]} 👋`;
+      const topSub = document.getElementById('topbar-subtext');
+      if (topSub) topSub.textContent =
         role === 'mentor' ? 'Ready to teach someone today?' : 'What would you like to learn today?';
 
-      // Sidebar
-      document.getElementById('sidebar-name').textContent = name;
-      document.getElementById('sidebar-name').classList.remove('text-slate-400');
-      document.getElementById('sidebar-dept').textContent = dept;
-      document.getElementById('sidebar-credits').textContent = credits;
-      document.getElementById('stat-credits').textContent = credits;
-      document.getElementById('bar-credits').style.width = Math.min((credits / 200) * 100, 100) + '%';
+      // Hero banner greeting
+      const heroGreet = document.getElementById('hero-greeting');
+      if (heroGreet) heroGreet.textContent = `Welcome back, ${name.split(' ')[0]}! 👋`;
+
+      // Sidebar User Card
+      const sbName = document.getElementById('sidebar-name');
+      if (sbName) {
+        sbName.textContent = name;
+        sbName.classList.remove('text-slate-400');
+        sbName.classList.add('text-[#0B1F17]');
+      }
+      const sbDept = document.getElementById('sidebar-dept');
+      if (sbDept) {
+        sbDept.textContent = dept;
+        sbDept.classList.remove('text-slate-400');
+        sbDept.classList.add('text-slate-600');
+      }
+      const sbCredits = document.getElementById('sidebar-credits');
+      if (sbCredits) sbCredits.textContent = credits;
+      const sbStreak = document.getElementById('sidebar-streak');
+      if (sbStreak) sbStreak.textContent = profile?.streak ?? 1;
+
+      const statCredits = document.getElementById('stat-credits');
+      if (statCredits) statCredits.textContent = credits;
+      const barCredits = document.getElementById('bar-credits');
+      if (barCredits) barCredits.style.width = Math.min((credits / 200) * 100, 100) + '%';
 
       // Ledger balance + stats
       document.getElementById('ledger-balance').textContent     = credits;
@@ -1556,27 +1572,237 @@
       lucide.createIcons();
     }
 
-    // ── Render sessions ───────────────────────────────────────────────
+    // ── Dynamic Subject Mastery Tracker ──────────────────────────────
+    function renderSubjectProgress(userId, ledger) {
+      const container = document.getElementById('subject-tracker-grid');
+      if (!container || !window.GyanSetuAuth?.getUserSubjectProgress) return;
+
+      const subjects = window.GyanSetuAuth.getUserSubjectProgress(userId, ledger);
+
+      container.innerHTML = subjects.map(sub => {
+        return `
+          <div class="skill-pill group flex flex-col justify-between p-3.5 rounded-2xl border border-slate-200/90 bg-white hover:border-[#2F6F11] hover:shadow-md transition cursor-pointer"
+               onclick="handleSubjectAction('${sub.key}', '${sub.actionUrl}')"
+               title="${escapeHtml(sub.status)}">
+            <div>
+              <div class="flex items-center justify-between text-sm font-bold text-slate-800">
+                <span class="flex items-center gap-1.5 font-extrabold text-[#0B1F17]">${sub.icon} ${escapeHtml(sub.name)}</span>
+                <span class="text-xs font-black ${sub.percent > 0 ? 'text-[#2F6F11]' : 'text-slate-400'}">${sub.percent}%</span>
+              </div>
+              <p class="mt-1 text-[11px] font-semibold text-slate-500">${escapeHtml(sub.status)}</p>
+            </div>
+            <div class="mt-3">
+              <div class="h-2 w-full overflow-hidden rounded-full bg-emerald-100/60">
+                <div class="h-full rounded-full bg-[#2F6F11] transition-all duration-500 group-hover:bg-[#B9F044]" style="width: ${sub.percent}%"></div>
+              </div>
+              <div class="mt-2 flex items-center justify-between text-[10px] text-slate-400 group-hover:text-[#2F6F11]">
+                <span class="font-bold">${sub.completed}/${sub.target} completed</span>
+                <span class="font-bold underline">${escapeHtml(sub.actionText)} &rarr;</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleSubjectAction(subjectKey, actionUrl) {
+      if (actionUrl.startsWith('#')) {
+        const el = document.querySelector(actionUrl);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('ring-4', 'ring-[#B9F044]');
+          setTimeout(() => el.classList.remove('ring-4', 'ring-[#B9F044]'), 2000);
+        }
+      } else {
+        window.location.href = actionUrl;
+      }
+    }
+
+    // ── Dynamic Hero Collab & Session Workspace ───────────────────────
+    function renderHeroWorkspace(profile, allPeers, ledger) {
+      // 1. Dynamic peer count in hero
+      const peerTextEl = document.getElementById('hero-peers-text');
+      if (peerTextEl) {
+        if (allPeers && allPeers.length > 0) {
+          peerTextEl.textContent = `${allPeers.length} campus peer${allPeers.length > 1 ? 's' : ''} registered & active ✨`;
+        } else {
+          peerTextEl.textContent = `You are active in your study room ✨`;
+        }
+      }
+
+      // 2. Resolve Active Code Focus from real tasks
+      const hasSolvedDsa = (ledger || []).some(l => l.reference_id === 'chal_dsa' || l.reason?.includes('Rotated Array'));
+      const hasSolvedSys = (ledger || []).some(l => l.reference_id === 'chal_sys' || l.reason?.includes('Distributed Escrow') || l.reason?.includes('System Design'));
+
+      let codeFileName = 'workspace_sync.py';
+      let codeHtml = `<p><span class="text-[#B9F044]">def</span> <span class="text-white">study_session</span><span class="text-slate-400">(peer):</span></p><p class="pl-3.5"><span class="text-slate-400">solve_doubts</span><span class="text-[#B9F044]">(</span><span class="text-white">'Campus Collab'</span><span class="text-[#B9F044]">)</span></p><p class="pl-3.5"><span class="text-slate-500"># Real-time peer sync ready ✓</span></p>`;
+      let sessionTitle = 'Interactive Learning Workspace';
+      let statProgress = 'Ready to Learn';
+
+      if (hasSolvedDsa) {
+        codeFileName = 'rotated_array_search.py';
+        codeHtml = `<p><span class="text-[#B9F044]">def</span> <span class="text-white">search</span><span class="text-slate-400">(nums, target):</span></p><p class="pl-3.5"><span class="text-white">mid</span> <span class="text-[#B9F044]">=</span> <span class="text-slate-400">(low + high) // 2</span></p><p class="pl-3.5"><span class="text-emerald-400"># Binary Search Challenge Solved ✓</span></p>`;
+        sessionTitle = 'DSA Challenge Completed';
+        statProgress = 'DSA Solved (100%)';
+      } else if (hasSolvedSys) {
+        codeFileName = 'escrow_lock.js';
+        codeHtml = `<p><span class="text-[#B9F044]">async function</span> <span class="text-white">releaseCredits</span><span class="text-slate-400">() {</span></p><p class="pl-3.5"><span class="text-[#B9F044]">await</span> <span class="text-white">db.transaction</span><span class="text-slate-400">();</span></p><p class="pl-3.5"><span class="text-emerald-400">// System Design Verified ✓</span></p>`;
+        sessionTitle = 'System Design Verified';
+        statProgress = 'Sys Design Solved';
+      }
+
+      const nameEl = document.getElementById('hero-workspace-name');
+      const avatarEl = document.getElementById('hero-workspace-avatar');
+      const metaEl = document.getElementById('hero-workspace-meta');
+      const badgeEl = document.getElementById('hero-workspace-badge');
+      const titleEl = document.getElementById('hero-workspace-title');
+      const fileEl = document.getElementById('hero-code-filename');
+      const codeEl = document.getElementById('hero-code-content');
+      const solvedEl = document.getElementById('hero-stat-solved');
+      const creditsEl = document.getElementById('hero-stat-credits');
+
+      if (allPeers && allPeers.length > 0) {
+        const topPeer = allPeers[0];
+        const initials = (topPeer.full_name || 'CP').split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+        if (avatarEl) avatarEl.textContent = initials;
+        if (nameEl) nameEl.textContent = topPeer.full_name || 'Campus Peer';
+        if (metaEl) metaEl.textContent = `${topPeer.department || 'CSE'} • ${topPeer.role || 'Learner'} • ${topPeer.xp || 50} XP`;
+        if (badgeEl) badgeEl.textContent = topPeer.role === 'mentor' ? 'Top Mentor' : 'Live Peer';
+        if (titleEl) titleEl.textContent = 'Active Peer Collab';
+      } else {
+        const initials = (profile?.full_name || 'You').split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+        if (avatarEl) avatarEl.textContent = initials;
+        if (nameEl) nameEl.textContent = `${profile?.full_name || 'Your Workspace'} (You)`;
+        if (metaEl) metaEl.textContent = `${profile?.department || 'CSE'} • ${profile?.role || 'Learner'} • ${profile?.xp || 50} XP`;
+        if (badgeEl) badgeEl.textContent = 'Active Now';
+        if (titleEl) titleEl.textContent = 'Your Workspace';
+      }
+
+      if (fileEl) fileEl.textContent = codeFileName;
+      if (codeEl) codeEl.innerHTML = codeHtml;
+      if (solvedEl) solvedEl.textContent = statProgress;
+      if (creditsEl) creditsEl.textContent = `+${profile?.credits || 100} 🪙`;
+    }
+
+    // ── Render Mentors / Campus Peers ─────────────────────────────────
+    let currentMentorsList = [];
+
     function renderMentors(mentors) {
+      currentMentorsList = mentors || [];
       const grid = document.getElementById('mentors-grid');
       const empty = document.getElementById('mentors-empty');
       if (!grid) return;
       const cta = document.getElementById('become-mentor-card');
       grid.querySelectorAll('.mentor-card:not(#become-mentor-card)').forEach(card => card.remove());
+
       if (!mentors || mentors.length === 0) {
         empty?.classList.remove('hidden');
         return;
       }
       empty?.classList.add('hidden');
+
       mentors.forEach(mentor => {
-        const name = mentor.full_name || 'Unnamed mentor';
-        const initials = name.split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase();
-        const topics = Array.isArray(mentor.topics) ? mentor.topics : [];
+        const name = mentor.full_name || 'Campus Peer';
+        const initials = name.split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase() || 'CP';
+        const topics = Array.isArray(mentor.topics) && mentor.topics.length > 0 ? mentor.topics : ['General Study', mentor.department || 'CSE'];
         const card = document.createElement('article');
-        card.className = 'mentor-card';
-        card.innerHTML = `<div class="flex items-center gap-3"><div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#B9F044] text-sm font-extrabold">${initials}</div><div class="min-w-0"><p class="truncate text-sm font-extrabold">${escapeHtml(name)}</p><p class="text-xs text-slate-500">${escapeHtml(mentor.department || '')}${mentor.year ? ` · ${escapeHtml(mentor.year)}` : ''}</p></div></div><div class="mt-3 flex flex-wrap gap-1.5">${topics.map(topic => `<span class="tag">${escapeHtml(topic)}</span>`).join('')}</div><p class="mt-3 text-xs text-slate-500">${escapeHtml(mentor.bio || '')}</p>`;
+        card.className = 'mentor-card flex flex-col justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center gap-3">
+              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#B9F044] text-sm font-extrabold text-[#0B1F17] shadow-sm">${escapeHtml(initials)}</div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  <p class="truncate text-sm font-extrabold text-[#0B1F17]">${escapeHtml(name)}</p>
+                  <span class="rounded-full bg-[#F4FBEA] border border-[#B9F044]/40 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#2F6F11]">
+                    ${escapeHtml(mentor.role || 'Learner')}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500">${escapeHtml(mentor.department || 'Student')}${mentor.year ? ` · ${escapeHtml(mentor.year)}` : ''}</p>
+              </div>
+            </div>
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              ${topics.map(topic => `<span class="tag">${escapeHtml(topic)}</span>`).join('')}
+            </div>
+            <p class="mt-3 text-xs text-slate-500 line-clamp-2">${escapeHtml(mentor.bio || `Registered campus peer available for collaborative pair coding & study sessions.`)}</p>
+          </div>
+          <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+            <span class="text-xs font-bold text-slate-600">${Number(mentor.credits) || 100} Credits &bull; ${Number(mentor.xp) || 50} XP</span>
+            <button onclick="requestSessionWithPeer('${escapeHtml(mentor.id || '')}', '${escapeHtml(name)}')" class="rounded-xl bg-[#0B1F17] px-3.5 py-1.5 text-xs font-extrabold text-[#B9F044] hover:bg-[#064E3B] transition shadow-sm">
+              Connect &rarr;
+            </button>
+          </div>`;
         grid.insertBefore(card, cta);
       });
+      lucide.createIcons();
+    }
+
+    function filterMentors(type, btn) {
+      if (btn) {
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      if (type === 'all') {
+        renderMentors(currentMentorsList);
+      } else if (type === 'live') {
+        const live = currentMentorsList.filter(m => (m.streak || 0) > 0 || m.role === 'mentor');
+        renderMentors(live.length > 0 ? live : currentMentorsList);
+      } else if (type === 'top') {
+        const top = [...currentMentorsList].sort((a, b) => (Number(b.xp) || 0) - (Number(a.xp) || 0));
+        renderMentors(top);
+      }
+    }
+
+    function requestSessionWithPeer(peerId, peerName) {
+      showToast(`Initiating peer session with ${peerName}...`);
+      setTimeout(() => {
+        window.location.href = `room.html?peer=${encodeURIComponent(peerName)}`;
+      }, 600);
+    }
+
+    function copyInviteLink() {
+      const url = window.location.origin + '/login.html';
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('📋 GyanSetu invite link copied to clipboard!');
+        }).catch(() => {
+          prompt('Copy this link to invite peers:', url);
+        });
+      } else {
+        prompt('Copy this link to invite peers:', url);
+      }
+    }
+
+    async function seedDemoPeerAccount() {
+      const demoNames = ['Ananya Sen', 'Dev Patel', 'Simran Kaur', 'Aditya Verma'];
+      const chosenName = demoNames[Math.floor(Math.random() * demoNames.length)];
+      const email = chosenName.toLowerCase().replace(/\s+/g, '.') + '@gehu.ac.in';
+      const id = 'peer_' + Date.now();
+
+      const newPeerProfile = {
+        id: id,
+        email: email,
+        full_name: chosenName,
+        department: 'CSE',
+        year: '3rd Year',
+        role: 'mentor',
+        credits: 140,
+        xp: 120,
+        rr: 1050,
+        streak: 3,
+        topics: ['DSA', 'Web Dev', 'Python'],
+        bio: '3rd Year CSE peer passionate about problem solving, algorithms & code reviews.'
+      };
+
+      if (window.GyanSetuAuth?.saveLocalAccount) {
+        window.GyanSetuAuth.saveLocalAccount(email, 'Password123', newPeerProfile);
+      }
+      if (window.GyanSetuAuth?.saveProfileToSupabase) {
+        await window.GyanSetuAuth.saveProfileToSupabase(newPeerProfile);
+      }
+
+      showToast(`🎉 Campus peer '${chosenName}' registered successfully!`);
+      await loadDashboard();
     }
 
     function renderLeaderboard(rows) {
@@ -1715,19 +1941,16 @@
       document.getElementById('dash-rank-state-num').textContent = '4';
       document.getElementById('dash-rank-college-num').textContent = '2';
       document.querySelectorAll('.skeleton').forEach(element => element.remove());
-      const empty = document.getElementById('mentors-empty');
-      if (empty) empty.classList.add('hidden');
-      const grid = document.getElementById('mentors-grid');
-      if (grid) {
-        const cta = document.getElementById('become-mentor-card');
-        grid.querySelectorAll('.mentor-card:not(#become-mentor-card)').forEach(card => card.remove());
-        (demo.mentors || []).forEach(mentor => {
-          const card = document.createElement('div');
-          card.className = 'mentor-card';
-          card.innerHTML = `<div class="flex items-center gap-3"><div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#B9F044] text-sm font-extrabold">${mentor.avatar}</div><div><p class="text-sm font-extrabold">${escapeHtml(mentor.name)}</p><p class="text-xs text-slate-500">${escapeHtml(mentor.department)} · ${escapeHtml(mentor.year)}</p></div></div><div class="mt-3 flex flex-wrap gap-1.5">${mentor.topics.map(topic => `<span class="tag">${escapeHtml(topic)}</span>`).join('')}</div><p class="mt-3 text-xs text-slate-500">${escapeHtml(mentor.bio)}</p>`;
-          grid.insertBefore(card, cta);
+      if (window.GyanSetuAuth?.getAllRegisteredPeers) {
+        window.GyanSetuAuth.getAllRegisteredPeers(currentUserId).then(peers => {
+          renderMentors(peers);
+          renderHeroWorkspace(currentProfile, peers, demo.ledger || []);
         });
+      } else {
+        renderMentors([]);
+        renderHeroWorkspace(currentProfile, [], demo.ledger || []);
       }
+      renderSubjectProgress(currentUserId, demo.ledger || []);
 
       // Check solved challenges in demo
       const hasSolvedDsa = (demo.ledger || []).some(l => l.reference_id === 'chal_dsa' || l.reason?.includes('Rotated Array'));
@@ -1944,6 +2167,17 @@
         });
       }
 
+      // Record real-time user activity for Subject Mastery Tracking
+      if (window.GyanSetuAuth?.recordUserActivity) {
+        window.GyanSetuAuth.recordUserActivity(currentUserId, {
+          type: 'CHALLENGE_SOLVED',
+          subject: activeChallengeType === 'dsa' ? 'DSA' : 'Web Dev',
+          title: chal.title,
+          xp: 25,
+          credits: 10
+        });
+      }
+
       closeChallengeModal();
       showToast(`🎉 Correct! +10 Credits &amp; +20 RR awarded!`);
       submitBtn.disabled = false;
@@ -1996,6 +2230,17 @@
 
       // Persist unlock state locally so reloading never charges again
       localStorage.setItem(`unlocked_note_${currentUserId}_${noteId}`, 'true');
+
+      // Record note unlocking activity for subject tracking
+      if (window.GyanSetuAuth?.recordUserActivity) {
+        const noteSubject = noteId === 'note-1' ? 'DSA' : (noteId === 'note-2' ? 'Operating Systems' : 'DBMS');
+        window.GyanSetuAuth.recordUserActivity(currentUserId, {
+          type: 'NOTE_UNLOCKED',
+          subject: noteSubject,
+          title: title,
+          credits: -cost
+        });
+      }
 
       // Update button
       const num = noteId.replace('note-', '');
@@ -2119,13 +2364,23 @@
         return;
       }
       let activeUser = null;
+      let cachedProfile = null;
       if (window.GyanSetuAuth) {
-        const authData = await window.GyanSetuAuth.getCurrentUser();
-        if (authData?.user) activeUser = authData.user;
+        try {
+          const authData = await window.GyanSetuAuth.getCurrentUser();
+          if (authData?.user) {
+            activeUser = authData.user;
+            cachedProfile = authData.profile;
+          }
+        } catch (e) {
+          console.warn('GyanSetuAuth error:', e);
+        }
       }
       if (!activeUser) {
-        const { data: { session } } = await sbClient.auth.getSession();
-        if (session?.user) activeUser = session.user;
+        try {
+          const { data: { session } } = await sbClient.auth.getSession();
+          if (session?.user) activeUser = session.user;
+        } catch (e) {}
       }
       if (!activeUser) {
         window.location.href = 'login.html';
@@ -2136,48 +2391,51 @@
       const email  = activeUser.email || 'student@gyansetu.edu';
       currentUserId = userId;
 
-      // Fetch profile safely
+      // Fetch profile safely from Supabase
       let profile = null;
       try {
         const { data } = await sbClient
           .from('profiles').select('*').eq('id', userId).maybeSingle();
-        profile = data;
+        if (data) profile = data;
       } catch (e) {
         console.warn('Error reading profile:', e);
       }
 
+      if (!profile && cachedProfile) {
+        profile = cachedProfile;
+      }
+
       // If user profile doesn't exist yet, construct fallback or upsert
       if (!profile) {
-        const fallbackName = session.user.user_metadata?.full_name || email.split('@')[0];
+        const fallbackName = activeUser.user_metadata?.full_name || cachedProfile?.full_name || email.split('@')[0];
         profile = {
           id: userId,
           email: email,
           full_name: fallbackName,
-          department: session.user.user_metadata?.department || 'Member',
-          role: session.user.user_metadata?.role || 'learner',
+          department: activeUser.user_metadata?.department || cachedProfile?.department || 'CSE',
+          role: activeUser.user_metadata?.role || cachedProfile?.role || 'learner',
           credits: 100,
           xp: 50,
           streak: 1
         };
-        sbClient.from('profiles').insert(profile).then(() => {}).catch(() => {});
+        sbClient.from('profiles').upsert(profile).then(() => {}).catch(() => {});
       }
       currentProfile = profile;
       renderUser(profile, email);
 
-      // Fetch live mentor directory safely
-      let mentors = [];
+      // Fetch live registered peers safely (NO mock mentors)
+      let peers = [];
       try {
-        const { data } = await sbClient.from('profiles')
-          .select('*')
-          .eq('role', 'mentor').neq('id', userId);
-        if (data && data.length > 0) mentors = data;
+        if (window.GyanSetuAuth?.getAllRegisteredPeers) {
+          peers = await window.GyanSetuAuth.getAllRegisteredPeers(userId);
+        } else {
+          const { data } = await sbClient.from('profiles').select('*').neq('id', userId);
+          if (data) peers = data;
+        }
       } catch (e) {
-        console.warn('Error fetching mentors:', e);
+        console.warn('Error fetching peers:', e);
       }
-      if (mentors.length === 0 && window.GYANSETU_DEMO?.mentors) {
-        mentors = window.GYANSETU_DEMO.mentors;
-      }
-      renderMentors(mentors);
+      renderMentors(peers);
 
       // Fetch sessions safely
       let mySessions = [];
@@ -2194,12 +2452,17 @@
         console.warn('Error fetching sessions:', e);
       }
 
-      // Fetch leaderboard
+      // Fetch leaderboard of real registered students
       let leaderboard = [];
       try {
-        const { data } = await sbClient.from('profiles')
-          .select('id, full_name, xp').order('xp', { ascending: false }).limit(10);
-        leaderboard = data || [];
+        if (window.GyanSetuAuth?.getAllRegisteredUsers) {
+          const allStudents = await window.GyanSetuAuth.getAllRegisteredUsers();
+          leaderboard = allStudents.sort((a, b) => (Number(b.xp) || 0) - (Number(a.xp) || 0)).slice(0, 10);
+        } else {
+          const { data } = await sbClient.from('profiles')
+            .select('id, full_name, xp').order('xp', { ascending: false }).limit(10);
+          leaderboard = data || [];
+        }
         renderLeaderboard(leaderboard);
       } catch (e) {
         console.warn('Error fetching leaderboard:', e);
@@ -2217,6 +2480,12 @@
       } catch (e) {
         console.warn('Error fetching ledger:', e);
       }
+
+      // Render Dynamic Subject Progress Tracker for the logged-in student
+      renderSubjectProgress(userId, ledger);
+
+      // Render Dynamic Hero Collab Workspace
+      renderHeroWorkspace(profile, peers, ledger);
 
       // Re-evaluate dynamic badges with full context
       renderBadges(profile?.badges || [], profile, ledger, mySessions);

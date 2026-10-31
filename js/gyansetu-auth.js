@@ -483,6 +483,196 @@
     },
 
     /**
+     * Fetch ALL real registered users across Supabase and local storage
+     * Strips any mock/fake profiles so only actual registered students are displayed
+     */
+    async getAllRegisteredUsers() {
+      var sb = getSupabaseClient();
+      var usersMap = new Map();
+
+      // 1. Fetch from Supabase profiles table
+      if (sb) {
+        try {
+          var { data, error } = await sb.from('profiles').select('*');
+          if (!error && Array.isArray(data)) {
+            data.forEach(function (p) {
+              if (p && p.id && !String(p.id).startsWith('demo-')) {
+                var key = (p.email || p.id).toLowerCase();
+                usersMap.set(key, p);
+              }
+            });
+          }
+        } catch (e) {
+          console.warn('[GyanSetuAuth] Fetch profiles error:', e);
+        }
+      }
+
+      // 2. Fetch from local registered accounts (multi-tab/session resilience)
+      try {
+        var accounts = JSON.parse(localStorage.getItem(STORAGE_KEYS.REGISTERED_ACCOUNTS) || '{}');
+        Object.keys(accounts).forEach(function (email) {
+          var item = accounts[email];
+          if (item && item.profile) {
+            var prof = item.profile;
+            var key = (prof.email || prof.id || email).toLowerCase();
+            if (!usersMap.has(key)) {
+              usersMap.set(key, prof);
+            }
+          }
+        });
+      } catch (e) {}
+
+      // 3. Ensure active user profile is included
+      try {
+        var activeProf = JSON.parse(localStorage.getItem(STORAGE_KEYS.ACTIVE_PROFILE) || 'null');
+        if (activeProf && activeProf.id && !String(activeProf.id).startsWith('demo-')) {
+          var key = (activeProf.email || activeProf.id).toLowerCase();
+          if (!usersMap.has(key)) {
+            usersMap.set(key, activeProf);
+          }
+        }
+      } catch (e) {}
+
+      return Array.from(usersMap.values());
+    },
+
+    /**
+     * Get real registered peer mentors/classmates excluding the logged-in user
+     */
+    async getAllRegisteredPeers(excludeUserId) {
+      var allUsers = await this.getAllRegisteredUsers();
+      return allUsers.filter(function (p) {
+        if (!p) return false;
+        if (excludeUserId && (p.id === excludeUserId || String(p.id) === String(excludeUserId))) return false;
+        // Never allow mock demo IDs
+        if (p.id === 'demo-mentor-1' || p.id === 'demo-mentor-2' || p.id === 'demo-mentor-3') return false;
+        return true;
+      });
+    },
+
+    /**
+     * Record dynamic activity performed by the user on GyanSetu
+     */
+    recordUserActivity(userId, activity) {
+      if (!userId) return null;
+      try {
+        var key = 'gyansetu_activities_' + userId;
+        var activities = JSON.parse(localStorage.getItem(key) || '[]');
+        var item = {
+          id: generateUUID(),
+          userId: userId,
+          type: activity.type || 'GENERAL',
+          subject: activity.subject || 'General',
+          title: activity.title || '',
+          xp: Number(activity.xp) || 0,
+          credits: Number(activity.credits) || 0,
+          timestamp: activity.timestamp || Date.now(),
+          details: activity.details || {}
+        };
+        activities.unshift(item);
+        localStorage.setItem(key, JSON.stringify(activities.slice(0, 100)));
+        window.dispatchEvent(new CustomEvent('gyansetu:activity', { detail: item }));
+        return item;
+      } catch (e) {
+        console.warn('[GyanSetuAuth] recordUserActivity error:', e);
+        return null;
+      }
+    },
+
+    /**
+     * Get recent recorded activities for the user
+     */
+    getUserActivities(userId) {
+      if (!userId) return [];
+      try {
+        var key = 'gyansetu_activities_' + userId;
+        return JSON.parse(localStorage.getItem(key) || '[]');
+      } catch (e) {
+        return [];
+      }
+    },
+
+    /**
+     * Calculate dynamic Subject Mastery & Progress based on ACTUAL actions taken
+     */
+    getUserSubjectProgress(userId, ledger) {
+      ledger = ledger || [];
+      var activities = this.getUserActivities(userId);
+
+      var subjects = [
+        { key: 'DSA', name: 'DSA', icon: '🧩', target: 2, actionText: 'Solve Problem', actionUrl: '#card-chal-dsa' },
+        { key: 'Python', name: 'Python', icon: '🐍', target: 2, actionText: 'Race Arena', actionUrl: 'arena.html?topic=lang-python' },
+        { key: 'Web Dev', name: 'Web Dev', icon: '🎨', target: 2, actionText: 'System Design', actionUrl: '#card-chal-sys' },
+        { key: 'DBMS', name: 'DBMS', icon: '🗃️', target: 2, actionText: 'Unlock Cheatsheet', actionUrl: '#section-notes' },
+        { key: 'Operating Systems', name: 'Operating Systems', icon: '💻', target: 2, actionText: 'Kernel Notes', actionUrl: '#section-notes' },
+        { key: 'Machine Learning', name: 'Machine Learning', icon: '🤖', target: 2, actionText: 'Arena Sprint', actionUrl: 'arena.html?topic=math' },
+        { key: 'Computer Networks', name: 'Computer Networks', icon: '🌐', target: 2, actionText: 'Arena Race', actionUrl: 'arena.html?topic=cs-general' }
+      ];
+
+      return subjects.map(function (sub) {
+        var completedCount = 0;
+        var details = [];
+
+        // Check ledger transactions
+        ledger.forEach(function (item) {
+          var ref = String(item.reference_id || item.reference_type || '').toLowerCase();
+          var reason = String(item.reason || '').toLowerCase();
+
+          if (sub.key === 'DSA' && (ref === 'chal_dsa' || reason.includes('rotated array') || reason.includes('dsa'))) {
+            completedCount++;
+            details.push('Rotated Array Challenge Solved');
+          }
+          if (sub.key === 'Web Dev' && (ref === 'chal_sys' || reason.includes('escrow') || reason.includes('system design') || reason.includes('web'))) {
+            completedCount++;
+            details.push('System Design Challenge Solved');
+          }
+          if (sub.key === 'DBMS' && (ref === 'note-3' || reason.includes('dbms') || reason.includes('indexing'))) {
+            completedCount++;
+            details.push('DBMS Indexing Note Unlocked');
+          }
+          if (sub.key === 'Operating Systems' && (ref === 'note-2' || reason.includes('kernel') || reason.includes('operating system'))) {
+            completedCount++;
+            details.push('OS Kernel Architecture Unlocked');
+          }
+          if (sub.key === 'DSA' && (ref === 'note-1' || reason.includes('graphs & dp'))) {
+            completedCount++;
+            details.push('DSA Cheat Sheet Unlocked');
+          }
+        });
+
+        // Check recorded activity log
+        activities.forEach(function (act) {
+          if (act.subject === sub.key || act.subject === sub.name) {
+            completedCount++;
+            if (act.title) details.push(act.title);
+          }
+        });
+
+        var percent = Math.min(100, Math.round((completedCount / sub.target) * 100));
+        var status = 'Not Started';
+        if (percent === 0) {
+          status = 'Not Started · Click to practice →';
+        } else if (percent < 100) {
+          status = `${percent}% · ${completedCount} of ${sub.target} done`;
+        } else {
+          status = '100% · Mastered 🎯';
+        }
+
+        return {
+          key: sub.key,
+          name: sub.name,
+          icon: sub.icon,
+          percent: percent,
+          completed: completedCount,
+          target: sub.target,
+          status: status,
+          actionText: sub.actionText,
+          actionUrl: sub.actionUrl
+        };
+      });
+    },
+
+    /**
      * Sign out user completely
      */
     async logout() {
