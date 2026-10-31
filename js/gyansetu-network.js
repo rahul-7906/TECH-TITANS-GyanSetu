@@ -24,38 +24,20 @@
     getConnections: function () {
       try {
         var raw = localStorage.getItem(STORAGE_KEYS.CONNECTIONS);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {}
-
-      // Default initial campus network cohort if empty
-      var defaults = [
-        {
-          id: 'peer_rohan',
-          name: 'Rohan Sharma',
-          dept: 'B.Tech CSE - 3rd Year',
-          college: 'Graphic Era Hill University',
-          avatar: '👨‍💻',
-          rr: 1240,
-          tier: 'Gold',
-          status: 'online',
-          activity: 'Practicing DSA Binary Trees',
-          connectedAt: new Date(Date.now() - 3600000 * 2).toISOString()
-        },
-        {
-          id: 'peer_priya',
-          name: 'Priya Verma',
-          dept: 'B.Tech AI/ML - 2nd Year',
-          college: 'Graphic Era Hill University',
-          avatar: '👩‍💻',
-          rr: 1380,
-          tier: 'Platinum',
-          status: 'racing',
-          activity: 'Racing in Arena (Room turbo-dsa-42)',
-          connectedAt: new Date(Date.now() - 3600000 * 5).toISOString()
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          var clean = (parsed || []).filter(function (c) {
+            if (!c || !c.name) return false;
+            var name = c.name.toLowerCase();
+            return !name.includes('rohan') && !name.includes('priya') && !name.includes('vikram') && !name.includes('ananya') && c.id !== 'peer_rohan' && c.id !== 'peer_priya';
+          });
+          if (clean.length !== parsed.length) {
+            localStorage.setItem(STORAGE_KEYS.CONNECTIONS, JSON.stringify(clean));
+          }
+          return clean;
         }
-      ];
-      this.saveConnections(defaults);
-      return defaults;
+      } catch (e) {}
+      return [];
     },
 
     saveConnections: function (list) {
@@ -189,64 +171,37 @@
     getNotifications: function () {
       try {
         var raw = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
-        if (raw) return JSON.parse(raw);
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          // Strictly purge any dummy or mock alerts
+          var clean = (parsed || []).filter(function (n) {
+            if (!n || !n.desc) return false;
+            var text = ((n.title || '') + ' ' + (n.desc || '')).toLowerCase();
+            return !text.includes('rohan sharma') &&
+                   !text.includes('priya verma') &&
+                   !text.includes('vikram malhotra') &&
+                   !text.includes('ananya joshi') &&
+                   !text.includes('turbo-dsa-42') &&
+                   n.id !== 'notif_1' && n.id !== 'notif_2' && n.id !== 'notif_3' && n.id !== 'notif_4';
+          });
+          if (clean.length !== parsed.length) {
+            localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(clean));
+          }
+          return clean;
+        }
       } catch (e) {}
 
-      // Initial realistic live campus alerts
+      // Authentic system notification only
       var initialAlerts = [
         {
-          id: 'notif_1',
-          type: 'online',
-          icon: '🟢',
-          title: 'Peer Online & Available',
-          desc: '<strong>Rohan Sharma</strong> (CSE - 3rd Year) is online and ready for DSA peer micro-sessions.',
-          actionLabel: 'Book 15m 📅',
-          actionUrl: 'session.html',
-          time: 'Just now',
-          unread: true
-        },
-        {
-          id: 'notif_2',
-          type: 'racing',
-          icon: '🏎️',
-          title: 'Speed Arena Practice Live',
-          desc: '<strong>Priya Verma</strong> just started practicing in Speed Race Arena (Room: <code>turbo-dsa-42</code>)!',
-          actionLabel: 'Join Race 🏎️',
-          actionUrl: 'arena.html?room=turbo-dsa-42&team=team2',
-          time: '4 mins ago',
-          unread: true
-        },
-        {
-          id: 'notif_3',
-          type: 'network',
-          icon: '🤝',
-          title: 'Campus Network Request',
-          desc: '<strong>Vikram Malhotra</strong> (MCA - 1st Year) connected with you. Build your Arena Squad together!',
-          actionLabel: 'Invite to Squad 📨',
-          actionUrl: 'javascript:window.GyanSetuNetwork.inviteToArena("Vikram Malhotra")',
-          time: '25 mins ago',
-          unread: true
-        },
-        {
-          id: 'notif_4',
-          type: 'mastery',
-          icon: '💡',
-          title: 'Subject Mastery Milestone',
-          desc: '<strong>Ananya Joshi</strong> solved 5 algorithmic challenges in Operating Systems!',
-          actionLabel: 'Practice OS 📚',
-          actionUrl: 'arena.html?topic=cs-general',
-          time: '1 hour ago',
-          unread: false
-        },
-        {
-          id: 'notif_5',
+          id: 'notif_system_welcome',
           type: 'credits',
           icon: '🪙',
-          title: 'Starter Balance Credited',
-          desc: 'Welcome bonus of <strong>+100 Credits</strong> verified in your platform escrow ledger.',
-          actionLabel: 'View Ledger 📊',
-          actionUrl: 'dashboard.html#ledger',
-          time: 'Today',
+          title: 'Account Escrow Verified',
+          desc: 'Your starting credit balance is active in escrow. Connect with campus peers or enter the Speed Race Arena to collaborate.',
+          actionLabel: 'View Dashboard 📊',
+          actionUrl: 'dashboard.html',
+          time: 'Active',
           unread: false
         }
       ];
@@ -304,7 +259,11 @@
       var notifs = this.getNotifications();
 
       if (notifs.length === 0) {
-        container.innerHTML = '<div class="p-6 text-center text-xs text-slate-400">No notifications right now. Activity from peers will appear here!</div>';
+        container.innerHTML = '<div class="p-6 text-center text-xs text-slate-400">' +
+          '<div class="text-2xl mb-1.5">🔔</div>' +
+          '<p class="font-bold text-[#0B1F17]">No new notifications</p>' +
+          '<p class="text-[11px] text-slate-400 mt-0.5">Real-time alerts for duels, study sessions, and peer connections will appear here.</p>' +
+        '</div>';
         return;
       }
 

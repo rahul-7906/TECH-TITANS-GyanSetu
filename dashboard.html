@@ -78,8 +78,7 @@
     .mentor-card,
     .duel-card,
     #sessions > div,
-    #ledger > div,
-    #performance-card {
+    #ledger > div {
       border-radius: 20px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, .06);
       transition: transform 300ms ease, box-shadow 300ms ease;
@@ -87,8 +86,7 @@
 
     .stat-card:hover,
     .mentor-card:hover,
-    .duel-card:hover,
-    #performance-card:hover {
+    .duel-card:hover {
       transform: scale(1.02);
       box-shadow: 0 14px 36px rgba(76, 29, 149, .12);
     }
@@ -398,8 +396,7 @@
         <p class="nav-section-label">Dashboard</p>
         <div class="space-y-0.5">
           <a href="#overview" class="sidebar-link active" id="nav-overview"><i data-lucide="layout-dashboard" class="lucide"></i> Overview</a>
-          <a href="#mentors" class="sidebar-link" id="nav-mentors"><i data-lucide="users" class="lucide"></i> Find Mentors</a>
-          <a href="#sessions" class="sidebar-link" id="nav-sessions"><i data-lucide="calendar" class="lucide"></i> My Sessions</a>
+          <a href="#activity-tracker" class="sidebar-link" id="nav-tracker"><i data-lucide="activity" class="lucide"></i> Activity Tracker</a>
           <a href="#ledger" class="sidebar-link" id="nav-ledger"><i data-lucide="coins" class="lucide"></i> Credit Ledger</a>
           <a href="#notes-section" class="sidebar-link" id="nav-notes"><i data-lucide="book-open" class="lucide"></i> Notes Vault</a>
           <a href="#duels" class="sidebar-link" id="nav-duels"><i data-lucide="trophy" class="lucide"></i> Skill Duels</a>
@@ -604,8 +601,8 @@
               <a href="arena.html" class="inline-flex items-center gap-2 rounded-xl border border-[#2F6F11]/30 bg-white/80 px-4 py-3 text-sm font-bold text-[#2F6F11] transition duration-300 hover:bg-[#B9F044] hover:text-[#0B1F17]">
                 🏎️ Race Arena Duels
               </a>
-              <a href="#mentors" class="inline-flex items-center gap-2 rounded-xl border border-transparent bg-[#2F6F11]/10 px-4 py-3 text-sm font-bold text-[#2F6F11] transition duration-300 hover:bg-[#2F6F11]/20">
-                <i data-lucide="users" class="h-4 w-4"></i> Find Peer Mentors
+              <a href="peers.html" class="inline-flex items-center gap-2 rounded-xl border border-transparent bg-[#2F6F11]/10 px-4 py-3 text-sm font-bold text-[#2F6F11] transition duration-300 hover:bg-[#2F6F11]/20">
+                <i data-lucide="users" class="h-4 w-4"></i> Smart Match Peers
               </a>
             </div>
           </div>
@@ -625,9 +622,9 @@
             class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
             <i data-lucide="calendar-plus" class="h-4 w-4"></i> Book a Session
           </a>
-          <a href="#mentors"
+          <a href="ranking.html"
             class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
-            <i data-lucide="users" class="h-4 w-4"></i> Find a Mentor
+            <i data-lucide="crown" class="h-4 w-4"></i> Campus Ranking
           </a>
           <a href="#notes-section"
             class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
@@ -686,37 +683,37 @@
               </div>
               <div class="mt-3 flex items-center justify-between gap-2">
                 <div>
-                  <p class="text-3xl font-extrabold tracking-tight text-slate-900"><span id="stat-streak">&mdash;</span> <span class="text-base font-bold">Days</span></p>
-                  <p class="mt-1 text-xs font-semibold text-slate-500">3 days to level up!</p>
+                  <p class="text-3xl font-extrabold tracking-tight text-slate-900"><span id="stat-streak">1</span> <span class="text-base font-bold">Day</span></p>
+                  <p class="mt-1 text-xs font-semibold text-slate-500">Active campus learner</p>
                 </div>
-                <div class="grid h-[76px] w-[76px] shrink-0 place-items-center rounded-full" style="background:conic-gradient(#FF9A5C 0 75%, #FFEDD5 75% 100%)">
-                  <div class="grid h-[58px] w-[58px] place-items-center rounded-full bg-white text-xs font-extrabold text-orange-600">75%</div>
+                <div class="grid h-[76px] w-[76px] shrink-0 place-items-center rounded-full" id="streak-circle-bg" style="background:conic-gradient(#FF9A5C 0 20%, #FFEDD5 20% 100%)">
+                  <div class="grid h-[58px] w-[58px] place-items-center rounded-full bg-white text-xs font-extrabold text-orange-600" id="streak-circle-pct">20%</div>
                 </div>
               </div>
-              <div class="progress-bar mt-4"><div class="progress-bar-fill" id="bar-streak" style="width:75%;background:linear-gradient(90deg,#FF9A5C,#FDBA74)"></div></div>
+              <div class="progress-bar mt-4"><div class="progress-bar-fill" id="bar-streak" style="width:20%;background:linear-gradient(90deg,#FF9A5C,#FDBA74)"></div></div>
             </div>
             <!-- Competitive Rank Card -->
             <div class="stat-card border-t-4 border-t-[#B9F044] bg-white p-5 flex flex-col justify-between" id="stat-card-rank">
               <div>
                 <div class="flex items-center justify-between">
-                  <span id="stat-rank-emblem" class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0B1F17] p-1.5">
-                    <!-- SVG Emblem injected -->
+                  <span id="stat-rank-emblem" class="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 border border-amber-300 text-amber-600 shadow-xs p-1.5 transition">
+                    🏆
                   </span>
                   <a href="ranking.html" class="rounded-full bg-[#0B1F17] px-2.5 py-1 text-[10px] font-black text-[#B9F044] hover:bg-forest transition">
                     Ladder &rarr;
                   </a>
                 </div>
                 <div class="mt-3 flex items-baseline justify-between">
-                  <p class="text-2xl font-black tracking-tight text-slate-900" id="stat-rank-name">Gold II</p>
-                  <span class="font-mono font-bold text-xs text-slate-500" id="stat-rank-rr">1,245 RR</span>
+                  <p class="text-2xl font-black tracking-tight text-slate-900" id="stat-rank-name">Silver I</p>
+                  <span class="font-mono font-bold text-xs text-slate-500" id="stat-rank-rr">1,000 RR</span>
                 </div>
-                <p class="text-xs font-semibold text-slate-500" id="stat-rank-next">89 RR to Gold I</p>
+                <p class="text-xs font-semibold text-slate-500" id="stat-rank-next">100 RR to Gold III</p>
               </div>
               <div class="mt-3">
-                <div class="progress-bar"><div class="progress-bar-fill" id="bar-rank" style="width:47%;background:linear-gradient(90deg,#B9F044,#2F6F11)"></div></div>
+                <div class="progress-bar"><div class="progress-bar-fill" id="bar-rank" style="width:20%;background:linear-gradient(90deg,#B9F044,#2F6F11)"></div></div>
                 <p class="mt-2 text-[10px] font-bold text-slate-400 flex justify-between">
-                  <span>Global #<strong class="text-slate-700" id="stat-rank-global">8</strong></span>
-                  <span>College #<strong class="text-slate-700" id="stat-rank-college">4</strong></span>
+                  <span>Global #<strong class="text-slate-700" id="stat-rank-global">1</strong></span>
+                  <span>College #<strong class="text-slate-700" id="stat-rank-college">1</strong></span>
                 </p>
               </div>
             </div>
@@ -726,20 +723,20 @@
           <div id="competitive-rank-banner" class="mt-5 overflow-hidden rounded-[24px] border border-[#B9F044]/30 bg-gradient-to-r from-[#06130E] via-[#0B2A1E] to-[#14532D] p-5 sm:p-6 text-white shadow-card">
             <div class="flex flex-col md:flex-row items-center justify-between gap-6">
               <div class="flex items-center gap-4 sm:gap-5 w-full md:w-auto">
-                <div id="dash-rank-emblem-large" class="shrink-0 flex items-center justify-center p-3 rounded-2xl bg-white/5 border border-white/10 shadow-inner">
-                  <!-- SVG Emblem injected -->
+                <div id="dash-rank-emblem-large" class="shrink-0 flex items-center justify-center p-3 rounded-2xl bg-white/10 border border-white/20 shadow-inner">
+                  <span class="text-3xl">🏆</span>
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-2 mb-1 flex-wrap">
                     <span class="rounded-full bg-[#B9F044] px-2.5 py-0.5 text-[10px] font-black text-[#0B1F17] uppercase tracking-wider">Competitive Rating</span>
-                    <span id="dash-rank-division-badge" class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white border border-white/10">Gold Tier</span>
+                    <span id="dash-rank-division-badge" class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white border border-white/10">Silver Tier</span>
                   </div>
-                  <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight truncate" id="dash-rank-title">GOLD II &bull; <span class="font-mono text-[#B9F044]" id="dash-rank-rr-title">1,245 RR</span></h3>
-                  <p class="text-xs text-emerald-100/75 mt-0.5" id="dash-rank-target-text">Next: <strong>Gold I</strong> &bull; 89 RR to promote</p>
+                  <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight truncate" id="dash-rank-title">SILVER I &bull; <span class="font-mono text-[#B9F044]" id="dash-rank-rr-title">1,000 RR</span></h3>
+                  <p class="text-xs text-emerald-100/75 mt-0.5" id="dash-rank-target-text">Next: <strong>Gold III</strong> &bull; 100 RR to promote</p>
 
                   <div class="mt-2.5 w-full max-w-sm">
                     <div class="h-2 w-full rounded-full bg-white/10 overflow-hidden">
-                      <div id="dash-rank-progress-fill" class="h-full rounded-full bg-gradient-to-r from-[#B9F044] to-[#8FD420] transition-all duration-700" style="width: 47%"></div>
+                      <div id="dash-rank-progress-fill" class="h-full rounded-full bg-gradient-to-r from-[#B9F044] to-[#8FD420] transition-all duration-700" style="width: 20%"></div>
                     </div>
                   </div>
                 </div>
@@ -748,13 +745,13 @@
               <!-- Location standings & Button -->
               <div class="flex flex-col sm:flex-row md:flex-col items-start md:items-end justify-between w-full md:w-auto gap-3 shrink-0 border-t md:border-t-0 border-white/10 pt-3 md:pt-0">
                 <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🌐 Global #<strong id="dash-rank-global-num" class="text-[#B9F044]">8</strong></span>
-                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🇮🇳 India #<strong id="dash-rank-india-num" class="text-white">6</strong></span>
-                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🏔️ State #<strong id="dash-rank-state-num" class="text-white">4</strong></span>
-                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🎓 College #<strong id="dash-rank-college-num" class="text-[#B9F044]">2</strong></span>
+                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🌐 Global #<strong id="dash-rank-global-num" class="text-[#B9F044]">1</strong></span>
+                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🇮🇳 India #<strong id="dash-rank-india-num" class="text-white">1</strong></span>
+                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🏔️ State #<strong id="dash-rank-state-num" class="text-white">1</strong></span>
+                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🎓 College #<strong id="dash-rank-college-num" class="text-[#B9F044]">1</strong></span>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="text-xs font-bold text-emerald-200">🔥 <span id="dash-rank-streak-num">12</span>-Day Streak</span>
+                  <span class="text-xs font-bold text-emerald-200">🔥 <span id="dash-rank-streak-num">1</span>-Day Streak</span>
                   <a href="ranking.html" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-4 py-2 text-xs font-black text-[#0B1F17] shadow-glow hover:brightness-110 transition">
                     <span>View Leaderboard &rarr;</span>
                   </a>
@@ -764,19 +761,8 @@
           </div>
         </section>
 
-        <section id="performance-card" class="mb-8 rounded-[20px] border border-white bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:p-7">
-          <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p class="section-title mb-1">Your Performance 📈</p>
-              <h2 class="text-lg font-extrabold text-slate-900">You are growing faster than 80% peers</h2>
-            </div>
-            <span class="rounded-full bg-[#F4FBEA] border border-[#B9F044]/30 px-3 py-1.5 text-xs font-bold text-[#2F6F11]">Last 7 days</span>
-          </div>
-          <div class="h-56 w-full sm:h-64"><canvas id="performanceChart" role="img" aria-label="Area chart of credits earned from Monday through Sunday"></canvas></div>
-        </section>
-
-        <!-- ===== FIND MENTORS ===== -->
-        <section id="mentors" class="mb-8">
+        <!-- ===== SUBJECT MASTERY & ACTIVITY TRACKER ===== -->
+        <section id="activity-tracker" class="mb-8">
           <!-- Subject Mastery & Activity Tracker (Dynamic Real-Time Tracking) -->
           <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
             <div>
@@ -789,151 +775,8 @@
           </div>
 
           <!-- Dynamic Subject Grid Container (populated by renderSubjectProgress) -->
-          <div id="subject-tracker-grid" class="mb-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div id="subject-tracker-grid" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <!-- Rendered dynamically by renderSubjectProgress(userId, ledger) -->
-          </div>
-
-          <!-- Peer Network Section Header -->
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <p class="section-title mb-0">Campus Peer Network &amp; Mentors</p>
-              <p class="text-xs text-slate-500">Real registered students in your campus cohort</p>
-            </div>
-            <div class="flex gap-1.5">
-              <button class="tab-btn active" onclick="filterMentors('all',this)">All Peers</button>
-              <button class="tab-btn" onclick="filterMentors('live',this)">&#128994; Online</button>
-              <button class="tab-btn" onclick="filterMentors('top',this)">&#11088; High XP</button>
-            </div>
-          </div>
-
-          <!-- Mentor grid — empty state until real data loads -->
-          <div id="mentors-grid" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-
-            <!-- Skeleton cards (shown while loading) -->
-            <div class="mentor-card" id="skeleton-1">
-              <div class="flex items-center gap-3">
-                <div class="skeleton h-12 w-12 rounded-xl"></div>
-                <div class="flex-1 space-y-2">
-                  <div class="skeleton h-3.5 w-28 rounded"></div>
-                  <div class="skeleton h-3 w-20 rounded"></div>
-                </div>
-              </div>
-              <div class="mt-3 flex gap-1.5">
-                <div class="skeleton h-5 w-14 rounded-lg"></div>
-                <div class="skeleton h-5 w-14 rounded-lg"></div>
-              </div>
-              <div class="mt-3 skeleton h-4 w-40 rounded"></div>
-            </div>
-            <div class="mentor-card" id="skeleton-2">
-              <div class="flex items-center gap-3">
-                <div class="skeleton h-12 w-12 rounded-xl"></div>
-                <div class="flex-1 space-y-2">
-                  <div class="skeleton h-3.5 w-24 rounded"></div>
-                  <div class="skeleton h-3 w-18 rounded"></div>
-                </div>
-              </div>
-              <div class="mt-3 flex gap-1.5">
-                <div class="skeleton h-5 w-16 rounded-lg"></div>
-                <div class="skeleton h-5 w-12 rounded-lg"></div>
-              </div>
-              <div class="mt-3 skeleton h-4 w-36 rounded"></div>
-            </div>
-            <div class="mentor-card" id="skeleton-3">
-              <div class="flex items-center gap-3">
-                <div class="skeleton h-12 w-12 rounded-xl"></div>
-                <div class="flex-1 space-y-2">
-                  <div class="skeleton h-3.5 w-28 rounded"></div>
-                  <div class="skeleton h-3 w-16 rounded"></div>
-                </div>
-              </div>
-              <div class="mt-3 flex gap-1.5">
-                <div class="skeleton h-5 w-20 rounded-lg"></div>
-                <div class="skeleton h-5 w-14 rounded-lg"></div>
-              </div>
-              <div class="mt-3 skeleton h-4 w-44 rounded"></div>
-            </div>
-
-            <!-- Become a mentor CTA — always visible -->
-            <div
-              class="mentor-card flex flex-col items-center justify-center border border-lime-200 bg-gradient-to-br from-lime-50 via-white to-emerald-50 p-5 text-center transition-all duration-300 hover:scale-[1.02]"
-              id="become-mentor-card">
-              <svg viewBox="0 0 160 110" class="mb-3 h-24 w-36" role="img" aria-label="A student sharing knowledge with a friend" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="80" cy="99" rx="60" ry="7" fill="#D9F99D"/>
-                <rect x="25" y="58" width="110" height="8" rx="4" fill="#84CC16"/>
-                <path d="M37 67h8l-3 27h-8zm78 0h8l5 27h-8z" fill="#65A30D"/>
-                <rect x="63" y="38" width="35" height="24" rx="5" fill="#A78BFA"/>
-                <circle cx="80" cy="23" r="15" fill="#F6C7A8"/>
-                <path d="M65 22c1-16 17-22 28-12 4 4 5 9 4 15-7-2-12-6-15-11-3 6-9 9-17 8z" fill="#49344F"/>
-                <circle cx="75" cy="24" r="1.5" fill="#334155"/><circle cx="85" cy="24" r="1.5" fill="#334155"/>
-                <path d="M76 31c3 2 6 2 9 0" fill="none" stroke="#C06B71" stroke-width="1.5" stroke-linecap="round"/>
-                <rect x="31" y="47" width="23" height="15" rx="3" fill="#FDE68A"/>
-                <path d="M36 52h13m-13 4h9" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M112 28l3 6 6 2-6 3-3 6-2-6-6-3 6-2z" fill="#A3E635"/>
-              </svg>
-              <p class="text-base font-extrabold text-slate-900">Become a Mentor 🌱</p>
-              <p class="mt-1 max-w-[220px] text-xs leading-relaxed text-slate-600">Teach what you know, earn credits every session.</p>
-              <button
-                class="mt-4 rounded-full bg-[#D9F99D] px-6 py-2.5 text-xs font-extrabold text-slate-900 shadow-sm transition duration-300 hover:scale-[1.02] hover:bg-lime-300">Apply Now</button>
-            </div>
-          </div>
-
-          <!-- Empty state shown when no other registered peers are online yet -->
-          <div id="mentors-empty" class="hidden rounded-2xl border border-slate-200/80 bg-white p-7 shadow-card text-center">
-            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F4FBEA] text-[#2F6F11] border border-[#B9F044]/40 mb-3 shadow-inner">
-              <i data-lucide="sparkles" class="h-7 w-7 text-[#2F6F11]"></i>
-            </div>
-            <p class="text-base font-extrabold text-[#0B1F17]">You're the First Registered Peer Active in this Network! 🎓</p>
-            <p class="mx-auto mt-1.5 max-w-md text-xs leading-relaxed text-slate-500">
-              GyanSetu only displays verified real students who sign up or log in. No fake accounts! Invite a friend, or open an incognito window to register a classmate and test live peer collaboration.
-            </p>
-            <div class="mt-4 flex flex-wrap items-center justify-center gap-2.5">
-              <button onclick="copyInviteLink()" class="inline-flex items-center gap-1.5 rounded-xl bg-[#0B1F17] px-4 py-2 text-xs font-extrabold text-[#B9F044] hover:bg-[#064E3B] transition shadow-sm">
-                <i data-lucide="share-2" class="h-3.5 w-3.5"></i> <span>Copy Invite Link</span>
-              </button>
-              <a href="login.html" target="_blank" class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
-                <i data-lucide="external-link" class="h-3.5 w-3.5"></i> <span>Register Peer (New Tab)</span>
-              </a>
-              <button onclick="seedDemoPeerAccount()" class="inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044] bg-[#F4FBEA] px-3.5 py-2 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044] hover:text-[#0B1F17] transition">
-                <span>+ Add Campus Peer for Demo</span>
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <!-- ===== MY SESSIONS ===== -->
-        <section id="sessions" class="mb-8">
-          <p class="section-title">My Sessions</p>
-          <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
-            <div class="border-b border-slate-100 px-5 py-3 flex items-center justify-between">
-              <div class="flex gap-1">
-                <button class="tab-btn active" onclick="switchSessionTab('upcoming',this)">Upcoming</button>
-                <button class="tab-btn" onclick="switchSessionTab('past',this)">Past</button>
-              </div>
-              <a href="session.html" class="text-xs font-bold text-[#2F6F11] hover:underline">+ New Session</a>
-            </div>
-
-            <!-- Upcoming — empty state -->
-            <div id="sessions-upcoming">
-              <div class="empty-state">
-                <div class="empty-state-icon"><i data-lucide="calendar" class="h-6 w-6"></i></div>
-                <p class="text-sm font-extrabold text-[#0B1F17]">No upcoming sessions</p>
-                <p class="text-xs text-slate-500 max-w-xs">Book a session with a peer mentor to get started. Your
-                  upcoming sessions will appear here.</p>
-                <a href="#mentors"
-                  class="mt-1 rounded-xl bg-[#0B1F17] px-4 py-2 text-xs font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Find
-                  a Mentor</a>
-              </div>
-            </div>
-
-            <!-- Past — empty state -->
-            <div id="sessions-past" class="hidden">
-              <div class="empty-state">
-                <div class="empty-state-icon"><i data-lucide="clock" class="h-6 w-6"></i></div>
-                <p class="text-sm font-extrabold text-[#0B1F17]">No past sessions yet</p>
-                <p class="text-xs text-slate-500 max-w-xs">Once you complete a session, it will show up here with a full
-                  summary.</p>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -1026,12 +869,17 @@
         <!-- ===== SKILL DUELS ===== -->
         <!-- ===== SKILL DUELS ===== -->
         <section id="duels" class="mb-8">
-          <div class="mb-4 flex items-center justify-between">
+          <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <p class="section-title mb-0">Skill Duels &amp; Challenges</p>
-              <p class="text-xs text-slate-500">Test your engineering fundamentals. Solve challenges to earn instant credits &amp; XP.</p>
+              <p class="section-title mb-0">Skill Duels &amp; Engineering Challenges</p>
+              <p class="text-xs text-slate-500">Solve real coding &amp; systems problems across 14 academic domains. Earn instant credits, XP &amp; RR.</p>
             </div>
-            <span class="badge badge-mist">&#127942; Campus Rank: <span id="duel-rank">&mdash;</span></span>
+            <div class="flex items-center gap-2.5">
+              <button onclick="generateFreshChallenge()" class="inline-flex items-center gap-1.5 rounded-xl bg-[#0B1F17] px-3.5 py-2 text-xs font-black text-[#B9F044] hover:bg-[#064E3B] transition shadow-xs">
+                <span>⚡ Generate Fresh Challenge</span>
+              </button>
+              <span class="badge badge-mist">&#127942; Campus Rank: <span id="duel-rank">&mdash;</span></span>
+            </div>
           </div>
 
           <!-- Team Battle Arena Banner -->
@@ -1054,66 +902,53 @@
             </a>
           </div>
 
-          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <!-- Active Challenge 1 -->
-            <div class="duel-card bg-white p-5 border border-slate-100 flex flex-col justify-between" id="card-chal-dsa">
-              <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">DSA &bull; Medium</span>
-                  <span class="rounded-full bg-lime-100 px-2.5 py-0.5 text-[10px] font-bold text-[#2F6F11]">+10 Credits</span>
-                </div>
-                <h4 class="text-sm font-extrabold text-[#0B1F17] mb-1">Rotated Array Binary Search</h4>
-                <p class="text-xs text-slate-500 mb-4">Identify the optimal invariant to find a target value in an arbitrarily rotated sorted array.</p>
-              </div>
-              <div>
-                <button id="btn-chal-dsa" onclick="openChallengeModal('dsa')" class="w-full rounded-xl bg-[#0B1F17] py-2 text-xs font-bold text-[#B9F044] hover:bg-[#064E3B] transition">
-                  Solve Challenge (+10) &rarr;
-                </button>
+          <!-- Challenge Category Filter Chips -->
+          <div class="flex flex-wrap items-center gap-1.5 mb-4" id="challenge-filters">
+            <button class="tab-btn active text-xs py-1.5 px-3" onclick="filterChallenges('all', this)">All Challenges</button>
+            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterChallenges('dsa', this)">DSA &amp; Algos</button>
+            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterChallenges('sys', this)">Core Systems &amp; OS</button>
+            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterChallenges('db', this)">DBMS &amp; Networks</button>
+            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterChallenges('ai', this)">AI, ML &amp; Python</button>
+          </div>
+
+          <div class="grid gap-5 lg:grid-cols-3">
+            <!-- Dynamic Challenges Grid (2 Columns) -->
+            <div class="lg:col-span-2">
+              <div class="grid gap-4 sm:grid-cols-2" id="challenges-grid">
+                <!-- Rendered dynamically by renderChallengesGrid() -->
               </div>
             </div>
 
-            <!-- Active Challenge 2 -->
-            <div class="duel-card bg-white p-5 border border-slate-100 flex flex-col justify-between" id="card-chal-sys">
-              <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-700">Fullstack &bull; Hard</span>
-                  <span class="rounded-full bg-lime-100 px-2.5 py-0.5 text-[10px] font-bold text-[#2F6F11]">+10 Credits</span>
+            <!-- Leaderboard card (Right Column) -->
+            <div>
+              <div class="duel-card bg-white p-5 border border-slate-100 sticky top-20 shadow-card">
+                <div class="flex items-center justify-between mb-4">
+                  <p class="text-xs font-extrabold text-[#0B1F17]">&#127942; Campus Leaderboard</p>
+                  <a href="ranking.html" class="text-[11px] font-bold text-[#2F6F11] hover:underline">Full Ladder &rarr;</a>
                 </div>
-                <h4 class="text-sm font-extrabold text-[#0B1F17] mb-1">Distributed Escrow Race Condition</h4>
-                <p class="text-xs text-slate-500 mb-4">Spot the idempotency flaw when peer confirmations happen concurrently on WebRTC channels.</p>
+                <div id="leaderboard-rows" class="space-y-2">
+                  <!-- Skeleton rows -->
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-5 text-xs font-extrabold text-amber-500 text-right">1</span>
+                    <div class="skeleton h-7 w-7 rounded-full"></div>
+                    <div class="skeleton flex-1 h-3.5 rounded"></div>
+                    <div class="skeleton h-5 w-16 rounded-full"></div>
+                  </div>
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-5 text-xs font-extrabold text-slate-400 text-right">2</span>
+                    <div class="skeleton h-7 w-7 rounded-full"></div>
+                    <div class="skeleton flex-1 h-3.5 rounded"></div>
+                    <div class="skeleton h-5 w-14 rounded-full"></div>
+                  </div>
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-5 text-xs font-extrabold text-slate-400 text-right">3</span>
+                    <div class="skeleton h-7 w-7 rounded-full"></div>
+                    <div class="skeleton flex-1 h-3.5 rounded"></div>
+                    <div class="skeleton h-5 w-16 rounded-full"></div>
+                  </div>
+                </div>
+                <p class="mt-4 text-center text-[11px] text-slate-400">Complete challenges &amp; sessions to climb the ranks</p>
               </div>
-              <div>
-                <button id="btn-chal-sys" onclick="openChallengeModal('sys')" class="w-full rounded-xl bg-[#0B1F17] py-2 text-xs font-bold text-[#B9F044] hover:bg-[#064E3B] transition">
-                  Solve Challenge (+10) &rarr;
-                </button>
-              </div>
-            </div>
-
-            <!-- Leaderboard card -->
-            <div class="duel-card bg-white p-5 border border-slate-100">
-              <p class="text-xs font-extrabold mb-4">&#127942; Campus Leaderboard</p>
-              <div id="leaderboard-rows" class="space-y-2">
-                <!-- Skeleton rows -->
-                <div class="flex items-center gap-2.5">
-                  <span class="w-5 text-xs font-extrabold text-amber-500 text-right">1</span>
-                  <div class="skeleton h-7 w-7 rounded-full"></div>
-                  <div class="skeleton flex-1 h-3.5 rounded"></div>
-                  <div class="skeleton h-5 w-16 rounded-full"></div>
-                </div>
-                <div class="flex items-center gap-2.5">
-                  <span class="w-5 text-xs font-extrabold text-slate-400 text-right">2</span>
-                  <div class="skeleton h-7 w-7 rounded-full"></div>
-                  <div class="skeleton flex-1 h-3.5 rounded"></div>
-                  <div class="skeleton h-5 w-14 rounded-full"></div>
-                </div>
-                <div class="flex items-center gap-2.5">
-                  <span class="w-5 text-xs font-extrabold text-slate-400 text-right">3</span>
-                  <div class="skeleton h-7 w-7 rounded-full"></div>
-                  <div class="skeleton flex-1 h-3.5 rounded"></div>
-                  <div class="skeleton h-5 w-16 rounded-full"></div>
-                </div>
-              </div>
-              <p class="mt-4 text-center text-[11px] text-slate-400">Complete challenges &amp; sessions to climb the ranks</p>
             </div>
           </div>
         </section>
@@ -1122,65 +957,26 @@
         <section id="notes-section" class="mb-8">
           <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="section-title mb-0">Campus Notes Vault</p>
-              <p class="text-xs text-slate-500">Peer-shared study resources. Earn credits by contributing or unlock high-yield notes.</p>
+              <p class="section-title mb-0">Campus Notes Vault &amp; Community Board</p>
+              <p class="text-xs text-slate-500">Peer-verified revision notes. Earn +10 Credits &amp; +10 RR by contributing or unlock high-yield study sheets.</p>
             </div>
             <button onclick="openNoteUploadModal()" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-4 py-2 text-xs font-extrabold text-[#0B1F17] hover:brightness-105 transition shadow-sm">
               <i data-lucide="upload" class="h-3.5 w-3.5"></i> Contribute Notes (+10 Credits)
             </button>
           </div>
 
-          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <!-- Note Card 1 -->
-            <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-card flex flex-col justify-between" id="note-card-1">
-              <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">Computer Science</span>
-                  <span class="text-xs font-extrabold text-[#0B1F17] flex items-center gap-1"><i data-lucide="coins" class="h-3.5 w-3.5 text-amber-500"></i> 5 Credits</span>
-                </div>
-                <h4 class="text-sm font-extrabold text-[#0B1F17] mb-1">DSA Visual Cheat Sheet: Graphs &amp; DP</h4>
-                <p class="text-xs text-slate-500 mb-4">Complete pattern breakdown for Dijkstra, BFS/DFS cycles, topological sort, and memoization.</p>
-              </div>
-              <div id="note-action-1">
-                <button onclick="unlockNote('note-1', 'DSA Visual Cheat Sheet: Graphs & DP', 5)" class="w-full rounded-xl border border-[#2F6F11] text-[#2F6F11] py-2 text-xs font-bold hover:bg-[#F4FBEA] transition">
-                  Unlock Note (-5 Credits)
-                </button>
-              </div>
-            </div>
+          <!-- Notes Filter Chips -->
+          <div class="flex flex-wrap items-center gap-1.5 mb-4" id="note-filters">
+            <button class="tab-btn active text-xs py-1.5 px-3" onclick="filterNotes('all', this)">All Notes</button>
+            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterNotes('Computer Science', this)">Computer Science</button>
+            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterNotes('Core Systems', this)">Core Systems</button>
+            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterNotes('Databases', this)">Databases</button>
+            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterNotes('Networks', this)">Networks</button>
+            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterNotes('AI & ML', this)">AI &amp; ML</button>
+          </div>
 
-            <!-- Note Card 2 -->
-            <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-card flex flex-col justify-between" id="note-card-2">
-              <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-800">Core Systems</span>
-                  <span class="text-xs font-extrabold text-[#0B1F17] flex items-center gap-1"><i data-lucide="coins" class="h-3.5 w-3.5 text-amber-500"></i> 5 Credits</span>
-                </div>
-                <h4 class="text-sm font-extrabold text-[#0B1F17] mb-1">OS Concurrency &amp; Memory Paging</h4>
-                <p class="text-xs text-slate-500 mb-4">Semaphores, mutexes, deadlock prevention, virtual memory paging, and TLB cache hit rates.</p>
-              </div>
-              <div id="note-action-2">
-                <button onclick="unlockNote('note-2', 'OS Concurrency & Memory Paging', 5)" class="w-full rounded-xl border border-[#2F6F11] text-[#2F6F11] py-2 text-xs font-bold hover:bg-[#F4FBEA] transition">
-                  Unlock Note (-5 Credits)
-                </button>
-              </div>
-            </div>
-
-            <!-- Note Card 3 -->
-            <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-card flex flex-col justify-between" id="note-card-3">
-              <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold text-amber-800">Databases</span>
-                  <span class="text-xs font-extrabold text-[#0B1F17] flex items-center gap-1"><i data-lucide="coins" class="h-3.5 w-3.5 text-amber-500"></i> 5 Credits</span>
-                </div>
-                <h4 class="text-sm font-extrabold text-[#0B1F17] mb-1">DBMS Normalization &amp; B+ Trees</h4>
-                <p class="text-xs text-slate-500 mb-4">Step-by-step 1NF to BCNF decompositions, indexing mechanics, and SQL execution plans.</p>
-              </div>
-              <div id="note-action-3">
-                <button onclick="unlockNote('note-3', 'DBMS Normalization & B+ Trees', 5)" class="w-full rounded-xl border border-[#2F6F11] text-[#2F6F11] py-2 text-xs font-bold hover:bg-[#F4FBEA] transition">
-                  Unlock Note (-5 Credits)
-                </button>
-              </div>
-            </div>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" id="notes-grid">
+            <!-- Rendered dynamically by renderNotesGrid() -->
           </div>
         </section>
 
@@ -1330,6 +1126,7 @@
   <script src="js/gyansetu-auth.js"></script>
   <script src="js/credits-config.js"></script>
   <script src="js/rr-config.js"></script>
+  <script src="js/question-engine.js"></script>
   <script src="js/gyansetu-network.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
@@ -1445,54 +1242,92 @@
       if (barCredits) barCredits.style.width = Math.min((credits / 200) * 100, 100) + '%';
 
       // Ledger balance + stats
-      document.getElementById('ledger-balance').textContent     = credits;
-      document.getElementById('ledger-total-earned').textContent = profile?.total_earned ?? 0;
-      document.getElementById('ledger-total-spent').textContent  = profile?.total_spent  ?? 0;
-      document.getElementById('ledger-pending').textContent      = profile?.pending_credits ?? 0;
-      document.getElementById('ledger-xp').textContent          = xp;
-      document.getElementById('ledger-xp-next').textContent     = lvl.nextXp;
-      document.getElementById('ledger-level-label').textContent = `Level ${lvl.level} — ${lvl.name}`;
-      setTimeout(() => { document.getElementById('ledger-xp-bar').style.width = lvl.pct + '%'; }, 300);
+      const elLedgerBal = document.getElementById('ledger-balance');
+      if (elLedgerBal) elLedgerBal.textContent = credits;
+      const elLedgerEarned = document.getElementById('ledger-total-earned');
+      if (elLedgerEarned) elLedgerEarned.textContent = profile?.total_earned ?? 0;
+      const elLedgerSpent = document.getElementById('ledger-total-spent');
+      if (elLedgerSpent) elLedgerSpent.textContent = profile?.total_spent ?? 0;
+      const elLedgerPending = document.getElementById('ledger-pending');
+      if (elLedgerPending) elLedgerPending.textContent = profile?.pending_credits ?? 0;
+      const elLedgerXp = document.getElementById('ledger-xp');
+      if (elLedgerXp) elLedgerXp.textContent = xp;
+      const elLedgerXpNext = document.getElementById('ledger-xp-next');
+      if (elLedgerXpNext) elLedgerXpNext.textContent = lvl.nextXp;
+      const elLedgerLvlLabel = document.getElementById('ledger-level-label');
+      if (elLedgerLvlLabel) elLedgerLvlLabel.textContent = `Level ${lvl.level} — ${lvl.name}`;
+      const elLedgerBar = document.getElementById('ledger-xp-bar');
+      if (elLedgerBar) {
+        setTimeout(() => { if (elLedgerBar) elLedgerBar.style.width = lvl.pct + '%'; }, 300);
+      }
 
       // Sidebar avatar
       const sideAvatar = document.getElementById('sidebar-avatar');
-      sideAvatar.textContent = ini;
-      sideAvatar.classList.remove('avatar-ph');
-      sideAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
-      sideAvatar.style.color = '#0B1F17';
+      if (sideAvatar) {
+        sideAvatar.textContent = ini;
+        sideAvatar.classList.remove('avatar-ph');
+        sideAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
+        sideAvatar.style.color = '#0B1F17';
+      }
 
       // Topbar avatar
       const topAvatar = document.getElementById('topbar-avatar');
-      topAvatar.innerHTML = '';
-      topAvatar.textContent = ini;
-      topAvatar.classList.remove('avatar-ph');
-      topAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
-      topAvatar.style.color = '#0B1F17';
+      if (topAvatar) {
+        topAvatar.innerHTML = '';
+        topAvatar.textContent = ini;
+        topAvatar.classList.remove('avatar-ph');
+        topAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
+        topAvatar.style.color = '#0B1F17';
+      }
 
       const profileAvatar = document.getElementById('profile-avatar');
-      profileAvatar.innerHTML = '';
-      profileAvatar.textContent = ini;
-      profileAvatar.classList.remove('avatar-ph');
-      profileAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
-      profileAvatar.style.color = '#0B1F17';
+      if (profileAvatar) {
+        profileAvatar.innerHTML = '';
+        profileAvatar.textContent = ini;
+        profileAvatar.classList.remove('avatar-ph');
+        profileAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
+        profileAvatar.style.color = '#0B1F17';
+      }
 
       // Dropdown fields
-      document.getElementById('dropdown-avatar').textContent      = ini;
-      document.getElementById('dropdown-name').textContent        = name;
-      document.getElementById('dropdown-email').textContent       = email || '—';
-      document.getElementById('dropdown-role-badge').textContent  = role.charAt(0).toUpperCase() + role.slice(1);
-      document.getElementById('dropdown-credits').textContent     = credits;
-      document.getElementById('dropdown-streak').textContent      = profile?.streak ?? 0;
+      const elDropAvatar = document.getElementById('dropdown-avatar');
+      if (elDropAvatar) elDropAvatar.textContent = ini;
+      const elDropName = document.getElementById('dropdown-name');
+      if (elDropName) elDropName.textContent = name;
+      const elDropEmail = document.getElementById('dropdown-email');
+      if (elDropEmail) elDropEmail.textContent = email || '—';
+      const elDropBadge = document.getElementById('dropdown-role-badge');
+      if (elDropBadge) elDropBadge.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+      const elDropCredits = document.getElementById('dropdown-credits');
+      if (elDropCredits) elDropCredits.textContent = credits;
+      const elDropStreak = document.getElementById('dropdown-streak');
+      if (elDropStreak) elDropStreak.textContent = profile?.streak ?? 0;
 
       // Competitive Ranking (RR)
-      const userRR = profile?.rr ?? 1245;
-      const rankInfo = (typeof calculateRank === 'function') ? calculateRank(userRR) : { fullName: 'Gold II', tierKey: 'gold', rrToNext: 89, nextRankName: 'Gold I', progressPct: 47 };
+      const userRR = (profile?.id && typeof localStorage !== 'undefined' && localStorage.getItem('gyansetu_user_rr_' + profile.id) != null)
+        ? Number(localStorage.getItem('gyansetu_user_rr_' + profile.id))
+        : (profile?.rr ?? 1000);
+      const rankInfo = (typeof calculateRank === 'function') ? calculateRank(userRR) : { fullName: 'Silver I', tierKey: 'silver', rrToNext: 100, nextRankName: 'Gold III', progressPct: 0 };
       const rankEmblemHtml = (typeof renderRankEmblem === 'function') ? renderRankEmblem(rankInfo.tierKey, 38) : '';
       const rankEmblemLarge = (typeof renderRankEmblem === 'function') ? renderRankEmblem(rankInfo.tierKey, 64) : '';
 
+      // Tier styling map for emblem container
+      const tierContainerStyles = {
+        bronze: 'flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-900/10 border border-amber-800/30 text-amber-800 shadow-xs p-1 transition',
+        silver: 'flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 border border-slate-300 text-slate-700 shadow-xs p-1 transition',
+        gold: 'flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 border-2 border-amber-400 text-amber-700 shadow-sm p-1 transition',
+        platinum: 'flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-50 border-2 border-cyan-400 text-cyan-700 shadow-sm p-1 transition',
+        diamond: 'flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 border-2 border-indigo-400 text-indigo-700 shadow-sm p-1 transition',
+        master: 'flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-50 border-2 border-purple-400 text-purple-700 shadow-sm p-1 transition',
+        grandmaster: 'flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 border-2 border-rose-400 text-rose-700 shadow-sm p-1 transition'
+      };
+
       // Update 4th Stat Card
       const statEmblem = document.getElementById('stat-rank-emblem');
-      if (statEmblem) statEmblem.innerHTML = rankEmblemHtml;
+      if (statEmblem) {
+        statEmblem.className = tierContainerStyles[rankInfo.tierKey] || tierContainerStyles.silver;
+        statEmblem.innerHTML = rankEmblemHtml || '<span class="text-xl">🏆</span>';
+      }
       const statRankName = document.getElementById('stat-rank-name');
       if (statRankName) statRankName.textContent = rankInfo.fullName;
       const statRankRR = document.getElementById('stat-rank-rr');
@@ -1504,7 +1339,10 @@
 
       // Update Competitive Rank Hero Banner
       const dashEmblemLarge = document.getElementById('dash-rank-emblem-large');
-      if (dashEmblemLarge) dashEmblemLarge.innerHTML = rankEmblemLarge;
+      if (dashEmblemLarge) {
+        dashEmblemLarge.className = 'shrink-0 flex items-center justify-center p-2.5 rounded-2xl bg-white/20 border-2 border-white/40 shadow-glow';
+        dashEmblemLarge.innerHTML = rankEmblemLarge || '<span class="text-3xl">🏆</span>';
+      }
       const dashRankTitle = document.getElementById('dash-rank-title');
       if (dashRankTitle) dashRankTitle.innerHTML = `${rankInfo.fullName.toUpperCase()} &bull; <span class="font-mono text-[#B9F044]">${userRR.toLocaleString()} RR</span>`;
       const dashRankDivision = document.getElementById('dash-rank-division-badge');
@@ -1513,8 +1351,28 @@
       if (dashRankTarget) dashRankTarget.innerHTML = rankInfo.rrToNext > 0 ? `Next: <strong>${rankInfo.nextRankName}</strong> &bull; ${rankInfo.rrToNext} RR to promote` : 'Max Competitive Tier Reached';
       const dashProgressFill = document.getElementById('dash-rank-progress-fill');
       if (dashProgressFill) dashProgressFill.style.width = `${rankInfo.progressPct}%`;
+      
+      // Real user streak
+      const userStreak = Math.max(1, Number(profile?.streak) || 1);
       const dashStreak = document.getElementById('dash-rank-streak-num');
-      if (dashStreak) dashStreak.textContent = profile?.streak ?? 12;
+      if (dashStreak) dashStreak.textContent = userStreak;
+      const statStreak = document.getElementById('stat-streak');
+      if (statStreak) statStreak.textContent = userStreak;
+      const barStreak = document.getElementById('bar-streak');
+      if (barStreak) {
+        const streakPct = Math.min(100, Math.round((userStreak / 7) * 100));
+        barStreak.style.width = streakPct + '%';
+      }
+      const streakCircle = document.getElementById('streak-circle-pct');
+      if (streakCircle) {
+        const streakPct = Math.min(100, Math.round((userStreak / 7) * 100));
+        streakCircle.textContent = streakPct + '%';
+      }
+      const streakCircleBg = document.getElementById('streak-circle-bg');
+      if (streakCircleBg) {
+        const streakPct = Math.min(100, Math.round((userStreak / 7) * 100));
+        streakCircleBg.style.background = `conic-gradient(#FF9A5C 0 ${streakPct}%, #FFEDD5 ${streakPct}% 100%)`;
+      }
 
       // Badges
       renderBadges(profile?.badges || [], profile, _allLedger);
@@ -1725,48 +1583,53 @@
       }
     }
 
-    async function seedDemoPeerAccount() {
-      const demoNames = ['Ananya Sen', 'Dev Patel', 'Simran Kaur', 'Aditya Verma'];
-      const chosenName = demoNames[Math.floor(Math.random() * demoNames.length)];
-      const email = chosenName.toLowerCase().replace(/\s+/g, '.') + '@gehu.ac.in';
-      const id = 'peer_' + Date.now();
-
-      const newPeerProfile = {
-        id: id,
-        email: email,
-        full_name: chosenName,
-        department: 'CSE',
-        year: '3rd Year',
-        role: 'mentor',
-        credits: 140,
-        xp: 120,
-        rr: 1050,
-        streak: 3,
-        topics: ['DSA', 'Web Dev', 'Python'],
-        bio: '3rd Year CSE peer passionate about problem solving, algorithms & code reviews.'
-      };
-
-      if (window.GyanSetuAuth?.saveLocalAccount) {
-        window.GyanSetuAuth.saveLocalAccount(email, 'Password123', newPeerProfile);
-      }
-      if (window.GyanSetuAuth?.saveProfileToSupabase) {
-        await window.GyanSetuAuth.saveProfileToSupabase(newPeerProfile);
-      }
-
-      showToast(`🎉 Campus peer '${chosenName}' registered successfully!`);
-      await loadDashboard();
-    }
-
     function renderLeaderboard(rows) {
       const container = document.getElementById('leaderboard-rows');
       if (!container) return;
-      if (!rows || rows.length === 0) {
-        container.innerHTML = '<p class="py-5 text-center text-xs text-slate-400">Leaderboard data will appear after members complete activities.</p>';
+
+      let displayList = Array.isArray(rows) ? [...rows] : [];
+
+      // Filter out any mock/demo IDs (e.g. demo-*, peer-c*, etc.)
+      displayList = displayList.filter(p => p && !String(p.id || '').startsWith('demo-') && !String(p.id || '').startsWith('peer-c'));
+
+      // If currentProfile exists and is not in displayList, include it
+      if (currentProfile) {
+        const myIdx = displayList.findIndex(p => 
+          (currentUserId && p.id === currentUserId) || 
+          (p.email && currentProfile.email && p.email.toLowerCase() === currentProfile.email.toLowerCase()) ||
+          (p.full_name && currentProfile.full_name && p.full_name.toLowerCase() === currentProfile.full_name.toLowerCase())
+        );
+        if (myIdx >= 0) {
+          displayList[myIdx] = { ...displayList[myIdx], ...currentProfile };
+        } else {
+          displayList.push(currentProfile);
+        }
+      }
+
+      // Sort by XP descending, then Credits descending
+      displayList.sort((a, b) => {
+        const xpDiff = (Number(b.xp) || 0) - (Number(a.xp) || 0);
+        if (xpDiff !== 0) return xpDiff;
+        return (Number(b.credits) || 0) - (Number(a.credits) || 0);
+      });
+
+      if (displayList.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50/70 p-4 text-center">
+            <span class="text-xl">🏆</span>
+            <p class="mt-1 text-xs font-bold text-slate-700">No members on the leaderboard yet</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">Solve challenges or complete sessions to earn credits & XP.</p>
+          </div>
+        `;
         return;
       }
 
-      container.innerHTML = rows.slice(0, 10).map((row, index) => {
-        const isMe = currentUserId && (row.id === currentUserId || (row.email && currentProfile?.email && row.email.toLowerCase() === currentProfile.email.toLowerCase()));
+      container.innerHTML = displayList.slice(0, 10).map((row, index) => {
+        const isMe = currentUserId && (
+          row.id === currentUserId || 
+          (row.email && currentProfile?.email && row.email.toLowerCase() === currentProfile.email.toLowerCase()) ||
+          (row.full_name && currentProfile?.full_name && row.full_name.toLowerCase() === currentProfile.full_name.toLowerCase())
+        );
         const rankMedal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : `${index + 1}`));
         const initials = (row.full_name || 'U').split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase() || 'U';
         const credits = Number(row.credits) || 0;
@@ -1795,7 +1658,14 @@
             </div>
           </div>
         `;
-      }).join('');
+      }).join('') + (displayList.length === 1 ? `
+        <div class="mt-2.5 p-2.5 text-center rounded-xl bg-slate-50 border border-slate-100">
+          <p class="text-[10px] text-slate-500 font-medium">Invite your college batchmates to compete on the leaderboard!</p>
+          <button type="button" onclick="copyInviteLink()" class="mt-1.5 inline-flex items-center gap-1 rounded-lg bg-[#0B1F17] px-2.5 py-1 text-[9px] font-bold text-[#B9F044] hover:bg-[#064E3B] transition">
+            📋 Copy Invite Link
+          </button>
+        </div>
+      ` : '');
     }
 
     function escapeHtml(value) {
@@ -1806,6 +1676,7 @@
       if (!sessions || sessions.length === 0) return;
       const upcomingEl = document.getElementById('sessions-upcoming');
       const pastEl     = document.getElementById('sessions-past');
+      if (!upcomingEl || !pastEl) return;
       const upcoming   = sessions.filter(s => s.status === 'active' || s.status === 'pending');
       const past       = sessions.filter(s => s.status === 'complete' || s.status === 'completed');
 
@@ -1935,40 +1806,28 @@
       }
       renderSubjectProgress(currentUserId, demo.ledger || []);
 
-      // Check solved challenges in demo
-      const hasSolvedDsa = (demo.ledger || []).some(l => l.reference_id === 'chal_dsa' || l.reason?.includes('Rotated Array'));
-      const btnDsa = document.getElementById('btn-chal-dsa');
-      if (btnDsa && hasSolvedDsa) {
-        btnDsa.disabled = true;
-        btnDsa.className = 'w-full rounded-xl bg-slate-100 text-slate-400 py-2 text-xs font-bold cursor-not-allowed';
-        btnDsa.innerHTML = 'Solved ✅ (+10 Credits)';
-      }
-
-      // Check unlocked notes in demo
-      ['note-1', 'note-2', 'note-3'].forEach(nid => {
-        if (isNoteUnlocked(nid) || (demo.ledger || []).some(l => l.reference_id === nid && l.amount < 0)) {
-          const num = nid.replace('note-', '');
-          const actionDiv = document.getElementById(`note-action-${num}`);
-          const noteTitle = NOTES_CONTENT[nid]?.title || 'Study Note';
-          if (actionDiv) {
-            actionDiv.innerHTML = `
-              <button onclick="openNoteViewModal('${nid}', '${escapeHtml(noteTitle)}')" class="w-full rounded-xl bg-[#0B1F17] text-[#B9F044] py-2 text-xs font-bold transition">
-                View Note ✅
-              </button>`;
-          }
-        }
-      });
+      // Dynamic challenges & notes in demo mode
+      renderChallengesGrid();
+      renderNotesGrid();
     }
 
     // ── Challenge & Notes System State ────────────────────────────────
     let currentUserId = null;
     let currentProfile = null;
     let activeChallengeType = null;
+    let currentChallengeFilter = 'all';
+    let currentNoteFilter = 'all';
 
     const CHALLENGES = {
       dsa: {
+        id: 'dsa',
+        category: 'dsa',
+        domainBadge: 'DSA • Medium',
+        domainColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
         title: 'Rotated Array Binary Search',
         points: 10,
+        rr: 20,
+        summary: 'Identify the optimal invariant to find a target value in an arbitrarily rotated sorted array.',
         question: 'In a sorted array rotated at an unknown pivot (e.g. <code>[4, 5, 6, 7, 0, 1, 2]</code>), how can binary search verify in O(1) that the left half <code>[low...mid]</code> is strictly sorted?',
         options: [
           { text: 'nums[low] <= nums[mid]', correct: true },
@@ -1979,8 +1838,14 @@
         explanation: 'If nums[low] <= nums[mid], the subarray from low to mid cannot contain the rotation pivot, meaning it is strictly in ascending order.'
       },
       sys: {
+        id: 'sys',
+        category: 'sys',
+        domainBadge: 'Fullstack & Systems • Hard',
+        domainColor: 'bg-blue-50 text-blue-700 border-blue-200',
         title: 'Distributed Escrow Race Condition',
         points: 10,
+        rr: 20,
+        summary: 'Spot the idempotency flaw when peer confirmations happen concurrently on WebRTC channels.',
         question: 'During a peer-to-peer session, both learner and mentor send simultaneous completion signals. What database mechanism prevents releasing double credits?',
         options: [
           { text: 'Client-side setTimeout delay in JavaScript', correct: false },
@@ -1989,13 +1854,255 @@
           { text: 'Polling the session status every 5 seconds', correct: false }
         ],
         explanation: 'An atomic unique constraint or idempotency key in the ledger enforces that only one transaction can ever be committed for a given session ID.'
+      },
+      tree: {
+        id: 'tree',
+        category: 'dsa',
+        domainBadge: 'DSA • Hard',
+        domainColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        title: 'Binary Tree Maximum Path Sum',
+        points: 10,
+        rr: 20,
+        summary: 'Find the maximum sum path between any two nodes in a non-empty binary tree with negative values.',
+        question: 'In finding the Maximum Path Sum of a Binary Tree where node values can be negative, what must a recursive post-order helper return to its parent node?',
+        options: [
+          { text: 'node.val + max(0, leftGain, rightGain)', correct: true },
+          { text: 'node.val + leftGain + rightGain', correct: false },
+          { text: 'max(leftGain, rightGain)', correct: false },
+          { text: 'node.val * 2', correct: false }
+        ],
+        explanation: 'A parent node can only extend a path through one of its children (not both simultaneously), so the return value must be node.val + max(0, max(leftGain, rightGain)).'
+      },
+      db_acid: {
+        id: 'db_acid',
+        category: 'db',
+        domainBadge: 'DBMS • Medium',
+        domainColor: 'bg-amber-50 text-amber-700 border-amber-200',
+        title: 'Transaction Isolation & Phantom Reads',
+        points: 10,
+        rr: 20,
+        summary: 'Determine the lowest ANSI SQL isolation level that prevents Phantom Reads during range scans.',
+        question: 'Which ANSI SQL transaction isolation level is the minimum required to completely prevent Phantom Reads on concurrent range queries?',
+        options: [
+          { text: 'SERIALIZABLE', correct: true },
+          { text: 'REPEATABLE READ', correct: false },
+          { text: 'READ COMMITTED', correct: false },
+          { text: 'READ UNCOMMITTED', correct: false }
+        ],
+        explanation: 'Under ANSI SQL standards, REPEATABLE READ prevents non-repeatable reads on specific rows, but SERIALIZABLE (e.g. via Next-Key locks) is strictly required to prevent Phantom Reads where new matching rows are inserted.'
+      },
+      net_tcp: {
+        id: 'net_tcp',
+        category: 'db',
+        domainBadge: 'Networks • Medium',
+        domainColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+        title: 'TCP Handshake & SYN Flood Defense',
+        points: 10,
+        rr: 20,
+        summary: 'Identify the state-free cryptographic mitigation used to withstand massive SYN flood attacks.',
+        question: 'How do modern Linux kernel TCP stacks defend against half-open SYN Flood attacks without exhausting server connection backlogs?',
+        options: [
+          { text: 'SYN Cookies (encoding initial sequence number without storing state)', correct: true },
+          { text: 'Increasing FIN-WAIT timeout to 120 seconds', correct: false },
+          { text: 'Dropping all packets on port 443 automatically', correct: false },
+          { text: 'Relying exclusively on client-side TLS certificates', correct: false }
+        ],
+        explanation: 'SYN Cookies encode the client IP, port, server secret, and timestamp directly into the 32-bit Initial Sequence Number (ISN), allowing the server to avoid allocating backlog memory until the final ACK arrives.'
+      },
+      os_paging: {
+        id: 'os_paging',
+        category: 'sys',
+        domainBadge: 'OS & Systems • Hard',
+        domainColor: 'bg-blue-50 text-blue-700 border-blue-200',
+        title: 'Virtual Memory Page Replacement',
+        points: 10,
+        rr: 20,
+        summary: 'Distinguish Belady’s Anomaly and evaluate the Second-Chance (Clock) page replacement invariant.',
+        question: 'Which page replacement algorithm is immune to Belady’s Anomaly (where increasing the page frames can increase the number of page faults)?',
+        options: [
+          { text: 'LRU (Least Recently Used) stack algorithm', correct: true },
+          { text: 'FIFO (First-In First-Out)', correct: false },
+          { text: 'Second-Chance Clock without use bits', correct: false },
+          { text: 'Random replacement algorithm', correct: false }
+        ],
+        explanation: 'LRU belongs to the class of stack algorithms, where the set of pages in memory for n frames is always a strict subset of pages for n+1 frames, completely eliminating Belady\'s Anomaly.'
+      },
+      py_gil: {
+        id: 'py_gil',
+        category: 'ai',
+        domainBadge: 'Python Core • Medium',
+        domainColor: 'bg-purple-50 text-purple-700 border-purple-200',
+        title: 'CPython GIL & Parallel Execution',
+        points: 10,
+        rr: 20,
+        summary: 'Determine CPU-bound vs I/O-bound concurrency execution models under CPython.',
+        question: 'In standard CPython, what is the recommended architecture to achieve true multi-core CPU parallelism across multiple compute threads?',
+        options: [
+          { text: 'multiprocessing module (forking separate OS processes with distinct memory spaces)', correct: true },
+          { text: 'threading.Thread with high priority', correct: false },
+          { text: 'asyncio.gather without subprocesses', correct: false },
+          { text: 'time.sleep(0) in tight loops', correct: false }
+        ],
+        explanation: 'Because CPython\'s Global Interpreter Lock (GIL) serializes bytecode execution on a single OS thread at a time, true multi-core CPU bound concurrency requires separate processes via the multiprocessing module.'
+      },
+      ai_attn: {
+        id: 'ai_attn',
+        category: 'ai',
+        domainBadge: 'AI & ML • Hard',
+        domainColor: 'bg-purple-50 text-purple-700 border-purple-200',
+        title: 'Multi-Head Attention Scaling Factor',
+        points: 10,
+        rr: 20,
+        summary: 'Explain why Scaled Dot-Product Attention divides by the square root of dimension dk.',
+        question: 'In the Transformer Attention formula Attention(Q,K,V) = softmax(QK^T / sqrt(d_k)) * V, why is the scaling factor sqrt(d_k) essential?',
+        options: [
+          { text: 'Prevents the dot products from growing excessively large, avoiding vanishing gradients in softmax', correct: true },
+          { text: 'Guarantees the resulting matrix is skew-symmetric', correct: false },
+          { text: 'Converts floating point numbers to integers for GPU optimization', correct: false },
+          { text: 'Enforces orthogonality between Query and Value vectors', correct: false }
+        ],
+        explanation: 'For large values of d_k, the dot products grow large in magnitude, pushing the softmax function into regions with tiny gradients. Dividing by sqrt(d_k) preserves unit variance.'
       }
     };
 
+    function filterChallenges(cat, btn) {
+      currentChallengeFilter = cat;
+      document.querySelectorAll('#challenge-filters .tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderChallengesGrid();
+    }
+
+    function isChallengeSolved(chalId, chal) {
+      if (!currentUserId && !sessionStorage.getItem('gyansetu_demo_mode')) return false;
+      try {
+        const solvedSet = JSON.parse(localStorage.getItem('gyansetu_solved_challenges') || '[]');
+        if (solvedSet.includes(chalId)) return true;
+      } catch (e) {}
+      return (_allLedger || []).some(l =>
+        l.reference_id === `chal_${chalId}` ||
+        l.reference_id === chalId ||
+        (chal?.title && l.reason?.includes(chal.title))
+      );
+    }
+
+    function renderChallengesGrid() {
+      const grid = document.getElementById('challenges-grid');
+      if (!grid) return;
+
+      // Load stored dynamic challenges if any
+      try {
+        const stored = JSON.parse(localStorage.getItem('gyansetu_dynamic_challenges') || '{}');
+        Object.assign(CHALLENGES, stored);
+      } catch (e) {}
+
+      const chalList = Object.values(CHALLENGES);
+      const filtered = (currentChallengeFilter === 'all')
+        ? chalList
+        : chalList.filter(c => c.category === currentChallengeFilter);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-8 text-center bg-white rounded-2xl border border-slate-100 p-6">
+            <p class="text-xs font-bold text-slate-500">No challenges found in this topic yet.</p>
+            <button onclick="generateFreshChallenge()" class="mt-2 text-xs font-black text-[#2F6F11] underline">⚡ Generate one now</button>
+          </div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(chal => {
+        const solved = isChallengeSolved(chal.id, chal);
+        return `
+          <div class="duel-card bg-white p-5 border border-slate-100 rounded-2xl flex flex-col justify-between shadow-card hover:shadow-md transition" id="card-chal-${chal.id}">
+            <div>
+              <div class="flex items-center justify-between mb-3 gap-2">
+                <span class="rounded-full ${chal.domainColor || 'bg-slate-100 text-slate-700'} border px-2.5 py-0.5 text-[10px] font-black truncate">${escapeHtml(chal.domainBadge || 'Engineering')}</span>
+                <span class="rounded-full bg-lime-100 px-2.5 py-0.5 text-[10px] font-black text-[#2F6F11] shrink-0">+10 Credits</span>
+              </div>
+              <h4 class="text-sm font-extrabold text-[#0B1F17] mb-1 line-clamp-1">${escapeHtml(chal.title)}</h4>
+              <p class="text-xs text-slate-500 mb-4 line-clamp-2 leading-relaxed">${escapeHtml(chal.summary || chal.question.replace(/<[^>]+>/g, '').substring(0, 90) + '...')}</p>
+            </div>
+            <div>
+              ${solved ? `
+                <button id="btn-chal-${chal.id}" disabled class="w-full rounded-xl bg-slate-100 text-slate-400 py-2 text-xs font-bold cursor-not-allowed">
+                  Solved ✅ (+10 Credits &amp; +20 RR)
+                </button>
+              ` : `
+                <button id="btn-chal-${chal.id}" onclick="openChallengeModal('${chal.id}')" class="w-full rounded-xl bg-[#0B1F17] py-2 text-xs font-bold text-[#B9F044] hover:bg-[#064E3B] transition shadow-xs">
+                  Solve Challenge (+10) &rarr;
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function generateFreshChallenge() {
+      const domains = ['cs-general', 'dsa', 'lang-python', 'math', 'aptitude', 'physics'];
+      const domain = domains[Math.floor(Math.random() * domains.length)];
+      let dynamicQ = null;
+
+      if (window.GyanSetuQuestionEngine) {
+        dynamicQ = window.GyanSetuQuestionEngine.getNextQuestion(domain, Math.floor(Math.random() * 5), true);
+      }
+
+      const id = 'dyn_' + Date.now();
+      const rawOpts = dynamicQ?.opts || dynamicQ?.options || [
+        "O(1) amortized",
+        "O(N) linear scan",
+        "O(log N) bisection",
+        "O(N^2) quadratic"
+      ];
+      const correctIdx = Number(dynamicQ?.ans ?? 0);
+      const parsedOptions = rawOpts.map((opt, idx) => ({
+        text: typeof opt === 'string' ? opt : (opt.text || String(opt)),
+        correct: (idx === correctIdx)
+      }));
+
+      const expText = (typeof dynamicQ?.explanation === 'object')
+        ? (dynamicQ.explanation.why || dynamicQ.explanation.concept || 'Optimal solution verified.')
+        : (dynamicQ?.explanation || 'Optimal solution verified via GyanSetu Intelligent Multi-Domain Question Engine.');
+
+      const newChal = {
+        id,
+        category: (domain === 'dsa') ? 'dsa' : ((domain === 'lang-python') ? 'ai' : ((domain === 'cs-general') ? 'sys' : 'db')),
+        domainBadge: `${dynamicQ?.topicName || 'Core Systems'} • Dynamic ⚡`,
+        domainColor: 'bg-lime-50 text-[#2F6F11] border-[#B9F044]/50',
+        title: dynamicQ?.subtopic || dynamicQ?.title || `Dynamic ${dynamicQ?.topicName || 'Engineering'} Duel`,
+        points: 10,
+        rr: 20,
+        summary: expText.substring(0, 85) + '...',
+        question: dynamicQ?.q || dynamicQ?.question || 'What is the optimal asymptotic complexity for this operation?',
+        options: parsedOptions,
+        explanation: expText
+      };
+
+      CHALLENGES[id] = newChal;
+      try {
+        const stored = JSON.parse(localStorage.getItem('gyansetu_dynamic_challenges') || '{}');
+        stored[id] = newChal;
+        localStorage.setItem('gyansetu_dynamic_challenges', JSON.stringify(stored));
+      } catch (e) {}
+
+      renderChallengesGrid();
+      showToast(`⚡ Generated fresh ${newChal.domainBadge} challenge!`);
+      const card = document.getElementById(`card-chal-${id}`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('ring-2', 'ring-[#B9F044]');
+        setTimeout(() => card.classList.remove('ring-2', 'ring-[#B9F044]'), 1500);
+      }
+    }
+
     const NOTES_CONTENT = {
       'note-1': {
+        id: 'note-1',
         title: 'DSA Visual Cheat Sheet: Graphs & DP',
         subject: 'Computer Science',
+        subjectBadge: 'bg-emerald-100 text-emerald-800',
+        summary: 'Complete pattern breakdown for Dijkstra, BFS/DFS cycles, topological sort, and memoization.',
+        author: 'Prof. Sharma & Campus Cohort',
+        cost: 5,
         body: `
           <div class="space-y-3">
             <h4 class="font-extrabold text-[#0B1F17] text-sm">1. Graph Shortest Path & Cycles</h4>
@@ -2008,8 +2115,13 @@
           </div>`
       },
       'note-2': {
+        id: 'note-2',
         title: 'OS Concurrency & Memory Paging',
         subject: 'Core Systems',
+        subjectBadge: 'bg-blue-100 text-blue-800',
+        summary: 'Semaphores, mutexes, deadlock prevention, virtual memory paging, and TLB cache hit rates.',
+        author: 'Systems Lab Mentors',
+        cost: 5,
         body: `
           <div class="space-y-3">
             <h4 class="font-extrabold text-[#0B1F17] text-sm">1. Concurrency & Deadlocks</h4>
@@ -2026,8 +2138,13 @@
           </div>`
       },
       'note-3': {
+        id: 'note-3',
         title: 'DBMS Normalization & B+ Trees',
         subject: 'Databases',
+        subjectBadge: 'bg-amber-100 text-amber-800',
+        summary: 'Step-by-step 1NF to BCNF decompositions, indexing mechanics, and SQL execution plans.',
+        author: 'Campus Database Guild',
+        cost: 5,
         body: `
           <div class="space-y-3">
             <h4 class="font-extrabold text-[#0B1F17] text-sm">1. Relational Normal Forms</h4>
@@ -2038,8 +2155,128 @@
             <h4 class="font-extrabold text-[#0B1F17] text-sm mt-3">2. B+ Tree Indexing</h4>
             <p>Internal nodes store search keys as routers. All actual data pointers reside at leaf nodes, which are doubly-linked for high-throughput range scans.</p>
           </div>`
+      },
+      'note-4': {
+        id: 'note-4',
+        title: 'Computer Networks: TCP, BGP & HTTP/3',
+        subject: 'Networks',
+        subjectBadge: 'bg-indigo-100 text-indigo-800',
+        summary: 'TCP 3-way handshake, sliding window flow control, Congestion Control (Reno/CUBIC), and QUIC protocol.',
+        author: 'Networks Study Group',
+        cost: 5,
+        body: `
+          <div class="space-y-3">
+            <h4 class="font-extrabold text-[#0B1F17] text-sm">1. TCP Congestion Control</h4>
+            <p><strong>Slow Start:</strong> cwnd doubles every RTT until <code>ssthresh</code> is reached.</p>
+            <p><strong>Congestion Avoidance:</strong> cwnd increases linearly by 1 MSS per RTT (Additive Increase).</p>
+            <p><strong>Fast Retransmit & Recovery:</strong> Triggered on 3 duplicate ACKs; cwnd halved rather than reset to 1.</p>
+            <h4 class="font-extrabold text-[#0B1F17] text-sm mt-3">2. HTTP/2 vs HTTP/3 (QUIC)</h4>
+            <p>HTTP/2 multiplexes streams over single TCP connection, causing head-of-line blocking if one packet drops. HTTP/3 runs on top of UDP with QUIC, giving zero HoL blocking between independent streams.</p>
+          </div>`
+      },
+      'note-5': {
+        id: 'note-5',
+        title: 'Machine Learning: Attention & Transformers',
+        subject: 'AI & ML',
+        subjectBadge: 'bg-purple-100 text-purple-800',
+        summary: 'Mathematical breakdown of self-attention matrices, positional encodings, and backpropagation gradients.',
+        author: 'AI Research Cohort',
+        cost: 5,
+        body: `
+          <div class="space-y-3">
+            <h4 class="font-extrabold text-[#0B1F17] text-sm">1. Scaled Dot-Product Attention</h4>
+            <p>Formula: <code>Attention(Q, K, V) = softmax(Q * K^T / sqrt(d_k)) * V</code></p>
+            <p>Q, K, V are linear projections of input embeddings. Multi-Head attention projects queries, keys, and values h times with learned parameter matrices.</p>
+            <h4 class="font-extrabold text-[#0B1F17] text-sm mt-3">2. Positional Encoding</h4>
+            <p>Since self-attention is permutation-invariant, sinusoidal positional encodings <code>PE(pos, 2i) = sin(pos / 10000^(2i/d))</code> inject sequence order.</p>
+          </div>`
+      },
+      'note-6': {
+        id: 'note-6',
+        title: 'System Design: Distributed Caching & CAP',
+        subject: 'Core Systems',
+        subjectBadge: 'bg-cyan-100 text-cyan-800',
+        summary: 'Consistent hashing, cache eviction strategies (LRU/LFU), cache-aside vs write-through, and CAP trade-offs.',
+        author: 'Senior Peer Mentors',
+        cost: 5,
+        body: `
+          <div class="space-y-3">
+            <h4 class="font-extrabold text-[#0B1F17] text-sm">1. Cache Invalidation Patterns</h4>
+            <p><strong>Cache-Aside:</strong> Application reads from cache; on miss, reads from DB and populates cache. Writes update DB then invalidate cache.</p>
+            <p><strong>Write-Through:</strong> Application writes to cache; cache writes synchronously to DB.</p>
+            <h4 class="font-extrabold text-[#0B1F17] text-sm mt-3">2. Consistent Hashing</h4>
+            <p>Maps cache servers and data keys to a 360° hash ring. When nodes join or leave, only <code>K / N</code> keys need remapping on average, preventing thundering herds.</p>
+          </div>`
       }
     };
+
+    function filterNotes(cat, btn) {
+      currentNoteFilter = cat;
+      document.querySelectorAll('#note-filters .tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderNotesGrid();
+    }
+
+    function isNoteUnlocked(noteId) {
+      if (!currentUserId && !sessionStorage.getItem('gyansetu_demo_mode')) return false;
+      if (localStorage.getItem(`unlocked_note_${currentUserId || 'demo'}_${noteId}`) === 'true') return true;
+      return (_allLedger || []).some(l => l.reference_id === noteId && l.amount < 0);
+    }
+
+    function renderNotesGrid() {
+      const grid = document.getElementById('notes-grid');
+      if (!grid) return;
+
+      // Merge community submitted notes from localStorage
+      let allNotes = { ...NOTES_CONTENT };
+      try {
+        const communityNotes = JSON.parse(localStorage.getItem('gyansetu_campus_notes') || '{}');
+        Object.assign(allNotes, communityNotes);
+      } catch (e) {}
+
+      const noteList = Object.values(allNotes);
+      const filtered = (currentNoteFilter === 'all')
+        ? noteList
+        : noteList.filter(n => n.subject === currentNoteFilter);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-8 text-center bg-white rounded-2xl border border-slate-100 p-6">
+            <p class="text-xs font-bold text-slate-500">No notes in this subject yet. Be the first to contribute!</p>
+            <button onclick="openNoteUploadModal()" class="mt-2 text-xs font-black text-[#2F6F11] underline">+ Share Note (+10 Credits)</button>
+          </div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(note => {
+        const unlocked = isNoteUnlocked(note.id);
+        const subjectBadge = note.subjectBadge || 'bg-slate-100 text-slate-800';
+        return `
+          <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-card flex flex-col justify-between hover:shadow-md transition" id="card-${note.id}">
+            <div>
+              <div class="flex items-center justify-between mb-3 gap-2">
+                <span class="rounded-full ${subjectBadge} px-2.5 py-0.5 text-[10px] font-black truncate">${escapeHtml(note.subject || 'Engineering')}</span>
+                <span class="text-xs font-extrabold text-[#0B1F17] flex items-center gap-1 shrink-0"><i data-lucide="coins" class="h-3.5 w-3.5 text-amber-500"></i> ${note.cost || 5} Credits</span>
+              </div>
+              <h4 class="text-sm font-extrabold text-[#0B1F17] mb-1 line-clamp-1">${escapeHtml(note.title)}</h4>
+              <p class="text-xs text-slate-500 mb-4 line-clamp-2 leading-relaxed">${escapeHtml(note.summary || note.body.replace(/<[^>]+>/g, '').substring(0, 95) + '...')}</p>
+            </div>
+            <div id="note-action-${note.id}">
+              ${unlocked ? `
+                <button onclick="openNoteViewModal('${note.id}', '${escapeHtml(note.title)}')" class="w-full rounded-xl bg-[#0B1F17] text-[#B9F044] py-2 text-xs font-bold transition shadow-xs hover:bg-[#064E3B]">
+                  View Note ✅
+                </button>
+              ` : `
+                <button onclick="unlockNote('${note.id}', '${escapeHtml(note.title)}', ${note.cost || 5})" class="w-full rounded-xl border border-[#2F6F11] text-[#2F6F11] py-2 text-xs font-bold hover:bg-[#F4FBEA] transition">
+                  Unlock Note (-${note.cost || 5} Credits)
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
 
     function openChallengeModal(chalType) {
       activeChallengeType = chalType;
@@ -2130,13 +2367,17 @@
         return;
       }
 
-      // Mark button on dashboard as solved
-      const cardBtn = document.getElementById(`btn-chal-${activeChallengeType}`);
-      if (cardBtn) {
-        cardBtn.disabled = true;
-        cardBtn.className = 'w-full rounded-xl bg-slate-100 text-slate-400 py-2 text-xs font-bold cursor-not-allowed';
-        cardBtn.innerHTML = 'Solved ✅ (+10 Credits &amp; +20 RR)';
-      }
+      // Save to solved challenges set in localStorage
+      try {
+        const solved = JSON.parse(localStorage.getItem('gyansetu_solved_challenges') || '[]');
+        if (!solved.includes(activeChallengeType)) {
+          solved.push(activeChallengeType);
+          localStorage.setItem('gyansetu_solved_challenges', JSON.stringify(solved));
+        }
+      } catch (e) {}
+
+      // Re-render challenges grid to update solved status
+      renderChallengesGrid();
 
       // Also award +20 RR for competitive challenge win
       if (typeof window.recordRRTransaction === 'function') {
@@ -2154,7 +2395,7 @@
       if (window.GyanSetuAuth?.recordUserActivity) {
         window.GyanSetuAuth.recordUserActivity(currentUserId, {
           type: 'CHALLENGE_SOLVED',
-          subject: activeChallengeType === 'dsa' ? 'DSA' : 'Web Dev',
+          subject: (chal.category === 'dsa') ? 'DSA' : ((chal.category === 'ai') ? 'Python' : 'Web Dev'),
           title: chal.title,
           xp: 25,
           credits: 10
@@ -2176,15 +2417,8 @@
       await loadDashboard();
     }
 
-    // ── Notes System Handlers ─────────────────────────────────────────
-    function isNoteUnlocked(noteId) {
-      if (!currentUserId) return false;
-      if (localStorage.getItem(`unlocked_note_${currentUserId}_${noteId}`) === 'true') return true;
-      return _allLedger.some(l => l.reference_id === noteId && l.amount < 0);
-    }
-
     async function unlockNote(noteId, title, cost = 5) {
-      if (!currentUserId) {
+      if (!currentUserId && !sessionStorage.getItem('gyansetu_demo_mode')) {
         showToast('Please login to unlock study notes.', 'info');
         return;
       }
@@ -2218,28 +2452,19 @@
       }
 
       // Persist unlock state locally so reloading never charges again
-      localStorage.setItem(`unlocked_note_${currentUserId}_${noteId}`, 'true');
+      localStorage.setItem(`unlocked_note_${currentUserId || 'demo'}_${noteId}`, 'true');
 
       // Record note unlocking activity for subject tracking
       if (window.GyanSetuAuth?.recordUserActivity) {
-        const noteSubject = noteId === 'note-1' ? 'DSA' : (noteId === 'note-2' ? 'Operating Systems' : 'DBMS');
         window.GyanSetuAuth.recordUserActivity(currentUserId, {
           type: 'NOTE_UNLOCKED',
-          subject: noteSubject,
+          subject: 'Core Engineering',
           title: title,
           credits: -cost
         });
       }
 
-      // Update button
-      const num = noteId.replace('note-', '');
-      const actionDiv = document.getElementById(`note-action-${num}`);
-      if (actionDiv) {
-        actionDiv.innerHTML = `
-          <button onclick="openNoteViewModal('${noteId}', '${escapeHtml(title)}')" class="w-full rounded-xl bg-[#0B1F17] text-[#B9F044] py-2 text-xs font-bold transition">
-            View Note ✅
-          </button>`;
-      }
+      renderNotesGrid();
 
       if (res.success && currentProfile) {
         currentProfile.credits = res.newBalance;
@@ -2253,7 +2478,13 @@
     }
 
     function openNoteViewModal(noteId, title) {
-      const note = NOTES_CONTENT[noteId];
+      let allNotes = { ...NOTES_CONTENT };
+      try {
+        const communityNotes = JSON.parse(localStorage.getItem('gyansetu_campus_notes') || '{}');
+        Object.assign(allNotes, communityNotes);
+      } catch (e) {}
+
+      const note = allNotes[noteId];
       document.getElementById('view-note-title').textContent = title || note?.title || 'Study Note';
       document.getElementById('view-note-body').innerHTML = note?.body || '<p>Content unlocked successfully.</p>';
       document.getElementById('note-view-modal').classList.replace('hidden', 'flex');
@@ -2265,7 +2496,7 @@
     }
 
     function openNoteUploadModal() {
-      if (!currentUserId) {
+      if (!currentUserId && !sessionStorage.getItem('gyansetu_demo_mode')) {
         showToast('Please login to contribute notes.', 'info');
         return;
       }
@@ -2282,7 +2513,7 @@
     }
 
     async function submitNoteContribution() {
-      if (!currentUserId) {
+      if (!currentUserId && !sessionStorage.getItem('gyansetu_demo_mode')) {
         showToast('Please login first.', 'info');
         return;
       }
@@ -2335,6 +2566,35 @@
         return;
       }
 
+      // Save newly contributed note into localStorage and active pool
+      const noteId = `note_contrib_${Date.now()}`;
+      const newNote = {
+        id: noteId,
+        title: title,
+        subject: subject,
+        subjectBadge: 'bg-emerald-100 text-emerald-800',
+        summary: content.substring(0, 95) + '...',
+        author: currentProfile?.full_name || 'Campus Student',
+        cost: 5,
+        body: `
+          <div class="space-y-3">
+            <h4 class="font-extrabold text-[#0B1F17] text-sm">${escapeHtml(title)}</h4>
+            <p class="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(content)}</p>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Author: <strong>${escapeHtml(currentProfile?.full_name || 'Campus Peer')}</strong></span>
+              <span>Verified Campus Study Note</span>
+            </div>
+          </div>`
+      };
+
+      try {
+        const stored = JSON.parse(localStorage.getItem('gyansetu_campus_notes') || '{}');
+        stored[noteId] = newNote;
+        localStorage.setItem('gyansetu_campus_notes', JSON.stringify(stored));
+        // Auto-unlock for author
+        localStorage.setItem(`unlocked_note_${currentUserId || 'demo'}_${noteId}`, 'true');
+      } catch (e) {}
+
       // Also award +10 RR for verified educational note contribution
       if (typeof window.recordRRTransaction === 'function') {
         await window.recordRRTransaction(sbClient, {
@@ -2342,12 +2602,13 @@
           amount: RR_CONFIG.REWARDS.HELPFUL_VERIFIED_CONTRIBUTION,
           reason: `Notes Contribution: ${title}`,
           referenceType: 'CONTRIBUTION',
-          referenceId: `note_contrib_${Date.now()}`
+          referenceId: noteId
         });
       }
 
+      renderNotesGrid();
       closeNoteUploadModal();
-      showToast('🎉 +10 Credits &amp; +10 RR awarded for your notes contribution!');
+      showToast('🎉 +10 Credits &amp; +10 RR awarded! Note published to Campus Vault.');
       btn.disabled = false;
       btn.textContent = 'Submit Note (+10) →';
       await loadDashboard();
@@ -2450,26 +2711,43 @@
       // Fetch leaderboard of real registered students
       let leaderboard = [];
       try {
+        let allStudents = [];
         if (window.GyanSetuAuth?.getAllRegisteredUsers) {
-          const allStudents = await window.GyanSetuAuth.getAllRegisteredUsers();
-          // Ensure current user profile is present with latest credits & XP
-          if (profile && !allStudents.some(s => s.id === userId || (s.email && email && s.email.toLowerCase() === email.toLowerCase()))) {
+          allStudents = await window.GyanSetuAuth.getAllRegisteredUsers();
+        } else if (sbClient) {
+          const { data } = await sbClient.from('profiles')
+            .select('*').order('xp', { ascending: false }).limit(20);
+          allStudents = data || [];
+        }
+
+        // Filter out any mock/demo IDs (e.g. demo-*, peer-c*, etc.)
+        allStudents = (allStudents || []).filter(p => p && !String(p.id || '').startsWith('demo-') && !String(p.id || '').startsWith('peer-c'));
+
+        // Ensure current user profile is present with latest credits & XP
+        if (profile) {
+          const myIdx = allStudents.findIndex(s => 
+            (userId && s.id === userId) || 
+            (s.email && email && s.email.toLowerCase() === email.toLowerCase()) ||
+            (profile.full_name && s.full_name && s.full_name.toLowerCase() === profile.full_name.toLowerCase())
+          );
+          if (myIdx >= 0) {
+            allStudents[myIdx] = { ...allStudents[myIdx], ...profile };
+          } else {
             allStudents.push(profile);
           }
-          // Sort by XP descending, then Credits descending
-          leaderboard = allStudents.sort((a, b) => {
-            const xpDiff = (Number(b.xp) || 0) - (Number(a.xp) || 0);
-            if (xpDiff !== 0) return xpDiff;
-            return (Number(b.credits) || 0) - (Number(a.credits) || 0);
-          }).slice(0, 10);
-        } else {
-          const { data } = await sbClient.from('profiles')
-            .select('*').order('xp', { ascending: false }).limit(10);
-          leaderboard = data || [];
         }
+
+        // Sort by XP descending, then Credits descending
+        leaderboard = allStudents.sort((a, b) => {
+          const xpDiff = (Number(b.xp) || 0) - (Number(a.xp) || 0);
+          if (xpDiff !== 0) return xpDiff;
+          return (Number(b.credits) || 0) - (Number(a.credits) || 0);
+        }).slice(0, 10);
+
         renderLeaderboard(leaderboard);
       } catch (e) {
         console.warn('Error fetching leaderboard:', e);
+        renderLeaderboard(profile ? [profile] : []);
       }
 
       // Fetch credit ledger safely
@@ -2494,55 +2772,60 @@
       // Re-evaluate dynamic badges with full context
       renderBadges(profile?.badges || [], profile, ledger, mySessions);
 
-      // Update challenge buttons if already solved
-      const hasSolvedDsa = (ledger || []).some(l => l.reference_id === 'chal_dsa' || l.reason?.includes('Rotated Array'));
-      const btnDsa = document.getElementById('btn-chal-dsa');
-      if (btnDsa && hasSolvedDsa) {
-        btnDsa.disabled = true;
-        btnDsa.className = 'w-full rounded-xl bg-slate-100 text-slate-400 py-2 text-xs font-bold cursor-not-allowed';
-        btnDsa.innerHTML = 'Solved ✅ (+10 Credits)';
-      }
+      // Render dynamic challenges and campus notes
+      renderChallengesGrid();
+      renderNotesGrid();
 
-      const hasSolvedSys = (ledger || []).some(l => l.reference_id === 'chal_sys' || l.reason?.includes('Distributed Escrow'));
-      const btnSys = document.getElementById('btn-chal-sys');
-      if (btnSys && hasSolvedSys) {
-        btnSys.disabled = true;
-        btnSys.className = 'w-full rounded-xl bg-slate-100 text-slate-400 py-2 text-xs font-bold cursor-not-allowed';
-        btnSys.innerHTML = 'Solved ✅ (+10 Credits)';
-      }
+      const rank = (leaderboard || []).findIndex(row => 
+        (userId && row.id === userId) || 
+        (email && row.email && row.email.toLowerCase() === email.toLowerCase()) ||
+        (profile?.full_name && row.full_name && row.full_name.toLowerCase() === profile.full_name.toLowerCase())
+      );
+      const realRank = rank >= 0 ? (rank + 1) : 1;
 
-      // Update unlocked notes
-      ['note-1', 'note-2', 'note-3'].forEach(nid => {
-        if (isNoteUnlocked(nid)) {
-          const num = nid.replace('note-', '');
-          const actionDiv = document.getElementById(`note-action-${num}`);
-          const noteTitle = NOTES_CONTENT[nid]?.title || 'Study Note';
-          if (actionDiv) {
-            actionDiv.innerHTML = `
-              <button onclick="openNoteViewModal('${nid}', '${escapeHtml(noteTitle)}')" class="w-full rounded-xl bg-[#0B1F17] text-[#B9F044] py-2 text-xs font-bold transition">
-                View Note ✅
-              </button>`;
-          }
-        }
+      // Real college rank
+      const userCollege = (profile?.college || profile?.department || '').toLowerCase();
+      const collegePeers = (leaderboard || []).filter(s => {
+        const sc = (s.college || s.department || '').toLowerCase();
+        return sc && userCollege && (sc.includes(userCollege) || userCollege.includes(sc));
       });
+      const collegeIdx = collegePeers.findIndex(s => s.id === userId || (email && s.email && s.email.toLowerCase() === email.toLowerCase()));
+      const realCollegeRank = collegeIdx >= 0 ? (collegeIdx + 1) : 1;
 
-      const rank = (leaderboard || []).findIndex(row => row.id === userId);
-      const displayRank = rank >= 0 ? rank + 1 : 8;
-      document.getElementById('duel-rank').textContent = '#' + displayRank;
+      // Real state rank
+      const userState = (profile?.state || 'Uttarakhand').toLowerCase();
+      const statePeers = (leaderboard || []).filter(s => (s.state || 'Uttarakhand').toLowerCase() === userState);
+      const stateIdx = statePeers.findIndex(s => s.id === userId || (email && s.email && s.email.toLowerCase() === email.toLowerCase()));
+      const realStateRank = stateIdx >= 0 ? (stateIdx + 1) : 1;
+
+      // Real India rank
+      const userCountry = (profile?.country || 'India').toLowerCase();
+      const indiaPeers = (leaderboard || []).filter(s => (s.country || 'India').toLowerCase() === userCountry);
+      const indiaIdx = indiaPeers.findIndex(s => s.id === userId || (email && s.email && s.email.toLowerCase() === email.toLowerCase()));
+      const realIndiaRank = indiaIdx >= 0 ? (indiaIdx + 1) : 1;
+
+      const elDuelRank = document.getElementById('duel-rank');
+      if (elDuelRank) elDuelRank.textContent = '#' + realRank;
       const elGlobal = document.getElementById('stat-rank-global');
-      if (elGlobal) elGlobal.textContent = displayRank;
+      if (elGlobal) elGlobal.textContent = realRank;
       const elCollege = document.getElementById('stat-rank-college');
-      if (elCollege) elCollege.textContent = Math.max(1, Math.ceil(displayRank / 2));
+      if (elCollege) elCollege.textContent = realCollegeRank;
       const elDashGlobal = document.getElementById('dash-rank-global-num');
-      if (elDashGlobal) elDashGlobal.textContent = displayRank;
+      if (elDashGlobal) elDashGlobal.textContent = realRank;
       const elDashIndia = document.getElementById('dash-rank-india-num');
-      if (elDashIndia) elDashIndia.textContent = Math.max(1, displayRank - 2);
+      if (elDashIndia) elDashIndia.textContent = realIndiaRank;
       const elDashState = document.getElementById('dash-rank-state-num');
-      if (elDashState) elDashState.textContent = Math.max(1, displayRank - 4);
+      if (elDashState) elDashState.textContent = realStateRank;
       const elDashCollege = document.getElementById('dash-rank-college-num');
-      if (elDashCollege) elDashCollege.textContent = Math.max(1, Math.ceil(displayRank / 2));
-      document.getElementById('stat-streak').textContent = profile?.streak ?? '12';
-      document.getElementById('sidebar-streak').textContent = profile?.streak ?? '12';
+      if (elDashCollege) elDashCollege.textContent = realCollegeRank;
+
+      const realStreak = Math.max(1, Number(profile?.streak) || 1);
+      const elStatStreak = document.getElementById('stat-streak');
+      if (elStatStreak) elStatStreak.textContent = realStreak;
+      const elSideStreak = document.getElementById('sidebar-streak');
+      if (elSideStreak) elSideStreak.textContent = realStreak;
+      const dashStreak = document.getElementById('dash-rank-streak-num');
+      if (dashStreak) dashStreak.textContent = realStreak;
 
       // Remove skeletons
       setTimeout(() => {
@@ -2598,10 +2881,14 @@
 
     /* ── Session tabs ── */
     function switchSessionTab(tab, btn) {
-      document.getElementById('sessions-upcoming').classList.toggle('hidden', tab !== 'upcoming');
-      document.getElementById('sessions-past').classList.toggle('hidden', tab !== 'past');
-      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      const up = document.getElementById('sessions-upcoming');
+      const past = document.getElementById('sessions-past');
+      if (up) up.classList.toggle('hidden', tab !== 'upcoming');
+      if (past) past.classList.toggle('hidden', tab !== 'past');
+      if (btn?.parentElement) {
+        btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
     }
 
     /* ── Mentor filter (UI only) ── */
@@ -2669,69 +2956,16 @@
       loadDashboard();
     });
 
+    window.addEventListener('gyansetu:rr-updated', (e) => {
+      if ((!e.detail?.userId || e.detail?.userId === currentUserId) && currentProfile) {
+        currentProfile.rr = e.detail.newRR;
+        renderUser(currentProfile);
+      }
+    });
+
     loadDashboard();
   </script>
   <script>
-    const performanceCanvas = document.getElementById('performanceChart');
-    const chartValues = new URLSearchParams(window.location.search).get('demo') === '1'
-      ? window.GYANSETU_DEMO.chart
-      : [];
-    if (window.Chart && performanceCanvas) {
-      const chartContext = performanceCanvas.getContext('2d');
-      const chartFill = chartContext.createLinearGradient(0, 0, 0, 260);
-      chartFill.addColorStop(0, 'rgba(167, 139, 250, 0.38)');
-      chartFill.addColorStop(1, 'rgba(237, 233, 254, 0.04)');
-
-      new Chart(chartContext, {
-        type: 'line',
-        data: {
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          datasets: [{
-            label: 'Credits earned',
-            data: chartValues,
-            borderColor: '#7C3AED',
-            backgroundColor: chartFill,
-            fill: true,
-            tension: 0.42,
-            borderWidth: 3,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            pointBackgroundColor: '#fff',
-            pointBorderColor: '#7C3AED',
-            pointBorderWidth: 2
-          }]
-        },
-        options: {
-          maintainAspectRatio: false,
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#31234A',
-              padding: 10,
-              displayColors: false,
-              callbacks: {
-                label: context => `${context.parsed.y} credits earned`
-              }
-            }
-          },
-          scales: {
-            x: {
-              grid: { display: false },
-              border: { display: false },
-              ticks: { color: '#8B7AA8', font: { family: 'Poppins', size: 11 } }
-            },
-            y: {
-              beginAtZero: true,
-              border: { display: false, dash: [4, 4] },
-              grid: { color: 'rgba(139, 122, 168, 0.12)' },
-              ticks: { stepSize: 3, color: '#8B7AA8', font: { family: 'Poppins', size: 11 } }
-            }
-          }
-        }
-      });
-    }
-
     // ── Global Dashboard Real-Time Search & Priority Dropdown Engine ───
     let searchDebounceTimeout = null;
 

@@ -248,14 +248,18 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center flex-wrap gap-2">
           <div id="room-peers-pill" class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">
             <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="connected-peers-label">1 Active Peer Connected</span>
           </div>
-          <button type="button" onclick="copyTeamInviteLink(myTeam)" class="inline-flex items-center gap-1 rounded-xl border border-[#B9F044]/30 bg-[#B9F044]/15 px-3 py-1.5 text-xs font-extrabold text-[#B9F044] hover:bg-[#B9F044] hover:text-[#0B1F17] transition shadow-xs" title="Copy 1-Click Match Link for Teammate">
+          <button type="button" onclick="autoBalanceSquads()" class="inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/15 px-3 py-1.5 text-xs font-black text-[#B9F044] hover:bg-[#B9F044] hover:text-[#0B1F17] transition shadow-xs" title="Auto-balance squad members evenly">
+            <i data-lucide="scale" class="h-3.5 w-3.5"></i>
+            <span>⚖️ Auto-Balance</span>
+          </button>
+          <button type="button" onclick="copyTeamInviteLink(myTeam)" class="inline-flex items-center gap-1 rounded-xl border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-extrabold text-white hover:bg-white/20 transition shadow-xs" title="Copy 1-Click Match Link for Teammate">
             <i data-lucide="share-2" class="h-3.5 w-3.5"></i>
-            <span>Share Room Link</span>
+            <span>Share Room</span>
           </button>
         </div>
       </div>
@@ -290,35 +294,30 @@
             <!-- Members List -->
             <div class="mt-3">
               <div class="flex items-center justify-between mb-2">
-                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Team Alpha Roster</p>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Team Alpha Roster (Arrange Peers)</p>
                 <span class="text-[10px] text-emerald-400 font-bold" id="team1-live-count">1 Live</span>
               </div>
-              <div id="team1-members-list" class="flex flex-wrap gap-2">
-                <span class="inline-flex items-center gap-1.5 rounded-lg border border-[#B9F044]/30 bg-[#0B2A1E] px-2.5 py-1 text-xs font-bold text-white">
-                  <span class="h-2 w-2 rounded-full bg-[#B9F044]"></span>
-                  <span id="current-user-tag">You (Host 👑)</span>
-                </span>
-                <span class="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-bold text-slate-300">
-                  <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                  <span>Rohan Sharma</span>
-                </span>
+              <div id="team1-members-list" class="flex flex-wrap gap-2 min-h-[38px] p-1">
+                <!-- Dynamically populated with swap ⇄ and remove × controls -->
               </div>
             </div>
           </div>
 
-          <!-- Squad Actions -->
+          <!-- Squad Actions & Peer Drafting -->
           <div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="openPeerInviteModal('team1')" class="text-xs font-extrabold text-[#B9F044] hover:underline flex items-center gap-1">
-                <i data-lucide="plus-circle" class="h-3.5 w-3.5"></i> Add Campus Peer
-              </button>
-              <button type="button" onclick="copyTeamInviteLink('team1')" class="text-[11px] text-slate-300 hover:text-white flex items-center gap-1 ml-1" title="Copy Direct Invite Link for Team Alpha">
-                <i data-lucide="copy" class="h-3 w-3"></i> Copy Link
+            <div class="flex items-center flex-wrap gap-2">
+              <button type="button" onclick="openPeerInviteModal('team1')" class="text-xs font-extrabold text-[#B9F044] hover:underline flex items-center gap-1.5">
+                <i data-lucide="plus-circle" class="h-3.5 w-3.5"></i> Add Registered Peer
               </button>
             </div>
-            <button id="btn-join-team1" type="button" onclick="switchMySquad('team1')" class="hidden rounded-lg bg-[#B9F044]/20 border border-[#B9F044]/50 px-2 py-1 text-[10px] font-bold text-[#B9F044] hover:bg-[#B9F044] hover:text-[#0B1F17] transition">
-              Switch to Team Alpha
-            </button>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="copyTeamInviteLink('team1')" class="text-[11px] text-slate-300 hover:text-white flex items-center gap-1" title="Copy Direct Invite Link for Team Alpha">
+                <i data-lucide="copy" class="h-3 w-3"></i> Link
+              </button>
+              <button id="btn-join-team1" type="button" onclick="switchMySquad('team1')" class="hidden rounded-lg bg-[#B9F044]/20 border border-[#B9F044]/50 px-2 py-1 text-[10px] font-bold text-[#B9F044] hover:bg-[#B9F044] hover:text-[#0B1F17] transition">
+                Switch to Alpha
+              </button>
+            </div>
           </div>
         </div>
 
@@ -349,35 +348,30 @@
             <!-- Members List -->
             <div class="mt-3">
               <div class="flex items-center justify-between mb-2">
-                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Rival Titans Roster</p>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Rival Titans Roster (Arrange Peers)</p>
                 <span class="text-[10px] text-rose-400 font-bold" id="team2-live-count">1 Live</span>
               </div>
-              <div id="team2-members-list" class="flex flex-wrap gap-2">
-                <span class="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-950/30 px-2.5 py-1 text-xs font-bold text-rose-200">
-                  <span class="h-2 w-2 rounded-full bg-rose-400"></span>
-                  <span>Priya Verma (Rival Captain)</span>
-                </span>
-                <span class="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-bold text-slate-300">
-                  <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                  <span>Vikram Malhotra</span>
-                </span>
+              <div id="team2-members-list" class="flex flex-wrap gap-2 min-h-[38px] p-1">
+                <!-- Dynamically populated with swap ⇄ and remove × controls -->
               </div>
             </div>
           </div>
 
-          <!-- Squad Actions -->
+          <!-- Squad Actions & Peer Drafting -->
           <div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="openPeerInviteModal('team2')" class="text-xs font-extrabold text-rose-400 hover:underline flex items-center gap-1">
-                <i data-lucide="swords" class="h-3.5 w-3.5"></i> Add Campus Peer
-              </button>
-              <button type="button" onclick="copyTeamInviteLink('team2')" class="text-[11px] text-slate-300 hover:text-white flex items-center gap-1 ml-1" title="Copy Direct Invite Link for Rival Titans">
-                <i data-lucide="copy" class="h-3 w-3"></i> Copy Link
+            <div class="flex items-center flex-wrap gap-2">
+              <button type="button" onclick="openPeerInviteModal('team2')" class="text-xs font-extrabold text-rose-400 hover:underline flex items-center gap-1.5">
+                <i data-lucide="swords" class="h-3.5 w-3.5"></i> Add Registered Rival
               </button>
             </div>
-            <button id="btn-join-team2" type="button" onclick="switchMySquad('team2')" class="rounded-lg bg-rose-500/20 border border-rose-500/50 px-2 py-1 text-[10px] font-bold text-rose-300 hover:bg-rose-500 hover:text-white transition">
-              Switch to Rival Titans
-            </button>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="copyTeamInviteLink('team2')" class="text-[11px] text-slate-300 hover:text-white flex items-center gap-1" title="Copy Direct Invite Link for Rival Titans">
+                <i data-lucide="copy" class="h-3 w-3"></i> Link
+              </button>
+              <button id="btn-join-team2" type="button" onclick="switchMySquad('team2')" class="rounded-lg bg-rose-500/20 border border-rose-500/50 px-2 py-1 text-[10px] font-bold text-rose-300 hover:bg-rose-500 hover:text-white transition">
+                Switch to Rivals
+              </button>
+            </div>
           </div>
         </div>
 
@@ -906,16 +900,8 @@
         'cs-general': { name: 'Computer Science (Core)', icon: '💻', badge: 'CS & Systems', mode: 'quiz', group: 'tech' }
       };
 
-    // Campus Online Peers Directory (for live invite system)
-    const CAMPUS_ONLINE_PEERS = [
-      { id: 'peer-1', name: 'Rohan Sharma', dept: 'CSE &bull; 3rd Year', rr: 1380, tier: 'Gold I', avatar: '👨‍💻', online: true },
-      { id: 'peer-2', name: 'Priya Verma', dept: 'ECE &bull; 3rd Year', rr: 1210, tier: 'Gold II', avatar: '👩‍💻', online: true },
-      { id: 'peer-3', name: 'Vikram Malhotra', dept: 'CSE &bull; 4th Year', rr: 2120, tier: 'Diamond III', avatar: '⚡', online: true },
-      { id: 'peer-4', name: 'Sneha Patel', dept: 'IT &bull; 2nd Year', rr: 1140, tier: 'Gold III', avatar: '🚀', online: true },
-      { id: 'peer-5', name: 'Dev Rathore', dept: 'AI/DS &bull; 3rd Year', rr: 2650, tier: 'Master', avatar: '🏆', online: true },
-      { id: 'peer-6', name: 'Aisha Khan', dept: 'CSE &bull; 2nd Year', rr: 950, tier: 'Silver I', avatar: '🏎️', online: true },
-      { id: 'peer-7', name: 'Arjun Mehta', dept: 'Mechanical &bull; 3rd Year', rr: 870, tier: 'Silver II', avatar: '🛸', online: true }
-    ];
+    // Campus Online Peers Directory (loaded dynamically from real registered users)
+    const CAMPUS_ONLINE_PEERS = [];
 
     // ═══════════════════════════════════════════════════════════════════════
     // ARENA STATE
@@ -937,7 +923,7 @@
 
     let TEAMS = {
       team1: { name: 'Team Alpha', emoji: '🏎️', vehicle: 'Cyber GT Turbo', pts: 0, members: ['You (👑)'] },
-      team2: { name: 'Rival Titans', emoji: '🚀', vehicle: 'Rocket Dart', pts: 0, members: ['Rival Bot (Priya Verma)'] }
+      team2: { name: 'Rival Titans', emoji: '🚀', vehicle: 'Rocket Dart', pts: 0, members: ['Campus Pacer Bot 🚀'] }
     };
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -1006,6 +992,14 @@
       window.addEventListener('gyansetu:credits-updated', (e) => {
         if (e.detail?.newBalance != null) {
           document.getElementById('user-balance-display').textContent = e.detail.newBalance;
+        }
+      });
+
+      // Listen for competitive RR rating updates across windows & tabs
+      window.addEventListener('gyansetu:rr-updated', (e) => {
+        if (e.detail?.newRR != null) {
+          document.getElementById('user-rr-display').textContent = `${e.detail.newRR} RR`;
+          if (myUser?.profile) myUser.profile.rr = e.detail.newRR;
         }
       });
     });
@@ -1158,12 +1152,15 @@
         }
 
         const credits = prof?.credits ?? 100;
-        const rr = prof?.rr ?? 1000;
+        const rr = (myUser?.id && typeof localStorage !== 'undefined' && localStorage.getItem('gyansetu_user_rr_' + myUser.id) != null)
+          ? Number(localStorage.getItem('gyansetu_user_rr_' + myUser.id))
+          : (prof?.rr ?? 1245);
         const fullName = prof?.full_name || (myUser?.email ? myUser.email.split('@')[0] : 'Campus Student');
 
         if (myUser) {
           myUser.fullName = fullName;
           myUser.profile = prof;
+          if (myUser.profile) myUser.profile.rr = rr;
         }
 
         document.getElementById('user-balance-display').textContent = credits;
@@ -1176,6 +1173,18 @@
 
         // Asynchronously load real registered peers for the invite modal
         loadCampusPeersForArena();
+
+        // Restore cached squad arrangements if available
+        if (typeof sessionStorage !== 'undefined') {
+          try {
+            const cached = sessionStorage.getItem('gyansetu_arena_squads_' + currentRoom);
+            if (cached) {
+              const parsed = JSON.parse(cached);
+              if (Array.isArray(parsed.team1) && parsed.team1.length > 0) TEAMS.team1.members = parsed.team1;
+              if (Array.isArray(parsed.team2) && parsed.team2.length > 0) TEAMS.team2.members = parsed.team2;
+            }
+          } catch (e) {}
+        }
 
         // Update squad UI
         updateSquadSelectorUI();
@@ -1397,27 +1406,27 @@
         });
       }
 
-      // 6. If match is running, boost the active team's vehicle and broadcast
-      if (matchRunning) {
-        TEAMS[myTeam].pts = Math.min(100, TEAMS[myTeam].pts + 30);
-        updateCarPosition(myTeam, 'boost');
-        addCombatLog(`🚀 ${TEAMS[myTeam].name} (${myUser?.fullName || 'You'}) solved '${p.title}'! (+30 PTS SUPER NITRO BOOST!)`);
-
-        channel?.send({
-          type: 'broadcast',
-          event: 'team-point-update',
-          payload: {
-            senderId: myUser?.id,
-            senderName: myUser?.fullName || 'Teammate',
-            team: myTeam,
-            pts: TEAMS[myTeam].pts,
-            delta: 30,
-            reason: `Solved ${p.title}`
-          }
-        });
-      } else {
-        addCombatLog(`🎉 Challenge '${p.title}' solved! (+${creditsAwarded} 🪙 Credits & +${rrAwarded} 🏆 RR awarded)`);
+      // 6. Ensure match is running, boost the active team's vehicle and broadcast
+      if (!matchRunning) {
+        startRaceMatch(true);
       }
+
+      TEAMS[myTeam].pts = Math.min(100, TEAMS[myTeam].pts + 30);
+      updateCarPosition(myTeam, 'boost');
+      addCombatLog(`🚀 ${TEAMS[myTeam].name} (${myUser?.fullName || 'You'}) solved '${p.title}'! (+30 PTS SUPER NITRO BOOST!)`);
+
+      channel?.send({
+        type: 'broadcast',
+        event: 'team-point-update',
+        payload: {
+          senderId: myUser?.id,
+          senderName: myUser?.fullName || 'Teammate',
+          team: myTeam,
+          pts: TEAMS[myTeam].pts,
+          delta: 30,
+          reason: `Solved ${p.title}`
+        }
+      });
 
       feedback.innerHTML = `🎉 <strong>ACCEPTED!</strong> +${creditsAwarded} Platform Credits &amp; +${rrAwarded} RR deposited to your account!`;
       feedback.className = 'mt-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-3 text-center text-xs font-black text-emerald-300';
@@ -1606,13 +1615,12 @@
           });
         }
 
-        if (matchRunning) {
-          TEAMS[myTeam].pts = Math.min(100, TEAMS[myTeam].pts + 10);
-          updateCarPosition(myTeam, 'boost');
-          addCombatLog(`⚡ ${TEAMS[myTeam].name} solved Theory Sprint correctly! (+10 pts & +5 🪙 Credits)`);
-        } else {
-          addCombatLog(`⚡ Theory Sprint answered correctly! (+5 🪙 Credits & +5 🏆 RR)`);
+        if (!matchRunning) {
+          startRaceMatch(true);
         }
+        TEAMS[myTeam].pts = Math.min(100, TEAMS[myTeam].pts + 10);
+        updateCarPosition(myTeam, 'boost');
+        addCombatLog(`⚡ ${TEAMS[myTeam].name} solved Theory Sprint correctly! (+10 pts & +5 🪙 Credits)`);
         feedback.innerHTML = `✅ <strong>CORRECT!</strong> +5 Credits &amp; +5 RR awarded to your account!`;
         feedback.className = 'mt-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-3 text-center text-xs font-black text-emerald-300';
       } else {
@@ -2139,14 +2147,6 @@
           avatar: (u.full_name && u.full_name.charCodeAt(0) % 2 === 0) ? '👨‍💻' : '👩‍💻'
         }));
 
-        if (allCampusRegisteredPeers.length === 0) {
-          allCampusRegisteredPeers = [
-            { id: 'peer_rohan', name: 'Rohan Sharma', dept: 'B.Tech CSE - 3rd Year', college: 'Graphic Era Hill University', rr: 1240, tier: 'Gold', avatar: '👨‍💻' },
-            { id: 'peer_priya', name: 'Priya Verma', dept: 'B.Tech AI/ML - 2nd Year', college: 'Graphic Era Hill University', rr: 1380, tier: 'Platinum', avatar: '👩‍💻' },
-            { id: 'peer_vikram', name: 'Vikram Malhotra', dept: 'MCA - 1st Year', college: 'Graphic Era Hill University', rr: 1110, tier: 'Silver', avatar: '👨‍💻' },
-            { id: 'peer_ananya', name: 'Ananya Joshi', dept: 'B.Tech CSE - 4th Year', college: 'Graphic Era Hill University', rr: 1490, tier: 'Diamond', avatar: '👩‍💻' }
-          ];
-        }
       } catch (err) {
         console.warn('Could not load campus peers directory:', err);
       }
@@ -2219,22 +2219,63 @@
       lucide.createIcons();
     }
 
+    function normalizeMember(m, squadKey) {
+      if (!m) return { name: 'Player', isMe: false, isCaptain: false, isBot: false, avatar: '👤' };
+      if (typeof m === 'object' && m !== null) {
+        return {
+          name: m.name || 'Player',
+          isMe: !!m.isMe,
+          isCaptain: !!m.isCaptain,
+          isBot: !!m.isBot,
+          avatar: m.avatar || (m.isBot ? '🤖' : (m.isMe ? '⭐' : '👨‍💻'))
+        };
+      }
+      const str = String(m);
+      const isMe = str.includes('(You') || str.includes('You');
+      const isCaptain = str.includes('👑') || str.includes('Captain');
+      const isBot = str.includes('Bot') || str.includes('Adaptive');
+      const cleanName = str.replace(/\(You.*?\)/gi, '').replace(/\(Rival.*?\)/gi, '').replace(/\(Adaptive\)/gi, '').replace(/[👑👤⭐]/g, '').trim();
+      return {
+        name: cleanName || str,
+        isMe,
+        isCaptain,
+        isBot,
+        avatar: isBot ? '🤖' : (isMe ? '⭐' : (cleanName.charCodeAt(0) % 2 === 0 ? '👨‍💻' : '👩‍💻'))
+      };
+    }
+
+    function saveArenaSquads() {
+      if (typeof sessionStorage !== 'undefined') {
+        try {
+          sessionStorage.setItem('gyansetu_arena_squads_' + currentRoom, JSON.stringify({
+            team1: TEAMS.team1.members,
+            team2: TEAMS.team2.members
+          }));
+        } catch (e) {}
+      }
+    }
+
+    function quickAddPeer(squadKey, peerName) {
+      addPeerToSquad(squadKey, peerName);
+    }
+
     function addPeerToSquad(squadKey, peerName) {
-      if (!TEAMS[squadKey].members.includes(peerName)) {
+      const existing = (TEAMS[squadKey].members || []).some(m => normalizeMember(m, squadKey).name.toLowerCase() === peerName.toLowerCase());
+      if (!existing) {
         TEAMS[squadKey].members.push(peerName);
       }
       renderSquadRosters();
 
-      addCombatLog(`📨 Invitation sent to ${peerName}! Added to ${TEAMS[squadKey].name}. Room: ${currentRoom}`);
+      addCombatLog(`📨 Added ${peerName} to ${TEAMS[squadKey].name}! Room: ${currentRoom}`);
       playSound('correct');
 
-      // Toast alert
       const feedback = document.getElementById('action-feedback-banner');
-      feedback.textContent = `✅ ${peerName} invited to ${TEAMS[squadKey].name}! Direct invite link dispatched.`;
-      feedback.className = 'mt-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-2.5 text-center text-xs font-bold text-emerald-300';
-      feedback.classList.remove('hidden');
+      if (feedback) {
+        feedback.textContent = `✅ ${peerName} drafted into ${TEAMS[squadKey].name}! Direct invite link dispatched.`;
+        feedback.className = 'mt-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-2.5 text-center text-xs font-bold text-emerald-300';
+        feedback.classList.remove('hidden');
+      }
 
-      // Broadcast squad member join
       channel?.send({
         type: 'broadcast',
         event: 'peer-squad-join',
@@ -2242,28 +2283,184 @@
       });
     }
 
-    function renderSquadRosters() {
-      // Squad 1
-      const list1 = document.getElementById('team1-members-list');
-      if (list1) {
-        list1.innerHTML = TEAMS.team1.members.map(m => `
-          <span class="inline-flex items-center gap-1.5 rounded-lg border border-[#B9F044]/30 bg-[#0B2A1E] px-2.5 py-1 text-xs font-bold text-white shadow-sm">
-            <span class="h-2 w-2 rounded-full bg-[#B9F044]"></span>
-            <span>${m}</span>
-          </span>
-        `).join('');
+    function moveMember(fromSquad, index, toSquad) {
+      if (matchRunning) {
+        alert('Cannot rearrange squads while the race is live!');
+        return;
+      }
+      const member = TEAMS[fromSquad].members[index];
+      if (!member) return;
+      const parsed = normalizeMember(member, fromSquad);
+
+      if (parsed.isMe) {
+        switchMySquad(toSquad);
+        return;
       }
 
-      // Squad 2
+      TEAMS[fromSquad].members.splice(index, 1);
+      TEAMS[toSquad].members.push(member);
+      renderSquadRosters();
+      addCombatLog(`⇄ <strong>${parsed.name}</strong> moved to ${TEAMS[toSquad].name}!`);
+      playSound('boost');
+
+      channel?.send({
+        type: 'broadcast',
+        event: 'peer-squad-move',
+        payload: { member, fromSquad, toSquad }
+      });
+    }
+
+    function removeMember(squadKey, index) {
+      if (matchRunning) {
+        alert('Cannot remove squad members while the race is live!');
+        return;
+      }
+      const member = TEAMS[squadKey].members[index];
+      if (!member) return;
+      const parsed = normalizeMember(member, squadKey);
+
+      if (parsed.isMe) {
+        alert('You cannot remove yourself from your active squad. You can switch squads instead.');
+        return;
+      }
+
+      TEAMS[squadKey].members.splice(index, 1);
+      renderSquadRosters();
+      addCombatLog(`❌ <strong>${parsed.name}</strong> removed from ${TEAMS[squadKey].name}.`);
+      playSound('error');
+
+      channel?.send({
+        type: 'broadcast',
+        event: 'peer-squad-remove',
+        payload: { squadKey, index, member }
+      });
+    }
+
+    function autoBalanceSquads() {
+      if (matchRunning) {
+        alert('Cannot auto-balance while the race is live!');
+        return;
+      }
+
+      const allMembers = [];
+      const addUnique = (m, fromTeam) => {
+        const norm = normalizeMember(m, fromTeam);
+        if (!allMembers.some(x => normalizeMember(x, '').name.toLowerCase() === norm.name.toLowerCase())) {
+          allMembers.push(m);
+        }
+      };
+
+      (TEAMS.team1.members || []).forEach(m => addUnique(m, 'team1'));
+      (TEAMS.team2.members || []).forEach(m => addUnique(m, 'team2'));
+
+      const myMember = allMembers.find(m => normalizeMember(m, '').isMe) || `${myUser?.fullName || 'You'} (You 👑)`;
+      const otherMembers = allMembers.filter(m => !normalizeMember(m, '').isMe);
+
+      TEAMS.team1.members = [];
+      TEAMS.team2.members = [];
+
+      if (myTeam === 'team1') {
+        TEAMS.team1.members.push(myMember);
+      } else {
+        TEAMS.team2.members.push(myMember);
+      }
+
+      otherMembers.forEach(m => {
+        if (TEAMS.team1.members.length <= TEAMS.team2.members.length) {
+          TEAMS.team1.members.push(m);
+        } else {
+          TEAMS.team2.members.push(m);
+        }
+      });
+
+      if (TEAMS.team2.members.length === 0) {
+        TEAMS.team2.members.push('Campus Pacer Bot 🚀');
+      }
+
+      renderSquadRosters();
+      addCombatLog(`⚖️ Squads auto-balanced! ${TEAMS.team1.members.length} VS ${TEAMS.team2.members.length}`);
+      playSound('boost');
+
+      channel?.send({
+        type: 'broadcast',
+        event: 'squads-auto-balanced',
+        payload: {
+          team1: TEAMS.team1.members,
+          team2: TEAMS.team2.members
+        }
+      });
+    }
+
+    function renderSquadRosters() {
+      saveArenaSquads();
+
+      // Render Squad 1
+      const list1 = document.getElementById('team1-members-list');
+      if (list1) {
+        if (!TEAMS.team1.members || TEAMS.team1.members.length === 0) {
+          list1.innerHTML = `<span class="text-[11px] text-slate-400 italic">No members yet. Add registered peers or share room link.</span>`;
+        } else {
+          list1.innerHTML = TEAMS.team1.members.map((m, idx) => {
+            const item = normalizeMember(m, 'team1');
+            return `
+              <div class="inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044]/40 bg-[#0B2A1E] px-2.5 py-1 text-xs font-bold text-white shadow-sm transition hover:border-[#B9F044]">
+                <span class="text-xs">${item.avatar}</span>
+                <span class="max-w-[110px] sm:max-w-[140px] truncate">${item.name}</span>
+                ${item.isCaptain ? '<span class="text-[11px]" title="Squad Captain">👑</span>' : ''}
+                ${item.isMe ? '<span class="rounded bg-[#B9F044] text-[#0B1F17] px-1 py-0.2 text-[8px] font-black uppercase">YOU</span>' : ''}
+                
+                <div class="flex items-center gap-1.5 ml-1 border-l border-white/20 pl-1.5">
+                  <button type="button" onclick="moveMember('team1', ${idx}, 'team2')" class="text-slate-400 hover:text-[#B9F044] text-[11px] font-extrabold transition" title="Swap to Rival Titans">
+                    ⇄
+                  </button>
+                  ${!item.isMe ? `
+                    <button type="button" onclick="removeMember('team1', ${idx})" class="text-slate-400 hover:text-rose-400 text-sm font-black leading-none transition" title="Remove from squad">
+                      ×
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Render Squad 2
       const list2 = document.getElementById('team2-members-list');
       if (list2) {
-        list2.innerHTML = TEAMS.team2.members.map(m => `
-          <span class="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-950/30 px-2.5 py-1 text-xs font-bold text-rose-200 shadow-sm">
-            <span class="h-2 w-2 rounded-full bg-rose-400"></span>
-            <span>${m}</span>
-          </span>
-        `).join('');
+        if (!TEAMS.team2.members || TEAMS.team2.members.length === 0) {
+          list2.innerHTML = `<span class="text-[11px] text-slate-400 italic">No rivals yet. Add registered rivals or share room link.</span>`;
+        } else {
+          list2.innerHTML = TEAMS.team2.members.map((m, idx) => {
+            const item = normalizeMember(m, 'team2');
+            return `
+              <div class="inline-flex items-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-950/40 px-2.5 py-1 text-xs font-bold text-rose-200 shadow-sm transition hover:border-rose-400">
+                <span class="text-xs">${item.avatar}</span>
+                <span class="max-w-[110px] sm:max-w-[140px] truncate">${item.name}</span>
+                ${item.isCaptain ? '<span class="text-[11px]" title="Squad Captain">👑</span>' : ''}
+                ${item.isMe ? '<span class="rounded bg-rose-500 text-white px-1 py-0.2 text-[8px] font-black uppercase">YOU</span>' : ''}
+                
+                <div class="flex items-center gap-1.5 ml-1 border-l border-white/20 pl-1.5">
+                  <button type="button" onclick="moveMember('team2', ${idx}, 'team1')" class="text-slate-400 hover:text-[#B9F044] text-[11px] font-extrabold transition" title="Swap to Team Alpha">
+                    ⇄
+                  </button>
+                  ${!item.isMe ? `
+                    <button type="button" onclick="removeMember('team2', ${idx})" class="text-slate-400 hover:text-rose-400 text-sm font-black leading-none transition" title="Remove from squad">
+                      ×
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
       }
+
+      // Update count indicators
+      const count1 = document.getElementById('team1-live-count');
+      if (count1) count1.textContent = `${TEAMS.team1.members?.length || 0} Member${TEAMS.team1.members?.length === 1 ? '' : 's'}`;
+      const count2 = document.getElementById('team2-live-count');
+      if (count2) count2.textContent = `${TEAMS.team2.members?.length || 0} Member${TEAMS.team2.members?.length === 1 ? '' : 's'}`;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -2348,24 +2545,28 @@
       const count2 = document.getElementById('team2-live-count');
       if (count2) count2.textContent = `${t2.length} Online`;
 
-      // Update squad rosters
-      TEAMS.team1.members = t1.map(p => {
+      // Merge live peers into squad rosters without erasing manually arranged teammates
+      peers.forEach(p => {
         const isMe = (p.id === myUser?.id);
-        return isMe ? `${p.name} (You 👑)` : p.name;
+        const peerLabel = isMe ? `${p.name} (You 👑)` : p.name;
+        const targetSquad = p.team === 'team2' ? 'team2' : 'team1';
+
+        const inTeam1 = TEAMS.team1.members.some(m => normalizeMember(m, 'team1').name.toLowerCase() === p.name.toLowerCase());
+        const inTeam2 = TEAMS.team2.members.some(m => normalizeMember(m, 'team2').name.toLowerCase() === p.name.toLowerCase());
+        if (!inTeam1 && !inTeam2) {
+          TEAMS[targetSquad].members.push(peerLabel);
+        }
       });
-      if (TEAMS.team1.members.length === 0 && myTeam === 'team1') {
-        TEAMS.team1.members.push(`${myUser?.fullName || 'You'} (You 👑)`);
+
+      // Ensure current user is in myTeam
+      const hasMe = TEAMS[myTeam].members.some(m => normalizeMember(m, myTeam).isMe);
+      if (!hasMe) {
+        TEAMS[myTeam].members.unshift(`${myUser?.fullName || 'You'} (You 👑)`);
       }
 
-      TEAMS.team2.members = t2.map(p => {
-        const isMe = (p.id === myUser?.id);
-        return isMe ? `${p.name} (You 👑)` : p.name;
-      });
-      if (TEAMS.team2.members.length === 0 && myTeam === 'team2') {
-        TEAMS.team2.members.push(`${myUser?.fullName || 'You'} (You 👑)`);
-      } else if (TEAMS.team2.members.length === 0) {
-        // If no human peers on Team 2, display AI Rival Bot placeholder
-        TEAMS.team2.members.push('AI Rival Bot (Adaptive)');
+      // Ensure Team 2 has a rival if empty
+      if (TEAMS.team2.members.length === 0) {
+        TEAMS.team2.members.push('Campus Pacer Bot 🚀');
       }
 
       renderSquadRosters();
@@ -2420,11 +2621,42 @@
 
       channel.on('broadcast', { event: 'peer-squad-join' }, ({ payload }) => {
         if (!payload?.squad || !payload?.peer) return;
-        if (!TEAMS[payload.squad].members.includes(payload.peer)) {
+        if (!TEAMS[payload.squad].members.some(m => normalizeMember(m, payload.squad).name.toLowerCase() === payload.peer.toLowerCase())) {
           TEAMS[payload.squad].members.push(payload.peer);
           renderSquadRosters();
           addCombatLog(`👋 <strong>${payload.peer}</strong> joined ${TEAMS[payload.squad].name} via live link!`);
         }
+      });
+
+      channel.on('broadcast', { event: 'peer-squad-move' }, ({ payload }) => {
+        if (!payload?.member || !payload?.fromSquad || !payload?.toSquad) return;
+        const norm = normalizeMember(payload.member, payload.fromSquad);
+        const idx = TEAMS[payload.fromSquad].members.findIndex(m => normalizeMember(m, payload.fromSquad).name.toLowerCase() === norm.name.toLowerCase());
+        if (idx >= 0) TEAMS[payload.fromSquad].members.splice(idx, 1);
+        if (!TEAMS[payload.toSquad].members.some(m => normalizeMember(m, payload.toSquad).name.toLowerCase() === norm.name.toLowerCase())) {
+          TEAMS[payload.toSquad].members.push(payload.member);
+        }
+        renderSquadRosters();
+        addCombatLog(`⇄ <strong>${norm.name}</strong> was moved to ${TEAMS[payload.toSquad].name}!`);
+      });
+
+      channel.on('broadcast', { event: 'peer-squad-remove' }, ({ payload }) => {
+        if (!payload?.squadKey || !payload?.member) return;
+        const norm = normalizeMember(payload.member, payload.squadKey);
+        const idx = TEAMS[payload.squadKey].members.findIndex(m => normalizeMember(m, payload.squadKey).name.toLowerCase() === norm.name.toLowerCase());
+        if (idx >= 0) {
+          TEAMS[payload.squadKey].members.splice(idx, 1);
+          renderSquadRosters();
+          addCombatLog(`❌ <strong>${norm.name}</strong> was removed from ${TEAMS[payload.squadKey].name}.`);
+        }
+      });
+
+      channel.on('broadcast', { event: 'squads-auto-balanced' }, ({ payload }) => {
+        if (!payload?.team1 || !payload?.team2) return;
+        TEAMS.team1.members = payload.team1;
+        TEAMS.team2.members = payload.team2;
+        renderSquadRosters();
+        addCombatLog(`⚖️ Squads were auto-balanced!`);
       });
 
       channel.on('broadcast', { event: 'match-start' }, ({ payload }) => {

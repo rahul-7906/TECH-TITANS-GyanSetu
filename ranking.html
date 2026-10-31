@@ -448,8 +448,9 @@
             full_name: prof.full_name || (prof.email || userObj?.email || 'Campus Student').split('@')[0],
             email: prof.email || userObj?.email || '',
             department: prof.department || 'Computer Science',
-            role: prof.role || 'learner',
-            rr: Number(prof.rr) || (1000 + (Number(prof.xp) || 50) * 2),
+            rr: (typeof localStorage !== 'undefined' && localStorage.getItem('gyansetu_user_rr_' + prof.id) != null)
+              ? Number(localStorage.getItem('gyansetu_user_rr_' + prof.id))
+              : (Number(prof.rr) || (1000 + (Number(prof.xp) || 50) * 2)),
             xp: Number(prof.xp) || 50,
             credits: Number(prof.credits) || 100,
             streak: Number(prof.streak) || 1,
@@ -809,6 +810,18 @@
         </div>
       `).join('');
     }
+
+    window.addEventListener('gyansetu:rr-updated', (e) => {
+      if (e.detail?.newRR != null && currentProfile) {
+        currentProfile.rr = e.detail.newRR;
+        if (allPeers && allPeers.length > 0) {
+          const idx = allPeers.findIndex(p => p.id === currentProfile.id || p.full_name === currentProfile.full_name);
+          if (idx >= 0) allPeers[idx].rr = e.detail.newRR;
+        }
+        updateUserNavAndPinnedBar();
+        renderLeaderboardUI();
+      }
+    });
 
     function escapeHtml(str) {
       if (!str) return '';

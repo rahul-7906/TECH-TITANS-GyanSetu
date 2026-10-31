@@ -170,34 +170,31 @@ function calculateRank(rrValue) {
 /**
  * ORIGINAL GYANSETU RANK EMBLEMS
  * Renders original, crisp metallic vector artwork for each rank tier.
- * Completely free of copyrighted game assets.
+ * Uses dynamic unique IDs to guarantee zero SVG paint-server collisions or black fallbacks.
  */
 function renderRankEmblem(tierKey, size = 64, className = '') {
-  const key = String(tierKey || 'bronze').toLowerCase().replace(/\s+/g, '');
+  const key = String(tierKey || 'gold').toLowerCase().replace(/\s+/g, '');
+  const uid = 'rr_' + key + '_' + Math.floor(Math.random() * 1000000);
 
   switch (key) {
     case 'bronze':
       return `
-        <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-md ${className}" aria-label="Bronze Rank Emblem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-md ${className}" aria-label="Bronze Rank Emblem">
           <defs>
-            <linearGradient id="brz-body" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#E29050"/>
-              <stop offset="50%" stop-color="#B86226"/>
-              <stop offset="100%" stop-color="#7C3B12"/>
-            </linearGradient>
-            <linearGradient id="brz-rim" x1="0%" y1="0%" x2="0%" y2="100%">
+            <linearGradient id="${uid}-body" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#FED7AA"/>
+              <stop offset="35%" stop-color="#FB923C"/>
+              <stop offset="70%" stop-color="#EA580C"/>
               <stop offset="100%" stop-color="#9A3412"/>
             </linearGradient>
+            <linearGradient id="${uid}-rim" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#FFF7ED"/>
+              <stop offset="100%" stop-color="#C2410C"/>
+            </linearGradient>
           </defs>
-          <!-- Outer Shield Base -->
-          <polygon points="50,6 88,24 76,78 50,94 24,78 12,24" fill="url(#brz-body)" stroke="url(#brz-rim)" stroke-width="3" stroke-linejoin="round"/>
-          <!-- Inner Facets -->
-          <polygon points="50,14 80,29 70,72 50,86 30,72 20,29" fill="#9A3412" opacity="0.6"/>
-          <polygon points="50,14 50,86 30,72 20,29" fill="#7C2D12" opacity="0.5"/>
-          <!-- Center Emblem: Student Torch / Chevron -->
-          <path d="M50 30 L60 48 L53 48 L55 64 L45 64 L47 48 L40 48 Z" fill="#FED7AA"/>
-          <!-- Wing rivets -->
+          <polygon points="50,6 88,24 76,78 50,94 24,78 12,24" fill="url(#${uid}-body)" stroke="url(#${uid}-rim)" stroke-width="3" stroke-linejoin="round"/>
+          <polygon points="50,14 80,29 70,72 50,86 30,72 20,29" fill="#7C2D12" opacity="0.35"/>
+          <path d="M50 30 L60 48 L53 48 L55 64 L45 64 L47 48 L40 48 Z" fill="#FFEDD5"/>
           <circle cx="28" cy="38" r="2.5" fill="#FED7AA"/>
           <circle cx="72" cy="38" r="2.5" fill="#FED7AA"/>
           <circle cx="50" cy="74" r="3" fill="#FED7AA"/>
@@ -205,174 +202,153 @@ function renderRankEmblem(tierKey, size = 64, className = '') {
 
     case 'silver':
       return `
-        <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-md ${className}" aria-label="Silver Rank Emblem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-md ${className}" aria-label="Silver Rank Emblem">
           <defs>
-            <linearGradient id="slv-body" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="${uid}-body" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#FFFFFF"/>
-              <stop offset="45%" stop-color="#CBD5E1"/>
-              <stop offset="100%" stop-color="#475569"/>
-            </linearGradient>
-            <linearGradient id="slv-core" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#F8FAFC"/>
+              <stop offset="40%" stop-color="#E2E8F0"/>
+              <stop offset="75%" stop-color="#94A3B8"/>
               <stop offset="100%" stop-color="#64748B"/>
             </linearGradient>
+            <linearGradient id="${uid}-core" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#FFFFFF"/>
+              <stop offset="100%" stop-color="#CBD5E1"/>
+            </linearGradient>
           </defs>
-          <!-- Stepped Silver Crest -->
-          <polygon points="50,5 92,26 80,80 50,95 20,80 8,26" fill="url(#slv-body)" stroke="#E2E8F0" stroke-width="2.5" stroke-linejoin="round"/>
-          <!-- Inset wings -->
-          <polygon points="50,14 82,30 72,73 50,86 28,73 18,30" fill="#334155" opacity="0.4"/>
-          <!-- Dual Chevron Blades -->
-          <path d="M50 24 L70 42 L64 47 L50 35 L36 47 L30 42 Z" fill="url(#slv-core)"/>
-          <path d="M50 40 L68 56 L62 61 L50 51 L38 61 L32 56 Z" fill="url(#slv-core)"/>
-          <!-- Silver Core Star Gem -->
-          <polygon points="50,58 54,66 63,67 56,73 58,81 50,76 42,81 44,73 37,67 46,66" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
+          <polygon points="50,5 92,26 80,80 50,95 20,80 8,26" fill="url(#${uid}-body)" stroke="#F8FAFC" stroke-width="2.5" stroke-linejoin="round"/>
+          <polygon points="50,14 82,30 72,73 50,86 28,73 18,30" fill="#475569" opacity="0.25"/>
+          <path d="M50 24 L70 42 L64 47 L50 35 L36 47 L30 42 Z" fill="url(#${uid}-core)"/>
+          <path d="M50 40 L68 56 L62 61 L50 51 L38 61 L32 56 Z" fill="url(#${uid}-core)"/>
+          <polygon points="50,58 54,66 63,67 56,73 58,81 50,76 42,81 44,73 37,67 46,66" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
         </svg>`;
 
     case 'gold':
       return `
-        <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-lg ${className}" aria-label="Gold Rank Emblem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-lg ${className}" aria-label="Gold Rank Emblem">
           <defs>
-            <linearGradient id="gld-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#FEF08A"/>
-              <stop offset="40%" stop-color="#F59E0B"/>
-              <stop offset="100%" stop-color="#B45309"/>
+            <linearGradient id="${uid}-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFFBEB"/>
+              <stop offset="25%" stop-color="#FDE047"/>
+              <stop offset="60%" stop-color="#F59E0B"/>
+              <stop offset="100%" stop-color="#D97706"/>
             </linearGradient>
-            <linearGradient id="gld-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#6EE7B7"/>
+            <linearGradient id="${uid}-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#A7F3D0"/>
+              <stop offset="50%" stop-color="#10B981"/>
               <stop offset="100%" stop-color="#047857"/>
             </linearGradient>
           </defs>
-          <!-- Radiating Gold Points -->
-          <polygon points="50,2 62,20 84,10 80,32 98,38 84,54 94,74 74,74 68,96 50,82 32,96 26,74 6,74 16,54 2,38 20,32 16,10 38,20" fill="url(#gld-gold)" opacity="0.3"/>
+          <!-- Radiating Gold Points Halo -->
+          <polygon points="50,2 62,20 84,10 80,32 98,38 84,54 94,74 74,74 68,96 50,82 32,96 26,74 6,74 16,54 2,38 20,32 16,10 38,20" fill="url(#${uid}-gold)" opacity="0.4"/>
           <!-- Primary Knight Crest -->
-          <polygon points="50,6 90,26 78,82 50,96 22,82 10,26" fill="url(#gld-gold)" stroke="#FEF08A" stroke-width="3" stroke-linejoin="round"/>
-          <polygon points="50,14 80,30 70,74 50,86 30,74 20,30" fill="#78350F" opacity="0.5"/>
+          <polygon points="50,6 90,26 78,82 50,96 22,82 10,26" fill="url(#${uid}-gold)" stroke="#FEF08A" stroke-width="2.5" stroke-linejoin="round"/>
+          <polygon points="50,14 80,30 70,74 50,86 30,74 20,30" fill="#92400E" opacity="0.25"/>
           <!-- Dual Gold Wings -->
-          <path d="M50 22 L72 38 L65 44 L50 32 L35 44 L28 38 Z" fill="#FEF08A"/>
-          <!-- Central Emerald Gyan-Setu Jewel -->
-          <polygon points="50,42 66,54 50,78 34,54" fill="url(#gld-emerald)" stroke="#FEF08A" stroke-width="2"/>
-          <polygon points="50,42 50,78 34,54" fill="#065F46" opacity="0.4"/>
+          <path d="M50 22 L72 38 L65 44 L50 32 L35 44 L28 38 Z" fill="#FFFBEB"/>
+          <!-- Central Emerald Jewel -->
+          <polygon points="50,42 66,54 50,78 34,54" fill="url(#${uid}-emerald)" stroke="#FFFBEB" stroke-width="2"/>
         </svg>`;
 
     case 'platinum':
       return `
-        <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-lg ${className}" aria-label="Platinum Rank Emblem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-lg ${className}" aria-label="Platinum Rank Emblem">
           <defs>
-            <linearGradient id="plt-core" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#A5F3FC"/>
-              <stop offset="50%" stop-color="#0891B2"/>
-              <stop offset="100%" stop-color="#155E75"/>
+            <linearGradient id="${uid}-core" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ECFEFF"/>
+              <stop offset="35%" stop-color="#67E8F9"/>
+              <stop offset="70%" stop-color="#06B6D4"/>
+              <stop offset="100%" stop-color="#0891B2"/>
             </linearGradient>
-            <linearGradient id="plt-blade" x1="0%" y1="0%" x2="0%" y2="100%">
+            <linearGradient id="${uid}-blade" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stop-color="#FFFFFF"/>
-              <stop offset="100%" stop-color="#67E8F9"/>
+              <stop offset="100%" stop-color="#A5F3FC"/>
             </linearGradient>
           </defs>
           <!-- Hexagonal Prismatic Base -->
-          <polygon points="50,4 92,25 92,75 50,96 8,75 8,25" fill="#083344" stroke="#67E8F9" stroke-width="2.5" stroke-linejoin="round"/>
+          <polygon points="50,4 92,25 92,75 50,96 8,75 8,25" fill="url(#${uid}-core)" stroke="#CFFAFE" stroke-width="2.5" stroke-linejoin="round"/>
           <!-- Twin Crystalline Wings -->
-          <path d="M14 28 L40 46 L34 68 L14 52 Z" fill="url(#plt-blade)" opacity="0.85"/>
-          <path d="M86 28 L60 46 L66 68 L86 52 Z" fill="url(#plt-blade)" opacity="0.85"/>
-          <!-- Central Platinum Hex Prism -->
-          <polygon points="50,18 76,32 76,68 50,82 24,68 24,32" fill="url(#plt-core)" stroke="#CFFAFE" stroke-width="2.5"/>
-          <polygon points="50,18 50,82 24,68 24,32" fill="#083344" opacity="0.35"/>
+          <path d="M14 28 L40 46 L34 68 L14 52 Z" fill="url(#${uid}-blade)" opacity="0.9"/>
+          <path d="M86 28 L60 46 L66 68 L86 52 Z" fill="url(#${uid}-blade)" opacity="0.9"/>
+          <!-- Central Platinum Prism -->
+          <polygon points="50,18 76,32 76,68 50,82 24,68 24,32" fill="#0E7490" opacity="0.4" stroke="#FFFFFF" stroke-width="2"/>
           <!-- Energy Core -->
-          <circle cx="50" cy="50" r="10" fill="#E0F2FE" stroke="#38BDF8" stroke-width="2"/>
+          <circle cx="50" cy="50" r="10" fill="#FFFFFF" stroke="#38BDF8" stroke-width="2.5"/>
         </svg>`;
 
     case 'diamond':
       return `
-        <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-xl ${className}" aria-label="Diamond Rank Emblem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-xl ${className}" aria-label="Diamond Rank Emblem">
           <defs>
-            <linearGradient id="dia-glow" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#E0E7FF"/>
-              <stop offset="30%" stop-color="#818CF8"/>
-              <stop offset="70%" stop-color="#4F46E5"/>
-              <stop offset="100%" stop-color="#312E81"/>
+            <linearGradient id="${uid}-dia" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#EFF6FF"/>
+              <stop offset="30%" stop-color="#93C5FD"/>
+              <stop offset="65%" stop-color="#3B82F6"/>
+              <stop offset="100%" stop-color="#1D4ED8"/>
             </linearGradient>
-            <linearGradient id="dia-spark" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="${uid}-spark" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#FFFFFF"/>
-              <stop offset="100%" stop-color="#C7D2FE"/>
+              <stop offset="100%" stop-color="#DBEAFE"/>
             </linearGradient>
           </defs>
-          <!-- Outer Crown of Diamond Spikes -->
-          <polygon points="50,2 60,20 82,14 74,34 96,44 76,56 86,78 64,74 50,98 36,74 14,78 24,56 4,44 26,34 18,14 40,20" fill="url(#dia-glow)" opacity="0.4"/>
-          <!-- Brilliant Cut Diamond -->
-          <polygon points="50,8 88,34 50,92 12,34" fill="url(#dia-glow)" stroke="#EEF2FF" stroke-width="3" stroke-linejoin="round"/>
-          <!-- Diamond Facets -->
-          <polygon points="50,8 32,34 12,34" fill="#6366F1" opacity="0.6"/>
-          <polygon points="50,8 68,34 88,34" fill="#A5B4FC" opacity="0.8"/>
-          <polygon points="50,8 32,34 68,34" fill="#EEF2FF" opacity="0.9"/>
-          <polygon points="32,34 50,92 12,34" fill="#312E81" opacity="0.5"/>
-          <polygon points="68,34 50,92 88,34" fill="#4338CA" opacity="0.6"/>
-          <polygon points="32,34 68,34 50,92" fill="url(#dia-spark)"/>
+          <!-- Outer Crown Halo -->
+          <polygon points="50,2 60,20 82,14 74,34 96,44 76,56 86,78 64,74 50,98 36,74 14,78 24,56 4,44 26,34 18,14 40,20" fill="url(#${uid}-dia)" opacity="0.4"/>
+          <!-- Brilliant Cut Diamond Base -->
+          <polygon points="50,8 88,34 50,92 12,34" fill="url(#${uid}-dia)" stroke="#DBEAFE" stroke-width="3" stroke-linejoin="round"/>
+          <!-- Facets -->
+          <polygon points="50,8 32,34 12,34" fill="#60A5FA" opacity="0.6"/>
+          <polygon points="50,8 68,34 88,34" fill="#93C5FD" opacity="0.8"/>
+          <polygon points="50,8 32,34 68,34" fill="#EFF6FF" opacity="0.95"/>
+          <polygon points="32,34 68,34 50,92" fill="url(#${uid}-spark)"/>
           <!-- Center Starlight Refraction -->
           <polygon points="50,42 54,49 61,50 56,55 57,62 50,58 43,62 44,55 39,50 46,49" fill="#FFFFFF"/>
         </svg>`;
 
     case 'master':
       return `
-        <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-xl ${className}" aria-label="Master Rank Emblem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-xl ${className}" aria-label="Master Rank Emblem">
           <defs>
-            <linearGradient id="mst-core" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#F3E8FF"/>
-              <stop offset="35%" stop-color="#C084FC"/>
-              <stop offset="70%" stop-color="#7E22CE"/>
-              <stop offset="100%" stop-color="#3B0764"/>
+            <linearGradient id="${uid}-core" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FAF5FF"/>
+              <stop offset="30%" stop-color="#D8B4FE"/>
+              <stop offset="70%" stop-color="#9333EA"/>
+              <stop offset="100%" stop-color="#6B21A8"/>
             </linearGradient>
-            <linearGradient id="mst-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="${uid}-gold" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#FEF08A"/>
-              <stop offset="100%" stop-color="#CA8A04"/>
+              <stop offset="100%" stop-color="#EAB308"/>
             </linearGradient>
           </defs>
-          <!-- Outer Heraldic Halo -->
-          <circle cx="50" cy="50" r="44" stroke="#A855F7" stroke-width="2" stroke-dasharray="4 4" opacity="0.5"/>
-          <!-- Imperial Crest Blades -->
-          <polygon points="50,6 94,28 78,84 50,96 22,84 6,28" fill="url(#mst-core)" stroke="url(#mst-gold)" stroke-width="3" stroke-linejoin="round"/>
-          <polygon points="50,14 82,32 70,76 50,86 30,76 18,32" fill="#2E1065" opacity="0.6"/>
-          <!-- Master Imperial Crown -->
-          <path d="M26 36 L34 52 L50 40 L66 52 L74 36 L70 60 L30 60 Z" fill="url(#mst-gold)" stroke="#FEF08A" stroke-width="2"/>
+          <circle cx="50" cy="50" r="44" stroke="#C084FC" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"/>
+          <polygon points="50,6 94,28 78,84 50,96 22,84 6,28" fill="url(#${uid}-core)" stroke="url(#${uid}-gold)" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M26 36 L34 52 L50 40 L66 52 L74 36 L70 60 L30 60 Z" fill="url(#${uid}-gold)" stroke="#FFFBEB" stroke-width="2"/>
           <circle cx="26" cy="34" r="3" fill="#FDE047"/>
           <circle cx="50" cy="38" r="4" fill="#FDE047"/>
           <circle cx="74" cy="34" r="3" fill="#FDE047"/>
-          <!-- Royal Amethyst Core -->
-          <polygon points="50,56 64,68 50,84 36,68" fill="#E9D5FF" stroke="url(#mst-gold)" stroke-width="2"/>
+          <polygon points="50,56 64,68 50,84 36,68" fill="#F3E8FF" stroke="url(#${uid}-gold)" stroke-width="2"/>
         </svg>`;
 
     case 'grandmaster':
     case 'grand_master':
     default:
       return `
-        <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-2xl ${className}" aria-label="Grand Master Rank Emblem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="rank-emblem inline-block drop-shadow-2xl ${className}" aria-label="Grand Master Rank Emblem">
           <defs>
-            <linearGradient id="gm-body" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#FFE4E6"/>
-              <stop offset="30%" stop-color="#FB7185"/>
-              <stop offset="70%" stop-color="#BE123C"/>
-              <stop offset="100%" stop-color="#4C0519"/>
+            <linearGradient id="${uid}-gm" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFF1F2"/>
+              <stop offset="30%" stop-color="#FDA4AF"/>
+              <stop offset="70%" stop-color="#E11D48"/>
+              <stop offset="100%" stop-color="#9F1239"/>
             </linearGradient>
-            <linearGradient id="gm-wings" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="${uid}-wings" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#FEF08A"/>
-              <stop offset="50%" stop-color="#E11D48"/>
-              <stop offset="100%" stop-color="#881337"/>
-            </linearGradient>
-            <linearGradient id="gm-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#B9F044"/>
-              <stop offset="100%" stop-color="#15803D"/>
+              <stop offset="50%" stop-color="#F43F5E"/>
+              <stop offset="100%" stop-color="#BE123C"/>
             </linearGradient>
           </defs>
-          <!-- Radiating Solar Crown Blades -->
-          <polygon points="50,0 56,16 68,6 68,22 84,16 78,32 96,32 86,46 100,52 86,62 94,76 78,76 80,94 64,86 58,100 50,88 42,100 36,86 20,94 22,76 6,76 14,62 0,52 14,46 4,32 22,32 16,16 32,22 32,6 44,16" fill="url(#gm-wings)" opacity="0.45"/>
-          <!-- Apex Shield -->
-          <polygon points="50,6 92,26 80,82 50,96 20,82 8,26" fill="url(#gm-body)" stroke="#FEF08A" stroke-width="3" stroke-linejoin="round"/>
-          <!-- Wings Mantle -->
-          <path d="M12 30 Q30 45 50 26 Q70 45 88 30 L80 62 Q65 72 50 82 Q35 72 20 62 Z" fill="#4C0519" opacity="0.6"/>
-          <!-- Apex Crown with Star -->
+          <polygon points="50,0 56,16 68,6 68,22 84,16 78,32 96,32 86,46 100,52 86,62 94,76 78,76 80,94 64,86 58,100 50,88 42,100 36,86 20,94 22,76 6,76 14,62 0,52 14,46 4,32 22,32 16,16 32,22 32,6 44,16" fill="url(#${uid}-wings)" opacity="0.5"/>
+          <polygon points="50,6 92,26 80,82 50,96 20,82 8,26" fill="url(#${uid}-gm)" stroke="#FEF08A" stroke-width="3" stroke-linejoin="round"/>
+          <circle cx="50" cy="54" r="8" fill="#FFFBEB" stroke="#B9F044" stroke-width="2.5"/>
           <polygon points="26,38 36,54 50,42 64,54 74,38 68,64 32,64" fill="#FEF08A" stroke="#FFFFFF" stroke-width="1.5"/>
-          <!-- Center GyanSetu Apex Core Crystal (Emerald + Lime) -->
-          <polygon points="50,48 68,62 50,86 32,62" fill="url(#gm-emerald)" stroke="#FEF08A" stroke-width="2.5"/>
-          <polygon points="50,48 50,86 32,62" fill="#14532D" opacity="0.35"/>
-          <!-- Radiant Star Jewel -->
           <polygon points="50,30 53,36 60,37 55,42 56,48 50,44 44,48 45,42 40,37 47,36" fill="#FFFFFF"/>
         </svg>`;
   }
@@ -398,24 +374,118 @@ async function recordRRTransaction(sb, params) {
     referenceType = 'SYSTEM',
     referenceId = '',
     idempotencyKey = ''
-  } = params;
+  } = params || {};
 
   if (!userId || typeof amount !== 'number' || amount === 0 || !reason) {
     return { success: false, error: 'Invalid RR transaction parameters.' };
   }
 
-  // ── Demo Mode Simulation Guard ──────────────────────────────────────
-  const isDemo = String(userId).startsWith('demo') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('gyansetu_demo_mode') === 'true');
-  if (isDemo) {
-    const demo = (typeof window !== 'undefined' && window.GYANSETU_DEMO) ? window.GYANSETU_DEMO : null;
-    const currentRR = Number(demo?.profile?.rr ?? 1245);
-    let protectionCount = Number(demo?.profile?.rank_protection_count ?? 1);
-    let effectiveAmount = amount;
-    let protectionUsed = false;
+  const effectiveKey = idempotencyKey || (referenceId ? `${referenceType}:${referenceId}:${userId}` : '');
 
-    // Check idempotency in demo ledger
-    const effectiveKey = idempotencyKey || (referenceId ? `${referenceType}:${referenceId}:${userId}` : '');
-    if (effectiveKey && demo?.rr_ledger?.some(l => l.idempotency_key === effectiveKey || (l.reference_id === referenceId && l.reference_type === referenceType))) {
+  // ── 1. Resolve Current User Profile & RR (Local-First + Supabase) ────
+  let currentRR = 1245;
+  let protectionCount = 1;
+  let highestRR = 1245;
+  let challengeWins = 0;
+  let profileSource = null;
+
+  // A. Check localStorage explicit RR cache
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const cachedRR = localStorage.getItem('gyansetu_user_rr_' + userId);
+      if (cachedRR != null && !isNaN(Number(cachedRR))) {
+        currentRR = Number(cachedRR);
+      }
+    } catch (e) {}
+
+    // Check active profile
+    try {
+      const rawActive = localStorage.getItem('gyansetu_active_profile');
+      if (rawActive) {
+        const act = JSON.parse(rawActive);
+        if (act.id === userId || !act.id) {
+          profileSource = act;
+          if (act.rr != null && !isNaN(Number(act.rr))) currentRR = Number(act.rr);
+          if (act.rank_protection_count != null) protectionCount = Number(act.rank_protection_count);
+          if (act.highest_rr != null) highestRR = Number(act.highest_rr);
+          if (act.challenge_wins != null) challengeWins = Number(act.challenge_wins);
+        }
+      }
+    } catch (e) {}
+
+    // Check auth profile
+    if (!profileSource) {
+      try {
+        const rawAuth = localStorage.getItem('gyansetu_auth_profile');
+        if (rawAuth) {
+          const authP = JSON.parse(rawAuth);
+          if (authP.id === userId) {
+            profileSource = authP;
+            if (authP.rr != null && !isNaN(Number(authP.rr))) currentRR = Number(authP.rr);
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Check registered users list
+    try {
+      const regList = JSON.parse(localStorage.getItem('gyansetu_registered_users') || '[]');
+      const found = regList.find(u => u.id === userId);
+      if (found) {
+        if (!profileSource) profileSource = found;
+        if (found.rr != null && !isNaN(Number(found.rr))) currentRR = Number(found.rr);
+      }
+    } catch (e) {}
+  }
+
+  // B. Demo mode fallback
+  const isDemo = String(userId).startsWith('demo') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('gyansetu_demo_mode') === 'true');
+  const demo = (typeof window !== 'undefined' && window.GYANSETU_DEMO) ? window.GYANSETU_DEMO : null;
+  if (isDemo && demo?.profile) {
+    if (demo.profile.rr != null) currentRR = Number(demo.profile.rr);
+    if (demo.profile.rank_protection_count != null) protectionCount = Number(demo.profile.rank_protection_count);
+    if (demo.profile.highest_rr != null) highestRR = Number(demo.profile.highest_rr);
+    if (demo.profile.challenge_wins != null) challengeWins = Number(demo.profile.challenge_wins);
+  }
+
+  // C. Query Supabase profiles if online
+  if (sb && !isDemo) {
+    try {
+      const { data: remoteProfile } = await sb
+        .from('profiles')
+        .select('rr, highest_rr, rank_protection_count, challenge_wins')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (remoteProfile) {
+        if (remoteProfile.rr != null) currentRR = Number(remoteProfile.rr);
+        if (remoteProfile.rank_protection_count != null) protectionCount = Number(remoteProfile.rank_protection_count);
+        if (remoteProfile.highest_rr != null) highestRR = Number(remoteProfile.highest_rr);
+        if (remoteProfile.challenge_wins != null) challengeWins = Number(remoteProfile.challenge_wins);
+      }
+    } catch (e) {
+      console.warn('Supabase profile query fallback:', e);
+    }
+  }
+
+  // ── 2. Idempotency Check ─────────────────────────────────────────────
+  if (effectiveKey) {
+    // Check local transaction history
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const localLedger = JSON.parse(localStorage.getItem('gyansetu_rr_ledger_' + userId) || '[]');
+        if (localLedger.some(tx => tx.idempotency_key === effectiveKey || (tx.reference_id && tx.reference_id === referenceId && tx.reference_type === referenceType))) {
+          return {
+            success: false,
+            error: 'Transaction already processed (duplicate prevented).',
+            isDuplicate: true,
+            currentRR
+          };
+        }
+      } catch (e) {}
+    }
+
+    if (isDemo && demo?.rr_ledger?.some(l => l.idempotency_key === effectiveKey || (l.reference_id === referenceId && l.reference_type === referenceType))) {
       return {
         success: false,
         error: 'Transaction already processed (duplicate prevented).',
@@ -424,191 +494,209 @@ async function recordRRTransaction(sb, params) {
       };
     }
 
-    const previousRank = calculateRank(currentRR);
-    let tentativeNewRR = Math.max(0, currentRR + amount);
+    if (sb && !isDemo) {
+      try {
+        const { data: existing } = await sb
+          .from('rr_ledger')
+          .select('id, new_rr')
+          .eq('idempotency_key', effectiveKey)
+          .maybeSingle();
 
-    // Rank Protection Guard: If loss would cross below current major rank threshold
-    if (amount < 0 && tentativeNewRR < previousRank.rr) {
-      const tentativeRank = calculateRank(tentativeNewRR);
-      if (tentativeRank.tierKey !== previousRank.tierKey && protectionCount > 0) {
-        // Absorb the demoting portion using protection!
-        protectionCount -= 1;
-        protectionUsed = true;
-        // Keep user at current major tier floor instead of demoting
-        tentativeNewRR = Math.max(previousRank.minRR || 0, currentRR + amount);
-        effectiveAmount = tentativeNewRR - currentRR;
-      }
+        if (existing) {
+          return {
+            success: false,
+            error: 'Transaction already processed (duplicate prevented).',
+            isDuplicate: true,
+            currentRR: existing.new_rr
+          };
+        }
+      } catch (e) {}
     }
+  }
 
-    const newRR = tentativeNewRR;
-    const newRank = calculateRank(newRR);
+  // ── 3. Rank Protection & New RR Calculation ──────────────────────────
+  let effectiveAmount = amount;
+  let protectionUsed = false;
+  const previousRank = calculateRank(currentRR);
+  let tentativeNewRR = Math.max(0, currentRR + amount);
 
-    if (demo?.profile) {
-      demo.profile.rr = newRR;
-      demo.profile.highest_rr = Math.max(demo.profile.highest_rr || currentRR, newRR);
-      demo.profile.rank_protection_count = protectionCount;
-      if (amount > 0 && (referenceType === 'CHALLENGE' || referenceType === 'TEAM_CHALLENGE')) {
-        demo.profile.challenge_wins = (demo.profile.challenge_wins || 0) + 1;
-      }
+  // If loss would cross below current major rank threshold
+  if (amount < 0) {
+    const tentativeRank = calculateRank(tentativeNewRR);
+    if (tentativeRank.tierKey !== previousRank.tierKey && protectionCount > 0) {
+      protectionCount = Math.max(0, protectionCount - 1);
+      protectionUsed = true;
+      const tierFloor = RR_CONFIG.TIERS.find(t => t.key === previousRank.tierKey)?.minRR || 0;
+      tentativeNewRR = Math.max(tierFloor, currentRR + amount);
+      effectiveAmount = tentativeNewRR - currentRR;
     }
+  }
 
+  const newRR = tentativeNewRR;
+  const newRank = calculateRank(newRR);
+  const newHighest = Math.max(highestRR, newRR);
+  const newWins = (amount > 0 && (referenceType === 'CHALLENGE' || referenceType === 'TEAM_CHALLENGE' || referenceType === 'CODE_CHALLENGE'))
+    ? challengeWins + 1
+    : challengeWins;
+
+  const txData = {
+    id: 'rr-tx-' + Date.now(),
+    user_id: userId,
+    amount: effectiveAmount,
+    previous_rr: currentRR,
+    new_rr: newRR,
+    reason,
+    reference_type: referenceType,
+    reference_id: referenceId,
+    idempotency_key: effectiveKey,
+    status: 'COMPLETED',
+    created_at: new Date().toISOString()
+  };
+
+  // ── 4. Resilient Local-First Persistence ─────────────────────────────
+  if (typeof localStorage !== 'undefined') {
+    try {
+      // 1. Direct RR key
+      localStorage.setItem('gyansetu_user_rr_' + userId, String(newRR));
+
+      // 2. Active profile
+      const rawActive = localStorage.getItem('gyansetu_active_profile');
+      if (rawActive) {
+        const act = JSON.parse(rawActive);
+        if (act.id === userId || !act.id) {
+          act.rr = newRR;
+          act.highest_rr = newHighest;
+          act.rank_protection_count = protectionCount;
+          act.challenge_wins = newWins;
+          localStorage.setItem('gyansetu_active_profile', JSON.stringify(act));
+        }
+      }
+
+      // 3. Auth profile
+      const rawAuth = localStorage.getItem('gyansetu_auth_profile');
+      if (rawAuth) {
+        const authP = JSON.parse(rawAuth);
+        if (authP.id === userId) {
+          authP.rr = newRR;
+          authP.highest_rr = newHighest;
+          authP.rank_protection_count = protectionCount;
+          authP.challenge_wins = newWins;
+          localStorage.setItem('gyansetu_auth_profile', JSON.stringify(authP));
+        }
+      }
+
+      // 4. Registered users array
+      const regList = JSON.parse(localStorage.getItem('gyansetu_registered_users') || '[]');
+      const regIdx = regList.findIndex(u => u.id === userId);
+      if (regIdx >= 0) {
+        regList[regIdx].rr = newRR;
+        regList[regIdx].highest_rr = newHighest;
+        regList[regIdx].rank_protection_count = protectionCount;
+        regList[regIdx].challenge_wins = newWins;
+        localStorage.setItem('gyansetu_registered_users', JSON.stringify(regList));
+      }
+
+      // 5. Local accounts
+      const accounts = JSON.parse(localStorage.getItem('gyansetu_local_accounts') || '{}');
+      Object.keys(accounts).forEach(k => {
+        if (accounts[k]?.profile?.id === userId) {
+          accounts[k].profile.rr = newRR;
+          accounts[k].profile.highest_rr = newHighest;
+          accounts[k].profile.rank_protection_count = protectionCount;
+          accounts[k].profile.challenge_wins = newWins;
+        }
+      });
+      localStorage.setItem('gyansetu_local_accounts', JSON.stringify(accounts));
+
+      // 6. Local RR Ledger
+      const localLedger = JSON.parse(localStorage.getItem('gyansetu_rr_ledger_' + userId) || '[]');
+      localLedger.unshift(txData);
+      if (localLedger.length > 50) localLedger.pop();
+      localStorage.setItem('gyansetu_rr_ledger_' + userId, JSON.stringify(localLedger));
+    } catch (e) {
+      console.warn('LocalStorage RR persistence warning:', e);
+    }
+  }
+
+  // ── 5. Demo Object Persistence ───────────────────────────────────────
+  if (demo?.profile) {
+    demo.profile.rr = newRR;
+    demo.profile.highest_rr = newHighest;
+    demo.profile.rank_protection_count = protectionCount;
+    demo.profile.challenge_wins = newWins;
     if (!demo.rr_ledger) demo.rr_ledger = [];
-    const demoTx = {
-      id: 'rr-tx-' + Date.now(),
-      user_id: userId,
-      amount: effectiveAmount,
-      previous_rr: currentRR,
-      new_rr: newRR,
-      reason,
-      reference_type: referenceType,
-      reference_id: referenceId,
-      idempotency_key: effectiveKey,
-      status: 'COMPLETED',
-      created_at: new Date().toISOString()
-    };
-    demo.rr_ledger.unshift(demoTx);
-
-    const isPromotion = newRank.tierKey !== previousRank.tierKey && newRR > currentRR;
-    const isDemotion = newRank.tierKey !== previousRank.tierKey && newRR < currentRR;
-
-    if (isPromotion && typeof window !== 'undefined' && typeof window.showRankPromotionModal === 'function') {
-      window.showRankPromotionModal(newRank, newRR, previousRank);
-    } else if (isDemotion && typeof window !== 'undefined' && typeof window.showRankDemotionToast === 'function') {
-      window.showRankDemotionToast(newRank, newRR);
-    }
-
-    return {
-      success: true,
-      previousRR: currentRR,
-      newRR,
-      previousRank,
-      newRank,
-      isPromotion,
-      isDemotion,
-      protectionUsed,
-      transaction: demoTx
-    };
+    demo.rr_ledger.unshift(txData);
   }
 
-  // ── Real Supabase Production Execution ──────────────────────────────
-  try {
-    // 1. Idempotency Check
-    const effectiveKey = idempotencyKey || (referenceId ? `${referenceType}:${referenceId}:${userId}` : '');
-    if (effectiveKey) {
-      const { data: existing } = await sb
-        .from('rr_ledger')
-        .select('id, new_rr')
-        .eq('idempotency_key', effectiveKey)
-        .maybeSingle();
+  // ── 6. Remote Supabase Persistence (Non-Blocking / Graceful) ─────────
+  if (sb && !isDemo) {
+    try {
+      // Upsert profile stats
+      await sb.from('profiles').update({
+        rr: newRR,
+        highest_rr: newHighest,
+        rank_protection_count: protectionCount,
+        challenge_wins: newWins
+      }).eq('id', userId);
 
-      if (existing) {
-        return {
-          success: false,
-          error: 'Transaction already processed (duplicate prevented).',
-          isDuplicate: true,
-          currentRR: existing.new_rr
-        };
+      // Record in remote ledger if table exists
+      await sb.from('rr_ledger').insert({
+        user_id: userId,
+        amount: effectiveAmount,
+        previous_rr: currentRR,
+        new_rr: newRR,
+        reason,
+        reference_type: referenceType,
+        reference_id: referenceId,
+        idempotency_key: effectiveKey,
+        status: 'COMPLETED'
+      });
+    } catch (e) {
+      console.warn('Supabase remote RR sync warning (local-first preserved):', e);
+    }
+  }
+
+  // ── 7. Promotion / Demotion Triggers & Global Broadcast ──────────────
+  const isPromotion = newRank.tierKey !== previousRank.tierKey && newRR > currentRR;
+  const isDemotion = newRank.tierKey !== previousRank.tierKey && newRR < currentRR;
+
+  if (typeof window !== 'undefined') {
+    // Dispatch global event so all open tabs, dashboard, ranking, and arena update instantly
+    window.dispatchEvent(new CustomEvent('gyansetu:rr-updated', {
+      detail: {
+        userId,
+        amount: effectiveAmount,
+        previousRR: currentRR,
+        newRR,
+        previousRank,
+        newRank,
+        isPromotion,
+        isDemotion,
+        protectionUsed,
+        reason,
+        referenceType,
+        referenceId
       }
-    }
+    }));
 
-    // 2. Fetch current profile stats
-    const { data: profile, error: profErr } = await sb
-      .from('profiles')
-      .select('rr, highest_rr, rank_protection_count, challenge_wins')
-      .eq('id', userId)
-      .single();
-
-    if (profErr || !profile) {
-      return { success: false, error: profErr?.message || 'User profile not found.' };
-    }
-
-    const currentRR = Number(profile.rr ?? 1245);
-    let protectionCount = Number(profile.rank_protection_count ?? 1);
-    let effectiveAmount = amount;
-    let protectionUsed = false;
-
-    const previousRank = calculateRank(currentRR);
-    let tentativeNewRR = Math.max(0, currentRR + amount);
-
-    // Rank Protection Guard
-    if (amount < 0) {
-      const tentativeRank = calculateRank(tentativeNewRR);
-      if (tentativeRank.tierKey !== previousRank.tierKey && protectionCount > 0) {
-        protectionCount -= 1;
-        protectionUsed = true;
-        // User stays at the boundary rather than crossing down
-        const tierFloor = RR_CONFIG.TIERS.find(t => t.key === previousRank.tierKey)?.minRR || 0;
-        tentativeNewRR = Math.max(tierFloor, currentRR + amount);
-        effectiveAmount = tentativeNewRR - currentRR;
-      }
-    }
-
-    const newRR = tentativeNewRR;
-    const newRank = calculateRank(newRR);
-    const newHighest = Math.max(Number(profile.highest_rr) || currentRR, newRR);
-
-    // 3. Insert RR Ledger entry
-    const ledgerRow = {
-      user_id: userId,
-      amount: effectiveAmount,
-      previous_rr: currentRR,
-      new_rr: newRR,
-      reason,
-      reference_type: referenceType,
-      reference_id: referenceId,
-      idempotency_key: effectiveKey,
-      status: 'COMPLETED'
-    };
-
-    const { data: txData, error: txErr } = await sb
-      .from('rr_ledger')
-      .insert(ledgerRow)
-      .select()
-      .single();
-
-    if (txErr) {
-      if (txErr.code === '23505') {
-        return { success: false, error: 'Transaction already recorded (duplicate prevented).', isDuplicate: true };
-      }
-      return { success: false, error: txErr.message };
-    }
-
-    // 4. Update Profile RR atomically
-    const profileUpdates = {
-      rr: newRR,
-      highest_rr: newHighest,
-      rank_protection_count: protectionCount
-    };
-    if (amount > 0 && (referenceType === 'CHALLENGE' || referenceType === 'TEAM_CHALLENGE')) {
-      profileUpdates.challenge_wins = (profile.challenge_wins || 0) + 1;
-    }
-
-    await sb.from('profiles').update(profileUpdates).eq('id', userId);
-
-    const isPromotion = newRank.tierKey !== previousRank.tierKey && newRR > currentRR;
-    const isDemotion = newRank.tierKey !== previousRank.tierKey && newRR < currentRR;
-
-    if (isPromotion && typeof window !== 'undefined' && typeof window.showRankPromotionModal === 'function') {
+    if (isPromotion && typeof window.showRankPromotionModal === 'function') {
       window.showRankPromotionModal(newRank, newRR, previousRank);
-    } else if (isDemotion && typeof window !== 'undefined' && typeof window.showRankDemotionToast === 'function') {
+    } else if (isDemotion && typeof window.showRankDemotionToast === 'function') {
       window.showRankDemotionToast(newRank, newRR);
     }
-
-    return {
-      success: true,
-      previousRR: currentRR,
-      newRR,
-      previousRank,
-      newRank,
-      isPromotion,
-      isDemotion,
-      protectionUsed,
-      transaction: txData
-    };
-  } catch (err) {
-    console.error('RR Transaction Exception:', err);
-    return { success: false, error: err.message || 'Server error recording RR.' };
   }
+
+  return {
+    success: true,
+    previousRR: currentRR,
+    newRR,
+    previousRank,
+    newRank,
+    isPromotion,
+    isDemotion,
+    protectionUsed,
+    transaction: txData
+  };
 }
 
 /**

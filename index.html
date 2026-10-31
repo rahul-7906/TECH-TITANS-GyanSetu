@@ -14,10 +14,23 @@
   <style>
     html, body { margin: 0; padding: 0; width: 100%; }
 
+    /* Scroll progress indicator */
+    #scroll-progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3.5px;
+      width: 0%;
+      background: linear-gradient(90deg, #B9F044 0%, #10B981 50%, #B9F044 100%);
+      z-index: 100;
+      transition: width 0.08s linear;
+      box-shadow: 0 0 10px rgba(185,240,68,0.7);
+    }
+
     .navbar-glass {
       backdrop-filter: blur(18px) saturate(160%);
       -webkit-backdrop-filter: blur(18px) saturate(160%);
-      background: rgba(255,255,255,0.82);
+      background: rgba(255,255,255,0.85);
       border-bottom: 1px solid rgba(255,255,255,0.6);
     }
     .navbar-scrolled {
@@ -48,12 +61,94 @@
       border-radius: 1.5rem;
       padding: 1.5rem;
       background: #fff;
-      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+      transform-style: preserve-3d;
     }
     .feat-card:hover {
-      transform: translateY(-5px);
       border-color: #B9F044;
-      box-shadow: 0 16px 40px -12px rgba(11,31,23,0.14);
+      box-shadow: 0 20px 45px -12px rgba(11,31,23,0.16);
+    }
+
+    /* Floating micro badges keyframes */
+    @keyframes floatBadge1 {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(1.5deg); }
+    }
+    @keyframes floatBadge2 {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(9px) rotate(-1.5deg); }
+    }
+    @keyframes floatBadge3 {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-7px) scale(1.04); }
+    }
+    .badge-float-1 { animation: floatBadge1 5.5s ease-in-out infinite; }
+    .badge-float-2 { animation: floatBadge2 6.5s ease-in-out infinite; }
+    .badge-float-3 { animation: floatBadge3 7s ease-in-out infinite; }
+
+    /* Scroll reveal transitions */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal-on-scroll.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Stagger delay classes */
+    .delay-100 { transition-delay: 100ms; }
+    .delay-200 { transition-delay: 200ms; }
+    .delay-300 { transition-delay: 300ms; }
+    .delay-400 { transition-delay: 400ms; }
+
+    /* FAQ accordion styling */
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+    }
+    .faq-item.active .faq-answer {
+      max-height: 280px;
+      opacity: 1;
+    }
+    .faq-item.active .faq-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* Interactive Playground active state */
+    .tab-pill.active {
+      background: #0B1F17;
+      color: #B9F044;
+      border-color: #0B1F17;
+      box-shadow: 0 4px 16px -2px rgba(11,31,23,0.3);
+    }
+
+    /* Custom range sliders */
+    input[type=range] {
+      -webkit-appearance: none;
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 999px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #0B1F17;
+      border: 3px solid #B9F044;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(11,31,23,0.25);
+      transition: transform 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
     }
 
     .cta-section {
@@ -72,6 +167,9 @@
 </head>
 <body class="font-sans text-ink antialiased overflow-x-hidden">
 
+  <!-- Scroll Progress Indicator -->
+  <div id="scroll-progress-bar"></div>
+
   <!-- ============================================================
        NAVBAR
        ============================================================ -->
@@ -82,9 +180,16 @@
         <img src="images/gyansetu-logo.jpg" alt="GyanSetu" class="h-9 w-auto rounded-xl object-contain shadow-sm border border-emerald-900/30" />
       </a>
 
-      <ul class="hidden items-center gap-7 text-[13px] font-semibold text-slate-600 lg:flex">
+      <ul class="hidden items-center gap-6 text-[13px] font-semibold text-slate-600 lg:flex">
         <li><a href="#about" class="nav-link transition hover:text-[#0B1F17]">About</a></li>
         <li><a href="#features" class="nav-link transition hover:text-[#0B1F17]">Features</a></li>
+        <li>
+          <a href="#demo" class="nav-link transition hover:text-[#0B1F17] flex items-center gap-1.5 font-bold text-[#2F6F11]">
+            <span class="h-2 w-2 rounded-full bg-[#B9F044] animate-ping"></span>
+            <span>Live Demo</span>
+          </a>
+        </li>
+        <li><a href="#calculator" class="nav-link transition hover:text-[#0B1F17]">Value Calculator</a></li>
         <li><a href="#how-it-works" class="nav-link transition hover:text-[#0B1F17]">How It Works</a></li>
         <li><a href="#faq" class="nav-link transition hover:text-[#0B1F17]">FAQ</a></li>
       </ul>
@@ -109,6 +214,8 @@
         <ul class="flex flex-col gap-0.5 text-sm font-semibold text-slate-600">
           <li><a href="#about" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">About GyanSetu</a></li>
           <li><a href="#features" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Platform Features</a></li>
+          <li><a href="#demo" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11] font-bold text-[#2F6F11]">Interactive Live Demo ⚡</a></li>
+          <li><a href="#calculator" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Growth Calculator 🪙</a></li>
           <li><a href="#how-it-works" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">How It Works</a></li>
           <li><a href="#faq" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">FAQ</a></li>
         </ul>
@@ -122,12 +229,16 @@
 
 
   <!-- ============================================================
-       HERO — full viewport height
+       HERO — full viewport height with interactive canvas & parallax
        ============================================================ -->
   <section class="hero-bg relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-5 pb-16 pt-28 sm:px-8 lg:pt-20">
 
-    <div class="pointer-events-none absolute left-0 top-0 h-[70vh] w-[70vw] -translate-x-1/3 -translate-y-1/4 rounded-full bg-[#B9F044]/10 blur-3xl"></div>
-    <div class="pointer-events-none absolute bottom-0 right-0 h-[50vh] w-[50vw] translate-x-1/4 translate-y-1/4 rounded-full bg-[#064E3B]/8 blur-3xl"></div>
+    <!-- Interactive constellation canvas -->
+    <canvas id="hero-interactive-canvas" class="pointer-events-none absolute inset-0 h-full w-full z-0 opacity-45"></canvas>
+
+    <!-- Parallax background glowing orbs -->
+    <div data-parallax-rate="0.18" class="parallax-element pointer-events-none absolute left-0 top-0 h-[70vh] w-[70vw] -translate-x-1/3 -translate-y-1/4 rounded-full bg-[#B9F044]/15 blur-3xl transition-transform duration-75"></div>
+    <div data-parallax-rate="-0.15" class="parallax-element pointer-events-none absolute bottom-0 right-0 h-[50vh] w-[50vw] translate-x-1/4 translate-y-1/4 rounded-full bg-[#064E3B]/10 blur-3xl transition-transform duration-75"></div>
 
     <div class="relative mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
 
@@ -200,9 +311,50 @@
         </div>
       </div>
 
-      <!-- Right: Clean Minimalist Value Proposition Showcase -->
-      <div class="relative lg:pl-4">
-        <div class="relative rounded-3xl border border-slate-200/90 bg-white/95 p-6 sm:p-8 shadow-[0_24px_64px_-16px_rgba(11,31,23,0.12)] backdrop-blur-md">
+      <!-- Right: Interactive Value Proposition Showcase with Floating Micro-Badges & 3D Tilt -->
+      <div class="relative lg:pl-4 reveal-on-scroll delay-100">
+
+        <!-- Floating Interactive Badge 1: Credits -->
+        <a href="#demo" onclick="window.switchDemoTab && window.switchDemoTab('credits');" class="badge-float-1 group absolute -top-5 -left-3 sm:-left-6 z-20 flex items-center gap-2.5 rounded-2xl border border-[#B9F044]/90 bg-white/95 px-3.5 py-2 shadow-[0_12px_28px_-6px_rgba(11,31,23,0.18)] backdrop-blur-md transition hover:scale-105 hover:border-[#2F6F11]">
+          <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#B9F044] text-[#0B1F17] text-xs font-black shadow-xs">🪙</span>
+          <div>
+            <p class="text-[11px] font-extrabold text-[#0B1F17] leading-tight flex items-center gap-1">
+              +100 Credits
+              <span class="text-[9px] text-[#2F6F11] font-bold">Free</span>
+            </p>
+            <p class="text-[9px] text-slate-500 font-medium group-hover:text-[#2F6F11] transition">Test Escrow &darr;</p>
+          </div>
+        </a>
+
+        <!-- Floating Interactive Badge 2: 15-Min Timer -->
+        <a href="#demo" onclick="window.switchDemoTab && window.switchDemoTab('sprint');" class="badge-float-2 group absolute -top-5 -right-2 sm:-right-4 z-20 flex items-center gap-2.5 rounded-2xl border border-slate-700 bg-[#0B1F17] text-white px-3.5 py-2 shadow-[0_12px_28px_-6px_rgba(11,31,23,0.35)] backdrop-blur-md transition hover:scale-105">
+          <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#B9F044] text-[#0B1F17] text-xs font-black">⚡</span>
+          <div>
+            <p class="text-[11px] font-extrabold text-[#B9F044] leading-tight">15m Rapid Doubt</p>
+            <p class="text-[9px] text-slate-300 group-hover:text-white transition">Launch Demo &darr;</p>
+          </div>
+        </a>
+
+        <!-- Floating Interactive Badge 3: Speed Arena -->
+        <a href="#demo" onclick="window.switchDemoTab && window.switchDemoTab('arena');" class="badge-float-3 group absolute -bottom-5 -left-2 sm:-left-5 z-20 flex items-center gap-2.5 rounded-2xl border border-amber-300 bg-amber-50/95 px-3.5 py-2 shadow-[0_12px_28px_-6px_rgba(11,31,23,0.14)] backdrop-blur-md transition hover:scale-105">
+          <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#0B1F17] text-[#B9F044] text-xs">🏎️</span>
+          <div>
+            <p class="text-[11px] font-extrabold text-[#0B1F17] leading-tight">Speed Race Arena</p>
+            <p class="text-[9px] text-amber-700 font-bold group-hover:underline">Play Mini Race &darr;</p>
+          </div>
+        </a>
+
+        <!-- Floating Interactive Badge 4: Live Collab -->
+        <a href="#demo" onclick="window.switchDemoTab && window.switchDemoTab('collab');" class="badge-float-1 group absolute -bottom-5 -right-2 sm:-right-4 z-20 flex items-center gap-2.5 rounded-2xl border border-emerald-300 bg-emerald-50/95 px-3.5 py-2 shadow-[0_12px_28px_-6px_rgba(11,31,23,0.14)] backdrop-blur-md transition hover:scale-105">
+          <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#064E3B] text-[#B9F044] text-xs">💻</span>
+          <div>
+            <p class="text-[11px] font-extrabold text-[#0B1F17] leading-tight">Live Collab Room</p>
+            <p class="text-[9px] text-emerald-800 font-bold group-hover:underline">Run Code &darr;</p>
+          </div>
+        </a>
+
+        <!-- Main Card with 3D Tilt -->
+        <div class="tilt-card relative rounded-3xl border border-slate-200/90 bg-white/95 p-6 sm:p-8 shadow-[0_24px_64px_-16px_rgba(11,31,23,0.12)] backdrop-blur-md">
 
           <div class="flex items-center justify-between border-b border-slate-100 pb-4">
             <div class="flex items-center gap-3">
@@ -280,22 +432,22 @@
        ============================================================ -->
   <section id="features" class="section-alt px-5 py-20 sm:px-8">
     <div class="mx-auto max-w-7xl">
-      <div class="mx-auto mb-14 max-w-2xl text-center">
+      <div class="mx-auto mb-14 max-w-2xl text-center reveal-on-scroll">
         <span class="inline-block rounded-full bg-[#B9F044]/20 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">Platform Features</span>
         <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl">Everything You Need to<br/>Learn Smarter Together</h2>
-        <p class="mx-auto mt-4 max-w-md text-[15px] leading-7 text-slate-500">Five powerful tools, one seamless campus platform. Ask, match, earn, collab, compete.</p>
+        <p class="mx-auto mt-4 max-w-md text-[15px] leading-7 text-slate-500">Four integrated tools, one seamless campus platform. Ask, match, earn, collab, compete.</p>
       </div>
 
       <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <!-- Feature 1 -->
-        <div class="feat-card group flex flex-col">
+        <div class="feat-card group flex flex-col reveal-on-scroll delay-100">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B1F17] text-[#B9F044]">
             <i data-lucide="zap" class="h-7 w-7"></i>
           </div>
           <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">15-Min Rapid Sessions</h3>
           <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Book instant 1-on-1 micro-sessions with campus peers who already mastered your subject.</p>
           <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-            <a href="login.html#signup" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Sign up to book &rarr;</a>
+            <a href="#demo" onclick="switchDemoTab('sprint')" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Try Live Demo &rarr;</a>
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </div>
@@ -303,14 +455,14 @@
         </div>
 
         <!-- Feature 2 -->
-        <div class="feat-card group flex flex-col">
+        <div class="feat-card group flex flex-col reveal-on-scroll delay-200">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044] text-[#0B1F17]">
             <i data-lucide="monitor" class="h-7 w-7"></i>
           </div>
           <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Live Collab Room</h3>
           <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Real-time shared code editor, interactive whiteboard, and low-latency audio &mdash; built into every session.</p>
           <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-            <a href="login.html#signup" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Unlock live room &rarr;</a>
+            <a href="#demo" onclick="switchDemoTab('collab')" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Run Collab Code &rarr;</a>
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </div>
@@ -318,7 +470,7 @@
         </div>
 
         <!-- Feature 3 -->
-        <div class="feat-card group flex flex-col">
+        <div class="feat-card group flex flex-col reveal-on-scroll delay-300">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B1F17] text-[#B9F044]">
             <i data-lucide="search-check" class="h-7 w-7"></i>
           </div>
@@ -333,14 +485,14 @@
         </div>
 
         <!-- Feature 4 -->
-        <div class="feat-card group flex flex-col">
+        <div class="feat-card group flex flex-col reveal-on-scroll delay-400">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044] text-[#0B1F17]">
             <i data-lucide="trophy" class="h-7 w-7"></i>
           </div>
           <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Arena Races &amp; Rankings</h3>
           <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Race your peers in coding battles, solve 14-domain procedural quizzes, and earn your place on the campus leaderboard.</p>
           <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-            <a href="login.html#signup" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Join the arena &rarr;</a>
+            <a href="#demo" onclick="switchDemoTab('arena')" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Play Arena Race &rarr;</a>
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </div>
@@ -352,11 +504,355 @@
 
 
   <!-- ============================================================
+       INTERACTIVE PLATFORM PLAYGROUND (LIVE DEMO)
+       ============================================================ -->
+  <section id="demo" class="relative overflow-hidden bg-white px-5 py-24 sm:px-8 border-y border-slate-100">
+    <!-- Ambient mesh background -->
+    <div class="pointer-events-none absolute -top-40 right-10 h-96 w-96 rounded-full bg-[#B9F044]/15 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-40 left-10 h-96 w-96 rounded-full bg-emerald-700/5 blur-3xl"></div>
+
+    <div class="relative mx-auto max-w-6xl">
+      <!-- Header -->
+      <div class="mx-auto mb-10 max-w-2xl text-center reveal-on-scroll">
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#B9F044]/25 border border-[#B9F044]/60 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">
+          <span class="h-2 w-2 rounded-full bg-[#2F6F11] animate-ping"></span>
+          Live Interactive Simulator
+        </span>
+        <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl">
+          Test-Drive the Core Features Right Here
+        </h2>
+        <p class="mx-auto mt-3 max-w-lg text-[15px] leading-relaxed text-slate-500">
+          Experience how micro-sessions, shared collab rooms, speed race challenges, and escrow protection operate in real-time.
+        </p>
+      </div>
+
+      <!-- Tab Navigation Buttons -->
+      <div class="mx-auto mb-8 flex max-w-3xl flex-wrap items-center justify-center gap-2 reveal-on-scroll delay-100">
+        <button id="tab-btn-sprint" onclick="switchDemoTab('sprint')" class="tab-pill active flex items-center gap-2 rounded-2xl border border-slate-200 px-5 py-3 text-xs sm:text-sm font-bold transition">
+          <span>⚡</span>
+          <span>15-Min Doubt Sprint</span>
+        </button>
+        <button id="tab-btn-collab" onclick="switchDemoTab('collab')" class="tab-pill flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/80 px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 transition hover:bg-slate-100">
+          <span>💻</span>
+          <span>Live Collab Room</span>
+        </button>
+        <button id="tab-btn-arena" onclick="switchDemoTab('arena')" class="tab-pill flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/80 px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 transition hover:bg-slate-100">
+          <span>🏎️</span>
+          <span>Speed Race Arena</span>
+        </button>
+        <button id="tab-btn-credits" onclick="switchDemoTab('credits')" class="tab-pill flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/80 px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 transition hover:bg-slate-100">
+          <span>🛡️</span>
+          <span>Escrow Protection</span>
+        </button>
+      </div>
+
+      <!-- Simulator Interactive Canvas & Container -->
+      <div class="rounded-3xl border border-slate-200/90 bg-[#FAFDF6] p-5 sm:p-8 shadow-[0_24px_50px_-12px_rgba(11,31,23,0.08)] reveal-on-scroll delay-200">
+
+        <!-- PANE 1: 15-MIN SPRINT DEMO -->
+        <div id="demo-pane-sprint" class="space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 pb-5">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#0B1F17] text-[#B9F044] text-xs font-bold">⚡</span>
+                <h3 class="text-base sm:text-lg font-extrabold text-[#0B1F17]">15-Minute Micro-Mentorship Session</h3>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">Live synchronized timer with automated doubt status checks &amp; instant escrow release.</p>
+            </div>
+            <div id="sprint-status-badge" class="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-3.5 py-1 text-xs font-bold text-emerald-800 self-start sm:self-auto">
+              <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span id="sprint-status-text">Session Ready to Begin</span>
+            </div>
+          </div>
+
+          <!-- Interactive Workspace Mockup -->
+          <div class="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+            <!-- Left: Doubt card & live timer -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Active Doubt Topic</span>
+                <span id="sprint-subject-pill" class="text-xs font-bold text-[#2F6F11] bg-[#B9F044]/20 px-2.5 py-0.5 rounded-full">Computer Science • Algorithms</span>
+              </div>
+              <h4 id="sprint-doubt-title" class="text-base font-bold text-[#0B1F17] mt-2">
+                "How to convert recursive tree traversal into an iterative approach using a stack without recursion depth overflow?"
+              </h4>
+
+              <!-- Quick topic selector chips -->
+              <div class="mt-4 flex flex-wrap gap-2 pt-3 border-t border-slate-100">
+                <span class="text-[11px] font-bold text-slate-400 self-center">Try other topics:</span>
+                <button onclick="setSprintTopic('How to convert recursive tree traversal into an iterative approach using a stack without recursion depth overflow?', 'CS • Algorithms')" class="rounded-lg bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:bg-[#B9F044]/30 hover:text-[#0B1F17] transition">Tree Traversal</button>
+                <button onclick="setSprintTopic('Why does Dijkstra algorithm fail on negative cycles, and when to switch to Bellman-Ford?', 'Networks & Graphs')" class="rounded-lg bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:bg-[#B9F044]/30 hover:text-[#0B1F17] transition">Graph Shortest Path</button>
+                <button onclick="setSprintTopic('Explain page fault frequency replacement versus working set model in Virtual Memory?', 'Operating Systems')" class="rounded-lg bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:bg-[#B9F044]/30 hover:text-[#0B1F17] transition">OS Paging</button>
+              </div>
+
+              <!-- Interactive Mentor Profile & Status -->
+              <div class="mt-5 rounded-xl bg-slate-50 p-3.5 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-full bg-[#0B1F17] text-[#B9F044] font-black flex items-center justify-center text-sm shadow-xs">
+                    PM
+                  </div>
+                  <div>
+                    <p class="text-xs font-extrabold text-[#0B1F17]">Peer Mentor <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Escrow Verified</span></p>
+                    <p class="text-[11px] text-slate-500">CS &amp; Engineering • Peer Doubts Escrow</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] font-bold text-slate-400">Escrow Value</p>
+                  <p class="text-xs font-black text-[#2F6F11]">25 Credits</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Interactive Timer & Action Console -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 flex flex-col justify-between shadow-xs text-center">
+              <div>
+                <p class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Time Remaining</p>
+                <div id="sprint-timer-display" class="my-4 font-mono text-5xl font-extrabold tracking-tight text-[#0B1F17]">
+                  15:00
+                </div>
+                <p id="sprint-timer-subtext" class="text-xs text-slate-500">
+                  Focus on 1 specific doubt. Micro-sessions keep learning fast and high-retention.
+                </p>
+              </div>
+
+              <div class="space-y-2 mt-6">
+                <button id="sprint-start-btn" onclick="toggleSprintTimer()" class="w-full flex items-center justify-center gap-2 rounded-xl bg-[#0B1F17] py-3 text-xs sm:text-sm font-bold text-[#B9F044] hover:bg-[#064E3B] transition shadow-xs">
+                  <i data-lucide="play" class="h-4 w-4"></i>
+                  <span id="sprint-start-text">Start 15m Sprint Demo</span>
+                </button>
+                <button id="sprint-solve-btn" onclick="resolveSprintDemo()" class="w-full flex items-center justify-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition">
+                  <i data-lucide="check-circle-2" class="h-4 w-4"></i>
+                  <span>Mark Doubt Solved (+25 Credits Released)</span>
+                </button>
+                <div id="sprint-toast" class="hidden text-xs font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 py-2 px-3 rounded-xl transition animate-fade-in">
+                  🎉 Escrow Verified! 25 Credits released to peer mentor. +10 XP earned!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 2: LIVE COLLAB ROOM DEMO -->
+        <div id="demo-pane-collab" class="hidden space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B9F044] text-[#0B1F17] text-xs font-bold">💻</span>
+                <h3 class="text-base sm:text-lg font-extrabold text-[#0B1F17]">Live Collab Room Code Runner</h3>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">Multi-peer synchronized editor with real-time test execution and interactive diagram.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span class="text-xs font-extrabold text-[#2F6F11]">Peer Connected: Tanvi P. (Typing...)</span>
+            </div>
+          </div>
+
+          <!-- Code Editor + Output Box -->
+          <div class="overflow-hidden rounded-2xl border border-slate-800 bg-[#0A120E] text-slate-200 shadow-xl font-mono text-xs">
+            <!-- IDE Toolbar -->
+            <div class="flex items-center justify-between bg-[#06100B] px-4 py-2.5 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <div class="flex gap-1.5">
+                  <span class="h-3 w-3 rounded-full bg-rose-500/80"></span>
+                  <span class="h-3 w-3 rounded-full bg-amber-500/80"></span>
+                  <span class="h-3 w-3 rounded-full bg-emerald-500/80"></span>
+                </div>
+                <span class="ml-2 text-[11px] font-bold text-slate-400">solution.py &bull; Python 3.11</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="toggleCollabView('whiteboard')" id="collab-wb-btn" class="rounded-lg bg-slate-800 px-3 py-1 text-[11px] font-semibold text-slate-300 hover:text-white transition">🎨 View Diagram</button>
+                <button onclick="runCollabCode()" id="run-code-btn" class="flex items-center gap-1.5 rounded-lg bg-[#B9F044] px-3.5 py-1 text-[11px] font-black text-[#0B1F17] hover:bg-emerald-300 transition">
+                  <i data-lucide="play" class="h-3 w-3 fill-current"></i>
+                  <span>Run Code</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Code Body / Whiteboard View -->
+            <div id="collab-code-area" class="p-4 sm:p-5 text-[12px] sm:text-[13px] leading-relaxed overflow-x-auto text-emerald-200/90 whitespace-pre">def binary_search(arr: list[int], target: int) -> int:
+    left, right = 0, len(arr) - 1
+    
+    while left &lt;= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid  # Match found in O(log n)
+        elif arr[mid] &lt; target:
+            left = mid + 1
+        else:
+            right = mid - 1
+            
+    return -1</div>
+
+            <!-- Collab Whiteboard Diagram (toggled) -->
+            <div id="collab-wb-area" class="hidden p-5 bg-[#08150F] border-t border-slate-800 text-center">
+              <p class="text-xs font-bold text-[#B9F044] mb-3">Live Interactive Diagram Preview (Binary Search Range Halving)</p>
+              <div class="flex items-center justify-center gap-2 text-xs flex-wrap">
+                <span class="px-3 py-2 rounded-lg bg-slate-800 text-slate-400">[2, 5, 8]</span>
+                <span class="text-[#B9F044] font-bold">&rarr;</span>
+                <span class="px-3 py-2 rounded-lg bg-emerald-950 border border-emerald-500 text-[#B9F044] font-bold">mid = [12] (Target Match)</span>
+                <span class="text-[#B9F044] font-bold">&larr;</span>
+                <span class="px-3 py-2 rounded-lg bg-slate-800 text-slate-400">[16, 23, 38]</span>
+              </div>
+            </div>
+
+            <!-- Terminal output area -->
+            <div class="border-t border-slate-800 bg-[#040806] p-4 text-[11px] leading-normal font-mono">
+              <div class="flex items-center justify-between text-slate-500 mb-1.5">
+                <span>TERMINAL OUTPUT</span>
+                <span id="collab-run-status" class="text-slate-400">Idle (Click 'Run Code' above)</span>
+              </div>
+              <div id="collab-terminal-output" class="text-slate-400">
+                $ python3 -m unittest test_solution.py<br/>
+                &gt; Ready. Click 'Run Code' to execute test cases against the live runner.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 3: SPEED ARENA RACING MINI-GAME -->
+        <div id="demo-pane-arena" class="hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#0B1F17] text-[#B9F044] text-xs font-bold">🏎️</span>
+                <h3 class="text-base sm:text-lg font-extrabold text-[#0B1F17]">Speed Race Arena Mini-Battle</h3>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">Answer correctly to trigger Nitro Boost and outpace your campus rival to the checkered flag.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="arena-race-state" class="rounded-full bg-amber-100 border border-amber-300 px-3 py-0.5 text-xs font-extrabold text-amber-900">
+                🏁 Match Ready: 1v1 Sprint
+              </span>
+            </div>
+          </div>
+
+          <!-- Race Track Visualizer -->
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
+            <!-- Lane 1: Player -->
+            <div>
+              <div class="flex items-center justify-between text-xs font-extrabold text-[#0B1F17] mb-1.5">
+                <span class="flex items-center gap-1.5">🏎️ <span>You (Speed Racer)</span> <span id="player-nitro-badge" class="hidden text-[10px] font-black text-white bg-emerald-600 px-2 py-0.5 rounded-full animate-bounce">⚡ NITRO!</span></span>
+                <span id="player-dist-pct" class="font-mono text-emerald-700">10%</span>
+              </div>
+              <div class="relative h-6 w-full rounded-full bg-slate-100 p-0.5 border border-slate-200 overflow-hidden">
+                <div id="player-car-bar" class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-[#B9F044] transition-all duration-700 ease-out flex items-center justify-end pr-1 text-xs" style="width: 10%;">
+                  🏎️
+                </div>
+              </div>
+            </div>
+
+            <!-- Lane 2: Rival -->
+            <div>
+              <div class="flex items-center justify-between text-xs font-extrabold text-slate-500 mb-1.5">
+                <span class="flex items-center gap-1.5">🏎️ <span>Campus Rival (Live Pacer)</span></span>
+                <span id="rival-dist-pct" class="font-mono text-slate-500">45%</span>
+              </div>
+              <div class="relative h-6 w-full rounded-full bg-slate-100 p-0.5 border border-slate-200 overflow-hidden">
+                <div id="rival-car-bar" class="h-full rounded-full bg-slate-400 transition-all duration-700 ease-out flex items-center justify-end pr-1 text-xs" style="width: 45%;">
+                  🏎️
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rapid Question Box -->
+          <div class="rounded-2xl border border-amber-200 bg-amber-50/70 p-5 shadow-xs">
+            <div class="flex items-center justify-between text-xs font-extrabold text-amber-900 mb-2">
+              <span class="uppercase tracking-wider">Speed Challenge Question</span>
+              <span class="bg-amber-200 px-2.5 py-0.5 rounded-full">+50 XP &bull; Nitro Unlock</span>
+            </div>
+            <h4 class="text-sm sm:text-base font-extrabold text-[#0B1F17]">
+              "What is the average case lookup time complexity of a Hash Table?"
+            </h4>
+            <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <button onclick="handleArenaAnswer(false, this)" class="arena-opt-btn rounded-xl border border-slate-200 bg-white py-2.5 px-3 text-xs font-bold text-slate-700 hover:border-slate-400 transition">
+                A) O(n)
+              </button>
+              <button onclick="handleArenaAnswer(true, this)" class="arena-opt-btn rounded-xl border border-slate-200 bg-white py-2.5 px-3 text-xs font-bold text-slate-700 hover:border-[#2F6F11] hover:bg-[#B9F044]/20 transition">
+                B) O(1) &mdash; Constant
+              </button>
+              <button onclick="handleArenaAnswer(false, this)" class="arena-opt-btn rounded-xl border border-slate-200 bg-white py-2.5 px-3 text-xs font-bold text-slate-700 hover:border-slate-400 transition">
+                C) O(log n)
+              </button>
+              <button onclick="handleArenaAnswer(false, this)" class="arena-opt-btn rounded-xl border border-slate-200 bg-white py-2.5 px-3 text-xs font-bold text-slate-700 hover:border-slate-400 transition">
+                D) O(n²)
+              </button>
+            </div>
+
+            <!-- Dynamic Result Notice -->
+            <div id="arena-result-msg" class="mt-4 hidden p-3 rounded-xl text-center text-xs font-bold"></div>
+          </div>
+        </div>
+
+        <!-- PANE 4: ESCROW PROTECTION FLOW -->
+        <div id="demo-pane-credits" class="hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold">🛡️</span>
+                <h3 class="text-base sm:text-lg font-extrabold text-[#0B1F17]">Zero-Risk Escrow Ledger Protection</h3>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">Credits are never deducted until you explicitly confirm your doubt was solved.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">Automated Campus Ledger</span>
+            </div>
+          </div>
+
+          <!-- Step Progress Visualizer -->
+          <div class="grid sm:grid-cols-3 gap-3 text-center">
+            <div id="escrow-step-1" class="rounded-2xl border-2 border-[#0B1F17] bg-white p-4 transition-all">
+              <span class="text-[10px] font-black uppercase text-[#2F6F11] tracking-wider">Phase 1</span>
+              <h5 class="text-xs font-extrabold text-[#0B1F17] mt-1">Doubt Booked</h5>
+              <p class="text-[11px] text-slate-500 mt-1">100 Credits securely locked in escrow vault. Not sent to mentor yet.</p>
+            </div>
+            <div id="escrow-step-2" class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition-all">
+              <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Phase 2</span>
+              <h5 class="text-xs font-extrabold text-slate-600 mt-1">15m Collab Room</h5>
+              <p class="text-[11px] text-slate-500 mt-1">Audio call, code editor &amp; whiteboard active. Both peers connected.</p>
+            </div>
+            <div id="escrow-step-3" class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition-all">
+              <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Phase 3</span>
+              <h5 class="text-xs font-extrabold text-slate-600 mt-1">Verified Release</h5>
+              <p class="text-[11px] text-slate-500 mt-1">Student clicks 'Solved'. Credits instantly transfer to mentor ledger.</p>
+            </div>
+          </div>
+
+          <!-- Interactive Stepper Controller -->
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div id="escrow-icon-vault" class="h-12 w-12 rounded-2xl bg-[#0B1F17] text-[#B9F044] flex items-center justify-center font-bold text-xl shadow-xs transition">
+                🔒
+              </div>
+              <div>
+                <p id="escrow-status-headline" class="text-sm font-extrabold text-[#0B1F17]">Credits In Vault: 100 🪙</p>
+                <p id="escrow-status-desc" class="text-xs text-slate-500">Guaranteed refund if the session does not take place.</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <button onclick="advanceEscrowDemo()" id="escrow-advance-btn" class="rounded-xl bg-[#0B1F17] px-5 py-2.5 text-xs font-bold text-[#B9F044] hover:bg-[#064E3B] transition">
+                Advance to Phase 2 &rarr;
+              </button>
+              <button onclick="resetEscrowDemo()" class="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 transition">
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
        HOW IT WORKS
        ============================================================ -->
   <section id="how-it-works" class="bg-white px-5 py-20 sm:px-8">
     <div class="mx-auto max-w-7xl">
-      <div class="mx-auto mb-14 max-w-xl text-center">
+      <div class="mx-auto mb-14 max-w-xl text-center reveal-on-scroll">
         <span class="inline-block rounded-full bg-[#B9F044]/20 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">Simple Process</span>
         <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl">From Doubt to Solved in 3 Steps</h2>
         <p class="mx-auto mt-4 max-w-md text-[15px] leading-7 text-slate-500">No complicated onboarding. Be up and learning in under 2 minutes.</p>
@@ -370,7 +866,7 @@
           </div>
         </div>
 
-        <div class="relative flex flex-col items-center text-center">
+        <div class="relative flex flex-col items-center text-center reveal-on-scroll delay-100">
           <div class="relative z-10 flex h-24 w-24 flex-col items-center justify-center rounded-3xl bg-[#0B1F17] shadow-[0_8px_24px_-8px_rgba(11,31,23,0.35)]">
             <i data-lucide="user-plus" class="h-8 w-8 text-[#B9F044]"></i>
             <span class="mt-1 text-[10px] font-extrabold uppercase tracking-widest text-[#B9F044]/60">Step 1</span>
@@ -379,7 +875,7 @@
           <p class="mt-2 max-w-xs text-[13px] leading-6 text-slate-500">List the subjects you know and the ones you need help with. Takes 2 minutes.</p>
         </div>
 
-        <div class="relative flex flex-col items-center text-center">
+        <div class="relative flex flex-col items-center text-center reveal-on-scroll delay-200">
           <div class="relative z-10 flex h-24 w-24 flex-col items-center justify-center rounded-3xl bg-[#B9F044] shadow-[0_8px_24px_-8px_rgba(185,240,68,0.5)]">
             <i data-lucide="search" class="h-8 w-8 text-[#0B1F17]"></i>
             <span class="mt-1 text-[10px] font-extrabold uppercase tracking-widest text-[#0B1F17]/50">Step 2</span>
@@ -388,7 +884,7 @@
           <p class="mt-2 max-w-xs text-[13px] leading-6 text-slate-500">Browse verified peer mentors by subject, filter by availability, and book a 15-min slot.</p>
         </div>
 
-        <div class="relative flex flex-col items-center text-center">
+        <div class="relative flex flex-col items-center text-center reveal-on-scroll delay-300">
           <div class="relative z-10 flex h-24 w-24 flex-col items-center justify-center rounded-3xl bg-[#0B1F17] shadow-[0_8px_24px_-8px_rgba(11,31,23,0.35)]">
             <i data-lucide="graduation-cap" class="h-8 w-8 text-[#B9F044]"></i>
             <span class="mt-1 text-[10px] font-extrabold uppercase tracking-widest text-[#B9F044]/60">Step 3</span>
@@ -398,7 +894,7 @@
         </div>
       </div>
 
-      <div class="mt-14 flex justify-center">
+      <div class="mt-14 flex justify-center reveal-on-scroll delay-200">
         <a href="login.html#signup" class="btn-pill inline-flex items-center gap-3 rounded-2xl bg-[#0B1F17] py-3.5 pl-7 pr-2.5 text-[14px] font-bold text-white shadow-[0_8px_32px_-8px_rgba(11,31,23,0.4)] transition hover:bg-[#064E3B]">
           Get Started Free
           <span class="arrow-circle flex h-9 w-9 items-center justify-center rounded-xl bg-[#B9F044] text-[#0B1F17]">
@@ -411,51 +907,251 @@
 
 
   <!-- ============================================================
-       FAQ SECTION
+       INTERACTIVE CAMPUS GROWTH & CREDIT CALCULATOR
+       ============================================================ -->
+  <section id="calculator" class="bg-gradient-to-b from-[#FAFDF6] via-white to-[#F4FBEA] px-5 py-24 sm:px-8 border-t border-slate-100">
+    <div class="mx-auto max-w-5xl">
+
+      <div class="mx-auto mb-12 max-w-2xl text-center reveal-on-scroll">
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#B9F044]/20 border border-[#B9F044]/50 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">
+          🪙 Real-Time Earnings Simulator
+        </span>
+        <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl">
+          How Much Can You Grow on Campus?
+        </h2>
+        <p class="mx-auto mt-3 max-w-lg text-[15px] leading-relaxed text-slate-500">
+          Adjust the sliders below to calculate your estimated monthly credits earned, campus XP gained, and projected peer mentor tier.
+        </p>
+      </div>
+
+      <div class="grid gap-8 lg:grid-cols-[1.3fr_1fr] items-center reveal-on-scroll delay-100">
+
+        <!-- Controls Box -->
+        <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-[0_16px_40px_-12px_rgba(11,31,23,0.08)] space-y-6">
+
+          <!-- Slider 1: Micro-sessions taught -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label for="calc-sessions-slider" class="text-xs sm:text-sm font-extrabold text-[#0B1F17] flex items-center gap-2">
+                <span>⚡ 15-Min Sessions You Can Teach</span>
+              </label>
+              <span id="calc-sessions-val" class="font-mono text-sm font-extrabold text-[#2F6F11] bg-[#B9F044]/20 px-2.5 py-0.5 rounded-full">
+                3 sessions / week
+              </span>
+            </div>
+            <input type="range" id="calc-sessions-slider" min="1" max="10" value="3" step="1" oninput="updateCalculator()" class="w-full cursor-pointer accent-[#0B1F17]" />
+            <div class="flex justify-between text-[11px] text-slate-400 mt-1 font-semibold">
+              <span>1 session</span>
+              <span>5 sessions</span>
+              <span>10 sessions / wk</span>
+            </div>
+          </div>
+
+          <!-- Slider 2: Speed races won -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label for="calc-races-slider" class="text-xs sm:text-sm font-extrabold text-[#0B1F17] flex items-center gap-2">
+                <span>🏎️ Speed Arena Races Participated</span>
+              </label>
+              <span id="calc-races-val" class="font-mono text-sm font-extrabold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">
+                5 races / week
+              </span>
+            </div>
+            <input type="range" id="calc-races-slider" min="0" max="20" value="5" step="1" oninput="updateCalculator()" class="w-full cursor-pointer accent-[#0B1F17]" />
+            <div class="flex justify-between text-[11px] text-slate-400 mt-1 font-semibold">
+              <span>0 (Casual)</span>
+              <span>10 races</span>
+              <span>20 races / wk</span>
+            </div>
+          </div>
+
+          <!-- Dropdown: Department -->
+          <div>
+            <label for="calc-dept-select" class="block text-xs sm:text-sm font-extrabold text-[#0B1F17] mb-2">
+              🎓 Your Campus Department
+            </label>
+            <select id="calc-dept-select" onchange="updateCalculator()" class="w-full rounded-2xl border border-slate-200 bg-slate-50/60 p-3 text-xs sm:text-sm font-bold text-slate-700 focus:border-[#2F6F11] focus:bg-white focus:outline-none transition">
+              <option value="CSE" selected>Computer Science &amp; Engineering</option>
+              <option value="ECE">Electronics &amp; Communication</option>
+              <option value="MECH">Mechanical Engineering</option>
+              <option value="CIVIL">Civil Engineering</option>
+              <option value="MATH">Mathematics &amp; Computing</option>
+              <option value="AI">Artificial Intelligence &amp; Data Science</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Projected Value Output Card -->
+        <div class="rounded-3xl border border-[#0B1F17]/10 bg-[#0B1F17] text-white p-6 sm:p-8 shadow-[0_24px_50px_-12px_rgba(11,31,23,0.3)] flex flex-col justify-between space-y-6">
+          <div>
+            <div class="flex items-center justify-between border-b border-white/10 pb-4">
+              <span class="text-xs uppercase font-extrabold tracking-widest text-[#B9F044]">Estimated Monthly Output</span>
+              <span id="calc-dept-badge" class="text-[11px] font-bold text-slate-300 bg-white/10 px-2.5 py-0.5 rounded-full">Dept: CSE</span>
+            </div>
+
+            <!-- Credits and XP metrics -->
+            <div class="mt-6 grid grid-cols-2 gap-4">
+              <div class="rounded-2xl bg-white/5 border border-white/10 p-4 text-center">
+                <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Monthly Credits</p>
+                <div id="calc-credits-out" class="mt-1 font-mono text-3xl font-black text-[#B9F044]">
+                  +660 🪙
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">Spendable on doubts</p>
+              </div>
+
+              <div class="rounded-2xl bg-white/5 border border-white/10 p-4 text-center">
+                <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Campus XP</p>
+                <div id="calc-xp-out" class="mt-1 font-mono text-3xl font-black text-emerald-300">
+                  +2,440 ⚡
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">Leaderboard points</p>
+              </div>
+            </div>
+
+            <!-- Projected Rank Tier -->
+            <div class="mt-6 rounded-2xl bg-[#142C23] border border-[#B9F044]/30 p-4">
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="font-bold text-slate-300">Projected Campus Rank</span>
+                <span id="calc-tier-badge" class="font-extrabold text-[#B9F044]">🥇 Gold Academic Pioneer</span>
+              </div>
+              <div class="relative h-2 w-full rounded-full bg-black/40 overflow-hidden mt-2">
+                <div id="calc-tier-progress" class="h-full bg-gradient-to-r from-emerald-400 to-[#B9F044] rounded-full transition-all duration-500" style="width: 72%;"></div>
+              </div>
+              <p id="calc-tier-desc" class="text-[11px] text-slate-300 mt-2">
+                Top 8% on campus leaderboard. Unlocks Verified Peer badge &amp; unlimited matchmaking.
+              </p>
+            </div>
+          </div>
+
+          <a href="login.html#signup" class="btn-pill inline-flex items-center justify-center gap-2 rounded-2xl bg-[#B9F044] py-3.5 px-6 text-xs sm:text-sm font-extrabold text-[#0B1F17] hover:bg-emerald-300 transition shadow-lg">
+            <span>Claim Tier on Signup &mdash; Free 100 Credits</span>
+            <span class="arrow-circle flex h-6 w-6 items-center justify-center rounded-full bg-[#0B1F17] text-[#B9F044]">
+              <i data-lucide="arrow-right" class="h-3 w-3"></i>
+            </span>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       INTERACTIVE FAQ SECTION WITH ACCORDION & SEARCH
        ============================================================ -->
   <section id="faq" class="section-alt px-5 py-20 sm:px-8">
     <div class="mx-auto max-w-4xl">
-      <div class="mb-12 text-center">
+      <div class="mb-10 text-center reveal-on-scroll">
         <span class="inline-block rounded-full bg-[#B9F044]/20 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">Frequently Asked Questions</span>
         <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl">Everything You Need to Know</h2>
-        <p class="mt-2 text-sm text-slate-500">Clear, transparent answers about accounts, credits, and live sessions.</p>
+        <p class="mt-2 text-sm text-slate-500">Clear, transparent answers about accounts, credits, micro-sessions, and security.</p>
       </div>
 
-      <div class="space-y-4">
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-          <h3 class="text-base font-extrabold text-[#0B1F17] flex items-center gap-2">
-            <span class="text-[#2F6F11]">Q:</span> Why do I need to sign in to access features?
-          </h3>
-          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            GyanSetu is an authentic campus learning community. Logging in ensures verified peer profiles, protects your credit ledger balance, saves your learning progress, and prevents spam.
-          </p>
+      <!-- FAQ Category Filter Chips & Live Search -->
+      <div class="mb-8 space-y-3 reveal-on-scroll delay-100">
+        <div class="flex flex-wrap items-center justify-center gap-2">
+          <button onclick="filterFaqCategory('all', this)" class="faq-filter-btn rounded-xl bg-[#0B1F17] px-4 py-2 text-xs font-bold text-[#B9F044] shadow-xs transition">
+            All Questions
+          </button>
+          <button onclick="filterFaqCategory('credits', this)" class="faq-filter-btn rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 hover:border-slate-400 transition">
+            🪙 Credits &amp; Escrow
+          </button>
+          <button onclick="filterFaqCategory('sessions', this)" class="faq-filter-btn rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 hover:border-slate-400 transition">
+            ⚡ 15m Micro-Sessions
+          </button>
+          <button onclick="filterFaqCategory('arena', this)" class="faq-filter-btn rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 hover:border-slate-400 transition">
+            🏎️ Arena &amp; Rankings
+          </button>
         </div>
 
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-          <h3 class="text-base font-extrabold text-[#0B1F17] flex items-center gap-2">
-            <span class="text-[#2F6F11]">Q:</span> Do I have to pay real money?
-          </h3>
-          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            No real money is required! GyanSetu operates on a campus peer credit economy. Every registered student receives <strong>100 bonus credits</strong> on signup. You earn additional credits by teaching peers, solving arena challenges, or sharing verified study materials.
-          </p>
+        <div class="relative max-w-md mx-auto">
+          <input type="text" id="faq-search-input" oninput="filterFaqSearch()" placeholder="Search FAQ topics (e.g. escrow, credits, leaderboard)..." class="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 shadow-xs focus:border-[#2F6F11] focus:outline-none" />
+          <i data-lucide="search" class="absolute left-3.5 top-3 h-4 w-4 text-slate-400"></i>
+        </div>
+      </div>
+
+      <!-- Accordion Items -->
+      <div id="faq-list" class="space-y-3 reveal-on-scroll delay-200">
+        <!-- Question 1 -->
+        <div class="faq-item active rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs transition" data-category="credits" data-keywords="sign in login authentication verified ledger balance spam">
+          <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between text-left focus:outline-none" aria-expanded="true">
+            <h3 class="text-sm sm:text-base font-extrabold text-[#0B1F17] flex items-center gap-2.5">
+              <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B9F044]/30 text-[#2F6F11] text-xs font-black">Q</span>
+              <span>Why do I need to sign in to access workspace features?</span>
+            </h3>
+            <i data-lucide="chevron-down" class="faq-chevron h-4 w-4 text-slate-400 transition-transform duration-300 shrink-0 ml-2"></i>
+          </button>
+          <div class="faq-answer">
+            <p class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed pl-8 border-t border-slate-100 pt-3">
+              GyanSetu is an authentic campus learning community. Logging in ensures verified peer profiles, protects your credit ledger balance, saves your learning progress, and prevents spam.
+            </p>
+          </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-          <h3 class="text-base font-extrabold text-[#0B1F17] flex items-center gap-2">
-            <span class="text-[#2F6F11]">Q:</span> What happens to my credits during a 1-on-1 session?
-          </h3>
-          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Credits stay safe in <strong>Escrow Protection</strong>. They are only released to your peer mentor when you confirm that your doubt was clearly and satisfactorily resolved.
-          </p>
+        <!-- Question 2 -->
+        <div class="faq-item rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs transition" data-category="credits" data-keywords="pay money free cost subscription starter bonus 100 credits">
+          <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between text-left focus:outline-none" aria-expanded="false">
+            <h3 class="text-sm sm:text-base font-extrabold text-[#0B1F17] flex items-center gap-2.5">
+              <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B9F044]/30 text-[#2F6F11] text-xs font-black">Q</span>
+              <span>Do I have to pay real money to use GyanSetu?</span>
+            </h3>
+            <i data-lucide="chevron-down" class="faq-chevron h-4 w-4 text-slate-400 transition-transform duration-300 shrink-0 ml-2"></i>
+          </button>
+          <div class="faq-answer">
+            <p class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed pl-8 border-t border-slate-100 pt-3">
+              No real money is required! GyanSetu operates on a campus peer credit economy. Every registered student receives <strong>100 bonus credits</strong> on signup. You earn additional credits by teaching peers, solving arena challenges, or contributing verified notes.
+            </p>
+          </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-          <h3 class="text-base font-extrabold text-[#0B1F17] flex items-center gap-2">
-            <span class="text-[#2F6F11]">Q:</span> What features unlock after signing in?
-          </h3>
-          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Once signed in, your personal Dashboard gives you full access to <strong>Smart Match</strong> (find and book mentors), <strong>Live Collab Rooms</strong> (shared code editor, whiteboard, voice call), <strong>Campus Arena</strong> (coding races and 14-domain procedural quizzes), and the <strong>Campus Leaderboard</strong>.
-          </p>
+        <!-- Question 3 -->
+        <div class="faq-item rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs transition" data-category="credits" data-keywords="escrow protection safety refund guarantee transfer mentor release">
+          <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between text-left focus:outline-none" aria-expanded="false">
+            <h3 class="text-sm sm:text-base font-extrabold text-[#0B1F17] flex items-center gap-2.5">
+              <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B9F044]/30 text-[#2F6F11] text-xs font-black">Q</span>
+              <span>How does Escrow Protection keep my credits safe during a session?</span>
+            </h3>
+            <i data-lucide="chevron-down" class="faq-chevron h-4 w-4 text-slate-400 transition-transform duration-300 shrink-0 ml-2"></i>
+          </button>
+          <div class="faq-answer">
+            <p class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed pl-8 border-t border-slate-100 pt-3">
+              When you book a 1-on-1 micro-session, the required credits are placed into automated <strong>Escrow Protection</strong>. They are only transferred to your peer mentor when you click "Mark Doubt Solved". If the peer doesn't show up or your doubt isn't addressed, your credits are refunded in full.
+            </p>
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="faq-item rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs transition" data-category="sessions" data-keywords="micro 15 minutes session length doubt focused rapid webrtc">
+          <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between text-left focus:outline-none" aria-expanded="false">
+            <h3 class="text-sm sm:text-base font-extrabold text-[#0B1F17] flex items-center gap-2.5">
+              <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B9F044]/30 text-[#2F6F11] text-xs font-black">Q</span>
+              <span>Why are sessions strictly 15 minutes long?</span>
+            </h3>
+            <i data-lucide="chevron-down" class="faq-chevron h-4 w-4 text-slate-400 transition-transform duration-300 shrink-0 ml-2"></i>
+          </button>
+          <div class="faq-answer">
+            <p class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed pl-8 border-t border-slate-100 pt-3">
+              Research shows that students retain the most when tackling single, bite-sized doubts rather than sitting through hour-long lectures. The 15-minute format respects both peers' time, maintains laser focus, and makes asking for help friction-free.
+            </p>
+          </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="faq-item rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs transition" data-category="arena" data-keywords="arena coding race challenges rankings leaderboard xp domains procedural">
+          <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between text-left focus:outline-none" aria-expanded="false">
+            <h3 class="text-sm sm:text-base font-extrabold text-[#0B1F17] flex items-center gap-2.5">
+              <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B9F044]/30 text-[#2F6F11] text-xs font-black">Q</span>
+              <span>What is the Speed Race Arena and how do rankings work?</span>
+            </h3>
+            <i data-lucide="chevron-down" class="faq-chevron h-4 w-4 text-slate-400 transition-transform duration-300 shrink-0 ml-2"></i>
+          </button>
+          <div class="faq-answer">
+            <p class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed pl-8 border-t border-slate-100 pt-3">
+              The Speed Race Arena allows campus peers to race in real-time by answering procedural coding questions across 14 academic disciplines. Winning races earns you Campus XP and moves your squad up the department leaderboard.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -590,40 +1286,535 @@
       } catch (e) {}
     }
 
-    // Navbar scroll effect
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-      navbar.classList.toggle('navbar-scrolled', window.scrollY > 40);
+    // ============================================================
+    // SCROLL PROGRESS BAR & PARALLAX GLOW ORBS
+    // ============================================================
+    const scrollProgressBar = document.getElementById('scroll-progress-bar');
+    const parallaxElements = document.querySelectorAll('.parallax-element');
+
+    function handleScrollAnimations() {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      
+      // Update top progress bar
+      if (scrollProgressBar && docHeight > 0) {
+        const pct = Math.min(100, Math.max(0, (scrollY / docHeight) * 100));
+        scrollProgressBar.style.width = pct + '%';
+      }
+
+      // Parallax translation on ambient glowing background orbs
+      if (parallaxElements.length > 0 && window.innerWidth > 768) {
+        parallaxElements.forEach(el => {
+          const rate = parseFloat(el.getAttribute('data-parallax-rate') || '0.1');
+          el.style.transform = `translate3d(0, ${scrollY * rate}px, 0)`;
+        });
+      }
+
+      // Navbar scroll effect
+      const navbar = document.getElementById('navbar');
+      if (navbar) {
+        navbar.classList.toggle('navbar-scrolled', scrollY > 40);
+      }
+    }
+
+    window.addEventListener('scroll', handleScrollAnimations, { passive: true });
+    handleScrollAnimations();
+
+
+    // ============================================================
+    // SCROLL REVEAL OBSERVER (.reveal-on-scroll)
+    // ============================================================
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          // Once revealed, no need to re-hide
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: '0px 0px -40px 0px'
     });
+
+    document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+      revealObserver.observe(el);
+    });
+
+
+    // ============================================================
+    // HERO CONSTELLATION NODE PARTICLES CANVAS
+    // ============================================================
+    (function initConstellationCanvas() {
+      const canvas = document.getElementById('hero-interactive-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      let width = 0;
+      let height = 0;
+      let particles = [];
+      const PARTICLE_COUNT = window.innerWidth < 640 ? 25 : 50;
+      let mouse = { x: -9999, y: -9999, radius: 140 };
+
+      function resizeCanvas() {
+        const parent = canvas.parentElement;
+        width = canvas.width = parent ? parent.offsetWidth : window.innerWidth;
+        height = canvas.height = parent ? parent.offsetHeight : window.innerHeight;
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas, { passive: true });
+
+      // Track mouse position over hero
+      window.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+      }, { passive: true });
+
+      canvas.parentElement?.addEventListener('mouseleave', () => {
+        mouse.x = -9999;
+        mouse.y = -9999;
+      });
+
+      // Initialize particles
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          radius: Math.random() * 2 + 1.5,
+          color: i % 3 === 0 ? 'rgba(185, 240, 68, 0.7)' : 'rgba(11, 31, 23, 0.45)'
+        });
+      }
+
+      function animate() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, width, height);
+
+        // Update & draw particles
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+
+          // Move
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // Wrap edges
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+
+          // Mouse subtle interaction
+          const dx = mouse.x - p.x;
+          const dy = mouse.y - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < mouse.radius) {
+            const force = (mouse.radius - dist) / mouse.radius;
+            p.x -= (dx / dist) * force * 1.5;
+            p.y -= (dy / dist) * force * 1.5;
+          }
+
+          // Draw node
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+
+          // Connect nearby nodes
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const djx = p.x - p2.x;
+            const djy = p.y - p2.y;
+            const d = Math.sqrt(djx * djx + djy * djy);
+
+            if (d < 115) {
+              const alpha = (1 - d / 115) * 0.22;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = `rgba(185, 240, 68, ${alpha})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    })();
+
+
+    // ============================================================
+    // 3D TILT EFFECT ON CARDS
+    // ============================================================
+    document.querySelectorAll('.tilt-card, .feat-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        if (window.innerWidth < 768) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = ((y - centerY) / centerY) * -5;
+        const rotateY = ((x - centerX) / centerX) * 5;
+
+        card.style.transform = `perspective(800px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+      });
+    });
+
+
+    // ============================================================
+    // INTERACTIVE PLATFORM PLAYGROUND (DEMO TABS)
+    // ============================================================
+    window.switchDemoTab = function(tabName) {
+      const tabs = ['sprint', 'collab', 'arena', 'credits'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const pane = document.getElementById(`demo-pane-${t}`);
+        if (t === tabName) {
+          btn?.classList.add('active');
+          btn?.classList.remove('bg-slate-50/80', 'text-slate-700');
+          pane?.classList.remove('hidden');
+        } else {
+          btn?.classList.remove('active');
+          btn?.classList.add('bg-slate-50/80', 'text-slate-700');
+          pane?.classList.add('hidden');
+        }
+      });
+      lucide.createIcons();
+    };
+
+    // 1. Sprint Timer Simulation
+    let sprintSeconds = 900;
+    let sprintTimerInterval = null;
+    let sprintIsRunning = false;
+
+    window.toggleSprintTimer = function() {
+      const startBtnText = document.getElementById('sprint-start-text');
+      const statusBadge = document.getElementById('sprint-status-badge');
+      const statusText = document.getElementById('sprint-status-text');
+
+      sprintIsRunning = !sprintIsRunning;
+      if (sprintIsRunning) {
+        if (startBtnText) startBtnText.textContent = 'Pause 15m Sprint Demo';
+        if (statusText) statusText.textContent = '🟢 Session In Progress (WebRTC)';
+        if (statusBadge) {
+          statusBadge.className = 'inline-flex items-center gap-2 rounded-full border border-emerald-400 bg-emerald-100 px-3.5 py-1 text-xs font-bold text-emerald-900';
+        }
+
+        sprintTimerInterval = setInterval(() => {
+          if (sprintSeconds > 0) {
+            sprintSeconds--;
+            updateSprintDisplay();
+          } else {
+            clearInterval(sprintTimerInterval);
+            sprintIsRunning = false;
+            if (startBtnText) startBtnText.textContent = 'Restart 15m Sprint';
+            if (statusText) statusText.textContent = '⏱️ Session Completed';
+          }
+        }, 1000);
+      } else {
+        clearInterval(sprintTimerInterval);
+        if (startBtnText) startBtnText.textContent = 'Resume 15m Sprint Demo';
+        if (statusText) statusText.textContent = '⏸️ Session Paused';
+      }
+    };
+
+    function updateSprintDisplay() {
+      const display = document.getElementById('sprint-timer-display');
+      if (!display) return;
+      const mins = Math.floor(sprintSeconds / 60);
+      const secs = sprintSeconds % 60;
+      display.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    window.resolveSprintDemo = function() {
+      clearInterval(sprintTimerInterval);
+      sprintIsRunning = false;
+      const toast = document.getElementById('sprint-toast');
+      const statusText = document.getElementById('sprint-status-text');
+      const startBtnText = document.getElementById('sprint-start-text');
+
+      if (toast) {
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 5000);
+      }
+      if (statusText) statusText.textContent = '✓ Doubt Solved & Escrow Released!';
+      if (startBtnText) startBtnText.textContent = 'Start New Sprint Demo';
+      sprintSeconds = 900;
+      updateSprintDisplay();
+    };
+
+    window.setSprintTopic = function(title, subject) {
+      const doubtTitle = document.getElementById('sprint-doubt-title');
+      const subjectPill = document.getElementById('sprint-subject-pill');
+      if (doubtTitle) doubtTitle.textContent = `"${title}"`;
+      if (subjectPill) subjectPill.textContent = subject;
+    };
+
+    // 2. Collab Code Runner Simulation
+    let isWhiteboardActive = false;
+    window.toggleCollabView = function(view) {
+      const codeArea = document.getElementById('collab-code-area');
+      const wbArea = document.getElementById('collab-wb-area');
+      const wbBtn = document.getElementById('collab-wb-btn');
+
+      isWhiteboardActive = !isWhiteboardActive;
+      if (isWhiteboardActive) {
+        codeArea?.classList.add('hidden');
+        wbArea?.classList.remove('hidden');
+        if (wbBtn) wbBtn.textContent = '💻 View Python Code';
+      } else {
+        codeArea?.classList.remove('hidden');
+        wbArea?.classList.add('hidden');
+        if (wbBtn) wbBtn.textContent = '🎨 View Diagram';
+      }
+    };
+
+    window.runCollabCode = function() {
+      const runBtn = document.getElementById('run-code-btn');
+      const status = document.getElementById('collab-run-status');
+      const output = document.getElementById('collab-terminal-output');
+
+      if (status) status.textContent = '⏳ Executing on campus runner...';
+      if (runBtn) runBtn.classList.add('opacity-50', 'pointer-events-none');
+
+      setTimeout(() => {
+        if (status) status.innerHTML = '<span class="text-[#B9F044] font-bold">✓ All Tests Passed (0.012ms)</span>';
+        if (output) {
+          output.innerHTML = `
+            <span class="text-[#B9F044] font-bold">[GyanSetu Live Runner v2.4 &bull; Python 3.11]</span><br/>
+            &gt; test_binary_search_found (test_solution.py) ... <span class="text-emerald-400 font-bold">ok</span><br/>
+            &gt; test_binary_search_not_found (test_solution.py) ... <span class="text-emerald-400 font-bold">ok</span><br/>
+            ----------------------------------------------------------------------<br/>
+            <span class="text-[#B9F044] font-bold">Ran 2 tests in 0.012s &bull; OK (Escrow code verification complete)</span>
+          `;
+        }
+        if (runBtn) runBtn.classList.remove('opacity-50', 'pointer-events-none');
+      }, 400);
+    };
+
+    // 3. Speed Arena Racing Simulation
+    window.handleArenaAnswer = function(isCorrect, btn) {
+      const resultMsg = document.getElementById('arena-result-msg');
+      const playerCar = document.getElementById('player-car-bar');
+      const playerDist = document.getElementById('player-dist-pct');
+      const nitroBadge = document.getElementById('player-nitro-badge');
+      const raceState = document.getElementById('arena-race-state');
+
+      if (isCorrect) {
+        btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-700');
+        btn.classList.remove('bg-white', 'text-slate-700');
+
+        if (nitroBadge) nitroBadge.classList.remove('hidden');
+        if (playerCar) playerCar.style.width = '100%';
+        if (playerDist) playerDist.textContent = '100% 🏁';
+        if (raceState) {
+          raceState.textContent = '🏆 1st Place Victory! (+50 XP & +15 Credits)';
+          raceState.className = 'rounded-full bg-emerald-100 border border-emerald-400 px-3 py-0.5 text-xs font-extrabold text-emerald-900';
+        }
+
+        if (resultMsg) {
+          resultMsg.className = 'mt-4 p-3 rounded-xl text-center text-xs font-bold bg-emerald-100 border border-emerald-300 text-emerald-800 animate-fade-in block';
+          resultMsg.innerHTML = '⚡ <strong>Correct!</strong> Hash Table lookup average is O(1). Nitro activated &mdash; You crossed the finish line first!';
+        }
+      } else {
+        btn.classList.add('bg-rose-100', 'text-rose-800', 'border-rose-300');
+        if (resultMsg) {
+          resultMsg.className = 'mt-4 p-3 rounded-xl text-center text-xs font-bold bg-rose-50 border border-rose-200 text-rose-800 animate-fade-in block';
+          resultMsg.innerHTML = '❌ Not quite. Hash tables use direct index hashing for <strong>O(1)</strong> average access. Try Option B!';
+        }
+      }
+    };
+
+    // 4. Escrow Protection Step-through
+    let escrowPhase = 1;
+    window.advanceEscrowDemo = function() {
+      escrowPhase = (escrowPhase % 3) + 1;
+      updateEscrowDisplay();
+    };
+
+    window.resetEscrowDemo = function() {
+      escrowPhase = 1;
+      updateEscrowDisplay();
+    };
+
+    function updateEscrowDisplay() {
+      const s1 = document.getElementById('escrow-step-1');
+      const s2 = document.getElementById('escrow-step-2');
+      const s3 = document.getElementById('escrow-step-3');
+      const vaultIcon = document.getElementById('escrow-icon-vault');
+      const headline = document.getElementById('escrow-status-headline');
+      const desc = document.getElementById('escrow-status-desc');
+      const advanceBtn = document.getElementById('escrow-advance-btn');
+
+      // Reset step styles
+      [s1, s2, s3].forEach(s => {
+        if (s) {
+          s.className = 'rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition-all';
+        }
+      });
+
+      if (escrowPhase === 1) {
+        if (s1) s1.className = 'rounded-2xl border-2 border-[#0B1F17] bg-white p-4 transition-all shadow-xs';
+        if (vaultIcon) vaultIcon.textContent = '🔒';
+        if (headline) headline.textContent = 'Credits In Vault: 100 🪙';
+        if (desc) desc.textContent = 'Guaranteed refund if the session does not take place.';
+        if (advanceBtn) advanceBtn.textContent = 'Advance to Phase 2 →';
+      } else if (escrowPhase === 2) {
+        if (s2) s2.className = 'rounded-2xl border-2 border-emerald-500 bg-emerald-50/50 p-4 transition-all shadow-xs';
+        if (vaultIcon) vaultIcon.textContent = '🛡️';
+        if (headline) headline.textContent = 'Session Active (Credits Protected)';
+        if (desc) desc.textContent = 'Both peers in room. Credits locked safely in smart escrow.';
+        if (advanceBtn) advanceBtn.textContent = 'Advance to Phase 3 →';
+      } else if (escrowPhase === 3) {
+        if (s3) s3.className = 'rounded-2xl border-2 border-[#B9F044] bg-[#FAFDF6] p-4 transition-all shadow-xs';
+        if (vaultIcon) vaultIcon.textContent = '✅';
+        if (headline) headline.textContent = 'Verified Release: 100 Credits Sent to Mentor';
+        if (desc) desc.textContent = 'Student approved doubt solution. Zero fees deducted.';
+        if (advanceBtn) advanceBtn.textContent = 'Restart Escrow Demo ↺';
+      }
+    }
+
+
+    // ============================================================
+    // INTERACTIVE CAMPUS GROWTH & CREDIT CALCULATOR
+    // ============================================================
+    window.updateCalculator = function() {
+      const sessions = parseInt(document.getElementById('calc-sessions-slider')?.value || '3');
+      const races = parseInt(document.getElementById('calc-races-slider')?.value || '5');
+      const dept = document.getElementById('calc-dept-select')?.value || 'CSE';
+
+      // Update slider value tags
+      const sVal = document.getElementById('calc-sessions-val');
+      const rVal = document.getElementById('calc-races-val');
+      const dBadge = document.getElementById('calc-dept-badge');
+
+      if (sVal) sVal.textContent = `${sessions} session${sessions > 1 ? 's' : ''} / week`;
+      if (rVal) rVal.textContent = `${races} race${races > 1 ? 's' : ''} / week`;
+      if (dBadge) dBadge.textContent = `Dept: ${dept}`;
+
+      // Calculate monthly credits & XP
+      const monthlyCredits = (sessions * 30 + races * 15) * 4;
+      const monthlyXP = (sessions * 120 + races * 50) * 4;
+
+      const creditsOut = document.getElementById('calc-credits-out');
+      const xpOut = document.getElementById('calc-xp-out');
+      if (creditsOut) creditsOut.textContent = `+${monthlyCredits.toLocaleString()} 🪙`;
+      if (xpOut) xpOut.textContent = `+${monthlyXP.toLocaleString()} ⚡`;
+
+      // Determine rank tier
+      const tierBadge = document.getElementById('calc-tier-badge');
+      const tierProgress = document.getElementById('calc-tier-progress');
+      const tierDesc = document.getElementById('calc-tier-desc');
+
+      if (monthlyXP < 800) {
+        if (tierBadge) tierBadge.textContent = '🥉 Bronze Peer Scout';
+        if (tierProgress) tierProgress.style.width = '35%';
+        if (tierDesc) tierDesc.textContent = 'Top 45% campus rank. Earn credits to unlock faster matching.';
+      } else if (monthlyXP < 2000) {
+        if (tierBadge) tierBadge.textContent = '🥈 Silver Campus Mentor';
+        if (tierProgress) tierProgress.style.width = '60%';
+        if (tierDesc) tierDesc.textContent = 'Top 20% campus rank. Unlocks mentor profile badges & arena priority.';
+      } else if (monthlyXP < 4500) {
+        if (tierBadge) tierBadge.textContent = '🥇 Gold Academic Pioneer';
+        if (tierProgress) tierProgress.style.width = '85%';
+        if (tierDesc) tierDesc.textContent = 'Top 8% on campus leaderboard. Unlocks Verified Peer badge & unlimited matchmaking.';
+      } else {
+        if (tierBadge) tierBadge.textContent = '💎 Diamond Campus Legend';
+        if (tierProgress) tierProgress.style.width = '100%';
+        if (tierDesc) tierDesc.textContent = 'Top 1% elite peer mentor. Featured on campus leaderboard homepage.';
+      }
+    };
+    updateCalculator();
+
+
+    // ============================================================
+    // INTERACTIVE FAQ ACCORDION & SEARCH
+    // ============================================================
+    window.toggleFaq = function(btn) {
+      const item = btn.closest('.faq-item');
+      if (!item) return;
+      const isActive = item.classList.contains('active');
+      
+      // Close other FAQs
+      document.querySelectorAll('.faq-item').forEach(i => {
+        if (i !== item) i.classList.remove('active');
+      });
+
+      item.classList.toggle('active', !isActive);
+      btn.setAttribute('aria-expanded', !isActive ? 'true' : 'false');
+    };
+
+    window.filterFaqCategory = function(cat, btn) {
+      document.querySelectorAll('.faq-filter-btn').forEach(b => {
+        b.className = 'faq-filter-btn rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 hover:border-slate-400 transition';
+      });
+      btn.className = 'faq-filter-btn rounded-xl bg-[#0B1F17] px-4 py-2 text-xs font-bold text-[#B9F044] shadow-xs transition';
+
+      const items = document.querySelectorAll('.faq-item');
+      items.forEach(item => {
+        const itemCat = item.getAttribute('data-category');
+        if (cat === 'all' || itemCat === cat) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    };
+
+    window.filterFaqSearch = function() {
+      const q = (document.getElementById('faq-search-input')?.value || '').toLowerCase().trim();
+      const items = document.querySelectorAll('.faq-item');
+      items.forEach(item => {
+        const text = (item.innerText || '').toLowerCase();
+        const kw = (item.getAttribute('data-keywords') || '').toLowerCase();
+        if (!q || text.includes(q) || kw.includes(q)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    };
+
 
     // Mobile menu toggle
     const menuBtn = document.getElementById('menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const menuIcon = document.getElementById('menu-icon');
     let menuOpen = false;
-    menuBtn.addEventListener('click', () => {
+    menuBtn?.addEventListener('click', () => {
       menuOpen = !menuOpen;
       if (menuOpen) {
-        mobileMenu.classList.remove('hidden');
-        mobileMenu.classList.add('open');
-        menuBtn.setAttribute('aria-expanded', 'true');
-        menuIcon.setAttribute('data-lucide', 'x');
+        mobileMenu?.classList.remove('hidden');
+        mobileMenu?.classList.add('open');
+        menuBtn?.setAttribute('aria-expanded', 'true');
+        menuIcon?.setAttribute('data-lucide', 'x');
       } else {
-        mobileMenu.classList.remove('open');
-        mobileMenu.classList.add('hidden');
-        menuBtn.setAttribute('aria-expanded', 'false');
-        menuIcon.setAttribute('data-lucide', 'menu');
+        mobileMenu?.classList.remove('open');
+        mobileMenu?.classList.add('hidden');
+        menuBtn?.setAttribute('aria-expanded', 'false');
+        menuIcon?.setAttribute('data-lucide', 'menu');
       }
       lucide.createIcons();
     });
 
-    mobileMenu.querySelectorAll('a').forEach(link => {
+    mobileMenu?.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
-        mobileMenu.classList.remove('open');
-        mobileMenu.classList.add('hidden');
+        mobileMenu?.classList.remove('open');
+        mobileMenu?.classList.add('hidden');
         menuOpen = false;
-        menuBtn.setAttribute('aria-expanded', 'false');
-        menuIcon.setAttribute('data-lucide', 'menu');
+        menuBtn?.setAttribute('aria-expanded', 'false');
+        menuIcon?.setAttribute('data-lucide', 'menu');
         lucide.createIcons();
       });
     });
@@ -631,7 +1822,7 @@
     // Active nav on scroll
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
-    const observer = new IntersectionObserver((entries) => {
+    const sectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           navLinks.forEach(link => {
@@ -642,8 +1833,8 @@
           });
         }
       });
-    }, { threshold: 0.4 });
-    sections.forEach(s => observer.observe(s));
+    }, { threshold: 0.35 });
+    sections.forEach(s => sectionObserver.observe(s));
   </script>
 </body>
 </html>
