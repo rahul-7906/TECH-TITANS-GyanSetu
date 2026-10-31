@@ -1,87 +1,403 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GyanSetu | Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="js/tailwind.config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    .sidebar-link { display:flex; align-items:center; gap:0.625rem; padding:0.6rem 0.875rem; border-radius:0.75rem; font-size:0.8125rem; font-weight:600; color:#475569; transition:all .15s; }
-    .sidebar-link:hover { background:#F4FBEA; color:#2F6F11; }
-    .sidebar-link.active { background:#0B1F17; color:#B9F044; }
-    .sidebar-link .lucide { width:1rem; height:1rem; }
-    .stat-card { border-radius:1.25rem; padding:1.25rem; border:1.5px solid #f1f5f9; background:#fff; }
-    .section-title { font-size:0.625rem; font-weight:800; text-transform:uppercase; letter-spacing:.25em; color:#2F6F11; margin-bottom:.75rem; }
-    .mentor-card { border-radius:1.25rem; border:1.5px solid #f1f5f9; background:#fff; padding:1rem; transition:all .2s; cursor:pointer; }
-    .mentor-card:hover { border-color:#B9F044; box-shadow:0 8px 24px -8px rgba(11,31,23,.12); }
-    .badge { display:inline-flex; align-items:center; gap:.35rem; border-radius:9999px; padding:.25rem .7rem; font-size:.6875rem; font-weight:700; }
-    .badge-lime { background:#B9F044; color:#0B1F17; }
-    .badge-mist { background:#F4FBEA; color:#2F6F11; }
-    .badge-dark { background:#0B1F17; color:#B9F044; }
-    .tag { display:inline-flex; align-items:center; padding:.2rem .6rem; border-radius:.5rem; background:#f1f5f9; font-size:.6875rem; font-weight:600; color:#64748b; }
-    .progress-bar { height:6px; border-radius:999px; background:#f1f5f9; overflow:hidden; }
-    .progress-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,#B9F044,#8FD420); transition:width 1s ease; }
-    .duel-card { border-radius:1.25rem; border:1.5px solid #f1f5f9; background:#fff; padding:1.25rem; transition:all .2s; }
-    .duel-card:hover { border-color:#B9F044; transform:translateY(-2px); box-shadow:0 8px 24px -8px rgba(11,31,23,.12); }
-    .tab-btn { padding:.5rem 1.1rem; font-size:.8125rem; font-weight:700; color:#94a3b8; border-radius:.75rem; transition:all .15s; }
-    .tab-btn.active { background:#0B1F17; color:#B9F044; }
-    .ledger-row { display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:.75rem; padding:.75rem 0; border-bottom:1px solid #f1f5f9; }
-    .ledger-row:last-child { border-bottom:none; }
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    :root {
+      --lavender: #EDE7F6;
+      --purple: #7C3AED;
+    }
+
+    .ghost-mode .user-name {
+      filter: blur(8px);
+    }
+
+    .ghost-mode #sidebar-avatar,
+    .ghost-mode #topbar-avatar {
+      display: none;
+    }
+
+    .ghost-mode #ghost-alias {
+      display: inline;
+    }
+
+    .shadow-mode {
+      background: #1A1625 !important;
+      color: white;
+    }
+
+    .shadow-mode main>section:not(#sessions) {
+      display: none;
+    }
+
+    .shadow-mode #quick-actions>a:not([href="session.html"]) {
+      display: none;
+    }
+
+    .shadow-mode #sessions a[href="#mentors"] {
+      display: none;
+    }
+
+    .shadow-mode #focus-message {
+      display: block;
+    }
+
+    .shadow-mode aside nav a:not(#nav-sessions):not([href="session.html"]),
+    .shadow-mode aside nav>div {
+      display: none;
+    }
+
+    body .stat-card,
+    body .mentor-card,
+    body .duel-card,
+    body #mentors-empty,
+    body #sessions>div,
+    body #ledger>div {
+      border-radius: 1rem;
+      box-shadow: 0 10px 24px rgba(76, 29, 149, .08);
+    }
+
+    .stat-card,
+    .mentor-card,
+    .duel-card,
+    #sessions > div,
+    #ledger > div,
+    #performance-card {
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .06);
+      transition: transform 300ms ease, box-shadow 300ms ease;
+    }
+
+    .stat-card:hover,
+    .mentor-card:hover,
+    .duel-card:hover,
+    #performance-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 14px 36px rgba(76, 29, 149, .12);
+    }
+
+    .ios-switch:checked + span {
+      background: #7C3AED;
+    }
+
+    .ios-switch:checked + span span {
+      transform: translateX(1.25rem);
+    }
+
+    .ios-switch:focus-visible + span {
+      outline: 3px solid #C4B5FD;
+      outline-offset: 3px;
+    }
+
+    .skill-pill {
+      border: 1px solid #ede9fe;
+      border-radius: 18px;
+      background: #fff;
+      padding: .85rem 1rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 300ms ease;
+    }
+
+    .skill-pill:hover,
+    .skill-pill:focus-visible {
+      border-color: #c4b5fd;
+      box-shadow: 0 10px 24px rgba(124, 58, 237, .12);
+      transform: translateY(-3px);
+      outline: none;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.6rem 0.875rem;
+      border-radius: 0.75rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #475569;
+      transition: all .15s;
+    }
+
+    .sidebar-link:hover {
+      background: #F4FBEA;
+      color: #2F6F11;
+    }
+
+    .sidebar-link.active {
+      background: #0B1F17;
+      color: #B9F044;
+    }
+
+    .sidebar-link .lucide {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .stat-card {
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      border: 1.5px solid #f1f5f9;
+      background: #fff;
+    }
+
+    .section-title {
+      font-size: 0.625rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .25em;
+      color: #2F6F11;
+      margin-bottom: .75rem;
+    }
+
+    .mentor-card {
+      border-radius: 1.25rem;
+      border: 1.5px solid #f1f5f9;
+      background: #fff;
+      padding: 1rem;
+      transition: all .2s;
+      cursor: pointer;
+    }
+
+    .mentor-card:hover {
+      border-color: #B9F044;
+      box-shadow: 0 8px 24px -8px rgba(11, 31, 23, .12);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      border-radius: 9999px;
+      padding: .25rem .7rem;
+      font-size: .6875rem;
+      font-weight: 700;
+    }
+
+    .badge-lime {
+      background: #B9F044;
+      color: #0B1F17;
+    }
+
+    .badge-mist {
+      background: #F4FBEA;
+      color: #2F6F11;
+    }
+
+    .badge-dark {
+      background: #0B1F17;
+      color: #B9F044;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: .2rem .6rem;
+      border-radius: .5rem;
+      background: #f1f5f9;
+      font-size: .6875rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .progress-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #B9F044, #8FD420);
+      transition: width 1s ease;
+    }
+
+    .duel-card {
+      border-radius: 1.25rem;
+      border: 1.5px solid #f1f5f9;
+      background: #fff;
+      padding: 1.25rem;
+      transition: all .2s;
+    }
+
+    .duel-card:hover {
+      border-color: #B9F044;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -8px rgba(11, 31, 23, .12);
+    }
+
+    .tab-btn {
+      padding: .5rem 1.1rem;
+      font-size: .8125rem;
+      font-weight: 700;
+      color: #94a3b8;
+      border-radius: .75rem;
+      transition: all .15s;
+    }
+
+    .tab-btn.active {
+      background: #0B1F17;
+      color: #B9F044;
+    }
+
+    .ledger-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: .75rem;
+      padding: .75rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .ledger-row:last-child {
+      border-bottom: none;
+    }
+
     /* Empty state */
-    .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:3rem 1rem; text-align:center; gap:.75rem; }
-    .empty-state-icon { width:3.5rem; height:3.5rem; border-radius:1rem; background:#F4FBEA; display:flex; align-items:center; justify-content:center; color:#2F6F11; }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+      text-align: center;
+      gap: .75rem;
+    }
+
+    .empty-state-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 1rem;
+      background: #F4FBEA;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2F6F11;
+    }
+
     /* Skeleton shimmer */
-    .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e8f0e0 50%, #f1f5f9 75%); background-size:400% 100%; animation: shimmer 1.6s infinite; border-radius:.5rem; }
-    @keyframes shimmer { 0%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .skeleton {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e8f0e0 50%, #f1f5f9 75%);
+      background-size: 400% 100%;
+      animation: shimmer 1.6s infinite;
+      border-radius: .5rem;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 100% 50%
+      }
+
+      100% {
+        background-position: 0% 50%
+      }
+    }
+
     /* Avatar placeholder */
-    .avatar-ph { background:#E2E8F0; color:#94A3B8; }
+    .avatar-ph {
+      background: #E2E8F0;
+      color: #94A3B8;
+    }
   </style>
 </head>
-<body class="font-sans text-ink antialiased bg-[#F7FAF3]">
+
+<body class="font-sans text-ink antialiased bg-[#EDE7F6]">
+
+  <div class="sticky top-0 z-50 mx-3 mt-3 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/80 bg-white/95 px-4 py-3 shadow-lg shadow-violet-200/40 backdrop-blur sm:mx-6 sm:px-6 md:flex-nowrap">
+    <a href="dashboard.html" class="flex items-center gap-2" aria-label="GyanSetu dashboard">
+      <span class="text-2xl" aria-hidden="true">👻📚</span>
+      <span class="bg-gradient-to-r from-violet-700 via-fuchsia-500 to-amber-500 bg-clip-text text-lg font-extrabold tracking-tight text-transparent">GyanSetu</span>
+    </a>
+    <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 md:gap-3">
+      <label title="Ask doubts without fear of judgement" class="flex cursor-pointer items-center gap-2 text-xs font-semibold text-slate-700 sm:text-sm">
+        <span aria-hidden="true">👻</span>
+        <span>Ghost Mode</span>
+        <input id="ghostToggle" type="checkbox" class="ios-switch sr-only" onchange="toggleGhost()" />
+        <span class="relative h-6 w-11 rounded-full bg-slate-200 transition-colors duration-300">
+          <span class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-300"></span>
+        </span>
+      </label>
+      <label class="flex cursor-pointer items-center gap-2 text-xs font-semibold text-slate-700 sm:text-sm">
+        <span aria-hidden="true">🌙</span>
+        <span>Shadow Mode</span>
+        <input id="shadowToggle" type="checkbox" class="ios-switch sr-only" onchange="toggleShadow()" />
+        <span class="relative h-6 w-11 rounded-full bg-slate-200 transition-colors duration-300">
+          <span class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-300"></span>
+        </span>
+      </label>
+    </div>
+    <div class="ml-auto flex items-center gap-2 sm:gap-3">
+      <span id="mentorSleep" class="max-w-[145px] text-right text-[10px] font-semibold leading-tight text-slate-600 sm:max-w-none sm:text-xs" aria-live="polite"></span>
+      <div id="topbar-avatar" class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-violet-200 bg-violet-100 text-lg" aria-label="Learner avatar">🧑‍🎓</div>
+    </div>
+  </div>
 
   <div class="flex min-h-screen">
 
     <!-- ===================== SIDEBAR ===================== -->
-    <aside class="hidden w-60 shrink-0 flex-col border-r border-slate-100 bg-white lg:flex" style="position:sticky;top:0;height:100vh;">
+    <aside class="hidden w-60 shrink-0 flex-col border-r border-slate-100 bg-white lg:flex"
+      style="position:sticky;top:3.5rem;height:calc(100vh - 3.5rem);">
       <!-- Brand -->
       <div class="flex items-center gap-2.5 border-b border-slate-100 px-5 py-5">
-        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11]">
-          <i data-lucide="graduation-cap" class="h-5 w-5 text-[#0B1F17]"></i>
+        <span class="text-xl" aria-hidden="true">👻📚</span>
+        <span
+          class="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-amber-500 bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
+          GyanSetu
         </span>
-        <span class="text-lg font-extrabold tracking-tight">GyanSetu</span>
       </div>
 
       <!-- User profile — shows initials from auth, no hardcoded name -->
       <div class="mx-3 mt-4 rounded-xl border border-slate-100 bg-[#F4FBEA] p-3">
         <div class="flex items-center gap-2.5">
-          <div id="sidebar-avatar" class="flex h-10 w-10 items-center justify-center rounded-xl avatar-ph text-sm font-extrabold">
+          <div id="sidebar-avatar"
+            class="flex h-10 w-10 items-center justify-center rounded-xl avatar-ph text-sm font-extrabold">
             <i data-lucide="user" class="h-5 w-5"></i>
           </div>
           <div class="min-w-0">
-            <p id="sidebar-name" class="text-sm font-extrabold truncate text-slate-400">Your Name</p>
+            <p id="sidebar-name" class="user-name text-sm font-extrabold truncate text-slate-400">Your Name</p>
+            <span id="ghost-alias" class="hidden text-sm font-extrabold text-violet-700">Ghost Learner #42</span>
             <p id="sidebar-dept" class="text-[11px] text-slate-400">Department &bull; Year</p>
           </div>
         </div>
         <div class="mt-2.5 flex items-center justify-between">
-          <span class="badge badge-dark"><i data-lucide="coins" class="h-3 w-3"></i> <span id="sidebar-credits">0</span> credits</span>
-          <span class="badge badge-mist"><i data-lucide="flame" class="h-3 w-3"></i> <span id="sidebar-streak">0</span>-day</span>
+          <span class="badge badge-dark"><i data-lucide="coins" class="h-3 w-3"></i> <span id="sidebar-credits">0</span>
+            credits</span>
+          <span class="badge badge-mist"><i data-lucide="flame" class="h-3 w-3"></i> <span
+              id="sidebar-streak">0</span>-day</span>
         </div>
       </div>
 
       <!-- Nav links -->
       <nav class="mt-4 flex-1 space-y-0.5 px-3">
-        <a href="#overview"  class="sidebar-link active" id="nav-overview"><i data-lucide="layout-dashboard" class="lucide"></i> Overview</a>
-        <a href="#mentors"   class="sidebar-link" id="nav-mentors"><i data-lucide="users" class="lucide"></i> Find Mentors</a>
-        <a href="#sessions"  class="sidebar-link" id="nav-sessions"><i data-lucide="calendar" class="lucide"></i> My Sessions</a>
-        <a href="#ledger"    class="sidebar-link" id="nav-ledger"><i data-lucide="coins" class="lucide"></i> Credit Ledger</a>
-        <a href="#duels"     class="sidebar-link" id="nav-duels"><i data-lucide="trophy" class="lucide"></i> Skill Duels</a>
+        <a href="#overview" class="sidebar-link active" id="nav-overview"><i data-lucide="layout-dashboard"
+            class="lucide"></i> Overview</a>
+        <a href="#mentors" class="sidebar-link" id="nav-mentors"><i data-lucide="users" class="lucide"></i> Find
+          Mentors</a>
+        <a href="#sessions" class="sidebar-link" id="nav-sessions"><i data-lucide="calendar" class="lucide"></i> My
+          Sessions</a>
+        <a href="#ledger" class="sidebar-link" id="nav-ledger"><i data-lucide="coins" class="lucide"></i> Credit
+          Ledger</a>
+        <a href="#duels" class="sidebar-link" id="nav-duels"><i data-lucide="trophy" class="lucide"></i> Skill Duels</a>
         <a href="session.html" class="sidebar-link"><i data-lucide="calendar-plus" class="lucide"></i> Book Session</a>
-        <a href="room.html"  class="sidebar-link"><i data-lucide="monitor" class="lucide"></i> Live Room</a>
+        <a href="room.html" class="sidebar-link"><i data-lucide="monitor" class="lucide"></i> Live Room</a>
         <div class="mt-3 border-t border-slate-100 pt-3">
           <a href="#" class="sidebar-link"><i data-lucide="settings" class="lucide"></i> Settings</a>
           <a href="index.html" class="sidebar-link"><i data-lucide="log-out" class="lucide"></i> Back to Home</a>
@@ -93,97 +409,183 @@
     <div class="flex-1 min-w-0">
 
       <!-- TOP BAR -->
-      <header class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-3 sm:px-7">
+      <header
+        class="relative z-10 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-3 sm:px-7">
         <div class="flex items-center gap-3">
-          <a href="index.html" class="flex items-center gap-2 lg:hidden">
-            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#B9F044] to-[#2F6F11]">
+          <a href="index.html" class="hidden items-center gap-2 lg:hidden">
+            <span
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#B9F044] to-[#2F6F11]">
               <i data-lucide="graduation-cap" class="h-4 w-4 text-[#0B1F17]"></i>
             </span>
             <span class="text-base font-extrabold">GyanSetu</span>
           </a>
-          <div class="hidden lg:block">
-            <h1 class="text-base font-extrabold">Welcome to GyanSetu &#128075;</h1>
-            <p class="text-[11px] text-slate-500">What would you like to learn today?</p>
+          <div>
+            <h1 class="text-base font-extrabold">Your learning dashboard ✨</h1>
+            <p class="text-[11px] text-slate-500">One session at a time, you’re growing.</p>
           </div>
         </div>
 
         <div class="flex items-center gap-2.5">
           <div class="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 sm:flex">
             <i data-lucide="search" class="h-3.5 w-3.5 text-slate-400"></i>
-            <input type="text" placeholder="Search mentors, topics&hellip;" class="w-44 bg-transparent text-xs outline-none placeholder-slate-400" />
+            <input type="text" placeholder="Search mentors, topics&hellip;"
+              class="w-44 bg-transparent text-xs outline-none placeholder-slate-400" />
           </div>
-          <button class="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-[#F4FBEA] transition">
+          <button
+            class="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-[#F4FBEA] transition">
             <i data-lucide="bell" class="h-4 w-4"></i>
           </button>
-          <div id="topbar-avatar" class="flex h-9 w-9 items-center justify-center rounded-xl avatar-ph text-xs font-extrabold">
-            <i data-lucide="user" class="h-4 w-4"></i>
-          </div>
         </div>
       </header>
 
       <!-- PAGE CONTENT -->
       <main class="px-5 py-7 sm:px-7">
 
+        <p id="focus-message"
+          class="mb-5 hidden rounded-2xl bg-violet-900 px-4 py-3 text-sm font-bold text-white shadow-lg">
+          🌙 Deep Focus Mode ON - No Distractions
+        </p>
+
+        <section class="relative mb-8 overflow-hidden rounded-[24px] bg-gradient-to-br from-[#EDE7F6] via-[#E9D5FF] to-[#D8B4FE] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:p-8">
+          <div class="absolute -right-10 -top-14 h-48 w-48 rounded-full bg-white/25 blur-2xl" aria-hidden="true"></div>
+          <div class="relative flex flex-col items-center justify-between gap-6 md:flex-row">
+            <div class="max-w-md">
+              <span class="mb-3 inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-violet-700">✨ YOUR LEARNING SPACE</span>
+              <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-4xl">Welcome back, Learner! 👋</h1>
+              <p class="mt-3 text-sm font-medium text-slate-700 sm:text-base">Ready to learn together today?</p>
+              <p class="mt-2 inline-flex items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 text-xs font-semibold text-slate-700"><span class="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></span>3 peers are studying now ✨</p>
+              <a href="room.html" class="mt-5 inline-flex items-center gap-2 rounded-full bg-violet-700 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-violet-900/20 transition duration-300 hover:scale-[1.02] hover:bg-violet-800">▶ Start a Session</a>
+            </div>
+            <div class="w-full max-w-[300px] shrink-0" aria-label="Illustration of a student studying at a desk" role="img">
+              <svg viewBox="0 0 360 250" class="w-full drop-shadow-lg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <ellipse cx="184" cy="225" rx="148" ry="15" fill="#A78BFA" opacity=".22"/>
+                <rect x="34" y="170" width="292" height="13" rx="6.5" fill="#8B5CF6"/>
+                <path d="M66 183h12l-6 44H60zm215 0h12l8 44h-12z" fill="#7C3AED"/>
+                <rect x="65" y="145" width="47" height="25" rx="4" fill="#F9A8D4"/>
+                <rect x="59" y="137" width="54" height="11" rx="3" fill="#FBCFE8"/>
+                <rect x="72" y="127" width="45" height="11" rx="3" fill="#C4B5FD"/>
+                <path d="M285 169v-29m0 8c-18-5-20-19-11-25 12 3 14 15 11 25zm0-6c2-17 13-22 22-18 0 12-10 20-22 18z" fill="#6BAF87"/>
+                <rect x="270" y="168" width="31" height="13" rx="4" fill="#FB923C"/>
+                <rect x="143" y="122" width="90" height="52" rx="8" fill="#334155"/>
+                <rect x="150" y="129" width="76" height="38" rx="4" fill="#C4B5FD"/>
+                <path d="M135 174h106l11 8H124z" fill="#64748B"/>
+                <path d="M247 148h20l-3 18h-14z" fill="#FDBA74"/>
+                <ellipse cx="257" cy="148" rx="10" ry="3" fill="#7C3AED"/>
+                <path d="M267 152h4c6 0 6 9 0 9h-5" fill="none" stroke="#FB923C" stroke-width="3"/>
+                <path d="M154 119c-2-29 12-52 36-54 24-2 40 14 38 40l-5 24-64 4z" fill="#7C3AED"/>
+                <circle cx="191" cy="89" r="29" fill="#F6C7A8"/>
+                <path d="M161 84c2-27 21-40 42-29 12 6 18 17 17 31-9-3-15-10-19-18-9 12-22 17-40 16z" fill="#3F2B47"/>
+                <circle cx="181" cy="91" r="2.5" fill="#334155"/><circle cx="201" cy="91" r="2.5" fill="#334155"/>
+                <path d="M184 103c5 4 11 4 16 0" fill="none" stroke="#C06B71" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M168 125c13 9 32 9 46 0l11 43h-70z" fill="#A78BFA"/>
+                <path d="M176 130l16 16 16-16" fill="none" stroke="#FDE68A" stroke-width="4" stroke-linecap="round"/>
+                <rect x="88" y="63" width="44" height="36" rx="5" fill="#FEF3C7" transform="rotate(-7 88 63)"/>
+                <path d="M98 76h22m-20 8h19m-18 8h13" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+                <path d="M250 45l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#fff" opacity=".9"/>
+                <path d="M126 111l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#F472B6"/>
+              </svg>
+            </div>
+          </div>
+        </section>
+
         <!-- Quick action bar -->
-        <div class="mb-7 flex flex-wrap items-center gap-3">
-          <a href="room.html" class="btn-pill inline-flex items-center gap-2.5 rounded-xl bg-[#0B1F17] py-2 pl-4 pr-2 text-xs font-bold text-white transition hover:bg-[#064E3B] shadow-card">
+        <div id="quick-actions" class="mb-7 flex flex-wrap items-center gap-3">
+          <a href="room.html"
+            class="btn-pill inline-flex items-center gap-2.5 rounded-xl bg-[#0B1F17] py-2 pl-4 pr-2 text-xs font-bold text-white transition hover:bg-[#064E3B] shadow-card">
             &#9889; Start Live Session
-            <span class="arrow-circle flex h-7 w-7 items-center justify-center rounded-full bg-[#B9F044] text-[#0B1F17]">
+            <span
+              class="arrow-circle flex h-7 w-7 items-center justify-center rounded-full bg-[#B9F044] text-[#0B1F17]">
               <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>
             </span>
           </a>
-          <a href="session.html" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
+          <a href="session.html"
+            class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
             <i data-lucide="calendar-plus" class="h-4 w-4"></i> Book a Session
           </a>
-          <a href="#mentors" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
+          <a href="#mentors"
+            class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
             <i data-lucide="users" class="h-4 w-4"></i> Find a Mentor
           </a>
-          <a href="#duels" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
+          <a href="#duels"
+            class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
             <i data-lucide="trophy" class="h-4 w-4"></i> Join a Duel
           </a>
         </div>
 
         <!-- ===== OVERVIEW STATS ===== -->
         <section id="overview" class="mb-8">
-          <p class="section-title">Overview</p>
+          <div class="mb-4 flex items-end justify-between">
+            <div>
+              <p class="section-title mb-1">Your progress</p>
+              <h2 class="text-xl font-extrabold tracking-tight text-slate-900">Little wins, big growth 🌱</h2>
+            </div>
+            <span class="hidden rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-violet-700 sm:inline-flex">This week ✨</span>
+          </div>
           <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="stat-card shadow-card">
+            <div class="stat-card border-t-4 border-t-[#C6F16D] bg-white p-5">
               <div class="flex items-center justify-between">
-                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9F044]/15 text-[#2F6F11]"><i data-lucide="coins" class="h-5 w-5"></i></span>
-                <span class="badge badge-mist">Balance</span>
+                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-lime-100 text-xl">💰</span>
+                <span class="rounded-full bg-lime-50 px-3 py-1 text-[11px] font-bold text-green-700">Balance</span>
               </div>
-              <p class="mt-3 text-2xl font-extrabold" id="stat-credits">0</p>
+              <p class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900" id="stat-credits">0</p>
               <p class="text-xs font-semibold text-slate-500">Knowledge Credits</p>
-              <div class="progress-bar mt-3"><div class="progress-bar-fill" id="bar-credits" style="width:0%"></div></div>
-            </div>
-            <div class="stat-card shadow-card">
-              <div class="flex items-center justify-between">
-                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0B1F17]/8 text-[#0B1F17]"><i data-lucide="calendar-check" class="h-5 w-5"></i></span>
-                <span class="badge badge-mist">This month</span>
+              <p class="mt-2 text-xs font-bold text-emerald-600">+120 this week ↗</p>
+              <div class="mt-4 flex h-8 items-end gap-1.5" aria-label="Weekly credits trending upward">
+                <span class="h-2 w-3 rounded-t bg-lime-200"></span><span class="h-4 w-3 rounded-t bg-lime-300"></span><span class="h-3 w-3 rounded-t bg-lime-300"></span><span class="h-6 w-3 rounded-t bg-lime-400"></span><span class="h-5 w-3 rounded-t bg-lime-400"></span><span class="h-8 w-3 rounded-t bg-lime-500"></span>
               </div>
-              <p class="mt-3 text-2xl font-extrabold" id="stat-sessions">0</p>
+              <div class="progress-bar mt-2"><div class="progress-bar-fill" id="bar-credits" style="width:0%"></div></div>
+            </div>
+            <div class="stat-card border-t-4 border-t-violet-500 bg-white p-5">
+              <div class="flex items-center justify-between">
+                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-100 text-xl">📅</span>
+                <span class="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold text-violet-700">Sessions</span>
+              </div>
+              <p class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900" id="stat-sessions">0</p>
               <p class="text-xs font-semibold text-slate-500">Sessions Completed</p>
-              <div class="progress-bar mt-3"><div class="progress-bar-fill" id="bar-sessions" style="width:0%"></div></div>
-            </div>
-            <div class="stat-card shadow-card">
-              <div class="flex items-center justify-between">
-                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9F044]/15 text-[#2F6F11]"><i data-lucide="flame" class="h-5 w-5"></i></span>
-                <span class="badge badge-mist">Streak</span>
+              <p class="mt-2 text-xs font-bold text-emerald-600">+4 this week ↗</p>
+              <div class="mt-4 flex h-8 items-end gap-1.5" aria-hidden="true">
+                <span class="h-3 w-3 rounded-t bg-violet-200"></span><span class="h-5 w-3 rounded-t bg-violet-300"></span><span class="h-4 w-3 rounded-t bg-violet-300"></span><span class="h-7 w-3 rounded-t bg-violet-400"></span><span class="h-6 w-3 rounded-t bg-violet-500"></span>
               </div>
-              <p class="mt-3 text-2xl font-extrabold" id="stat-streak">0</p>
-              <p class="text-xs font-semibold text-slate-500">Day Streak</p>
-              <div class="progress-bar mt-3"><div class="progress-bar-fill" id="bar-streak" style="width:0%"></div></div>
+              <div class="progress-bar mt-2"><div class="progress-bar-fill" id="bar-sessions" style="width:0%"></div></div>
             </div>
-            <div class="stat-card shadow-card">
+            <div class="stat-card border-t-4 border-t-[#FF9A5C] bg-white p-5">
               <div class="flex items-center justify-between">
-                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0B1F17]/8 text-[#0B1F17]"><i data-lucide="star" class="h-5 w-5"></i></span>
-                <span class="badge badge-mist">As mentor</span>
+                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-100 text-xl">🔥</span>
+                <span class="rounded-full bg-orange-50 px-3 py-1 text-[11px] font-bold text-orange-700">On fire!</span>
               </div>
-              <p class="mt-3 text-2xl font-extrabold" id="stat-rating">&#8212;</p>
-              <p class="text-xs font-semibold text-slate-500">Avg Rating</p>
-              <div class="progress-bar mt-3"><div class="progress-bar-fill" id="bar-rating" style="width:0%"></div></div>
+              <div class="mt-3 flex items-center justify-between gap-2">
+                <div>
+                  <p class="text-3xl font-extrabold tracking-tight text-slate-900"><span id="stat-streak">12</span> <span class="text-base font-bold">Days</span></p>
+                  <p class="mt-1 text-xs font-semibold text-slate-500">3 days to level up!</p>
+                </div>
+                <div class="grid h-[76px] w-[76px] shrink-0 place-items-center rounded-full" style="background:conic-gradient(#FF9A5C 0 75%, #FFEDD5 75% 100%)">
+                  <div class="grid h-[58px] w-[58px] place-items-center rounded-full bg-white text-xs font-extrabold text-orange-600">75%</div>
+                </div>
+              </div>
+              <div class="progress-bar mt-4"><div class="progress-bar-fill" id="bar-streak" style="width:75%;background:linear-gradient(90deg,#FF9A5C,#FDBA74)"></div></div>
+            </div>
+            <div class="stat-card border-t-4 border-t-sky-400 bg-white p-5">
+              <div class="flex items-center justify-between">
+                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-xl">⭐</span>
+                <span class="rounded-full bg-sky-50 px-3 py-1 text-[11px] font-bold text-sky-700">As mentor</span>
+              </div>
+              <p class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900" id="stat-rating">&#8212;</p>
+              <p class="text-xs font-semibold text-slate-500">Average peer rating</p>
+              <p class="mt-2 text-xs font-medium text-slate-500">Your kindness makes a difference 💜</p>
+              <div class="progress-bar mt-4"><div class="progress-bar-fill" id="bar-rating" style="width:0%"></div></div>
             </div>
           </div>
+        </section>
+
+        <section id="performance-card" class="mb-8 rounded-[20px] border border-white bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:p-7">
+          <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p class="section-title mb-1">Your Performance 📈</p>
+              <h2 class="text-lg font-extrabold text-slate-900">You are growing faster than 80% peers</h2>
+            </div>
+            <span class="rounded-full bg-violet-50 px-3 py-1.5 text-xs font-bold text-violet-700">Last 7 days</span>
+          </div>
+          <div class="h-56 w-full sm:h-64"><canvas id="performanceChart" role="img" aria-label="Area chart of credits earned from Monday through Sunday"></canvas></div>
         </section>
 
         <!-- ===== FIND MENTORS ===== -->
@@ -198,14 +600,42 @@
           </div>
 
           <!-- Subject filter chips -->
-          <div class="mb-4 flex flex-wrap gap-2">
-            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">DSA</button>
-            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">Python</button>
-            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">Web Dev</button>
-            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">DBMS</button>
-            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">OS</button>
-            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">Machine Learning</button>
-            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">CN</button>
+          <div class="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <button class="skill-pill group" aria-label="Filter by DSA, 64 percent of peers available">
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🧩 DSA</span><span class="text-xs font-semibold text-violet-600">64%</span></span>
+              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:64%"></span></span>
+            </button>
+            <button class="skill-pill group" aria-label="Filter by Python, 78 percent of peers available">
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🐍 Python</span><span class="text-xs font-semibold text-violet-600">78%</span></span>
+              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:78%"></span></span>
+            </button>
+            <button class="skill-pill group" aria-label="Filter by Web Development, 82 percent of peers available">
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🎨 Web Dev</span><span class="text-xs font-semibold text-violet-600">82%</span></span>
+              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:82%"></span></span>
+            </button>
+            <button class="skill-pill group" aria-label="Filter by DBMS, 56 percent of peers available">
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🗃️ DBMS</span><span class="text-xs font-semibold text-violet-600">56%</span></span>
+              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:56%"></span></span>
+            </button>
+            <button class="skill-pill group" aria-label="Filter by Operating Systems, 48 percent of peers available">
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>💻 Operating Systems</span><span class="text-xs font-semibold text-violet-600">48%</span></span>
+              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:48%"></span></span>
+            </button>
+            <button class="skill-pill group" aria-label="Filter by Machine Learning, 71 percent of peers available">
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🤖 Machine Learning</span><span class="text-xs font-semibold text-violet-600">71%</span></span>
+              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:71%"></span></span>
+            </button>
+            <button class="skill-pill group" aria-label="Filter by Computer Networks, 59 percent of peers available">
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🌐 Computer Networks</span><span class="text-xs font-semibold text-violet-600">59%</span></span>
+              <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:59%"></span></span>
+            </button>
           </div>
 
           <!-- Mentor grid — empty state until real data loads -->
@@ -256,13 +686,26 @@
             </div>
 
             <!-- Become a mentor CTA — always visible -->
-            <div class="mentor-card flex flex-col items-center justify-center border-dashed border-2 border-[#B9F044]/40 bg-[#F4FBEA] text-center" id="become-mentor-card">
-              <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#B9F044]/20 text-[#2F6F11] mb-3">
-                <i data-lucide="plus" class="h-6 w-6"></i>
-              </div>
-              <p class="text-sm font-extrabold">Become a Mentor</p>
-              <p class="mt-1 text-xs text-slate-500 max-w-[160px]">Teach what you know, earn credits every session.</p>
-              <button class="mt-4 rounded-xl bg-[#B9F044] px-4 py-1.5 text-xs font-extrabold text-[#0B1F17] transition hover:brightness-95">Apply Now</button>
+            <div
+              class="mentor-card flex flex-col items-center justify-center border border-lime-200 bg-gradient-to-br from-lime-50 via-white to-emerald-50 p-5 text-center transition-all duration-300 hover:scale-[1.02]"
+              id="become-mentor-card">
+              <svg viewBox="0 0 160 110" class="mb-3 h-24 w-36" role="img" aria-label="A student sharing knowledge with a friend" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="80" cy="99" rx="60" ry="7" fill="#D9F99D"/>
+                <rect x="25" y="58" width="110" height="8" rx="4" fill="#84CC16"/>
+                <path d="M37 67h8l-3 27h-8zm78 0h8l5 27h-8z" fill="#65A30D"/>
+                <rect x="63" y="38" width="35" height="24" rx="5" fill="#A78BFA"/>
+                <circle cx="80" cy="23" r="15" fill="#F6C7A8"/>
+                <path d="M65 22c1-16 17-22 28-12 4 4 5 9 4 15-7-2-12-6-15-11-3 6-9 9-17 8z" fill="#49344F"/>
+                <circle cx="75" cy="24" r="1.5" fill="#334155"/><circle cx="85" cy="24" r="1.5" fill="#334155"/>
+                <path d="M76 31c3 2 6 2 9 0" fill="none" stroke="#C06B71" stroke-width="1.5" stroke-linecap="round"/>
+                <rect x="31" y="47" width="23" height="15" rx="3" fill="#FDE68A"/>
+                <path d="M36 52h13m-13 4h9" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M112 28l3 6 6 2-6 3-3 6-2-6-6-3 6-2z" fill="#A3E635"/>
+              </svg>
+              <p class="text-base font-extrabold text-slate-900">Become a Mentor 🌱</p>
+              <p class="mt-1 max-w-[220px] text-xs leading-relaxed text-slate-600">Teach what you know, earn credits every session.</p>
+              <button
+                class="mt-4 rounded-full bg-[#D9F99D] px-6 py-2.5 text-xs font-extrabold text-slate-900 shadow-sm transition duration-300 hover:scale-[1.02] hover:bg-lime-300">Apply Now</button>
             </div>
           </div>
 
@@ -271,7 +714,8 @@
             <div class="empty-state">
               <div class="empty-state-icon"><i data-lucide="users" class="h-6 w-6"></i></div>
               <p class="text-sm font-extrabold text-[#0B1F17]">No mentors available right now</p>
-              <p class="text-xs text-slate-500 max-w-xs">Check back shortly or broaden your subject filter to find available peers.</p>
+              <p class="text-xs text-slate-500 max-w-xs">Check back shortly or broaden your subject filter to find
+                available peers.</p>
             </div>
           </div>
         </section>
@@ -293,8 +737,11 @@
               <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="calendar" class="h-6 w-6"></i></div>
                 <p class="text-sm font-extrabold text-[#0B1F17]">No upcoming sessions</p>
-                <p class="text-xs text-slate-500 max-w-xs">Book a session with a peer mentor to get started. Your upcoming sessions will appear here.</p>
-                <a href="#mentors" class="mt-1 rounded-xl bg-[#0B1F17] px-4 py-2 text-xs font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Find a Mentor</a>
+                <p class="text-xs text-slate-500 max-w-xs">Book a session with a peer mentor to get started. Your
+                  upcoming sessions will appear here.</p>
+                <a href="#mentors"
+                  class="mt-1 rounded-xl bg-[#0B1F17] px-4 py-2 text-xs font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Find
+                  a Mentor</a>
               </div>
             </div>
 
@@ -303,7 +750,8 @@
               <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="clock" class="h-6 w-6"></i></div>
                 <p class="text-sm font-extrabold text-[#0B1F17]">No past sessions yet</p>
-                <p class="text-xs text-slate-500 max-w-xs">Once you complete a session, it will show up here with a full summary.</p>
+                <p class="text-xs text-slate-500 max-w-xs">Once you complete a session, it will show up here with a full
+                  summary.</p>
               </div>
             </div>
           </div>
@@ -313,7 +761,8 @@
         <section id="ledger" class="mb-8">
           <div class="mb-4 flex items-center justify-between">
             <p class="section-title mb-0">Credit Ledger</p>
-            <span class="badge badge-dark"><i data-lucide="coins" class="h-3 w-3"></i> Balance: <span id="ledger-balance">0</span> credits</span>
+            <span class="badge badge-dark"><i data-lucide="coins" class="h-3 w-3"></i> Balance: <span
+                id="ledger-balance">0</span> credits</span>
           </div>
           <div class="rounded-2xl border border-slate-100 bg-white shadow-card">
             <!-- Header row -->
@@ -327,7 +776,8 @@
               <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="receipt" class="h-6 w-6"></i></div>
                 <p class="text-sm font-extrabold text-[#0B1F17]">No transactions yet</p>
-                <p class="text-xs text-slate-500 max-w-xs">Your credit history will appear here after your first session. New users get a free 20-credit welcome bonus on signup.</p>
+                <p class="text-xs text-slate-500 max-w-xs">Your credit history will appear here after your first
+                  session. New users get a free 20-credit welcome bonus on signup.</p>
               </div>
             </div>
             <!-- Transaction rows injected by JS -->
@@ -348,8 +798,11 @@
               <div class="empty-state py-8">
                 <div class="empty-state-icon"><i data-lucide="swords" class="h-6 w-6"></i></div>
                 <p class="text-sm font-extrabold text-[#0B1F17]">No active duels right now</p>
-                <p class="text-xs text-slate-500 max-w-xs">New skill duels are posted weekly. Check back on Monday for the next round of challenges and earn bonus credits.</p>
-                <button class="mt-1 rounded-xl border border-slate-200 px-4 py-2 text-xs font-extrabold text-ink transition hover:border-[#B9F044] hover:text-[#2F6F11]">Notify Me When Next Duel Starts</button>
+                <p class="text-xs text-slate-500 max-w-xs">New skill duels are posted weekly. Check back on Monday for
+                  the next round of challenges and earn bonus credits.</p>
+                <button
+                  class="mt-1 rounded-xl border border-slate-200 px-4 py-2 text-xs font-extrabold text-ink transition hover:border-[#B9F044] hover:text-[#2F6F11]">Notify
+                  Me When Next Duel Starts</button>
               </div>
             </div>
 
@@ -384,18 +837,23 @@
 
         <!-- ===== LIVE ROOM CTA ===== -->
         <section class="mb-4">
-          <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#06130E] via-[#0B2A1E] to-[#14532D] px-6 py-8 sm:px-10">
+          <div
+            class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#06130E] via-[#0B2A1E] to-[#14532D] px-6 py-8 sm:px-10">
             <div class="grid-tex absolute inset-0 opacity-40 pointer-events-none"></div>
-            <div class="absolute -right-10 top-0 h-48 w-48 rounded-full bg-[#B9F044]/25 blur-3xl pointer-events-none"></div>
+            <div class="absolute -right-10 top-0 h-48 w-48 rounded-full bg-[#B9F044]/25 blur-3xl pointer-events-none">
+            </div>
             <div class="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p class="text-xs font-extrabold uppercase tracking-wider text-[#B9F044] mb-2">&#9889; Live Now</p>
                 <h3 class="text-xl font-extrabold text-white">Start or Join a Collaboration Room</h3>
-                <p class="mt-1.5 text-xs leading-5 text-emerald-100/70">Shared code editor + whiteboard + chat. One room ID is all you need.</p>
+                <p class="mt-1.5 text-xs leading-5 text-emerald-100/70">Shared code editor + whiteboard + chat. One room
+                  ID is all you need.</p>
               </div>
-              <a href="room.html" class="btn-pill inline-flex shrink-0 items-center gap-3 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-2.5 pl-6 pr-2 text-sm font-extrabold text-[#0B1F17] shadow-glow transition hover:brightness-110">
+              <a href="room.html"
+                class="btn-pill inline-flex shrink-0 items-center gap-3 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-2.5 pl-6 pr-2 text-sm font-extrabold text-[#0B1F17] shadow-glow transition hover:brightness-110">
                 Open Live Room
-                <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-[#0B1F17] text-[#B9F044]">
+                <span
+                  class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-[#0B1F17] text-[#B9F044]">
                   <i data-lucide="arrow-right" class="h-4 w-4"></i>
                 </span>
               </a>
@@ -408,17 +866,21 @@
   </div>
 
   <!-- Booking Modal -->
-  <div id="booking-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+  <div id="booking-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm px-4">
     <div class="w-full max-w-sm rounded-3xl border border-slate-100 bg-white p-7 shadow-2xl">
       <div class="flex items-center justify-between mb-5">
         <h3 class="text-base font-extrabold">Book a 15-Min Session</h3>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-ink"><i data-lucide="x" class="h-5 w-5"></i></button>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-ink"><i data-lucide="x"
+            class="h-5 w-5"></i></button>
       </div>
       <p class="text-xs text-slate-500 mb-4">Select a time slot to confirm your session.</p>
       <div class="grid grid-cols-3 gap-2 mb-5" id="slot-grid">
         <!-- Slots injected dynamically -->
       </div>
-      <button onclick="confirmBooking()" class="w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Confirm Booking</button>
+      <button onclick="confirmBooking()"
+        class="w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Confirm
+        Booking</button>
     </div>
   </div>
 
@@ -428,7 +890,7 @@
 
     /* ── Sidebar active nav ── */
     document.querySelectorAll('.sidebar-link').forEach(link => {
-      link.addEventListener('click', function() {
+      link.addEventListener('click', function () {
         document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
         if (!this.href.includes('room.html') && !this.href.includes('index.html')) {
           this.classList.add('active');
@@ -458,7 +920,7 @@
       const now = new Date();
       for (let i = 1; i <= 5; i++) {
         const d = new Date(now.getTime() + i * 60 * 60 * 1000);
-        const label = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        const label = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const btn = document.createElement('button');
         btn.textContent = label;
         btn.className = 'rounded-xl border border-slate-200 py-2 text-xs font-bold hover:border-[#B9F044] hover:bg-[#F4FBEA] transition';
@@ -513,7 +975,7 @@
 
       // Remove skeletons after a short delay to show "no results" state
       setTimeout(() => {
-        ['skeleton-1','skeleton-2','skeleton-3'].forEach(id => {
+        ['skeleton-1', 'skeleton-2', 'skeleton-3'].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.remove();
         });
@@ -525,5 +987,85 @@
     /* Call on page load */
     loadDashboard();
   </script>
+  <script>
+    const performanceCanvas = document.getElementById('performanceChart');
+    if (window.Chart && performanceCanvas) {
+      const chartContext = performanceCanvas.getContext('2d');
+      const chartFill = chartContext.createLinearGradient(0, 0, 0, 260);
+      chartFill.addColorStop(0, 'rgba(167, 139, 250, 0.38)');
+      chartFill.addColorStop(1, 'rgba(237, 233, 254, 0.04)');
+
+      new Chart(chartContext, {
+        type: 'line',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [{
+            label: 'Credits earned',
+            data: [2, 5, 3, 8, 6, 9, 12],
+            borderColor: '#7C3AED',
+            backgroundColor: chartFill,
+            fill: true,
+            tension: 0.42,
+            borderWidth: 3,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#fff',
+            pointBorderColor: '#7C3AED',
+            pointBorderWidth: 2
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#31234A',
+              padding: 10,
+              displayColors: false,
+              callbacks: {
+                label: context => `${context.parsed.y} credits earned`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              border: { display: false },
+              ticks: { color: '#8B7AA8', font: { family: 'Poppins', size: 11 } }
+            },
+            y: {
+              beginAtZero: true,
+              border: { display: false, dash: [4, 4] },
+              grid: { color: 'rgba(139, 122, 168, 0.12)' },
+              ticks: { stepSize: 3, color: '#8B7AA8', font: { family: 'Poppins', size: 11 } }
+            }
+          }
+        }
+      });
+    }
+
+    // Keep the learner's profile private while showing a friendly alias.
+    function toggleGhost() {
+      document.body.classList.toggle('ghost-mode', document.getElementById('ghostToggle').checked);
+    }
+
+    // Focus mode keeps the sessions section and booking action visible.
+    function toggleShadow() {
+      document.body.classList.toggle('shadow-mode', document.getElementById('shadowToggle').checked);
+    }
+
+    function checkMentorAvailability() {
+      const hour = new Date().getHours();
+      document.getElementById('mentorSleep').textContent =
+        hour >= 23 || hour < 6
+          ? '😴 All Mentors Sleeping - Ask in Ghost Mode'
+          : '🟢 Mentors Available';
+    }
+
+    checkMentorAvailability();
+    setInterval(checkMentorAvailability, 60000);
+  </script>
 </body>
+
 </html>
