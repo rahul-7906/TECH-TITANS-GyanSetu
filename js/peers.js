@@ -130,9 +130,14 @@
             <span class="flex items-center gap-1 text-amber-500 font-bold">${stars} <span class="text-slate-400 font-normal">${peer.rating}</span></span>
             <span>${peer.sessions} sessions</span>
           </div>
-          <a href="session.html" class="inline-flex items-center gap-1.5 rounded-lg bg-[#0B1F17] px-3 py-1.5 text-[11px] font-bold text-[#B9F044] transition hover:bg-[#064E3B]">
-            <i data-lucide="calendar-plus" class="h-3 w-3"></i> Book
-          </a>
+          <div class="flex items-center gap-1.5">
+            <a href="arena.html?rival=${encodeURIComponent(peer.name)}" class="inline-flex items-center gap-1 rounded-lg border border-[#B9F044]/40 bg-[#B9F044]/15 px-2.5 py-1.5 text-[11px] font-bold text-[#2F6F11] transition hover:bg-[#B9F044] hover:text-[#0B1F17]" title="Challenge this peer to a Code Race in Arena">
+              🏎️ Race
+            </a>
+            <a href="session.html" class="inline-flex items-center gap-1.5 rounded-lg bg-[#0B1F17] px-3 py-1.5 text-[11px] font-bold text-[#B9F044] transition hover:bg-[#064E3B]">
+              <i data-lucide="calendar-plus" class="h-3 w-3"></i> Book
+            </a>
+          </div>
         </div>
       `;
       grid.appendChild(card);

@@ -336,17 +336,19 @@
   </style>
 </head>
 
-<body class="font-sans text-ink antialiased bg-[#EDE7F6]">
+<body class="font-sans text-ink antialiased bg-[#F8FAF6]">
   <div id="page-transition" aria-hidden="true"></div>
 
-  <div class="sticky top-0 z-50 mx-3 mt-3 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/80 bg-white/95 px-4 py-3 shadow-lg shadow-violet-200/40 backdrop-blur sm:mx-6 sm:px-6 md:flex-nowrap">
-    <a href="dashboard.html" class="flex items-center gap-2" aria-label="GyanSetu dashboard">
-      <span class="text-2xl" aria-hidden="true">👻📚</span>
-      <span class="bg-gradient-to-r from-violet-700 via-fuchsia-500 to-amber-500 bg-clip-text text-lg font-extrabold tracking-tight text-transparent">GyanSetu</span>
+  <div class="sticky top-0 z-50 mx-3 mt-3 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white/95 px-4 py-3 shadow-sm backdrop-blur sm:mx-6 sm:px-6 md:flex-nowrap">
+    <a href="index.html" class="flex items-center gap-2.5 shrink-0" aria-label="GyanSetu home">
+      <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11] shadow-sm">
+        <i data-lucide="graduation-cap" class="h-5 w-5 text-[#0B1F17]"></i>
+      </span>
+      <span class="text-[1.15rem] font-extrabold tracking-tight text-[#0B1F17]">GyanSetu</span>
     </a>
     <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 md:gap-3">
       <label title="Ask doubts without fear of judgement" class="flex cursor-pointer items-center gap-2 text-xs font-semibold text-slate-700 sm:text-sm">
-        <span aria-hidden="true">👻</span>
+        <i data-lucide="shield" class="h-4 w-4 text-[#2F6F11]"></i>
         <span>Ghost Mode</span>
         <input id="ghostToggle" type="checkbox" class="ios-switch sr-only" onchange="toggleGhost()" />
         <span class="relative h-6 w-11 rounded-full bg-slate-200 transition-colors duration-300">
@@ -354,7 +356,7 @@
         </span>
       </label>
       <label class="flex cursor-pointer items-center gap-2 text-xs font-semibold text-slate-700 sm:text-sm">
-        <span aria-hidden="true">🌙</span>
+        <i data-lucide="moon" class="h-4 w-4 text-slate-600"></i>
         <span>Shadow Mode</span>
         <input id="shadowToggle" type="checkbox" class="ios-switch sr-only" onchange="toggleShadow()" />
         <span class="relative h-6 w-11 rounded-full bg-slate-200 transition-colors duration-300">
@@ -364,7 +366,7 @@
     </div>
     <div class="ml-auto flex items-center gap-2 sm:gap-3">
       <span id="mentorSleep" class="max-w-[145px] text-right text-[10px] font-semibold leading-tight text-slate-600 sm:max-w-none sm:text-xs" aria-live="polite"></span>
-      <div id="topbar-avatar" class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-violet-200 bg-violet-100 text-lg" aria-label="Learner avatar">🧑‍🎓</div>
+      <div id="topbar-avatar" class="flex h-10 w-10 items-center justify-center rounded-xl border border-[#B9F044]/50 bg-[#F4FBEA] text-sm font-extrabold text-[#2F6F11]" aria-label="Learner avatar">RM</div>
     </div>
   </div>
 
@@ -374,13 +376,12 @@
     <aside class="hidden w-60 shrink-0 flex-col border-r border-slate-100 bg-white lg:flex"
       style="position:sticky;top:3.5rem;height:calc(100vh - 3.5rem);">
       <!-- Brand -->
-      <div class="flex items-center gap-2.5 border-b border-slate-100 px-5 py-5">
-        <span class="text-xl" aria-hidden="true">👻📚</span>
-        <span
-          class="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-amber-500 bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
-          GyanSetu
+      <a href="index.html" class="flex items-center gap-2.5 border-b border-slate-100 px-5 py-4 transition hover:opacity-90">
+        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11] shadow-sm">
+          <i data-lucide="graduation-cap" class="h-5 w-5 text-[#0B1F17]"></i>
         </span>
-      </div>
+        <span class="text-[1.15rem] font-extrabold tracking-tight text-[#0B1F17]">GyanSetu</span>
+      </a>
 
       <!-- User profile — shows initials from auth, no hardcoded name -->
       <div class="mx-3 mt-4 rounded-xl border border-slate-100 bg-[#F4FBEA] p-3">
@@ -391,7 +392,7 @@
           </div>
           <div class="min-w-0">
             <p id="sidebar-name" class="user-name text-sm font-extrabold truncate text-slate-400">Your Name</p>
-            <span id="ghost-alias" class="hidden text-sm font-extrabold text-violet-700">Ghost Learner #42</span>
+            <span id="ghost-alias" class="hidden text-sm font-extrabold text-[#2F6F11]">Ghost Learner #42</span>
             <p id="sidebar-dept" class="text-[11px] text-slate-400">Department &bull; Year</p>
           </div>
         </div>
@@ -522,48 +523,99 @@
       <main class="px-5 py-7 sm:px-7">
 
         <p id="focus-message"
-          class="mb-5 hidden rounded-2xl bg-violet-900 px-4 py-3 text-sm font-bold text-white shadow-lg">
+          class="mb-5 hidden rounded-2xl bg-[#0B1F17] border border-[#B9F044]/30 px-4 py-3 text-sm font-bold text-[#B9F044] shadow-lg">
           🌙 Deep Focus Mode ON - No Distractions
         </p>
 
-        <section class="relative mb-8 overflow-hidden rounded-[24px] bg-gradient-to-br from-[#EDE7F6] via-[#E9D5FF] to-[#D8B4FE] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:p-8">
-          <div class="absolute -right-10 -top-14 h-48 w-48 rounded-full bg-white/25 blur-2xl" aria-hidden="true"></div>
+        <section class="relative mb-8 overflow-hidden rounded-[24px] bg-gradient-to-br from-[#F4FBEA] via-[#EBF9DA] to-[#DCF5BA] p-6 border border-[#B9F044]/40 shadow-[0_8px_30px_rgba(47,111,17,0.06)] sm:p-8">
+          <div class="absolute -right-10 -top-14 h-48 w-48 rounded-full bg-[#B9F044]/25 blur-2xl" aria-hidden="true"></div>
           <div class="relative flex flex-col items-center justify-between gap-6 md:flex-row">
             <div class="max-w-md">
-              <span class="mb-3 inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-violet-700">✨ YOUR LEARNING SPACE</span>
-              <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-4xl">Welcome back, Learner! 👋</h1>
+              <span class="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[#2F6F11]/20 bg-white/85 px-3 py-1 text-xs font-bold text-[#2F6F11]">
+                <i data-lucide="sparkles" class="h-3.5 w-3.5 text-[#2F6F11]"></i> YOUR LEARNING SPACE
+              </span>
+              <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-[#0B1F17] sm:text-4xl">Welcome back, Learner! 👋</h1>
               <p class="mt-3 text-sm font-medium text-slate-700 sm:text-base">Ready to learn together today?</p>
-              <p class="mt-2 inline-flex items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 text-xs font-semibold text-slate-700"><span class="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></span>3 peers are studying now ✨</p>
-              <a href="room.html" class="mt-5 inline-flex items-center gap-2 rounded-full bg-violet-700 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-violet-900/20 transition duration-300 hover:scale-[1.02] hover:bg-violet-800">▶ Start a Session</a>
+              <p class="mt-2 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-white/80 px-3 py-1.5 text-xs font-semibold text-slate-700">
+                <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></span>3 peers are studying now ✨
+              </p>
+              <div class="mt-5 flex flex-wrap items-center gap-3">
+                <a href="room.html" class="inline-flex items-center gap-2 rounded-xl bg-[#0B1F17] px-5 py-3 text-sm font-extrabold text-[#B9F044] transition duration-300 hover:scale-[1.02] hover:bg-[#064E3B] shadow-md">
+                  <i data-lucide="play" class="h-4 w-4"></i> Start a Session
+                </a>
+                <a href="arena.html" class="inline-flex items-center gap-2 rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-4 py-3 text-sm font-bold text-[#2F6F11] transition duration-300 hover:bg-[#B9F044] hover:text-[#0B1F17]">
+                  🏎️ Race Arena
+                </a>
+              </div>
             </div>
-            <div class="w-full max-w-[300px] shrink-0" aria-label="Illustration of a student studying at a desk" role="img">
-              <svg viewBox="0 0 360 250" class="w-full drop-shadow-lg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <ellipse cx="184" cy="225" rx="148" ry="15" fill="#A78BFA" opacity=".22"/>
-                <rect x="34" y="170" width="292" height="13" rx="6.5" fill="#8B5CF6"/>
-                <path d="M66 183h12l-6 44H60zm215 0h12l8 44h-12z" fill="#7C3AED"/>
-                <rect x="65" y="145" width="47" height="25" rx="4" fill="#F9A8D4"/>
-                <rect x="59" y="137" width="54" height="11" rx="3" fill="#FBCFE8"/>
-                <rect x="72" y="127" width="45" height="11" rx="3" fill="#C4B5FD"/>
-                <path d="M285 169v-29m0 8c-18-5-20-19-11-25 12 3 14 15 11 25zm0-6c2-17 13-22 22-18 0 12-10 20-22 18z" fill="#6BAF87"/>
-                <rect x="270" y="168" width="31" height="13" rx="4" fill="#FB923C"/>
-                <rect x="143" y="122" width="90" height="52" rx="8" fill="#334155"/>
-                <rect x="150" y="129" width="76" height="38" rx="4" fill="#C4B5FD"/>
-                <path d="M135 174h106l11 8H124z" fill="#64748B"/>
-                <path d="M247 148h20l-3 18h-14z" fill="#FDBA74"/>
-                <ellipse cx="257" cy="148" rx="10" ry="3" fill="#7C3AED"/>
-                <path d="M267 152h4c6 0 6 9 0 9h-5" fill="none" stroke="#FB923C" stroke-width="3"/>
-                <path d="M154 119c-2-29 12-52 36-54 24-2 40 14 38 40l-5 24-64 4z" fill="#7C3AED"/>
-                <circle cx="191" cy="89" r="29" fill="#F6C7A8"/>
-                <path d="M161 84c2-27 21-40 42-29 12 6 18 17 17 31-9-3-15-10-19-18-9 12-22 17-40 16z" fill="#3F2B47"/>
-                <circle cx="181" cy="91" r="2.5" fill="#334155"/><circle cx="201" cy="91" r="2.5" fill="#334155"/>
-                <path d="M184 103c5 4 11 4 16 0" fill="none" stroke="#C06B71" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M168 125c13 9 32 9 46 0l11 43h-70z" fill="#A78BFA"/>
-                <path d="M176 130l16 16 16-16" fill="none" stroke="#FDE68A" stroke-width="4" stroke-linecap="round"/>
-                <rect x="88" y="63" width="44" height="36" rx="5" fill="#FEF3C7" transform="rotate(-7 88 63)"/>
-                <path d="M98 76h22m-20 8h19m-18 8h13" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
-                <path d="M250 45l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#fff" opacity=".9"/>
-                <path d="M126 111l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#F472B6"/>
-              </svg>
+            <!-- Interactive Live Collab Session Preview Card (Matches index.html design) -->
+            <div class="w-full max-w-[340px] shrink-0" aria-label="Interactive Learning Workspace Preview">
+              <div class="relative rounded-3xl border border-white/80 bg-white/95 p-4 shadow-[0_16px_40px_-12px_rgba(47,111,17,0.18)] backdrop-blur-md transition hover:scale-[1.01]">
+                
+                <!-- Card Header -->
+                <div class="mb-3 flex items-center justify-between pb-2 border-b border-slate-100">
+                  <div class="flex items-center gap-2">
+                    <span class="h-2.5 w-2.5 rounded-full bg-[#B9F044] animate-pulse"></span>
+                    <span class="text-xs font-black text-[#0B1F17]">Live Pair Session</span>
+                  </div>
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-[#0B1F17] px-2.5 py-0.5 text-[10px] font-black tracking-wide text-[#B9F044]">
+                    <span class="h-1.5 w-1.5 rounded-full bg-[#B9F044]"></span> 🎙️ AUDIO LIVE
+                  </span>
+                </div>
+
+                <!-- Peer Mentor Info -->
+                <div class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-[#F4FBEA] p-2.5 mb-2.5">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#064E3B] to-[#2F6F11] text-xs font-black text-white shadow-sm">
+                    AS
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <p class="flex items-center gap-1 text-xs font-black text-[#0B1F17]">
+                      <span>Aarav Sharma</span>
+                      <i data-lucide="badge-check" class="h-3.5 w-3.5 text-[#2F6F11]"></i>
+                    </p>
+                    <p class="truncate text-[10px] text-slate-500">DSA &bull; CSE 3rd Yr &bull; 4.9 ★</p>
+                  </div>
+                  <span class="shrink-0 rounded-full bg-[#B9F044] px-2 py-0.5 text-[10px] font-black text-[#0B1F17]">
+                    Top Mentor
+                  </span>
+                </div>
+
+                <!-- Shared Code Window -->
+                <div class="overflow-hidden rounded-xl bg-[#0B1F17] p-3 text-[11px] font-mono leading-5 shadow-inner">
+                  <div class="mb-2 flex items-center justify-between border-b border-white/10 pb-1.5">
+                    <div class="flex items-center gap-1.5">
+                      <span class="h-2 w-2 rounded-full bg-rose-500/80"></span>
+                      <span class="h-2 w-2 rounded-full bg-amber-500/80"></span>
+                      <span class="h-2 w-2 rounded-full bg-[#B9F044]"></span>
+                      <span class="ml-1 text-[10px] font-bold text-[#B9F044]">dsa_bfs_tree.py</span>
+                    </div>
+                    <span class="text-[9px] text-slate-400 font-mono">Syncing ⚡</span>
+                  </div>
+                  <p><span class="text-[#B9F044]">def</span> <span class="text-white">bfs</span><span class="text-slate-400">(root, target):</span></p>
+                  <p class="pl-3.5"><span class="text-slate-400">queue</span> <span class="text-[#B9F044]">=</span> <span class="text-white">deque</span><span class="text-slate-400">([root])</span></p>
+                  <p class="pl-3.5"><span class="text-slate-500"># Instant peer doubt cleared ✓</span></p>
+                </div>
+
+                <!-- Footer Stats -->
+                <div class="mt-2.5 grid grid-cols-2 gap-2 text-center text-xs">
+                  <div class="rounded-xl border border-slate-100 bg-[#F8FAF6] p-1.5">
+                    <p class="text-[9px] font-semibold text-slate-500">Session Length</p>
+                    <p class="text-[12px] font-black text-[#0B1F17]">14:20 <span class="text-[#2F6F11]">min</span></p>
+                  </div>
+                  <div class="rounded-xl border border-slate-100 bg-[#F8FAF6] p-1.5">
+                    <p class="text-[9px] font-semibold text-slate-500">Credits Earned</p>
+                    <p class="text-[12px] font-black text-amber-500 font-mono">+10 🪙</p>
+                  </div>
+                </div>
+
+                <!-- Live Tag -->
+                <div class="mt-2 text-center">
+                  <span class="inline-flex items-center gap-1 text-[10px] font-bold text-[#2F6F11]">
+                    <i data-lucide="check-circle-2" class="h-3 w-3"></i> 100% Verified Campus Peers
+                  </span>
+                </div>
+
+              </div>
             </div>
           </div>
         </section>
@@ -607,7 +659,7 @@
               <p class="section-title mb-1">Your progress</p>
               <h2 class="text-xl font-extrabold tracking-tight text-slate-900">Little wins, big growth 🌱</h2>
             </div>
-            <span class="hidden rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-violet-700 sm:inline-flex">This week ✨</span>
+            <span class="hidden rounded-full bg-[#F4FBEA] border border-[#B9F044]/30 px-3 py-1 text-xs font-bold text-[#2F6F11] sm:inline-flex">This week ✨</span>
           </div>
           <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <div class="stat-card border-t-4 border-t-[#C6F16D] bg-white p-5">
@@ -623,16 +675,16 @@
               </div>
               <div class="progress-bar mt-2"><div class="progress-bar-fill" id="bar-credits" style="width:0%"></div></div>
             </div>
-            <div class="stat-card border-t-4 border-t-violet-500 bg-white p-5">
+            <div class="stat-card border-t-4 border-t-emerald-600 bg-white p-5">
               <div class="flex items-center justify-between">
-                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-100 text-xl">📅</span>
-                <span class="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold text-violet-700">Sessions</span>
+                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-xl">📅</span>
+                <span class="rounded-full bg-[#F4FBEA] border border-[#B9F044]/30 px-3 py-1 text-[11px] font-bold text-[#2F6F11]">Sessions</span>
               </div>
               <p class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900" id="stat-sessions">&mdash;</p>
               <p class="text-xs font-semibold text-slate-500">Sessions Completed</p>
               <p class="mt-2 text-xs font-bold text-emerald-600">+4 this week ↗</p>
               <div class="mt-4 flex h-8 items-end gap-1.5" aria-hidden="true">
-                <span class="h-3 w-3 rounded-t bg-violet-200"></span><span class="h-5 w-3 rounded-t bg-violet-300"></span><span class="h-4 w-3 rounded-t bg-violet-300"></span><span class="h-7 w-3 rounded-t bg-violet-400"></span><span class="h-6 w-3 rounded-t bg-violet-500"></span>
+                <span class="h-3 w-3 rounded-t bg-emerald-200"></span><span class="h-5 w-3 rounded-t bg-emerald-300"></span><span class="h-4 w-3 rounded-t bg-emerald-300"></span><span class="h-7 w-3 rounded-t bg-emerald-400"></span><span class="h-6 w-3 rounded-t bg-emerald-500"></span>
               </div>
               <div class="progress-bar mt-2"><div class="progress-bar-fill" id="bar-sessions" style="width:0%"></div></div>
             </div>
@@ -727,7 +779,7 @@
               <p class="section-title mb-1">Your Performance 📈</p>
               <h2 class="text-lg font-extrabold text-slate-900">You are growing faster than 80% peers</h2>
             </div>
-            <span class="rounded-full bg-violet-50 px-3 py-1.5 text-xs font-bold text-violet-700">Last 7 days</span>
+            <span class="rounded-full bg-[#F4FBEA] border border-[#B9F044]/30 px-3 py-1.5 text-xs font-bold text-[#2F6F11]">Last 7 days</span>
           </div>
           <div class="h-56 w-full sm:h-64"><canvas id="performanceChart" role="img" aria-label="Area chart of credits earned from Monday through Sunday"></canvas></div>
         </section>
@@ -746,39 +798,39 @@
           <!-- Subject filter chips -->
           <div class="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <button class="skill-pill group" aria-label="Filter by DSA, 64 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🧩 DSA</span><span class="text-xs font-semibold text-violet-600">64%</span></span>
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🧩 DSA</span><span class="text-xs font-bold text-[#2F6F11]">64%</span></span>
               <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:64%"></span></span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:64%"></span></span>
             </button>
             <button class="skill-pill group" aria-label="Filter by Python, 78 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🐍 Python</span><span class="text-xs font-semibold text-violet-600">78%</span></span>
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🐍 Python</span><span class="text-xs font-bold text-[#2F6F11]">78%</span></span>
               <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:78%"></span></span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:78%"></span></span>
             </button>
             <button class="skill-pill group" aria-label="Filter by Web Development, 82 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🎨 Web Dev</span><span class="text-xs font-semibold text-violet-600">82%</span></span>
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🎨 Web Dev</span><span class="text-xs font-bold text-[#2F6F11]">82%</span></span>
               <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:82%"></span></span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:82%"></span></span>
             </button>
             <button class="skill-pill group" aria-label="Filter by DBMS, 56 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🗃️ DBMS</span><span class="text-xs font-semibold text-violet-600">56%</span></span>
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🗃️ DBMS</span><span class="text-xs font-bold text-[#2F6F11]">56%</span></span>
               <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:56%"></span></span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:56%"></span></span>
             </button>
             <button class="skill-pill group" aria-label="Filter by Operating Systems, 48 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>💻 Operating Systems</span><span class="text-xs font-semibold text-violet-600">48%</span></span>
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>💻 Operating Systems</span><span class="text-xs font-bold text-[#2F6F11]">48%</span></span>
               <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:48%"></span></span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:48%"></span></span>
             </button>
             <button class="skill-pill group" aria-label="Filter by Machine Learning, 71 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🤖 Machine Learning</span><span class="text-xs font-semibold text-violet-600">71%</span></span>
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🤖 Machine Learning</span><span class="text-xs font-bold text-[#2F6F11]">71%</span></span>
               <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:71%"></span></span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:71%"></span></span>
             </button>
             <button class="skill-pill group" aria-label="Filter by Computer Networks, 59 percent of peers available">
-              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🌐 Computer Networks</span><span class="text-xs font-semibold text-violet-600">59%</span></span>
+              <span class="flex items-center justify-between text-sm font-bold text-slate-800"><span>🌐 Computer Networks</span><span class="text-xs font-bold text-[#2F6F11]">59%</span></span>
               <span class="mt-1 block text-[11px] text-slate-500">peers available</span>
-              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-violet-100"><span class="block h-full rounded-full bg-violet-500 transition-all group-hover:bg-fuchsia-500" style="width:59%"></span></span>
+              <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-emerald-100/70"><span class="block h-full rounded-full bg-[#2F6F11] transition-all group-hover:bg-[#B9F044]" style="width:59%"></span></span>
             </button>
           </div>
 
@@ -1009,8 +1061,8 @@
                   <span class="rounded-full bg-[#B9F044] px-2 py-0.5 text-[10px] font-black text-[#0B1F17] uppercase tracking-wider">Live Battle</span>
                   <span class="text-xs font-bold text-emerald-200/80">Team Race Competition</span>
                 </div>
-                <h3 class="text-base sm:text-lg font-extrabold text-white">Campus Driver Race &amp; Group Challenges</h3>
-                <p class="text-xs text-emerald-100/70 mt-0.5">Assemble squads (ByteForce, CyberKnights, Algobots), answer rapid quiz sprints to propel your team car on the track (+10 / -5 pts), and win +20 Credits for your team!</p>
+                <h3 class="text-base sm:text-lg font-extrabold text-white">Campus Code Race, Custom Rooms &amp; Rival Duels</h3>
+                <p class="text-xs text-emerald-100/70 mt-0.5">Create custom rooms, invite campus teammates &amp; rivals, solve real coding problems in the Code Editor to trigger +30 Pts Super Nitro, and win +20 Credits &amp; +25 RR!</p>
               </div>
             </div>
             <a href="arena.html" class="btn-pill inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-5 py-2.5 text-xs font-extrabold text-[#0B1F17] hover:brightness-110 shadow-glow transition">
@@ -1023,7 +1075,7 @@
             <div class="duel-card bg-white p-5 border border-slate-100 flex flex-col justify-between" id="card-chal-dsa">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <span class="rounded-full bg-violet-100 px-2.5 py-0.5 text-[10px] font-bold text-violet-700">DSA &bull; Medium</span>
+                  <span class="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">DSA &bull; Medium</span>
                   <span class="rounded-full bg-lime-100 px-2.5 py-0.5 text-[10px] font-bold text-[#2F6F11]">+10 Credits</span>
                 </div>
                 <h4 class="text-sm font-extrabold text-[#0B1F17] mb-1">Rotated Array Binary Search</h4>
@@ -1202,7 +1254,7 @@
     <div class="w-full max-w-lg rounded-3xl border border-slate-100 bg-white p-6 sm:p-7 shadow-2xl">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800">
             <i data-lucide="swords" class="h-4 w-4"></i>
           </span>
           <div>
@@ -1335,7 +1387,7 @@
     // ── Badge definitions ─────────────────────────────────────────────
     const BADGE_DEFS = [
       { key: 'first_session',   icon: '🎓', label: 'First Session',      color: 'bg-blue-50 text-blue-700'   },
-      { key: 'first_teaching',  icon: '👑', label: 'First Teaching',     color: 'bg-purple-50 text-purple-700'},
+      { key: 'first_teaching',  icon: '👑', label: 'First Teaching',     color: 'bg-emerald-50 text-emerald-700'},
       { key: 'note_maker',      icon: '📚', label: 'Note Maker',         color: 'bg-amber-50 text-amber-700' },
       { key: 'helpful_mentor',  icon: '🤝', label: 'Helpful Mentor',     color: 'bg-green-50 text-green-700' },
       { key: 'streak_7',        icon: '🔥', label: '7-Day Streak',       color: 'bg-orange-50 text-orange-700'},
@@ -1533,7 +1585,7 @@
         container.innerHTML = '<p class="py-5 text-center text-xs text-slate-400">Leaderboard data will appear after members complete activities.</p>';
         return;
       }
-      container.innerHTML = rows.slice(0, 10).map((row, index) => `<div class="flex items-center gap-2.5"><span class="w-5 text-right text-xs font-extrabold ${index === 0 ? 'text-amber-500' : 'text-slate-400'}">${index + 1}</span><div class="flex h-7 w-7 items-center justify-center rounded-full bg-violet-100 text-[10px] font-extrabold text-violet-700">${escapeHtml((row.full_name || '?').slice(0, 2).toUpperCase())}</div><span class="flex-1 truncate text-xs font-bold text-slate-700">${escapeHtml(row.full_name || 'Unnamed member')}</span><span class="rounded-full bg-violet-50 px-2 py-1 text-[10px] font-bold text-violet-700">${Number(row.xp) || 0} XP</span></div>`).join('');
+      container.innerHTML = rows.slice(0, 10).map((row, index) => `<div class="flex items-center gap-2.5"><span class="w-5 text-right text-xs font-extrabold ${index === 0 ? 'text-amber-500' : 'text-slate-400'}">${index + 1}</span><div class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-[10px] font-extrabold text-[#2F6F11]">${escapeHtml((row.full_name || '?').slice(0, 2).toUpperCase())}</div><span class="flex-1 truncate text-xs font-bold text-slate-700">${escapeHtml(row.full_name || 'Unnamed member')}</span><span class="rounded-full bg-[#F4FBEA] border border-[#B9F044]/30 px-2 py-1 text-[10px] font-bold text-[#2F6F11]">${Number(row.xp) || 0} XP</span></div>`).join('');
     }
 
     function escapeHtml(value) {

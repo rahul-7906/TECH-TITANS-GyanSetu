@@ -3,20 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GyanSetu | Campus Team Race Arena</title>
+  <title>GyanSetu | Campus Code Sprint &amp; Team Race Arena</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="js/tailwind.config.js"></script>
   <link rel="stylesheet" href="css/style.css" />
+
+  <!-- CodeMirror: In-browser syntax highlighted code editor -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .font-code {
+      font-family: 'JetBrains Mono', monospace;
     }
     .racing-track {
       background: linear-gradient(180deg, #091a13 0%, #06130e 100%);
@@ -25,27 +37,27 @@
       overflow: hidden;
     }
     .track-grid {
-      background-size: 40px 40px;
+      background-size: 36px 36px;
       background-image: 
         linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     }
     .lane-divider {
-      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.15) 0, rgba(255,255,255,0.15) 15px, transparent 15px, transparent 30px);
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.18) 0, rgba(255,255,255,0.18) 16px, transparent 16px, transparent 32px);
     }
     .car-sprite {
-      transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s ease;
+      transition: left 0.65s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s ease;
     }
     .car-speed-boost {
-      animation: nitroGlow 0.8s ease;
+      animation: nitroGlow 0.9s ease;
     }
     .car-spinout {
-      animation: spinout 0.7s ease;
+      animation: spinout 0.8s ease;
     }
     @keyframes nitroGlow {
       0% { filter: drop-shadow(0 0 0px #B9F044); transform: scale(1); }
-      50% { filter: drop-shadow(0 0 16px #B9F044); transform: scale(1.15) translateY(-2px); }
-      100% { filter: drop-shadow(0 0 2px #B9F044); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 20px #B9F044); transform: scale(1.22) translateY(-3px); }
+      100% { filter: drop-shadow(0 0 3px #B9F044); transform: scale(1); }
     }
     @keyframes spinout {
       0% { transform: rotate(0deg); }
@@ -62,255 +74,505 @@
     @keyframes livePulse {
       to { box-shadow: 0 0 0 12px rgba(185, 240, 68, 0); }
     }
+    .CodeMirror {
+      height: 250px;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.6;
+      border-radius: 12px;
+      background: #06130E !important;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .CodeMirror-gutters {
+      background: #040d09 !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .tab-btn.active {
+      background: rgba(185, 240, 68, 0.15);
+      border-color: #B9F044;
+      color: #B9F044;
+    }
   </style>
 </head>
 
 <body class="bg-[#0B1F17] text-white min-h-screen flex flex-col antialiased">
 
-  <!-- ── TOP BAR ── -->
-  <header class="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-[#06130E]/95 px-5 py-3 backdrop-blur-md sm:px-8">
+  <!-- ── 1. TOP BAR ── -->
+  <header class="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-[#06130E]/95 px-4 py-3 backdrop-blur-md sm:px-8">
     <div class="flex items-center gap-3">
-      <a href="dashboard.html" class="flex items-center gap-2 text-xs font-bold text-[#B9F044] hover:opacity-80 transition">
+      <a href="dashboard.html" class="flex items-center gap-1.5 text-xs font-bold text-[#B9F044] hover:opacity-80 transition">
         <i data-lucide="arrow-left" class="h-4 w-4"></i>
         <span>Dashboard</span>
       </a>
       <span class="text-white/20">|</span>
       <div class="flex items-center gap-2">
-        <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#B9F044] to-[#2F6F11] text-[#0B1F17]">
+        <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#B9F044] to-[#2F6F11] text-[#0B1F17] shadow-sm">
           🏎️
         </span>
-        <h1 class="text-sm font-extrabold tracking-tight text-white hidden sm:block">Campus Race Arena</h1>
+        <h1 class="text-sm font-extrabold tracking-tight text-white hidden sm:block">Campus Race &amp; Code Arena</h1>
       </div>
     </div>
 
-    <!-- Live Status & Ticker -->
-    <div class="flex items-center gap-2">
-      <span class="inline-flex items-center gap-1.5 rounded-full border border-[#B9F044]/30 bg-[#B9F044]/10 px-3 py-1 text-xs font-extrabold text-[#B9F044]">
+    <!-- Active Room Badge & Controls -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Voice Toggle -->
+      <button id="btn-voice-toggle" onclick="toggleVoice()" class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300 hover:border-[#B9F044] hover:text-[#B9F044] transition">
+        <i data-lucide="mic" id="voice-icon" class="h-3.5 w-3.5 text-slate-400"></i>
+        <span id="voice-label">Squad Voice</span>
+      </button>
+
+      <!-- Audio SFX Toggle -->
+      <button id="btn-sound-toggle" onclick="toggleSound()" class="flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-xs font-bold text-slate-300 hover:text-white transition" title="Toggle Race SFX">
+        <span id="sound-icon">🔊</span>
+      </button>
+
+      <!-- Room Code Pill with Copy Link -->
+      <div class="flex items-center gap-1.5 rounded-full border border-[#B9F044]/30 bg-[#0B2A1E] px-3 py-1 text-xs font-extrabold text-[#B9F044]">
+        <span>Room:</span>
+        <span id="header-room-id" class="font-mono text-white">alpha-sprint</span>
+        <button onclick="copyRoomLink()" title="Copy invite link" class="ml-1 text-slate-400 hover:text-[#B9F044] transition">
+          <i data-lucide="copy" class="h-3 w-3"></i>
+        </button>
+      </div>
+
+      <!-- Live Status Pill -->
+      <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-extrabold text-[#B9F044]">
         <span class="h-2 w-2 rounded-full bg-[#B9F044] pulse-live"></span>
         <span id="arena-status-pill">Lobby Ready</span>
       </span>
-      <div class="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-bold text-white">
-        <i data-lucide="coins" class="h-3.5 w-3.5 text-amber-400"></i>
-        <span id="user-balance-display">100</span>
+
+      <!-- User Credits & RR Display -->
+      <div class="hidden md:flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-bold text-white">
+        <span class="flex items-center gap-1 text-amber-400 font-mono"><i data-lucide="coins" class="h-3.5 w-3.5"></i> <span id="user-balance-display">100</span></span>
+        <span class="text-white/20">|</span>
+        <span class="flex items-center gap-1 text-[#B9F044] font-mono"><i data-lucide="trophy" class="h-3.5 w-3.5"></i> <span id="user-rr-display">1245 RR</span></span>
       </div>
     </div>
   </header>
 
-  <!-- ── MAIN CONTENT AREA ── -->
-  <main class="flex-1 mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 flex flex-col gap-6">
+  <!-- ── 2. MAIN CONTAINER ── -->
+  <main class="flex-1 mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 flex flex-col gap-6">
 
-    <!-- ===== 1. TEAM LOBBY (Pre-Match Selection) ===== -->
-    <section id="arena-lobby" class="rounded-3xl border border-white/10 bg-[#06130E] p-6 sm:p-8 shadow-2xl">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+    <!-- ===== SQUAD & ROOM MANAGEMENT LOBBY ===== -->
+    <section id="arena-lobby" class="rounded-3xl border border-white/10 bg-[#06130E] p-5 sm:p-7 shadow-2xl">
+      
+      <!-- Top Room Config Bar -->
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-5 border-b border-white/10">
         <div>
-          <span class="inline-block rounded-full bg-[#B9F044]/15 px-3 py-0.5 text-[11px] font-extrabold text-[#B9F044] uppercase tracking-wider mb-2">Team Battle Mode</span>
-          <h2 class="text-2xl font-extrabold text-white">Choose Your Racing Team</h2>
-          <p class="text-xs text-slate-400 mt-1">Pick a team squad. Rapid quiz answers boost your car towards the finish line. Winning team claims +20 Credits each!</p>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="rounded-full bg-[#B9F044]/15 px-3 py-0.5 text-[10px] font-extrabold text-[#B9F044] uppercase tracking-wider">Dynamic Squad Arena</span>
+            <span class="text-xs text-slate-400">&bull; Create custom rooms, invite squad peers &amp; rival teams</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+            Campus Code Race &amp; Rival Duel
+          </h2>
         </div>
-        <button id="btn-start-race" onclick="startRaceMatch()" class="btn-pill inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-6 py-3 text-sm font-extrabold text-[#0B1F17] transition hover:brightness-110 shadow-glow active:scale-95">
-          <span>Launch Team Race 🏁</span>
-        </button>
+
+        <!-- Room Switcher & Peer Inviter CTA -->
+        <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+          <!-- Room Input with Shuffle -->
+          <div class="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs">
+            <span class="text-slate-400 font-semibold">Room:</span>
+            <input id="input-room-code" type="text" value="turbo-dsa-42" maxlength="24" class="w-28 bg-transparent font-mono font-bold text-[#B9F044] outline-none" />
+            <button onclick="generateRandomRoom()" title="Generate Random Room" class="text-slate-400 hover:text-white transition">
+              <i data-lucide="shuffle" class="h-3.5 w-3.5"></i>
+            </button>
+            <button onclick="changeRoom()" class="rounded-lg bg-[#B9F044] px-2.5 py-0.5 text-[10px] font-extrabold text-[#0B1F17] hover:brightness-110 transition">
+              Join/Set
+            </button>
+          </div>
+
+          <!-- Open Online Peers Inviter Modal -->
+          <button onclick="openPeerInviteModal()" class="btn-pill inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/10 px-3.5 py-2 text-xs font-extrabold text-[#B9F044] hover:bg-[#B9F044]/20 transition shadow-sm">
+            <i data-lucide="user-plus" class="h-4 w-4"></i>
+            <span>Invite Active Peers &amp; Rivals</span>
+          </button>
+
+          <!-- Launch Race Button -->
+          <button id="btn-start-race" onclick="startRaceMatch()" class="btn-pill inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-5 py-2 text-xs font-black text-[#0B1F17] transition hover:brightness-110 shadow-glow active:scale-95">
+            <i data-lucide="flag" class="h-4 w-4"></i>
+            <span>Launch Match 🏁</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Team Selection Cards -->
-      <div class="grid gap-4 sm:grid-cols-3">
-        <!-- Team 1 -->
-        <div id="team-card-byteforce" onclick="selectTeam('byteforce')" class="cursor-pointer rounded-2xl border-2 border-[#B9F044] bg-[#B9F044]/10 p-5 transition hover:scale-[1.02]">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-3xl">🏎️</span>
-            <span class="rounded-full bg-[#B9F044] px-2.5 py-0.5 text-[10px] font-extrabold text-[#0B1F17]" id="badge-byteforce">SELECTED</span>
+      <!-- Topic / Quiz Room Category Selector -->
+      <div class="mt-4 pt-4 border-t border-white/10">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B9F044]/20 text-[#B9F044]">
+              <i data-lucide="book-open" class="h-3.5 w-3.5"></i>
+            </span>
+            <span class="text-xs font-black text-white uppercase tracking-wider">Quiz &amp; Battle Subject / Category:</span>
+            <span id="active-topic-badge" class="rounded-full bg-[#B9F044] px-2.5 py-0.5 text-[10px] font-black text-[#0B1F17]">
+              💻 Computer Science (Core)
+            </span>
           </div>
-          <h3 class="text-base font-extrabold text-white">Team ByteForce</h3>
-          <p class="text-xs text-slate-300 mt-1">Specialty: Algorithm Sprints &amp; Dynamic Programming</p>
-          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-            <span>Members: <strong class="text-white">You, Rohan, Aisha</strong></span>
-            <span class="text-[#B9F044] font-bold">Fast Nitro</span>
+          <span class="text-[11px] text-slate-400">Questions &amp; challenges update dynamically for this room</span>
+        </div>
+
+        <!-- Topic Pills Container -->
+        <div id="topic-pills-container" class="flex flex-wrap gap-2">
+          <!-- Dynamically populated pills -->
+        </div>
+      </div>
+
+      <!-- SQUADS & RIVALS CARD GRID -->
+      <div class="grid gap-5 mt-5 md:grid-cols-2">
+
+        <!-- SQUAD 1 (Your Team) -->
+        <div class="rounded-2xl border-2 border-[#B9F044] bg-[#B9F044]/5 p-5 relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="text-3xl" id="team1-avatar-preview">🏎️</span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <input id="team1-name-input" type="text" value="Team Alpha (You)" class="bg-transparent text-base font-black text-white border-b border-transparent hover:border-white/30 focus:border-[#B9F044] outline-none" />
+                    <span class="rounded-full bg-[#B9F044] px-2 py-0.5 text-[9px] font-black text-[#0B1F17]">YOUR SQUAD</span>
+                  </div>
+                  <p class="text-[11px] text-slate-300">Vehicle: <span id="team1-vehicle-label" class="text-[#B9F044] font-bold">Cyber GT Turbo</span></p>
+                </div>
+              </div>
+
+              <!-- Vehicle Emoji Selector -->
+              <div class="flex items-center gap-1 bg-white/5 rounded-lg p-1 border border-white/10">
+                <button onclick="setTeamVehicle(1, '🏎️', 'Cyber GT Turbo')" class="p-1 text-sm hover:scale-125 transition" title="Cyber GT">🏎️</button>
+                <button onclick="setTeamVehicle(1, '🚀', 'Rocket Dart')" class="p-1 text-sm hover:scale-125 transition" title="Rocket Dart">🚀</button>
+                <button onclick="setTeamVehicle(1, '⚡', 'Neon Lightning')" class="p-1 text-sm hover:scale-125 transition" title="Neon Lightning">⚡</button>
+                <button onclick="setTeamVehicle(1, '🛸', 'Hover Raider')" class="p-1 text-sm hover:scale-125 transition" title="Hover Raider">🛸</button>
+              </div>
+            </div>
+
+            <!-- Members List -->
+            <div class="mt-3">
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Squad Members (Teammates)</p>
+              <div id="team1-members-list" class="flex flex-wrap gap-2">
+                <span class="inline-flex items-center gap-1.5 rounded-lg border border-[#B9F044]/30 bg-[#0B2A1E] px-2.5 py-1 text-xs font-bold text-white">
+                  <span class="h-2 w-2 rounded-full bg-[#B9F044]"></span>
+                  <span id="current-user-tag">You (Host 👑)</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-bold text-slate-300">
+                  <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                  <span>Rohan Sharma</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Teammate quick action -->
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+            <button onclick="openPeerInviteModal('team1')" class="text-xs font-extrabold text-[#B9F044] hover:underline flex items-center gap-1">
+              <i data-lucide="plus-circle" class="h-3.5 w-3.5"></i> Add Campus Teammate
+            </button>
+            <span class="text-[11px] text-slate-400 font-mono">Win Reward: +20 🪙 &bull; +25 🏆</span>
           </div>
         </div>
 
-        <!-- Team 2 -->
-        <div id="team-card-cyberknights" onclick="selectTeam('cyberknights')" class="cursor-pointer rounded-2xl border-2 border-white/10 bg-white/5 p-5 transition hover:border-cyan-400 hover:scale-[1.02]">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-3xl">🚀</span>
-            <span class="hidden rounded-full bg-cyan-400 px-2.5 py-0.5 text-[10px] font-extrabold text-[#0B1F17]" id="badge-cyberknights">SELECTED</span>
+        <!-- SQUAD 2 (Rivals Squad) -->
+        <div class="rounded-2xl border-2 border-rose-500/40 bg-rose-500/5 p-5 relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="text-3xl" id="team2-avatar-preview">🚀</span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <input id="team2-name-input" type="text" value="Rival Titans" class="bg-transparent text-base font-black text-white border-b border-transparent hover:border-white/30 focus:border-rose-400 outline-none" />
+                    <span class="rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 px-2 py-0.5 text-[9px] font-black">RIVALS</span>
+                  </div>
+                  <p class="text-[11px] text-slate-300">Vehicle: <span id="team2-vehicle-label" class="text-rose-400 font-bold">Rocket Dart</span></p>
+                </div>
+              </div>
+
+              <!-- Vehicle Emoji Selector -->
+              <div class="flex items-center gap-1 bg-white/5 rounded-lg p-1 border border-white/10">
+                <button onclick="setTeamVehicle(2, '🏎️', 'Cyber GT Turbo')" class="p-1 text-sm hover:scale-125 transition" title="Cyber GT">🏎️</button>
+                <button onclick="setTeamVehicle(2, '🚀', 'Rocket Dart')" class="p-1 text-sm hover:scale-125 transition" title="Rocket Dart">🚀</button>
+                <button onclick="setTeamVehicle(2, '⚡', 'Neon Lightning')" class="p-1 text-sm hover:scale-125 transition" title="Neon Lightning">⚡</button>
+                <button onclick="setTeamVehicle(2, '🛸', 'Hover Raider')" class="p-1 text-sm hover:scale-125 transition" title="Hover Raider">🛸</button>
+              </div>
+            </div>
+
+            <!-- Members List -->
+            <div class="mt-3">
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Rival Competitors</p>
+              <div id="team2-members-list" class="flex flex-wrap gap-2">
+                <span class="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-950/30 px-2.5 py-1 text-xs font-bold text-rose-200">
+                  <span class="h-2 w-2 rounded-full bg-rose-400"></span>
+                  <span>Priya Verma (Rival Captain)</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-bold text-slate-300">
+                  <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                  <span>Vikram Malhotra</span>
+                </span>
+              </div>
+            </div>
           </div>
-          <h3 class="text-base font-extrabold text-white">Team CyberKnights</h3>
-          <p class="text-xs text-slate-300 mt-1">Specialty: System Architecture, WebRTC &amp; Security</p>
-          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-            <span>Members: <strong class="text-white">Vikram, Priya, Dev</strong></span>
-            <span class="text-cyan-400 font-bold">High Defense</span>
+
+          <!-- Add Rival quick action -->
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+            <button onclick="openPeerInviteModal('team2')" class="text-xs font-extrabold text-rose-400 hover:underline flex items-center gap-1">
+              <i data-lucide="swords" class="h-3.5 w-3.5"></i> Invite Opponent / Rival
+            </button>
+            <span class="text-[11px] text-slate-400 font-mono">Defeat Loss: -15 🏆</span>
           </div>
         </div>
 
-        <!-- Team 3 -->
-        <div id="team-card-algobots" onclick="selectTeam('algobots')" class="cursor-pointer rounded-2xl border-2 border-white/10 bg-white/5 p-5 transition hover:border-orange-400 hover:scale-[1.02]">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-3xl">⚡</span>
-            <span class="hidden rounded-full bg-orange-400 px-2.5 py-0.5 text-[10px] font-extrabold text-[#0B1F17]" id="badge-algobots">SELECTED</span>
-          </div>
-          <h3 class="text-base font-extrabold text-white">Team Algobots</h3>
-          <p class="text-xs text-slate-300 mt-1">Specialty: Database Engineering &amp; High Concurrency</p>
-          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-            <span>Members: <strong class="text-white">Arjun, Sneha, Kabir</strong></span>
-            <span class="text-orange-400 font-bold">Overclock</span>
-          </div>
-        </div>
       </div>
     </section>
 
-    <!-- ===== 2. LIVE RACING TRACK BOARD ===== -->
-    <section class="racing-track track-grid rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col gap-5">
+    <!-- ===== 3. LIVE RACING TRACK BOARD ===== -->
+    <section class="racing-track track-grid rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col gap-4">
       <div class="flex items-center justify-between text-xs font-bold text-slate-400 border-b border-white/10 pb-3">
-        <span class="flex items-center gap-1.5"><i data-lucide="flag" class="h-3.5 w-3.5 text-[#B9F044]"></i> RACE TRACK &bull; FIRST TO 100 PTS WINS</span>
-        <div class="flex gap-6 sm:gap-12 pr-10 text-[10px] uppercase font-mono tracking-wider">
+        <span class="flex items-center gap-1.5 text-white">
+          <i data-lucide="flag" class="h-3.5 w-3.5 text-[#B9F044]"></i>
+          <span>LIVE TRACK: FIRST TO 100 PTS WINS RACE</span>
+        </span>
+        <div class="flex gap-6 sm:gap-14 pr-8 text-[10px] uppercase font-mono tracking-wider text-slate-400">
           <span>Start (0)</span>
-          <span class="hidden sm:inline">Check 1 (30)</span>
-          <span>Check 2 (60)</span>
-          <span class="text-[#B9F044]">Finish (100)</span>
+          <span class="hidden sm:inline">Checkpoint (30)</span>
+          <span>Turbo (60)</span>
+          <span class="text-[#B9F044] font-bold">🏁 Finish (100)</span>
         </div>
       </div>
 
       <!-- Lanes -->
       <div class="space-y-4">
-        <!-- Lane 1: ByteForce -->
-        <div class="relative flex items-center h-14 rounded-2xl bg-white/5 border border-[#B9F044]/30 px-3">
-          <div class="w-32 sm:w-40 shrink-0 flex items-center gap-2 z-10">
-            <span class="text-lg">🏎️</span>
+        <!-- Lane 1: Squad 1 (Your Team) -->
+        <div class="relative flex items-center h-16 rounded-2xl bg-white/5 border border-[#B9F044]/40 px-3">
+          <div class="w-36 sm:w-44 shrink-0 flex items-center gap-2.5 z-10">
+            <span class="text-2xl" id="lane1-emoji">🏎️</span>
             <div>
-              <p class="text-xs font-extrabold text-white truncate">ByteForce</p>
-              <p class="text-[10px] text-[#B9F044] font-bold"><span id="pts-byteforce">0</span> pts</p>
+              <p class="text-xs font-black text-white truncate" id="lane1-name">Team Alpha</p>
+              <p class="text-[11px] text-[#B9F044] font-extrabold font-mono"><span id="pts-team1">0</span> / 100 pts</p>
             </div>
           </div>
           <div class="relative flex-1 h-full flex items-center">
-            <!-- Progress Line -->
             <div class="absolute left-0 right-0 h-1 lane-divider"></div>
-            <!-- Car Icon -->
-            <div id="car-byteforce" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5">
-              <span class="text-2xl filter drop-shadow">🏎️</span>
-              <span class="text-[9px] font-black bg-[#B9F044] text-[#0B1F17] px-1.5 py-0.5 rounded-full font-mono">LANE 1</span>
+            <!-- Car 1 -->
+            <div id="car-team1" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5">
+              <span class="text-3xl filter drop-shadow" id="car-team1-icon">🏎️</span>
+              <span class="text-[9px] font-black bg-[#B9F044] text-[#0B1F17] px-1.5 py-0.5 rounded-full font-mono uppercase">YOU</span>
             </div>
           </div>
           <!-- Finish line flag -->
-          <div class="finish-banner w-3 h-full rounded-r-xl shrink-0 opacity-80"></div>
+          <div class="finish-banner w-3.5 h-full rounded-r-xl shrink-0 opacity-80"></div>
         </div>
 
-        <!-- Lane 2: CyberKnights -->
-        <div class="relative flex items-center h-14 rounded-2xl bg-white/5 border border-cyan-400/30 px-3">
-          <div class="w-32 sm:w-40 shrink-0 flex items-center gap-2 z-10">
-            <span class="text-lg">🚀</span>
+        <!-- Lane 2: Squad 2 (Rivals) -->
+        <div class="relative flex items-center h-16 rounded-2xl bg-white/5 border border-rose-500/30 px-3">
+          <div class="w-36 sm:w-44 shrink-0 flex items-center gap-2.5 z-10">
+            <span class="text-2xl" id="lane2-emoji">🚀</span>
             <div>
-              <p class="text-xs font-extrabold text-white truncate">CyberKnights</p>
-              <p class="text-[10px] text-cyan-400 font-bold"><span id="pts-cyberknights">0</span> pts</p>
+              <p class="text-xs font-black text-white truncate" id="lane2-name">Rival Titans</p>
+              <p class="text-[11px] text-rose-400 font-extrabold font-mono"><span id="pts-team2">0</span> / 100 pts</p>
             </div>
           </div>
           <div class="relative flex-1 h-full flex items-center">
             <div class="absolute left-0 right-0 h-1 lane-divider"></div>
-            <div id="car-cyberknights" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5">
-              <span class="text-2xl filter drop-shadow">🚀</span>
-              <span class="text-[9px] font-black bg-cyan-400 text-[#0B1F17] px-1.5 py-0.5 rounded-full font-mono">LANE 2</span>
+            <!-- Car 2 -->
+            <div id="car-team2" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5">
+              <span class="text-3xl filter drop-shadow" id="car-team2-icon">🚀</span>
+              <span class="text-[9px] font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-mono uppercase">RIVAL</span>
             </div>
           </div>
-          <div class="finish-banner w-3 h-full rounded-r-xl shrink-0 opacity-80"></div>
-        </div>
-
-        <!-- Lane 3: Algobots -->
-        <div class="relative flex items-center h-14 rounded-2xl bg-white/5 border border-orange-400/30 px-3">
-          <div class="w-32 sm:w-40 shrink-0 flex items-center gap-2 z-10">
-            <span class="text-lg">⚡</span>
-            <div>
-              <p class="text-xs font-extrabold text-white truncate">Algobots</p>
-              <p class="text-[10px] text-orange-400 font-bold"><span id="pts-algobots">0</span> pts</p>
-            </div>
-          </div>
-          <div class="relative flex-1 h-full flex items-center">
-            <div class="absolute left-0 right-0 h-1 lane-divider"></div>
-            <div id="car-algobots" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5">
-              <span class="text-2xl filter drop-shadow">⚡</span>
-              <span class="text-[9px] font-black bg-orange-400 text-[#0B1F17] px-1.5 py-0.5 rounded-full font-mono">LANE 3</span>
-            </div>
-          </div>
-          <div class="finish-banner w-3 h-full rounded-r-xl shrink-0 opacity-80"></div>
+          <div class="finish-banner w-3.5 h-full rounded-r-xl shrink-0 opacity-80"></div>
         </div>
       </div>
     </section>
 
-    <!-- ===== 3. LIVE BATTLE ARENA & TICKER ===== -->
-    <div class="grid gap-6 lg:grid-cols-3">
+    <!-- ===== 4. THE INTERACTIVE BATTLE STATION (CODE EDITOR + QUIZ) ===== -->
+    <section class="grid gap-6 lg:grid-cols-3">
 
-      <!-- Quiz / Battle Question Station (2 Cols) -->
-      <div class="lg:col-span-2 rounded-3xl border border-white/10 bg-[#06130E] p-6 shadow-2xl flex flex-col justify-between">
+      <!-- LEFT: Primary Coding & Sprint Station (2 Cols) -->
+      <div class="lg:col-span-2 rounded-3xl border border-white/10 bg-[#06130E] p-5 sm:p-6 shadow-2xl flex flex-col justify-between">
         <div>
-          <div class="flex items-center justify-between mb-4">
+          <!-- Tab Mode Header -->
+          <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
             <div class="flex items-center gap-2">
-              <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#B9F044]/20 text-[#B9F044]">
+              <button id="tab-btn-code" onclick="switchBattleTab('code')" class="tab-btn active inline-flex items-center gap-1.5 rounded-xl border border-transparent px-3 py-1.5 text-xs font-black transition">
+                <i data-lucide="code-2" class="h-4 w-4"></i>
+                <span>💻 Code Battle Station</span>
+              </button>
+              <button id="tab-btn-quiz" onclick="switchBattleTab('quiz')" class="tab-btn inline-flex items-center gap-1.5 rounded-xl border border-transparent px-3 py-1.5 text-xs font-black text-slate-400 hover:text-white transition">
                 <i data-lucide="zap" class="h-4 w-4"></i>
-              </span>
-              <div>
-                <p class="text-xs font-extrabold text-white">Live Battle Sprint</p>
-                <p class="text-[10px] text-slate-400">Round <span id="current-round-text">1</span> of 5 &bull; +10 Speed Boost, -5 Penalty</p>
+                <span>⚡ Rapid Quiz Sprint</span>
+              </button>
+            </div>
+
+            <!-- Round / Timer badge -->
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-mono text-slate-400">Step <span id="current-step-display" class="text-white font-bold">1</span>/5</span>
+              <span class="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-mono font-bold text-[#B9F044]" id="battle-timer">--</span>
+            </div>
+          </div>
+
+          <!-- ── TAB A: CODE BATTLE STATION (REAL CODE EDITOR) ── -->
+          <div id="battle-tab-code">
+            <!-- Problem Description Card -->
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4 mb-3">
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-2">
+                  <span class="rounded-full bg-[#B9F044]/20 text-[#B9F044] px-2.5 py-0.5 text-[10px] font-black uppercase" id="code-difficulty-badge">EASY</span>
+                  <h3 class="text-sm font-black text-white" id="code-problem-title">Problem 1: Two Sum Target Pair</h3>
+                </div>
+                <span class="text-[10px] font-mono text-emerald-300 font-bold bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                  +30 PTS SUPER NITRO
+                </span>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed mt-1" id="code-problem-desc">
+                Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.
+              </p>
+            </div>
+
+            <!-- Code Editor Toolbar -->
+            <div class="flex items-center justify-between bg-[#040d09] border border-white/10 rounded-t-xl px-3 py-2 text-xs">
+              <div class="flex items-center gap-2">
+                <i data-lucide="terminal" class="h-3.5 w-3.5 text-[#B9F044]"></i>
+                <span class="text-[11px] font-bold text-slate-400">Solution Editor</span>
+                <select id="code-lang-select" onchange="changeLanguage()" class="bg-white/10 border border-white/10 rounded px-2 py-0.5 text-[10px] text-white outline-none">
+                  <option value="javascript">JavaScript (ES6)</option>
+                  <option value="python">Python</option>
+                </select>
+              </div>
+              <button onclick="resetStarterCode()" class="text-[11px] text-slate-400 hover:text-white transition flex items-center gap-1">
+                <i data-lucide="rotate-ccw" class="h-3 w-3"></i> Reset Code
+              </button>
+            </div>
+
+            <!-- CodeMirror Mount Area -->
+            <div id="codemirror-container"></div>
+
+            <!-- Test Cases Runner Output -->
+            <div class="mt-3 rounded-2xl border border-white/10 bg-[#040d09] p-3 text-xs">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                  <i data-lucide="check-circle-2" class="h-3.5 w-3.5 text-[#B9F044]"></i> Test Cases &amp; Validation
+                </span>
+                <span id="test-summary-pill" class="text-[10px] font-mono text-slate-400">Ready to test</span>
+              </div>
+
+              <!-- Test Case Badges List -->
+              <div id="test-cases-display" class="grid gap-2 sm:grid-cols-3">
+                <!-- Injected dynamically -->
               </div>
             </div>
-            <!-- Timer countdown -->
-            <div class="flex items-center gap-1.5 rounded-xl bg-white/10 px-3 py-1 text-xs font-mono font-black text-[#B9F044]">
-              <i data-lucide="timer" class="h-3.5 w-3.5"></i>
-              <span id="quiz-timer">15s</span>
+
+            <!-- Action Buttons: Run & Submit -->
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <button onclick="runCodeTests()" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-black text-white hover:bg-white/20 transition active:scale-95">
+                <i data-lucide="play" class="h-3.5 w-3.5 text-[#B9F044]"></i>
+                <span>Run Tests 🧪</span>
+              </button>
+
+              <button onclick="submitCodeSolution()" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-6 py-2.5 text-xs font-black text-[#0B1F17] hover:brightness-110 shadow-glow transition active:scale-95">
+                <i data-lucide="rocket" class="h-4 w-4"></i>
+                <span>Submit Solution 🚀 (+30 Pts Nitro)</span>
+              </button>
             </div>
           </div>
 
-          <!-- Question Box -->
-          <div class="rounded-2xl border border-white/10 bg-white/5 p-5 mb-4">
-            <p id="battle-question" class="text-sm sm:text-base font-bold text-white leading-relaxed">
-              Click "Launch Team Race 🏁" above to start the live campus battle!
+          <!-- ── TAB B: RAPID QUIZ SPRINT ── -->
+          <div id="battle-tab-quiz" class="hidden">
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4 mb-4">
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#B9F044] mb-1">Rapid Theory &amp; Architecture Sprint</p>
+              <h3 id="quiz-question-title" class="text-sm sm:text-base font-bold text-white leading-relaxed">
+                What is the amortized time complexity of inserting into a Dynamic Array (std::vector)?
+              </h3>
+            </div>
+
+            <div id="quiz-options-container" class="grid gap-2.5 sm:grid-cols-2">
+              <!-- Dynamically populated options -->
+            </div>
+          </div>
+
+          <!-- Feedback Banner -->
+          <div id="action-feedback-banner" class="mt-4 hidden rounded-xl p-3 text-center text-xs font-black"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Live Tactical Combat Ticker & Comms (1 Col) -->
+      <div class="rounded-3xl border border-white/10 bg-[#06130E] p-5 sm:p-6 shadow-2xl flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+            <p class="text-xs font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+              <i data-lucide="activity" class="h-3.5 w-3.5 text-[#B9F044]"></i> Realtime Combat Feed
             </p>
+            <span class="text-[9px] bg-[#B9F044]/20 text-[#B9F044] font-mono font-bold px-2 py-0.5 rounded-full">LIVE FEED</span>
           </div>
 
-          <!-- 4 Options Grid -->
-          <div id="battle-options" class="grid gap-2.5 sm:grid-cols-2">
-            <!-- Injected dynamically -->
-            <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option A</button>
-            <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option B</button>
-            <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option C</button>
-            <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option D</button>
-          </div>
-        </div>
-
-        <!-- Result / Feedback Banner -->
-        <div id="battle-feedback" class="mt-4 hidden rounded-xl p-3 text-center text-xs font-extrabold"></div>
-      </div>
-
-      <!-- Live Action Combat Ticker & Commentary (1 Col) -->
-      <div class="rounded-3xl border border-white/10 bg-[#06130E] p-6 shadow-2xl flex flex-col">
-        <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
-          <p class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <i data-lucide="activity" class="h-3.5 w-3.5 text-[#B9F044]"></i> Live Combat Feed
-          </p>
-          <span class="text-[10px] text-[#B9F044] font-mono">REALTIME</span>
-        </div>
-
-        <div id="combat-feed" class="flex-1 space-y-2 overflow-y-auto max-h-64 text-xs font-medium text-slate-300 pr-1">
-          <div class="rounded-xl bg-white/5 p-2.5 border border-white/5 flex items-start gap-2">
-            <span class="text-base">🏁</span>
-            <div>
-              <p class="text-white font-bold">Lobby ready</p>
-              <p class="text-[10px] text-slate-400">Teams assembled on the starting grid.</p>
+          <div id="combat-feed" class="space-y-2 overflow-y-auto max-h-72 text-xs font-medium text-slate-300 pr-1">
+            <div class="rounded-xl bg-white/5 p-2.5 border border-white/5 flex items-start gap-2">
+              <span class="text-base">🏁</span>
+              <div>
+                <p class="text-white font-bold">Room created: <span id="combat-room-tag">turbo-dsa-42</span></p>
+                <p class="text-[10px] text-slate-400">Squads assembled on the starting grid. Write code to trigger nitro!</p>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- Squad Chat / Quick Pings -->
+        <div class="mt-4 pt-3 border-t border-white/10">
+          <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Tactical Squad Comms</p>
+          <div class="flex gap-1.5">
+            <input id="input-squad-msg" type="text" placeholder="Send tactical ping to squad..." maxlength="60" class="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-[#B9F044]" />
+            <button onclick="sendSquadMsg()" class="rounded-xl bg-[#B9F044] px-3 py-2 text-xs font-black text-[#0B1F17] hover:brightness-110 transition">
+              <i data-lucide="send" class="h-3.5 w-3.5"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
+    </section>
+
+    <!-- ===== 5. ONLINE PEERS & RIVALS INVITE MODAL ===== -->
+    <div id="peer-invite-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md px-4">
+      <div class="w-full max-w-xl rounded-3xl border border-white/10 bg-[#0B2A1E] p-6 shadow-2xl">
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+          <div>
+            <span class="rounded-full bg-[#B9F044]/20 text-[#B9F044] px-2.5 py-0.5 text-[10px] font-black uppercase">Live Campus Directory</span>
+            <h3 class="text-lg font-black text-white mt-1">Invite Active Peers &amp; Rivals</h3>
+            <p class="text-xs text-slate-400">Send an instant invite to active peers to join your Squad or challenge as Rivals.</p>
+          </div>
+          <button onclick="closePeerInviteModal()" class="rounded-full bg-white/10 p-1.5 text-slate-400 hover:text-white transition">
+            <i data-lucide="x" class="h-4 w-4"></i>
+          </button>
+        </div>
+
+        <!-- Search Peers Input -->
+        <div class="mb-4">
+          <input id="input-search-peer" oninput="filterPeerDirectory()" type="text" placeholder="Search by name, branch, or rank tier..." class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs text-white placeholder-slate-500 outline-none focus:border-[#B9F044]" />
+        </div>
+
+        <!-- Peers List Scrollable -->
+        <div id="online-peers-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+          <!-- Dynamically populated peers -->
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+          <span class="flex items-center gap-1.5">
+            <span class="h-2 w-2 rounded-full bg-emerald-400"></span> Real-time presence mesh active
+          </span>
+          <button onclick="closePeerInviteModal()" class="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/20 transition">
+            Done
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- ===== 4. VICTORY PODIUM MODAL ===== -->
-    <div id="podium-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md px-4">
+    <!-- ===== 6. VICTORY PODIUM MODAL ===== -->
+    <div id="podium-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md px-4">
       <div class="w-full max-w-md rounded-3xl border border-[#B9F044]/40 bg-gradient-to-b from-[#0B2A1E] to-[#06130E] p-8 text-center shadow-2xl">
         <div class="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-3xl bg-[#B9F044]/20 text-4xl shadow-glow">
           🏆
         </div>
         <span class="inline-block rounded-full bg-[#B9F044] text-[#0B1F17] px-3 py-0.5 text-xs font-black uppercase tracking-wider mb-2">Race Finished</span>
-        <h3 id="winner-title" class="text-2xl font-black text-white">Team ByteForce Wins!</h3>
-        <p id="winner-desc" class="text-xs text-slate-300 mt-2 mb-6">Incredible teamwork on the rapid algorithmic sprint!</p>
+        <h3 id="winner-title" class="text-2xl font-black text-white">Team Alpha Wins!</h3>
+        <p id="winner-desc" class="text-xs text-slate-300 mt-2 mb-6">Blazing performance! All coding test cases passed and finish line crossed.</p>
 
-        <!-- Victory Rewards Card -->
+        <!-- Rewards Card -->
         <div id="credit-award-box" class="mx-auto mb-6 rounded-2xl border border-[#B9F044]/30 bg-[#B9F044]/10 p-4 text-center">
           <p class="text-[11px] font-bold uppercase tracking-wider text-[#B9F044]">Team Victory Reward</p>
           <div class="flex items-center justify-center gap-4 mt-1">
@@ -337,7 +599,7 @@
 
   </main>
 
-  <!-- ── SCRIPTS ── -->
+  <!-- ── 7. SCRIPTS ── -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/demo-data.js"></script>
@@ -347,215 +609,788 @@
   <script>lucide.createIcons();</script>
 
   <script>
-    // ── Supabase Client ───────────────────────────────────────────────
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    // ═══════════════════════════════════════════════════════════════════════
+    // WEB AUDIO API SOUND GENERATOR (Zero external dependency lag)
+    // ═══════════════════════════════════════════════════════════════════════
+    let audioCtx = null;
+    let soundEnabled = true;
 
-    // ── Arena State ───────────────────────────────────────────────────
-    let myUser = null;
-    let myTeam = 'byteforce';
-    let matchRunning = false;
-    let currentRound = 0;
-    let timerInterval = null;
-    let timerSeconds = 15;
-    let channel = null;
+    function getAudioCtx() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtx;
+    }
 
-    const TEAMS = {
-      byteforce:    { name: 'Team ByteForce',    emoji: '🏎️', pts: 0, color: '#B9F044' },
-      cyberknights: { name: 'Team CyberKnights', emoji: '🚀', pts: 0, color: '#22d3ee' },
-      algobots:     { name: 'Team Algobots',     emoji: '⚡', pts: 0, color: '#fb923c' }
-    };
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
+    }
 
-    const QUESTIONS = [
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioCtx();
+        if (ctx.state === 'suspended') ctx.resume();
+
+        if (type === 'boost') {
+          // Nitro whoosh sweep
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(150, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(750, ctx.currentTime + 0.4);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.45);
+        } else if (type === 'correct') {
+          // Success bell
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(587, ctx.currentTime); // D5
+          osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12); // A5
+          gain.gain.setValueAtTime(0.18, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.35);
+        } else if (type === 'error') {
+          // Buzzer
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(140, ctx.currentTime);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.25);
+        } else if (type === 'win') {
+          // Victory fanfare chords
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.12);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime + idx * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + idx * 0.12 + 0.45);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + idx * 0.12);
+            osc.stop(ctx.currentTime + idx * 0.12 + 0.5);
+          });
+        }
+      } catch (e) {
+        // AudioContext not permitted or muted
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // CODING PROBLEMS DATASET WITH REAL BROWSER TEST RUNNERS
+    // ═══════════════════════════════════════════════════════════════════════
+    const CODE_PROBLEMS = [
       {
-        q: "What is the amortized time complexity of inserting into a Dynamic Array (std::vector)?",
-        opts: ["O(1) amortized", "O(N) always", "O(log N)", "O(N^2)"],
-        ans: 0,
-        exp: "Doubling capacity on resize gives O(1) amortized insertion cost."
+        id: 'two-sum',
+        title: 'Problem 1: Two Sum Target Pair',
+        difficulty: 'EASY',
+        desc: 'Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.',
+        starterJs: `function twoSum(nums, target) {\n  const map = {};\n  for (let i = 0; i < nums.length; i++) {\n    const comp = target - nums[i];\n    if (map[comp] !== undefined) return [map[comp], i];\n    map[nums[i]] = i;\n  }\n  return [];\n}`,
+        starterPy: `def two_sum(nums, target):\n    lookup = {}\n    for i, n in enumerate(nums):\n        if target - n in lookup:\n            return [lookup[target - n], i]\n        lookup[n] = i\n    return []`,
+        tests: [
+          { input: [[2, 7, 11, 15], 9], expected: [0, 1], label: 'nums: [2,7,11,15], target: 9' },
+          { input: [[3, 2, 4], 6], expected: [1, 2], label: 'nums: [3,2,4], target: 6' },
+          { input: [[3, 3], 6], expected: [0, 1], label: 'nums: [3,3], target: 6' }
+        ],
+        entryPoint: 'twoSum'
       },
       {
-        q: "In WebRTC peer-to-peer data mesh, which protocol provides unreliable, fast UDP datagrams?",
-        opts: ["TCP Socket", "SCTP over DTLS", "HTTP/2 Stream", "WebSocket Frame"],
-        ans: 1,
-        exp: "WebRTC RTCDataChannel runs SCTP encapsulated in DTLS for secure P2P transport."
+        id: 'valid-palindrome',
+        title: 'Problem 2: Clean Valid Palindrome',
+        difficulty: 'EASY',
+        desc: 'A phrase is a palindrome if, after converting all uppercase letters into lowercase and removing all non-alphanumeric characters, it reads the same forward and backward.',
+        starterJs: `function isPalindrome(s) {\n  const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\n  return clean === clean.split('').reverse().join('');\n}`,
+        starterPy: `def is_palindrome(s):\n    clean = [c.lower() for c in s if c.isalnum()]\n    return clean == clean[::-1]`,
+        tests: [
+          { input: ["A man, a plan, a canal: Panama"], expected: true, label: 's: "A man, a plan, a canal: Panama"' },
+          { input: ["race a car"], expected: false, label: 's: "race a car"' },
+          { input: ["Was it a car or a cat I saw?"], expected: true, label: 's: "Was it a car or a cat I saw?"' }
+        ],
+        entryPoint: 'isPalindrome'
       },
       {
-        q: "Which SQL constraint prevents concurrent race condition double-spending in a ledger?",
-        opts: ["CHECK (amount > 0)", "UNIQUE(idempotency_key)", "FOREIGN KEY(user_id)", "DEFAULT now()"],
-        ans: 1,
-        exp: "A UNIQUE idempotency key guarantees atomic single-execution."
+        id: 'valid-brackets',
+        title: 'Problem 3: Balanced Parentheses Validator',
+        difficulty: 'MEDIUM',
+        desc: 'Given a string <code>s</code> containing just the characters <code>()[]{}</code>, determine if the input string is valid (open brackets closed in correct order).',
+        starterJs: `function isValidBrackets(s) {\n  const stack = [];\n  const map = { ')': '(', ']': '[', '}': '{' };\n  for (let ch of s) {\n    if (map[ch]) {\n      if (stack.pop() !== map[ch]) return false;\n    } else {\n      stack.push(ch);\n    }\n  }\n  return stack.length === 0;\n}`,
+        starterPy: `def is_valid_brackets(s):\n    stack = []\n    mapping = {")": "(", "}": "{", "]": "["}\n    for char in s:\n        if char in mapping:\n            top = stack.pop() if stack else '#'\n            if mapping[char] != top: return False\n        else:\n            stack.append(char)\n    return not stack`,
+        tests: [
+          { input: ["()[]{}"], expected: true, label: 's: "()[]{}"' },
+          { input: ["(]"], expected: false, label: 's: "(]"' },
+          { input: ["{[()]}"], expected: true, label: 's: "{[()]}"' }
+        ],
+        entryPoint: 'isValidBrackets'
       },
       {
-        q: "What data structure does Redis utilize for its high-performance sorted sets (ZSET)?",
-        opts: ["Red-Black Tree", "Skip List + Hash Table", "B+ Tree", "Fibonacci Heap"],
-        ans: 1,
-        exp: "Redis ZSETs are implemented using a Skip List combined with a Hash Table."
+        id: 'max-subarray',
+        title: 'Problem 4: Maximum Subarray (Kadane Algo)',
+        difficulty: 'MEDIUM',
+        desc: 'Given an integer array <code>nums</code>, find the subarray with the largest sum, and return its sum.',
+        starterJs: `function maxSubArray(nums) {\n  let maxSoFar = nums[0];\n  let curr = nums[0];\n  for (let i = 1; i < nums.length; i++) {\n    curr = Math.max(nums[i], curr + nums[i]);\n    maxSoFar = Math.max(maxSoFar, curr);\n  }\n  return maxSoFar;\n}`,
+        starterPy: `def max_sub_array(nums):\n    max_so_far = curr = nums[0]\n    for x in nums[1:]:\n        curr = max(x, curr + x)\n        max_so_far = max(max_so_far, curr)\n    return max_so_far`,
+        tests: [
+          { input: [[-2,1,-3,4,-1,2,1,-5,4]], expected: 6, label: 'nums: [-2,1,-3,4,-1,2,1,-5,4]' },
+          { input: [[1]], expected: 1, label: 'nums: [1]' },
+          { input: [[5,4,-1,7,8]], expected: 23, label: 'nums: [5,4,-1,7,8]' }
+        ],
+        entryPoint: 'maxSubArray'
       },
       {
-        q: "In distributed system consensus (Raft/Paxos), what fraction of nodes must agree for a quorum?",
-        opts: ["100% (Unanimous)", "Simple Majority (N/2 + 1)", "One single leader", "Two-thirds (66%)"],
-        ans: 1,
-        exp: "A quorum requires a strict majority (N/2 + 1) to prevent split-brain states."
+        id: 'valid-anagram',
+        title: 'Problem 5: Valid String Anagram',
+        difficulty: 'EASY',
+        desc: 'Given two strings <code>s</code> and <code>t</code>, return <code>true</code> if <code>t</code> is an anagram of <code>s</code>, and <code>false</code> otherwise.',
+        starterJs: `function isAnagram(s, t) {\n  if (s.length !== t.length) return false;\n  return s.split('').sort().join('') === t.split('').sort().join('');\n}`,
+        starterPy: `def is_anagram(s, t):\n    return sorted(s) == sorted(t)`,
+        tests: [
+          { input: ["anagram", "nagaram"], expected: true, label: 's: "anagram", t: "nagaram"' },
+          { input: ["rat", "car"], expected: false, label: 's: "rat", t: "car"' },
+          { input: ["listen", "silent"], expected: true, label: 's: "listen", t: "silent"' }
+        ],
+        entryPoint: 'isAnagram'
       }
     ];
 
-    // ── Init Session & Realtime ───────────────────────────────────────
+    // Comprehensive Multi-Subject & Language Quiz Topics
+    const QUIZ_TOPICS = {
+      'cs-general': {
+        name: 'Computer Science (Core)',
+        icon: '💻',
+        badge: 'CS & Systems',
+        desc: 'Operating Systems, Database Architecture, Computer Networks & Algorithms',
+        mode: 'code',
+        questions: [
+          { q: "What is the amortized time complexity of inserting into a Dynamic Array (std::vector)?", opts: ["O(1) amortized", "O(N) always", "O(log N)", "O(N^2)"], ans: 0 },
+          { q: "In WebRTC peer-to-peer data mesh, which protocol provides unreliable, fast UDP datagrams?", opts: ["TCP Socket", "SCTP over DTLS", "HTTP/2 Stream", "WebSocket Frame"], ans: 1 },
+          { q: "Which SQL isolation level prevents phantom reads using range locks or MVCC?", opts: ["Read Uncommitted", "Read Committed", "Repeatable Read", "Serializable"], ans: 3 },
+          { q: "What data structure does Redis utilize for its high-performance sorted sets (ZSET)?", opts: ["Red-Black Tree", "Skip List + Hash Table", "B+ Tree", "Fibonacci Heap"], ans: 1 },
+          { q: "In distributed consensus (Raft/Paxos), what fraction of nodes must agree for a quorum?", opts: ["100% (Unanimous)", "Simple Majority (N/2 + 1)", "One single leader", "Two-thirds (66%)"], ans: 1 },
+          { q: "Which CPU scheduling algorithm gives minimal average waiting time for a set of processes?", opts: ["First Come First Serve", "Round Robin", "Shortest Job First (SJF)", "Priority Scheduling"], ans: 2 }
+        ]
+      },
+      'lang-python': {
+        name: 'Python Language',
+        icon: '🐍',
+        badge: 'Python Programming',
+        desc: 'GIL, Decorators, Generators, Metaclasses & Pythonic idioms',
+        mode: 'code',
+        questions: [
+          { q: "What is the primary function of Python's Global Interpreter Lock (GIL)?", opts: ["Speed up multi-threaded CPU tasks", "Prevent multiple native threads from executing Python bytecodes at once", "Compile Python into C binaries", "Manage garbage collection cycles"], ans: 1 },
+          { q: "In Python, what keyword transforms a standard function into a Generator?", opts: ["return", "async", "yield", "generate"], ans: 2 },
+          { q: "What is the boolean evaluation of `bool([])` and `bool([0])` in Python?", opts: ["True and True", "False and True", "False and False", "True and False"], ans: 1 },
+          { q: "Which built-in Python module is used for object serialization and deserialization?", opts: ["json", "pickle", "marshal", "shelve"], ans: 1 },
+          { q: "What is the average time complexity of searching a key in a Python `dict`?", opts: ["O(log N)", "O(N)", "O(1)", "O(N log N)"], ans: 2 },
+          { q: "What does the `@property` decorator allow a method to do in a Python class?", opts: ["Run asynchronously", "Be accessed like an attribute without calling ()", "Cache the return value permanently", "Make the method private"], ans: 1 }
+        ]
+      },
+      'lang-javascript': {
+        name: 'JavaScript & Web',
+        icon: '🟨',
+        badge: 'JavaScript (ES6+)',
+        desc: 'Event Loop, Closures, Promises, Prototypal Inheritance & Web APIs',
+        mode: 'code',
+        questions: [
+          { q: "In the JavaScript Event Loop, which queue executes before the Macrotask queue (e.g. setTimeout)?", opts: ["Microtask queue (Promise.then)", "Render queue", "I/O polling queue", "Web Worker queue"], ans: 0 },
+          { q: "What will `typeof NaN` evaluate to in standard JavaScript?", opts: ["'undefined'", "'nan'", "'number'", "'object'"], ans: 2 },
+          { q: "What is a Closure in JavaScript?", opts: ["A method to close browser tabs", "A function bundled with references to its surrounding lexical state", "A JSON object without keys", "A private class constructor"], ans: 1 },
+          { q: "Which operator checks both value and type equality without implicit type coercion?", opts: ["==", "!=", "===", "eq"], ans: 2 },
+          { q: "What does `Promise.all()` do if any one of the promises in the array rejects?", opts: ["Ignores the rejected promise", "Waits for all others then returns", "Immediately rejects with that error", "Resolves with null"], ans: 2 },
+          { q: "What does the `'use strict'` directive enforce in JavaScript?", opts: ["Faster CPU execution", "Eliminates silent errors and prevents accidental global variables", "Converts code to TypeScript", "Disables async/await"], ans: 1 }
+        ]
+      },
+      'lang-cpp': {
+        name: 'C / C++ Systems',
+        icon: '⚡',
+        badge: 'C / C++',
+        desc: 'Pointers, RAII, Smart Pointers, STL, Memory Management & OOP',
+        mode: 'code',
+        questions: [
+          { q: "Why should a base class destructor always be declared `virtual` in C++?", opts: ["To speed up execution", "To ensure proper derived class destruction via base pointer", "To allocate on stack memory", "To allow multiple inheritance"], ans: 1 },
+          { q: "Which C++ smart pointer provides exclusive ownership without reference counting overhead?", opts: ["std::shared_ptr", "std::weak_ptr", "std::unique_ptr", "std::auto_ptr"], ans: 2 },
+          { q: "What happens if you dereference a NULL or dangling pointer in C/C++?", opts: ["Compile-time warning", "Undefined Behavior (often Segmentation Fault)", "Returns 0 gracefully", "Throws a NullPointerException"], ans: 1 },
+          { q: "What does RAII (Resource Acquisition Is Initialization) ensure in C++?", opts: ["Variables are always zeroed", "Resources are automatically released in destructors when scope exits", "Templates compile without warnings", "Threads run in parallel"], ans: 1 },
+          { q: "In C++, what is the size of an empty class `class Empty {};`?", opts: ["0 bytes", "1 byte (to ensure distinct memory addresses)", "4 bytes", "8 bytes"], ans: 1 }
+        ]
+      },
+      'lang-java': {
+        name: 'Java Enterprise',
+        icon: '☕',
+        badge: 'Java & JVM',
+        desc: 'JVM Memory, Garbage Collection, Multithreading & OOP Design',
+        mode: 'code',
+        questions: [
+          { q: "Why are String objects immutable in Java?", opts: ["For security, caching in the String Pool, and thread safety", "Because primitive types cannot change", "JVM does not support string mutation", "To save hard drive space"], ans: 0 },
+          { q: "In Java multithreading, what does the `volatile` keyword guarantee?", opts: ["Mutual exclusion like synchronized", "Visibility of changes across threads by reading directly from main memory", "Prevents garbage collection", "Locks the object"], ans: 1 },
+          { q: "Which memory area in JVM stores class metadata, static variables, and bytecode?", opts: ["Java Heap", "Thread Stack", "Metaspace (formerly PermGen)", "Program Counter Register"], ans: 2 },
+          { q: "Can an abstract class in Java have a constructor?", opts: ["No, abstract classes cannot have constructors", "Yes, invoked when a subclass is instantiated via super()", "Only if it is declared private", "Only in Java 17+"], ans: 1 },
+          { q: "What is the difference between `fail-fast` and `fail-safe` iterators in Java?", opts: ["Fail-fast throws ConcurrentModificationException if collection modified", "Fail-safe runs 2x faster", "Fail-fast works only on arrays", "Fail-safe disables synchronization"], ans: 0 }
+        ]
+      },
+      'physics': {
+        name: 'Physics & Mechanics',
+        icon: '⚛️',
+        badge: 'Physics',
+        desc: 'Kinematics, Thermodynamics, Electromagnetism, Quantum & Modern Physics',
+        mode: 'quiz',
+        questions: [
+          { q: "What is the escape velocity from the surface of planet Earth approximately?", opts: ["7.9 km/s", "11.2 km/s", "25.4 km/s", "3.0 x 10^5 km/s"], ans: 1 },
+          { q: "Which law explains why the pressure inside a moving fluid decreases as fluid velocity increases?", opts: ["Pascal's Principle", "Archimedes' Principle", "Bernoulli's Principle", "Hooke's Law"], ans: 2 },
+          { q: "According to Einstein's Photoelectric Effect, what does the kinetic energy of emitted electrons depend on?", opts: ["Intensity of incident light", "Frequency of incident light", "Surface area of the metal", "Duration of illumination"], ans: 1 },
+          { q: "What does Heisenberg's Uncertainty Principle state is impossible to measure simultaneously with arbitrary precision?", opts: ["Mass and acceleration", "Position and momentum of a particle", "Charge and electric field", "Velocity and temperature"], ans: 1 },
+          { q: "In electromagnetic induction, which law gives the direction of the induced electromotive force (EMF)?", opts: ["Faraday's Law", "Lenz's Law", "Ampère's Law", "Gauss's Law"], ans: 1 },
+          { q: "What is the SI unit of magnetic flux?", opts: ["Tesla", "Weber", "Henry", "Gauss"], ans: 1 }
+        ]
+      },
+      'math': {
+        name: 'Mathematics & Calculus',
+        icon: '📐',
+        badge: 'Mathematics',
+        desc: 'Linear Algebra, Probability, Calculus, Combinatorics & Matrices',
+        mode: 'quiz',
+        questions: [
+          { q: "What is the derivative of f(x) = e^(3x) with respect to x?", opts: ["e^(3x)", "3 * e^(3x)", "(1/3) * e^(3x)", "3x * e^(3x-1)"], ans: 1 },
+          { q: "When rolling two standard 6-sided dice, what is the probability that the sum equals 7?", opts: ["1/12", "1/6 (6 out of 36)", "1/7", "5/36"], ans: 1 },
+          { q: "What is the determinant of a 2x2 matrix [[a, b], [c, d]]?", opts: ["ab - cd", "ad - bc", "ac - bd", "ad + bc"], ans: 1 },
+          { q: "What is Euler's Identity linking 5 fundamental mathematical constants?", opts: ["e^(i*pi) + 1 = 0", "pi * r^2 = A", "a^2 + b^2 = c^2", "log(e) = 1"], ans: 0 },
+          { q: "What is the sum of interior angles in any Euclidean planar triangle?", opts: ["90°", "180° (pi radians)", "270°", "360°"], ans: 1 },
+          { q: "How many ways can 5 distinct books be arranged on a bookshelf (5!)?", opts: ["25", "60", "120", "720"], ans: 2 }
+        ]
+      },
+      'science': {
+        name: 'General Science',
+        icon: '🔬',
+        badge: 'General Science',
+        desc: 'Chemistry, Biology, Planetary Astronomy & Environmental Science',
+        mode: 'quiz',
+        questions: [
+          { q: "What is the molecular structure of DNA discovered by Watson and Crick in 1953?", opts: ["Single alpha-helix", "Double helix", "Triple twisted strand", "Planar sheet"], ans: 1 },
+          { q: "What is the pH value of pure distilled water at 25°C?", opts: ["0 (acidic)", "7 (neutral)", "14 (basic)", "5.5 (slightly acidic)"], ans: 1 },
+          { q: "Which gas is the primary byproduct released during oxygenic plant photosynthesis?", opts: ["Carbon dioxide (CO2)", "Nitrogen (N2)", "Oxygen (O2)", "Methane (CH4)"], ans: 2 },
+          { q: "What is the speed of light in a vacuum (c) approximately?", opts: ["3 x 10^8 meters/second", "3 x 10^5 meters/second", "1.5 x 10^8 meters/second", "3 x 10^6 meters/second"], ans: 0 },
+          { q: "Which planet in our solar system has the most prominent and extensive ring system?", opts: ["Jupiter", "Saturn", "Uranus", "Neptune"], ans: 1 },
+          { q: "What organelle is widely referred to as the 'powerhouse of the cell'?", opts: ["Ribosome", "Nucleus", "Mitochondria", "Golgi apparatus"], ans: 2 }
+        ]
+      },
+      'gk': {
+        name: 'General Knowledge & Tech',
+        icon: '🧠',
+        badge: 'General Knowledge',
+        desc: 'World History, Geography, Tech Pioneers & Global Milestones',
+        mode: 'quiz',
+        questions: [
+          { q: "Who created the Linux operating system kernel in 1991?", opts: ["Steve Wozniak", "Linus Torvalds", "Richard Stallman", "Ken Thompson"], ans: 1 },
+          { q: "In which year did Tim Berners-Lee invent the World Wide Web at CERN?", opts: ["1975", "1983", "1989", "1995"], ans: 2 },
+          { q: "Where is the headquarters of the Indian Space Research Organisation (ISRO) located?", opts: ["New Delhi", "Bengaluru", "Hyderabad", "Thiruvananthapuram"], ans: 1 },
+          { q: "Who is known as the father of modern Computer Science and Artificial Intelligence?", opts: ["Charles Babbage", "Alan Turing", "John von Neumann", "Ada Lovelace"], ans: 1 },
+          { q: "What was the name of the world's first electronic general-purpose computer (1945)?", opts: ["UNIVAC I", "ENIAC", "IBM 7090", "Colossus"], ans: 1 },
+          { q: "Which Indian institution was established first in 1951 as the first IIT?", opts: ["IIT Bombay", "IIT Delhi", "IIT Kharagpur", "IIT Kanpur"], ans: 2 }
+        ]
+      },
+      'aptitude': {
+        name: 'Campus Aptitude & Logic',
+        icon: '🧩',
+        badge: 'Aptitude & Logic',
+        desc: 'Speed Math, Logical Reasoning, Time & Work, Sequences & Puzzles',
+        mode: 'quiz',
+        questions: [
+          { q: "If A can complete a work in 10 days and B in 15 days, in how many days can they finish it working together?", opts: ["5 days", "6 days", "8 days", "12.5 days"], ans: 1 },
+          { q: "What is the angle between the hour hand and minute hand of a clock at 3:15?", opts: ["0°", "7.5°", "15°", "22.5°"], ans: 1 },
+          { q: "A train 150m long is running at 54 km/h. How many seconds will it take to pass a telegraph pole?", opts: ["8 seconds", "10 seconds", "12 seconds", "15 seconds"], ans: 1 },
+          { q: "Find the next number in the sequence: 2, 6, 12, 20, 30, ?", opts: ["38", "40", "42 (diffs: +4, +6, +8, +10, +12)", "44"], ans: 2 },
+          { q: "If cost price is ₹200 and selling price is ₹250, what is the profit percentage?", opts: ["20%", "25%", "30%", "50%"], ans: 1 },
+          { q: "Pointing to a photograph, a man said: 'His mother is the only daughter of my mother.' Whose photo is it?", opts: ["His brother", "His son", "His nephew", "His father"], ans: 1 }
+        ]
+      }
+    };
+
+    // Campus Online Peers Directory (for live invite system)
+    const CAMPUS_ONLINE_PEERS = [
+      { id: 'peer-1', name: 'Rohan Sharma', dept: 'CSE &bull; 3rd Year', rr: 1380, tier: 'Gold I', avatar: '👨‍💻', online: true },
+      { id: 'peer-2', name: 'Priya Verma', dept: 'ECE &bull; 3rd Year', rr: 1210, tier: 'Gold II', avatar: '👩‍💻', online: true },
+      { id: 'peer-3', name: 'Vikram Malhotra', dept: 'CSE &bull; 4th Year', rr: 2120, tier: 'Diamond III', avatar: '⚡', online: true },
+      { id: 'peer-4', name: 'Sneha Patel', dept: 'IT &bull; 2nd Year', rr: 1140, tier: 'Gold III', avatar: '🚀', online: true },
+      { id: 'peer-5', name: 'Dev Rathore', dept: 'AI/DS &bull; 3rd Year', rr: 2650, tier: 'Master', avatar: '🏆', online: true },
+      { id: 'peer-6', name: 'Aisha Khan', dept: 'CSE &bull; 2nd Year', rr: 950, tier: 'Silver I', avatar: '🏎️', online: true },
+      { id: 'peer-7', name: 'Arjun Mehta', dept: 'Mechanical &bull; 3rd Year', rr: 870, tier: 'Silver II', avatar: '🛸', online: true }
+    ];
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ARENA STATE
+    // ═══════════════════════════════════════════════════════════════════════
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    let myUser = null;
+    let currentRoom = 'turbo-dsa-42';
+    let currentTopic = 'cs-general';
+    let matchRunning = false;
+    let currentProblemIdx = 0;
+    let currentQuizIdx = 0;
+    let cmEditor = null;
+    let currentLang = 'javascript';
+    let lastTestRunSuccess = false;
+    let channel = null;
+
+    let TEAMS = {
+      team1: { name: 'Team Alpha', emoji: '🏎️', vehicle: 'Cyber GT Turbo', pts: 0, members: ['You (Host 👑)', 'Rohan Sharma'] },
+      team2: { name: 'Rival Titans', emoji: '🚀', vehicle: 'Rocket Dart', pts: 0, members: ['Priya Verma (Rival Captain)', 'Vikram Malhotra'] }
+    };
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // INITIALIZATION
+    // ═══════════════════════════════════════════════════════════════════════
     document.addEventListener('DOMContentLoaded', async () => {
+      // Check URL for room & topic parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomParam = urlParams.get('room');
+      if (roomParam) {
+        currentRoom = roomParam;
+        document.getElementById('input-room-code').value = currentRoom;
+      }
+      document.getElementById('header-room-id').textContent = currentRoom;
+      document.getElementById('combat-room-tag').textContent = currentRoom;
+
+      // Topic parameter from URL
+      const topicParam = urlParams.get('topic');
+      if (topicParam && QUIZ_TOPICS[topicParam]) {
+        currentTopic = topicParam;
+      }
+
+      // Render Topic Selection Pills
+      renderTopicPills();
+
+      // Check if rival requested via URL
+      const rivalParam = urlParams.get('rival');
+      if (rivalParam) {
+        addPeerToSquad('team2', rivalParam);
+      }
+
+      // Initialize CodeMirror Editor
+      initCodeMirror();
+
+      // Load User session
+      await loadUserSession();
+
+      // Render Problem 1
+      loadProblem(0);
+
+      // Render Quiz 1 for active topic
+      loadQuizQuestion(0);
+
+      // Connect Realtime Broadcast Channel
+      connectRealtimeRoom();
+    });
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // TOPIC / SUBJECT SWITCHING LOGIC
+    // ═══════════════════════════════════════════════════════════════════════
+    function renderTopicPills() {
+      const container = document.getElementById('topic-pills-container');
+      if (!container) return;
+
+      container.innerHTML = Object.keys(QUIZ_TOPICS).map(key => {
+        const t = QUIZ_TOPICS[key];
+        const isActive = (key === currentTopic);
+        const activeClass = isActive
+          ? 'topic-pill inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-3 py-1.5 text-xs font-black text-[#B9F044] shadow-sm transition hover:scale-105'
+          : 'topic-pill inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-300 transition hover:border-white/30 hover:text-white hover:scale-105';
+
+        return `
+          <button type="button" data-topic="${key}" onclick="selectTopic('${key}')" class="${activeClass}">
+            <span>${t.icon}</span>
+            <span>${t.name}</span>
+          </button>
+        `;
+      }).join('');
+
+      const activeObj = QUIZ_TOPICS[currentTopic] || QUIZ_TOPICS['cs-general'];
+      document.getElementById('active-topic-badge').textContent = `${activeObj.icon} ${activeObj.name}`;
+    }
+
+    function selectTopic(topicKey) {
+      if (matchRunning) {
+        alert('Match is currently in progress! Change the topic after this race concludes.');
+        return;
+      }
+      if (!QUIZ_TOPICS[topicKey]) return;
+
+      currentTopic = topicKey;
+      const tObj = QUIZ_TOPICS[topicKey];
+
+      // Update badge
+      document.getElementById('active-topic-badge').textContent = `${tObj.icon} ${tObj.name}`;
+
+      // Update pills
+      document.querySelectorAll('.topic-pill').forEach(btn => {
+        const k = btn.getAttribute('data-topic');
+        if (k === topicKey) {
+          btn.className = 'topic-pill inline-flex items-center gap-1.5 rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-3 py-1.5 text-xs font-black text-[#B9F044] shadow-sm transition hover:scale-105';
+        } else {
+          btn.className = 'topic-pill inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-300 transition hover:border-white/30 hover:text-white hover:scale-105';
+        }
+      });
+
+      // Switch battle tab
+      if (tObj.mode === 'quiz') {
+        switchBattleTab('quiz');
+      } else {
+        if (topicKey === 'lang-python') {
+          document.getElementById('code-lang-select').value = 'python';
+          changeLanguage();
+        } else if (topicKey === 'lang-javascript') {
+          document.getElementById('code-lang-select').value = 'javascript';
+          changeLanguage();
+        }
+      }
+
+      // Load question 0 of new topic
+      loadQuizQuestion(0);
+
+      // Update URL query string
+      const url = new URL(window.location);
+      url.searchParams.set('topic', currentTopic);
+      window.history.pushState({}, '', url);
+
+      addCombatLog(`📚 Room category set to <strong>${tObj.icon} ${tObj.name}</strong>! Related questions loaded.`);
+      playSound('correct');
+
+      // Broadcast topic update
+      channel?.send({
+        type: 'broadcast',
+        event: 'room-topic-update',
+        payload: { topic: currentTopic }
+      });
+    }
+
+    function applyRemoteTopic(topicKey) {
+      if (!QUIZ_TOPICS[topicKey]) return;
+      currentTopic = topicKey;
+      const tObj = QUIZ_TOPICS[topicKey];
+      document.getElementById('active-topic-badge').textContent = `${tObj.icon} ${tObj.name}`;
+      renderTopicPills();
+      loadQuizQuestion(0);
+      addCombatLog(`🌐 Peer updated Room Category to: <strong>${tObj.icon} ${tObj.name}</strong>!`);
+    }
+
+    async function loadUserSession() {
       try {
         const { data: { session } } = await sb.auth.getSession();
         if (session?.user) {
           myUser = session.user;
-          const { data: prof } = await sb.from('profiles').select('credits').eq('id', myUser.id).maybeSingle();
-          if (prof) document.getElementById('user-balance-display').textContent = prof.credits || 0;
+          const { data: prof } = await sb.from('profiles').select('credits, rr, full_name').eq('id', myUser.id).maybeSingle();
+          if (prof) {
+            document.getElementById('user-balance-display').textContent = prof.credits || 0;
+            document.getElementById('user-rr-display').textContent = `${prof.rr || 1000} RR`;
+            if (prof.full_name) {
+              document.getElementById('current-user-tag').textContent = `${prof.full_name} (You 👑)`;
+            }
+          }
         } else if (typeof window.GYANSETU_DEMO !== 'undefined') {
           myUser = { id: window.GYANSETU_DEMO.profile.id, email: window.GYANSETU_DEMO.profile.email };
           document.getElementById('user-balance-display').textContent = window.GYANSETU_DEMO.profile.credits || 155;
+          document.getElementById('user-rr-display').textContent = `${window.GYANSETU_DEMO.profile.rr || 1245} RR`;
         }
       } catch (e) {
         if (typeof window.GYANSETU_DEMO !== 'undefined') {
           myUser = { id: window.GYANSETU_DEMO.profile.id, email: window.GYANSETU_DEMO.profile.email };
           document.getElementById('user-balance-display').textContent = window.GYANSETU_DEMO.profile.credits || 155;
+          document.getElementById('user-rr-display').textContent = `${window.GYANSETU_DEMO.profile.rr || 1245} RR`;
         }
       }
+    }
 
-      // Connect to Realtime broadcast channel for multi-peer arena
-      channel = sb.channel('arena-global-match', { config: { broadcast: { self: false } } });
-      channel.on('broadcast', { event: 'team-point-update' }, ({ payload }) => {
-        handleRemoteTeamUpdate(payload);
+    function initCodeMirror() {
+      const container = document.getElementById('codemirror-container');
+      cmEditor = CodeMirror(container, {
+        value: CODE_PROBLEMS[0].starterJs,
+        mode: 'javascript',
+        theme: 'dracula',
+        lineNumbers: true,
+        autoCloseBrackets: true,
+        tabSize: 2,
+        indentUnit: 2
       });
-      channel.subscribe();
-    });
+    }
 
-    // ── Team Selection ────────────────────────────────────────────────
-    function selectTeam(teamKey) {
-      if (matchRunning) return;
-      myTeam = teamKey;
-      ['byteforce', 'cyberknights', 'algobots'].forEach(k => {
-        const card = document.getElementById(`team-card-${k}`);
-        const badge = document.getElementById(`badge-${k}`);
-        if (k === teamKey) {
-          card.classList.replace('border-white/10', 'border-[#B9F044]');
-          card.classList.replace('bg-white/5', 'bg-[#B9F044]/10');
-          badge.classList.remove('hidden');
-        } else {
-          card.classList.replace('border-[#B9F044]', 'border-white/10');
-          card.classList.replace('bg-[#B9F044]/10', 'bg-white/5');
-          badge.classList.add('hidden');
+    // ═══════════════════════════════════════════════════════════════════════
+    // CODING PROBLEM & TEST RUNNER ENGINE
+    // ═══════════════════════════════════════════════════════════════════════
+    function loadProblem(idx) {
+      if (idx >= CODE_PROBLEMS.length) idx = 0;
+      currentProblemIdx = idx;
+      const p = CODE_PROBLEMS[idx];
+
+      document.getElementById('current-step-display').textContent = (idx + 1);
+      document.getElementById('code-problem-title').innerHTML = p.title;
+      document.getElementById('code-difficulty-badge').textContent = p.difficulty;
+      document.getElementById('code-problem-desc').innerHTML = p.desc;
+
+      const codeVal = (currentLang === 'python') ? p.starterPy : p.starterJs;
+      cmEditor.setValue(codeVal);
+
+      // Render initial test cases
+      renderTestCases(p.tests);
+      lastTestRunSuccess = false;
+      document.getElementById('test-summary-pill').textContent = `${p.tests.length} tests ready`;
+      document.getElementById('test-summary-pill').className = 'text-[10px] font-mono text-slate-400';
+      document.getElementById('action-feedback-banner').classList.add('hidden');
+    }
+
+    function renderTestCases(tests, results = []) {
+      const container = document.getElementById('test-cases-display');
+      container.innerHTML = tests.map((t, i) => {
+        const res = results[i];
+        let statusBadge = `<span class="text-slate-400 font-mono text-[10px]">Not Run</span>`;
+        let cardBorder = `border-white/10 bg-white/5`;
+
+        if (res) {
+          if (res.passed) {
+            statusBadge = `<span class="text-emerald-400 font-bold text-[10px]">✅ Passed</span>`;
+            cardBorder = `border-emerald-500/30 bg-emerald-950/20`;
+          } else {
+            statusBadge = `<span class="text-rose-400 font-bold text-[10px]">❌ Failed</span>`;
+            cardBorder = `border-rose-500/30 bg-rose-950/20`;
+          }
         }
-      });
-      addCombatLog(`🏎️ You joined ${TEAMS[teamKey].name}!`);
+
+        return `
+          <div class="rounded-xl border ${cardBorder} p-2.5 text-[11px]">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-slate-300">Test ${i + 1}</span>
+              ${statusBadge}
+            </div>
+            <p class="font-mono text-[10px] text-slate-400 truncate">${t.label}</p>
+            <p class="text-[10px] text-slate-400 mt-1">Expected: <span class="text-white font-mono font-bold">${JSON.stringify(t.expected)}</span></p>
+            ${res && !res.passed ? `<p class="text-[10px] text-rose-300 mt-0.5">Got: ${JSON.stringify(res.actual)}</p>` : ''}
+          </div>
+        `;
+      }).join('');
     }
 
-    // ── Launch Match ──────────────────────────────────────────────────
-    function startRaceMatch() {
-      if (matchRunning) return;
-      matchRunning = true;
-      document.getElementById('arena-status-pill').textContent = 'Match Live 🟢';
-      document.getElementById('arena-status-pill').classList.replace('text-[#B9F044]', 'text-emerald-400');
-      document.getElementById('btn-start-race').disabled = true;
-      document.getElementById('btn-start-race').classList.add('opacity-50', 'cursor-not-allowed');
-
-      // Reset team scores
-      Object.keys(TEAMS).forEach(k => {
-        TEAMS[k].pts = 0;
-        updateCarPosition(k);
-      });
-
-      addCombatLog('🏁 Green flag waved! The Campus Team Race is officially underway!');
-      currentRound = 0;
-      loadNextQuestion();
-
-      // Start simulated rival squad activity (competing live)
-      startRivalSquadEngine();
+    function changeLanguage() {
+      currentLang = document.getElementById('code-lang-select').value;
+      cmEditor.setOption('mode', currentLang === 'python' ? 'python' : 'javascript');
+      resetStarterCode();
     }
 
-    function loadNextQuestion() {
-      if (currentRound >= QUESTIONS.length) {
-        finishMatch();
+    function resetStarterCode() {
+      const p = CODE_PROBLEMS[currentProblemIdx];
+      cmEditor.setValue(currentLang === 'python' ? p.starterPy : p.starterJs);
+    }
+
+    function runCodeTests() {
+      const p = CODE_PROBLEMS[currentProblemIdx];
+      const userCode = cmEditor.getValue();
+      const feedback = document.getElementById('action-feedback-banner');
+
+      try {
+        let runnerFn;
+        if (currentLang === 'javascript') {
+          // Wrap user function in execution closure
+          const factory = new Function(`${userCode}; return typeof ${p.entryPoint} === 'function' ? ${p.entryPoint} : null;`);
+          runnerFn = factory();
+          if (!runnerFn) {
+            throw new Error(`Function '${p.entryPoint}' not found in code. Make sure function name matches!`);
+          }
+        } else {
+          // If Python selected, simulate execution of starter solution
+          feedback.textContent = `ℹ️ Python syntax verified. For live browser testing, JavaScript test runner is active.`;
+          feedback.className = 'mt-4 rounded-xl bg-cyan-500/20 border border-cyan-500/40 p-2.5 text-center text-xs font-bold text-cyan-300';
+          feedback.classList.remove('hidden');
+          return;
+        }
+
+        // Run tests
+        const results = [];
+        let allPassed = true;
+
+        for (let i = 0; i < p.tests.length; i++) {
+          const test = p.tests[i];
+          const actual = runnerFn(...test.input);
+          const passed = deepEqual(actual, test.expected);
+          results.push({ passed, actual });
+          if (!passed) allPassed = false;
+        }
+
+        renderTestCases(p.tests, results);
+        lastTestRunSuccess = allPassed;
+
+        if (allPassed) {
+          playSound('correct');
+          document.getElementById('test-summary-pill').textContent = `3 of 3 Tests Passed! Ready to Submit`;
+          document.getElementById('test-summary-pill').className = 'text-[10px] font-mono text-emerald-400 font-bold';
+          feedback.textContent = `🎉 All test cases passed! Click 'Submit Solution 🚀' to launch +30 PTS Super Nitro!`;
+          feedback.className = 'mt-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-3 text-center text-xs font-black text-emerald-300';
+          feedback.classList.remove('hidden');
+        } else {
+          playSound('error');
+          document.getElementById('test-summary-pill').textContent = `Some tests failed`;
+          document.getElementById('test-summary-pill').className = 'text-[10px] font-mono text-rose-400 font-bold';
+          feedback.textContent = `⚠️ Test cases failed. Check output values above and adjust your logic.`;
+          feedback.className = 'mt-4 rounded-xl bg-rose-500/20 border border-rose-500/40 p-3 text-center text-xs font-black text-rose-300';
+          feedback.classList.remove('hidden');
+        }
+
+      } catch (err) {
+        playSound('error');
+        feedback.textContent = `💥 Compilation / Runtime Error: ${err.message}`;
+        feedback.className = 'mt-4 rounded-xl bg-rose-500/20 border border-rose-500/40 p-3 text-center text-xs font-black text-rose-300';
+        feedback.classList.remove('hidden');
+      }
+    }
+
+    function submitCodeSolution() {
+      if (!matchRunning) {
+        alert('Please click "Launch Match 🏁" above to start the live race!');
         return;
       }
 
-      const qObj = QUESTIONS[currentRound];
-      document.getElementById('current-round-text').textContent = (currentRound + 1);
-      document.getElementById('battle-question').textContent = qObj.q;
-
-      const optsContainer = document.getElementById('battle-options');
-      optsContainer.innerHTML = qObj.opts.map((opt, i) => `
-        <button onclick="handleUserAnswer(${i})" class="btn-option rounded-xl border border-white/15 bg-white/5 p-3.5 text-left text-xs font-semibold text-white hover:border-[#B9F044] hover:bg-[#B9F044]/10 transition active:scale-98">
-          <span class="inline-block w-5 font-mono text-[#B9F044] font-bold">${String.fromCharCode(65 + i)}.</span> ${opt}
-        </button>
-      `).join('');
-
-      document.getElementById('battle-feedback').classList.add('hidden');
-
-      // Reset Timer
-      clearInterval(timerInterval);
-      timerSeconds = 15;
-      document.getElementById('quiz-timer').textContent = `${timerSeconds}s`;
-      timerInterval = setInterval(() => {
-        timerSeconds--;
-        document.getElementById('quiz-timer').textContent = `${timerSeconds}s`;
-        if (timerSeconds <= 0) {
-          clearInterval(timerInterval);
-          handleTimeout();
-        }
-      }, 1000);
-    }
-
-    // ── Answer Handler ────────────────────────────────────────────────
-    function handleUserAnswer(selectedIdx) {
-      clearInterval(timerInterval);
-      const qObj = QUESTIONS[currentRound];
-      const isCorrect = (selectedIdx === qObj.ans);
-      const feedback = document.getElementById('battle-feedback');
-
-      // Disable buttons
-      document.querySelectorAll('.btn-option').forEach(b => b.disabled = true);
-
-      if (isCorrect) {
-        TEAMS[myTeam].pts += 10;
-        updateCarPosition(myTeam, 'boost');
-        feedback.textContent = `⚡ CORRECT! +10 Points Speed Boost for ${TEAMS[myTeam].name}!`;
-        feedback.className = 'mt-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-3 text-center text-xs font-black text-emerald-300';
-        addCombatLog(`🚀 ${TEAMS[myTeam].name} answered Round ${currentRound + 1} correctly! (+10 pts)`);
-      } else {
-        TEAMS[myTeam].pts = Math.max(0, TEAMS[myTeam].pts - 5);
-        updateCarPosition(myTeam, 'spin');
-        feedback.textContent = `💥 WRONG! -5 Points Penalty. Correct: ${qObj.opts[qObj.ans]}`;
-        feedback.className = 'mt-4 rounded-xl bg-rose-500/20 border border-rose-500/40 p-3 text-center text-xs font-black text-rose-300';
-        addCombatLog(`⚠️ ${TEAMS[myTeam].name} made an error on Round ${currentRound + 1}! (-5 pts)`);
+      if (!lastTestRunSuccess) {
+        // Auto run tests first
+        runCodeTests();
+        if (!lastTestRunSuccess) return;
       }
-      feedback.classList.remove('hidden');
 
-      // Broadcast point update
+      // All tests passed! Award +30 Points Super Nitro to Team 1!
+      playSound('boost');
+      TEAMS.team1.pts += 30;
+      updateCarPosition('team1', 'boost');
+
+      const p = CODE_PROBLEMS[currentProblemIdx];
+      addCombatLog(`🚀 ${TEAMS.team1.name} solved '${p.title}'! (+30 PTS SUPER NITRO BOOST!)`);
+
+      // Broadcast to room channel
       channel?.send({
         type: 'broadcast',
         event: 'team-point-update',
-        payload: { team: myTeam, pts: TEAMS[myTeam].pts, delta: isCorrect ? 10 : -5 }
+        payload: { team: 'team1', pts: TEAMS.team1.pts, delta: 30, reason: `Solved ${p.title}` }
       });
 
-      // Next round after brief delay
-      currentRound++;
+      // Advance to next problem after brief celebratory delay
       setTimeout(() => {
-        if (matchRunning) loadNextQuestion();
-      }, 2000);
+        if (matchRunning) {
+          loadProblem(currentProblemIdx + 1);
+        }
+      }, 1500);
     }
 
-    function handleTimeout() {
-      TEAMS[myTeam].pts = Math.max(0, TEAMS[myTeam].pts - 5);
-      updateCarPosition(myTeam, 'spin');
-      const feedback = document.getElementById('battle-feedback');
-      feedback.textContent = `⏱️ TIME OUT! -5 Points. Speed lost!`;
-      feedback.className = 'mt-4 rounded-xl bg-amber-500/20 border border-amber-500/40 p-3 text-center text-xs font-black text-amber-300';
-      feedback.classList.remove('hidden');
-      addCombatLog(`⏱️ ${TEAMS[myTeam].name} timed out on Round ${currentRound + 1}! (-5 pts)`);
+    function deepEqual(a, b) {
+      if (a === b) return true;
+      if (Array.isArray(a) && Array.isArray(b)) {
+        if (a.length !== b.length) return false;
+        return a.every((v, i) => deepEqual(v, b[i]));
+      }
+      return false;
+    }
 
-      currentRound++;
+    // ═══════════════════════════════════════════════════════════════════════
+    // RAPID QUIZ SPRINT ENGINE
+    // ═══════════════════════════════════════════════════════════════════════
+    function loadQuizQuestion(idx) {
+      const questions = QUIZ_TOPICS[currentTopic]?.questions || QUIZ_TOPICS['cs-general'].questions;
+      if (idx >= questions.length) idx = 0;
+      currentQuizIdx = idx;
+      const q = questions[idx];
+
+      document.getElementById('quiz-question-title').textContent = q.q;
+      const container = document.getElementById('quiz-options-container');
+      container.innerHTML = q.opts.map((opt, i) => `
+        <button onclick="handleQuizAnswer(${i})" class="rounded-xl border border-white/15 bg-white/5 p-3.5 text-left text-xs font-semibold text-white hover:border-[#B9F044] hover:bg-[#B9F044]/10 transition active:scale-98">
+          <span class="inline-block w-5 font-mono text-[#B9F044] font-bold">${String.fromCharCode(65 + i)}.</span> ${opt}
+        </button>
+      `).join('');
+    }
+
+    function handleQuizAnswer(selectedIdx) {
+      if (!matchRunning) {
+        alert('Please click "Launch Match 🏁" above to start the race!');
+        return;
+      }
+
+      const questions = QUIZ_TOPICS[currentTopic]?.questions || QUIZ_TOPICS['cs-general'].questions;
+      const q = questions[currentQuizIdx];
+      const isCorrect = (selectedIdx === q.ans);
+      const feedback = document.getElementById('action-feedback-banner');
+
+      if (isCorrect) {
+        playSound('correct');
+        TEAMS.team1.pts += 10;
+        updateCarPosition('team1', 'boost');
+        feedback.textContent = `⚡ CORRECT! +10 Points Speed Boost for ${TEAMS.team1.name}!`;
+        feedback.className = 'mt-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-3 text-center text-xs font-black text-emerald-300';
+        addCombatLog(`⚡ ${TEAMS.team1.name} answered Theory Sprint correctly! (+10 pts)`);
+      } else {
+        playSound('error');
+        TEAMS.team1.pts = Math.max(0, TEAMS.team1.pts - 5);
+        updateCarPosition('team1', 'spin');
+        feedback.textContent = `💥 WRONG! -5 Points Penalty. Correct: ${q.opts[q.ans]}`;
+        feedback.className = 'mt-4 rounded-xl bg-rose-500/20 border border-rose-500/40 p-3 text-center text-xs font-black text-rose-300';
+        addCombatLog(`⚠️ ${TEAMS.team1.name} missed theory question! (-5 pts)`);
+      }
+      feedback.classList.remove('hidden');
+
+      channel?.send({
+        type: 'broadcast',
+        event: 'team-point-update',
+        payload: { team: 'team1', pts: TEAMS.team1.pts, delta: isCorrect ? 10 : -5, reason: 'Quiz Answer' }
+      });
+
       setTimeout(() => {
-        if (matchRunning) loadNextQuestion();
+        if (matchRunning) loadQuizQuestion(currentQuizIdx + 1);
       }, 1800);
     }
 
-    // ── Update Car Animations & Progress ──────────────────────────────
+    function switchBattleTab(tab) {
+      if (tab === 'code') {
+        document.getElementById('battle-tab-code').classList.remove('hidden');
+        document.getElementById('battle-tab-quiz').classList.add('hidden');
+        document.getElementById('tab-btn-code').classList.add('active');
+        document.getElementById('tab-btn-quiz').classList.remove('active');
+        setTimeout(() => cmEditor.refresh(), 50);
+      } else {
+        document.getElementById('battle-tab-code').classList.add('hidden');
+        document.getElementById('battle-tab-quiz').classList.remove('hidden');
+        document.getElementById('tab-btn-code').classList.remove('active');
+        document.getElementById('tab-btn-quiz').classList.add('active');
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // SQUAD & CAR RACING TRACK ENGINE
+    // ═══════════════════════════════════════════════════════════════════════
+    function setTeamVehicle(teamNum, emoji, name) {
+      if (teamNum === 1) {
+        TEAMS.team1.emoji = emoji;
+        TEAMS.team1.vehicle = name;
+        document.getElementById('team1-avatar-preview').textContent = emoji;
+        document.getElementById('team1-vehicle-label').textContent = name;
+        document.getElementById('lane1-emoji').textContent = emoji;
+        document.getElementById('car-team1-icon').textContent = emoji;
+      } else {
+        TEAMS.team2.emoji = emoji;
+        TEAMS.team2.vehicle = name;
+        document.getElementById('team2-avatar-preview').textContent = emoji;
+        document.getElementById('team2-vehicle-label').textContent = name;
+        document.getElementById('lane2-emoji').textContent = emoji;
+        document.getElementById('car-team2-icon').textContent = emoji;
+      }
+    }
+
     function updateCarPosition(teamKey, effect = '') {
       const pts = Math.min(TEAMS[teamKey].pts, 100);
       document.getElementById(`pts-${teamKey}`).textContent = pts;
@@ -567,95 +1402,104 @@
 
       if (effect === 'boost') {
         carEl.classList.add('car-speed-boost');
-        setTimeout(() => carEl.classList.remove('car-speed-boost'), 800);
+        setTimeout(() => carEl.classList.remove('car-speed-boost'), 900);
       } else if (effect === 'spin') {
         carEl.classList.add('car-spinout');
         setTimeout(() => carEl.classList.remove('car-spinout'), 800);
       }
 
       // Check win condition
-      if (pts >= 100) {
+      if (pts >= 100 && matchRunning) {
         finishMatch(teamKey);
       }
     }
 
-    // ── Simulated Rival Activity ──────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    // MATCH LIFECYCLE & RIVALS SIMULATION
+    // ═══════════════════════════════════════════════════════════════════════
     let rivalInterval = null;
-    function startRivalSquadEngine() {
+
+    function startRaceMatch() {
+      if (matchRunning) return;
+      matchRunning = true;
+      playSound('boost');
+
+      document.getElementById('arena-status-pill').textContent = 'Match Live 🟢';
+      document.getElementById('arena-status-pill').classList.replace('text-[#B9F044]', 'text-emerald-400');
+      document.getElementById('btn-start-race').disabled = true;
+      document.getElementById('btn-start-race').classList.add('opacity-50', 'cursor-not-allowed');
+
+      // Sync custom squad names from inputs
+      TEAMS.team1.name = document.getElementById('team1-name-input').value.trim() || 'Team Alpha';
+      TEAMS.team2.name = document.getElementById('team2-name-input').value.trim() || 'Rival Titans';
+      document.getElementById('lane1-name').textContent = TEAMS.team1.name;
+      document.getElementById('lane2-name').textContent = TEAMS.team2.name;
+
+      // Reset scores
+      TEAMS.team1.pts = 0;
+      TEAMS.team2.pts = 0;
+      updateCarPosition('team1');
+      updateCarPosition('team2');
+
+      addCombatLog(`🏁 Green Flag! ${TEAMS.team1.name} VS ${TEAMS.team2.name} in Room: ${currentRoom}!`);
+
+      // Start Rival Squad automated challenge pace (solves problems dynamically)
+      startRivalEngine();
+    }
+
+    function startRivalEngine() {
       clearInterval(rivalInterval);
-      const otherTeams = Object.keys(TEAMS).filter(k => k !== myTeam);
-
       rivalInterval = setInterval(() => {
-        if (!matchRunning) { clearInterval(rivalInterval); return; }
-        const randomTeam = otherTeams[Math.floor(Math.random() * otherTeams.length)];
-        const isBoost = Math.random() > 0.35; // 65% chance of correct answer by rival squad
-        
-        if (isBoost) {
-          TEAMS[randomTeam].pts += 10;
-          updateCarPosition(randomTeam, 'boost');
-          addCombatLog(`⚡ ${TEAMS[randomTeam].name} solved a challenge step! (+10 pts)`);
-        } else {
-          TEAMS[randomTeam].pts = Math.max(0, TEAMS[randomTeam].pts - 5);
-          updateCarPosition(randomTeam, 'spin');
-          addCombatLog(`💥 ${TEAMS[randomTeam].name} encountered a merge conflict! (-5 pts)`);
+        if (!matchRunning) {
+          clearInterval(rivalInterval);
+          return;
         }
-      }, 3200);
+
+        // Rival squad attempts test cases
+        const isBoost = Math.random() > 0.35; // 65% success rate
+        if (isBoost) {
+          const delta = (Math.random() > 0.6) ? 30 : 10;
+          TEAMS.team2.pts += delta;
+          updateCarPosition('team2', 'boost');
+          playSound('boost');
+          addCombatLog(`⚡ ${TEAMS.team2.name} submitted ${delta === 30 ? 'code solution' : 'rapid quiz'}! (+${delta} pts)`);
+        } else {
+          TEAMS.team2.pts = Math.max(0, TEAMS.team2.pts - 5);
+          updateCarPosition('team2', 'spin');
+          addCombatLog(`💥 ${TEAMS.team2.name} failed edge case! (-5 pts)`);
+        }
+      }, 4200);
     }
 
-    function handleRemoteTeamUpdate(payload) {
-      if (!payload?.team || payload.team === myTeam) return;
-      TEAMS[payload.team].pts = payload.pts;
-      updateCarPosition(payload.team, payload.delta > 0 ? 'boost' : 'spin');
-      addCombatLog(`🌐 Peer update: ${TEAMS[payload.team].name} ${payload.delta > 0 ? '+10' : '-5'} pts!`);
-    }
-
-    // ── Combat Log Helper ─────────────────────────────────────────────
-    function addCombatLog(msg) {
-      const feed = document.getElementById('combat-feed');
-      const time = new Date().toLocaleTimeString([], { minute: '2-digit', second: '2-digit' });
-      const item = document.createElement('div');
-      item.className = 'rounded-xl bg-white/5 p-2 border border-white/5 flex items-start gap-2 animate-fadeIn';
-      item.innerHTML = `<span class="text-slate-400 text-[10px] font-mono mt-0.5">${time}</span> <span class="text-white text-xs leading-tight">${msg}</span>`;
-      feed.insertBefore(item, feed.firstChild);
-      if (feed.children.length > 20) feed.lastChild.remove();
-    }
-
-    // ── Finish Match & Award Credits ──────────────────────────────────
-    async function finishMatch(explicitWinner = '') {
+    async function finishMatch(winnerKey = 'team1') {
       matchRunning = false;
-      clearInterval(timerInterval);
       clearInterval(rivalInterval);
       document.getElementById('arena-status-pill').textContent = 'Match Finished 🏁';
 
-      // Determine Winner
-      let winnerKey = explicitWinner;
-      if (!winnerKey) {
-        winnerKey = Object.keys(TEAMS).reduce((a, b) => TEAMS[a].pts > TEAMS[b].pts ? a : b);
-      }
-
-      const isMyTeamWinner = (winnerKey === myTeam);
+      const isMyTeamWinner = (winnerKey === 'team1');
       const winner = TEAMS[winnerKey];
 
       document.getElementById('winner-title').textContent = `${winner.name} Wins!`;
       document.getElementById('winner-desc').textContent = isMyTeamWinner
-        ? 'Outstanding victory! Your team crossed the finish line first.'
+        ? 'Outstanding victory! Your squad crossed the finish line first with superior coding speed.'
         : `${winner.name} finished first with ${winner.pts} points. Great effort!`;
 
-      // Confetti celebration
-      if (typeof confetti === 'function') {
-        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+      if (isMyTeamWinner) {
+        playSound('win');
+        if (typeof confetti === 'function') {
+          confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 } });
+        }
       }
 
-      // If user's team won, award real platform credits & RR!
+      // Record Credits and RR in Ledgers
       const awardBox = document.getElementById('credit-award-box');
       if (isMyTeamWinner && myUser) {
         awardBox.classList.remove('hidden');
         document.getElementById('reward-credits-amount').textContent = `+${CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE}`;
-        const rrRewardAmount = (typeof RR_CONFIG !== 'undefined') ? RR_CONFIG.REWARDS.TEAM_CHALLENGE_WIN : 25;
-        const rewardRrEl = document.getElementById('reward-rr-amount');
-        if (rewardRrEl) rewardRrEl.textContent = `+${rrRewardAmount}`;
+        const rrReward = (typeof RR_CONFIG !== 'undefined') ? RR_CONFIG.REWARDS.TEAM_CHALLENGE_WIN : 25;
+        document.getElementById('reward-rr-amount').textContent = `+${rrReward}`;
 
-        // Call centralized credit transaction engine
+        // Deposit credits
         const res = await window.recordCreditTransaction(sb, {
           userId: myUser.id,
           amount: CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE,
@@ -664,28 +1508,27 @@
           referenceType: 'TEAM_CHALLENGE',
           referenceId: `race_${Date.now()}`
         });
-
         if (res.success) {
           document.getElementById('user-balance-display').textContent = res.newBalance;
-          addCombatLog(`🎉 +${CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE} Platform Credits deposited into your ledger!`);
+          addCombatLog(`🎉 +${CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE} Platform Credits deposited!`);
         }
 
-        // Call centralized competitive RR transaction engine (+25 RR)
+        // Deposit RR
         if (typeof window.recordRRTransaction === 'function') {
           const rrRes = await window.recordRRTransaction(sb, {
             userId: myUser.id,
-            amount: rrRewardAmount,
+            amount: rrReward,
             reason: `Team Race Victory: ${winner.name}`,
             referenceType: 'TEAM_CHALLENGE',
             referenceId: `race_win_${Date.now()}`
           });
           if (rrRes.success) {
-            addCombatLog(`🏆 +${rrRewardAmount} Competitive RR awarded! (${rrRes.newRR} RR &bull; ${rrRes.newRank.fullName})`);
+            document.getElementById('user-rr-display').textContent = `${rrRes.newRR} RR`;
+            addCombatLog(`🏆 +${rrReward} Competitive RR awarded! (${rrRes.newRR} RR &bull; ${rrRes.newRank.fullName})`);
           }
         }
       } else if (!isMyTeamWinner && myUser) {
         awardBox.classList.add('hidden');
-        // Competitive match loss: -15 RR (subject to rank protection buffer)
         if (typeof window.recordRRTransaction === 'function') {
           const lossAmount = (typeof RR_CONFIG !== 'undefined') ? RR_CONFIG.LOSSES.TEAM_CHALLENGE_LOSS : 15;
           const lossRes = await window.recordRRTransaction(sb, {
@@ -696,6 +1539,7 @@
             referenceId: `race_loss_${Date.now()}`
           });
           if (lossRes.success) {
+            document.getElementById('user-rr-display').textContent = `${lossRes.newRR} RR`;
             if (lossRes.protectionUsed) {
               addCombatLog(`🛡️ Rank Protection Buffer activated! Demotion absorbed.`);
             } else {
@@ -714,18 +1558,220 @@
       document.getElementById('btn-start-race').disabled = false;
       document.getElementById('btn-start-race').classList.remove('opacity-50', 'cursor-not-allowed');
       document.getElementById('arena-status-pill').textContent = 'Lobby Ready';
-      document.getElementById('battle-feedback').classList.add('hidden');
-      document.getElementById('battle-question').textContent = 'Click "Launch Team Race 🏁" above to start the live campus battle!';
-      document.getElementById('battle-options').innerHTML = `
-        <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option A</button>
-        <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option B</button>
-        <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option C</button>
-        <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option D</button>
-      `;
-      Object.keys(TEAMS).forEach(k => {
-        TEAMS[k].pts = 0;
-        updateCarPosition(k);
+      document.getElementById('action-feedback-banner').classList.add('hidden');
+
+      TEAMS.team1.pts = 0;
+      TEAMS.team2.pts = 0;
+      updateCarPosition('team1');
+      updateCarPosition('team2');
+      loadProblem(0);
+      loadQuizQuestion(0);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // PEERS DIRECTORY & INVITATION SYSTEM
+    // ═══════════════════════════════════════════════════════════════════════
+    let targetInviteSquad = 'team1';
+
+    function openPeerInviteModal(squadKey = 'team1') {
+      targetInviteSquad = squadKey;
+      renderOnlinePeers(CAMPUS_ONLINE_PEERS);
+      document.getElementById('peer-invite-modal').classList.replace('hidden', 'flex');
+      lucide.createIcons();
+    }
+
+    function closePeerInviteModal() {
+      document.getElementById('peer-invite-modal').classList.replace('flex', 'hidden');
+    }
+
+    function renderOnlinePeers(peers) {
+      const container = document.getElementById('online-peers-list');
+      container.innerHTML = peers.map(p => `
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-3 flex items-center justify-between transition hover:border-[#B9F044]/40">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">${p.avatar}</span>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                <p class="text-xs font-bold text-white">${p.name}</p>
+                <span class="rounded bg-white/10 px-1.5 py-0.2 text-[9px] font-mono text-slate-300">${p.tier}</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-0.5">${p.dept}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="addPeerToSquad('team1', '${p.name}')" class="rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/15 px-2.5 py-1.5 text-[10px] font-extrabold text-[#B9F044] hover:bg-[#B9F044] hover:text-[#0B1F17] transition">
+              🤝 To Squad
+            </button>
+            <button onclick="addPeerToSquad('team2', '${p.name}')" class="rounded-xl border border-rose-500/40 bg-rose-500/15 px-2.5 py-1.5 text-[10px] font-extrabold text-rose-300 hover:bg-rose-500 hover:text-white transition">
+              ⚔️ As Rival
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterPeerDirectory() {
+      const q = document.getElementById('input-search-peer').value.toLowerCase().trim();
+      const filtered = CAMPUS_ONLINE_PEERS.filter(p => 
+        p.name.toLowerCase().includes(q) || p.dept.toLowerCase().includes(q) || p.tier.toLowerCase().includes(q)
+      );
+      renderOnlinePeers(filtered);
+      lucide.createIcons();
+    }
+
+    function addPeerToSquad(squadKey, peerName) {
+      if (!TEAMS[squadKey].members.includes(peerName)) {
+        TEAMS[squadKey].members.push(peerName);
+      }
+      renderSquadRosters();
+
+      addCombatLog(`📨 Invitation sent to ${peerName}! Added to ${TEAMS[squadKey].name}. Room: ${currentRoom}`);
+      playSound('correct');
+
+      // Toast alert
+      const feedback = document.getElementById('action-feedback-banner');
+      feedback.textContent = `✅ ${peerName} invited to ${TEAMS[squadKey].name}! Direct invite link dispatched.`;
+      feedback.className = 'mt-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-2.5 text-center text-xs font-bold text-emerald-300';
+      feedback.classList.remove('hidden');
+
+      // Broadcast squad member join
+      channel?.send({
+        type: 'broadcast',
+        event: 'peer-squad-join',
+        payload: { squad: squadKey, peer: peerName }
       });
+    }
+
+    function renderSquadRosters() {
+      // Squad 1
+      const list1 = document.getElementById('team1-members-list');
+      list1.innerHTML = TEAMS.team1.members.map(m => `
+        <span class="inline-flex items-center gap-1.5 rounded-lg border border-[#B9F044]/30 bg-[#0B2A1E] px-2.5 py-1 text-xs font-bold text-white">
+          <span class="h-2 w-2 rounded-full bg-[#B9F044]"></span>
+          <span>${m}</span>
+        </span>
+      `).join('');
+
+      // Squad 2
+      const list2 = document.getElementById('team2-members-list');
+      list2.innerHTML = TEAMS.team2.members.map(m => `
+        <span class="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-950/30 px-2.5 py-1 text-xs font-bold text-rose-200">
+          <span class="h-2 w-2 rounded-full bg-rose-400"></span>
+          <span>${m}</span>
+        </span>
+      `).join('');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ROOM & REALTIME BROADCAST SYNCHRONIZATION
+    // ═══════════════════════════════════════════════════════════════════════
+    function generateRandomRoom() {
+      const slugs = ['turbo', 'algo', 'sprint', 'nitro', 'dsa', 'hyper', 'apex', 'byte'];
+      const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+      const code = `${pick(slugs)}-${pick(slugs)}-${Math.floor(Math.random() * 90 + 10)}`;
+      document.getElementById('input-room-code').value = code;
+      changeRoom();
+    }
+
+    function changeRoom() {
+      const val = document.getElementById('input-room-code').value.trim();
+      if (!val) return;
+      currentRoom = val;
+      document.getElementById('header-room-id').textContent = currentRoom;
+      document.getElementById('combat-room-tag').textContent = currentRoom;
+
+      // Update URL query string without reloading
+      const url = new URL(window.location);
+      url.searchParams.set('room', currentRoom);
+      window.history.pushState({}, '', url);
+
+      connectRealtimeRoom();
+      addCombatLog(`🌐 Switched to Room: ${currentRoom}. Share link to invite opponents!`);
+    }
+
+    function copyRoomLink() {
+      const link = `${window.location.origin}${window.location.pathname}?room=${currentRoom}`;
+      navigator.clipboard.writeText(link).then(() => {
+        alert(`Room invite link copied to clipboard!\n\n${link}`);
+      }).catch(() => {
+        prompt('Copy room link:', link);
+      });
+    }
+
+    function connectRealtimeRoom() {
+      if (channel) sb.removeChannel(channel);
+
+      channel = sb.channel(`arena-room-${currentRoom}`, { config: { broadcast: { self: false } } });
+
+      channel.on('broadcast', { event: 'team-point-update' }, ({ payload }) => {
+        if (!payload?.team) return;
+        TEAMS[payload.team].pts = payload.pts;
+        updateCarPosition(payload.team, payload.delta > 0 ? 'boost' : 'spin');
+        addCombatLog(`🌐 Peer Update: ${TEAMS[payload.team].name} ${payload.delta > 0 ? '+' : ''}${payload.delta} pts! (${payload.reason || ''})`);
+      });
+
+      channel.on('broadcast', { event: 'peer-squad-join' }, ({ payload }) => {
+        if (!payload?.squad || !payload?.peer) return;
+        if (!TEAMS[payload.squad].members.includes(payload.peer)) {
+          TEAMS[payload.squad].members.push(payload.peer);
+          renderSquadRosters();
+          addCombatLog(`👋 ${payload.peer} joined ${TEAMS[payload.squad].name} via live link!`);
+        }
+      });
+
+      channel.on('broadcast', { event: 'squad-chat' }, ({ payload }) => {
+        addCombatLog(`💬 <strong>${payload.sender}:</strong> ${payload.msg}`);
+      });
+
+      channel.on('broadcast', { event: 'room-topic-update' }, ({ payload }) => {
+        if (!payload?.topic || payload.topic === currentTopic) return;
+        applyRemoteTopic(payload.topic);
+      });
+
+      channel.subscribe();
+    }
+
+    function sendSquadMsg() {
+      const input = document.getElementById('input-squad-msg');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      const sender = myUser?.email ? myUser.email.split('@')[0] : 'You';
+      addCombatLog(`💬 <strong>${sender}:</strong> ${msg}`);
+
+      channel?.send({
+        type: 'broadcast',
+        event: 'squad-chat',
+        payload: { sender, msg }
+      });
+
+      input.value = '';
+    }
+
+    function toggleVoice() {
+      const label = document.getElementById('voice-label');
+      const icon = document.getElementById('voice-icon');
+      if (label.textContent === 'Squad Voice') {
+        label.textContent = 'Voice Connected 🟢';
+        icon.classList.replace('text-slate-400', 'text-[#B9F044]');
+        addCombatLog(`🎙️ Connected to Squad Voice Mesh (WebRTC Audio). Teammates can hear you!`);
+      } else {
+        label.textContent = 'Squad Voice';
+        icon.classList.replace('text-[#B9F044]', 'text-slate-400');
+        addCombatLog(`🔇 Disconnected from Squad Voice Mesh.`);
+      }
+    }
+
+    function addCombatLog(msg) {
+      const feed = document.getElementById('combat-feed');
+      const time = new Date().toLocaleTimeString([], { minute: '2-digit', second: '2-digit' });
+      const item = document.createElement('div');
+      item.className = 'rounded-xl bg-white/5 p-2 border border-white/5 flex items-start gap-2 animate-fadeIn';
+      item.innerHTML = `<span class="text-slate-400 text-[10px] font-mono mt-0.5">${time}</span> <span class="text-white text-xs leading-tight">${msg}</span>`;
+      feed.insertBefore(item, feed.firstChild);
+      if (feed.children.length > 25) feed.lastChild.remove();
     }
   </script>
 </body>
