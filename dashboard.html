@@ -28,7 +28,8 @@
     }
 
     .ghost-mode #sidebar-avatar,
-    .ghost-mode #topbar-avatar {
+    .ghost-mode #topbar-avatar,
+    .ghost-mode #profile-avatar {
       display: none;
     }
 
@@ -400,7 +401,8 @@
         <a href="room.html" class="sidebar-link"><i data-lucide="monitor" class="lucide"></i> Live Room</a>
         <div class="mt-3 border-t border-slate-100 pt-3">
           <a href="#" class="sidebar-link"><i data-lucide="settings" class="lucide"></i> Settings</a>
-          <a href="index.html" class="sidebar-link"><i data-lucide="log-out" class="lucide"></i> Back to Home</a>
+          <a href="index.html" class="sidebar-link"><i data-lucide="home" class="lucide"></i> Back to Home</a>
+          <a href="#" onclick="logout()" class="sidebar-link text-red-500 hover:bg-red-50 hover:text-red-600"><i data-lucide="log-out" class="lucide"></i> Logout</a>
         </div>
       </nav>
     </aside>
@@ -419,9 +421,9 @@
             </span>
             <span class="text-base font-extrabold">GyanSetu</span>
           </a>
-          <div>
-            <h1 class="text-base font-extrabold">Your learning dashboard ✨</h1>
-            <p class="text-[11px] text-slate-500">One session at a time, you’re growing.</p>
+          <div class="hidden lg:block">
+            <h1 class="text-base font-extrabold" id="topbar-greeting">Welcome to GyanSetu 👋</h1>
+            <p class="text-[11px] text-slate-500" id="topbar-subtext">What would you like to learn today?</p>
           </div>
         </div>
 
@@ -435,6 +437,61 @@
             class="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-[#F4FBEA] transition">
             <i data-lucide="bell" class="h-4 w-4"></i>
           </button>
+          <!-- Avatar + Profile Dropdown -->
+          <div class="relative">
+            <div id="profile-avatar" onclick="toggleProfileDropdown()"
+              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl avatar-ph text-xs font-extrabold select-none">
+              <i data-lucide="user" class="h-4 w-4"></i>
+            </div>
+
+            <!-- Dropdown -->
+            <div id="profile-dropdown" class="hidden absolute right-0 top-11 z-50 w-64 rounded-2xl border border-slate-100 bg-white shadow-2xl overflow-hidden">
+              <!-- User info header -->
+              <div class="bg-gradient-to-br from-[#0B1F17] to-[#14532D] px-4 py-4">
+                <div class="flex items-center gap-3">
+                  <div id="dropdown-avatar" class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#B9F044] text-[#0B1F17] text-sm font-extrabold">?</div>
+                  <div class="min-w-0">
+                    <p id="dropdown-name" class="text-sm font-extrabold text-white truncate">Loading…</p>
+                    <p id="dropdown-email" class="text-[11px] text-emerald-200/70 truncate">—</p>
+                    <span id="dropdown-role-badge" class="mt-1 inline-block rounded-full bg-[#B9F044]/20 px-2 py-0.5 text-[10px] font-bold text-[#B9F044]">Learner</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stats row -->
+              <div class="grid grid-cols-3 divide-x divide-slate-100 border-b border-slate-100">
+                <div class="py-3 text-center">
+                  <p id="dropdown-credits" class="text-base font-extrabold text-[#0B1F17]">0</p>
+                  <p class="text-[10px] text-slate-400">Credits</p>
+                </div>
+                <div class="py-3 text-center">
+                  <p id="dropdown-sessions" class="text-base font-extrabold text-[#0B1F17]">0</p>
+                  <p class="text-[10px] text-slate-400">Sessions</p>
+                </div>
+                <div class="py-3 text-center">
+                  <p id="dropdown-streak" class="text-base font-extrabold text-[#0B1F17]">0</p>
+                  <p class="text-[10px] text-slate-400">Day Streak</p>
+                </div>
+              </div>
+
+              <!-- Menu items -->
+              <div class="py-1.5">
+                <a href="#overview" onclick="closeProfileDropdown()" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-[#F4FBEA] hover:text-[#2F6F11] transition">
+                  <i data-lucide="layout-dashboard" class="h-3.5 w-3.5"></i> Dashboard Overview
+                </a>
+                <a href="#sessions" onclick="closeProfileDropdown()" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-[#F4FBEA] hover:text-[#2F6F11] transition">
+                  <i data-lucide="calendar" class="h-3.5 w-3.5"></i> My Sessions
+                </a>
+                <a href="#ledger" onclick="closeProfileDropdown()" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-[#F4FBEA] hover:text-[#2F6F11] transition">
+                  <i data-lucide="coins" class="h-3.5 w-3.5"></i> Credit Ledger
+                </a>
+                <div class="my-1 border-t border-slate-100"></div>
+                <button onclick="logout()" class="flex w-full items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-red-500 hover:bg-red-50 transition">
+                  <i data-lucide="log-out" class="h-3.5 w-3.5"></i> Logout
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -759,29 +816,87 @@
 
         <!-- ===== CREDIT LEDGER ===== -->
         <section id="ledger" class="mb-8">
-          <div class="mb-4 flex items-center justify-between">
-            <p class="section-title mb-0">Credit Ledger</p>
-            <span class="badge badge-dark"><i data-lucide="coins" class="h-3 w-3"></i> Balance: <span
-                id="ledger-balance">0</span> credits</span>
-          </div>
-          <div class="rounded-2xl border border-slate-100 bg-white shadow-card">
-            <!-- Header row -->
-            <div class="ledger-row px-5 border-b border-slate-100">
-              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Description</p>
-              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Date</p>
-              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Amount</p>
+          <p class="section-title">Credit Ledger</p>
+
+          <!-- Balance + Stats Card -->
+          <div class="mb-5 overflow-hidden rounded-2xl bg-gradient-to-br from-[#0B1F17] via-[#0B2A1E] to-[#14532D] p-6 shadow-card">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p class="text-[11px] font-extrabold uppercase tracking-widest text-[#B9F044]/60 mb-1">Current Balance</p>
+                <p class="text-4xl font-extrabold text-white tracking-tight"><span id="ledger-balance">0</span> <span class="text-[#B9F044]">Credits</span></p>
+                <p id="ledger-level-label" class="mt-2 text-xs font-bold text-emerald-200/70">Level 1 — Learner</p>
+              </div>
+              <div class="flex flex-col items-end gap-2">
+                <div class="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5">
+                  <i data-lucide="trending-up" class="h-3.5 w-3.5 text-[#B9F044]"></i>
+                  <span class="text-[11px] font-bold text-white">+<span id="ledger-week-earned">0</span> this week</span>
+                </div>
+                <a href="#ledger" class="rounded-xl border border-white/20 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-white/10 transition">View History ↓</a>
+              </div>
             </div>
+
+            <!-- XP Progress bar -->
+            <div class="mt-5">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-bold text-emerald-200/70"><span id="ledger-xp">0</span> XP</span>
+                <span class="text-[11px] font-bold text-emerald-200/70">Next level: <span id="ledger-xp-next">500</span> XP</span>
+              </div>
+              <div class="h-1.5 w-full rounded-full bg-white/10">
+                <div id="ledger-xp-bar" class="h-1.5 rounded-full bg-gradient-to-r from-[#B9F044] to-[#8FD420] transition-all duration-700" style="width:0%"></div>
+              </div>
+            </div>
+
+            <!-- Stats row -->
+            <div class="mt-5 grid grid-cols-3 gap-3">
+              <div class="rounded-xl bg-white/8 px-3 py-2.5 text-center">
+                <p class="text-base font-extrabold text-white"><span id="ledger-total-earned">0</span></p>
+                <p class="text-[10px] text-emerald-200/60 mt-0.5">Total Earned</p>
+              </div>
+              <div class="rounded-xl bg-white/8 px-3 py-2.5 text-center">
+                <p class="text-base font-extrabold text-white"><span id="ledger-total-spent">0</span></p>
+                <p class="text-[10px] text-emerald-200/60 mt-0.5">Total Spent</p>
+              </div>
+              <div class="rounded-xl bg-white/8 px-3 py-2.5 text-center">
+                <p class="text-base font-extrabold text-white"><span id="ledger-pending">0</span></p>
+                <p class="text-[10px] text-emerald-200/60 mt-0.5">Pending</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badges -->
+          <div id="badges-section" class="mb-5 rounded-2xl border border-slate-100 bg-white p-4 shadow-card">
+            <p class="text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11] mb-3">Achievements</p>
+            <div id="badges-container" class="flex flex-wrap gap-2">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-400">
+                <i data-lucide="lock" class="h-3 w-3"></i> Complete actions to earn badges
+              </span>
+            </div>
+          </div>
+
+          <!-- Transaction History -->
+          <div class="rounded-2xl border border-slate-100 bg-white shadow-card overflow-hidden">
+            <!-- Filter bar -->
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-5 py-3">
+              <p class="text-[11px] font-extrabold uppercase tracking-widest text-slate-500">Transaction History</p>
+              <div class="flex gap-1" id="ledger-filters">
+                <button class="tab-btn active text-[11px] py-1 px-2.5" onclick="filterLedger('all',this)">All</button>
+                <button class="tab-btn text-[11px] py-1 px-2.5" onclick="filterLedger('EARN',this)">Earned</button>
+                <button class="tab-btn text-[11px] py-1 px-2.5" onclick="filterLedger('SPEND',this)">Spent</button>
+                <button class="tab-btn text-[11px] py-1 px-2.5" onclick="filterLedger('PENDING',this)">Pending</button>
+              </div>
+            </div>
+
             <!-- Empty state -->
             <div id="ledger-empty" class="px-5">
               <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="receipt" class="h-6 w-6"></i></div>
                 <p class="text-sm font-extrabold text-[#0B1F17]">No transactions yet</p>
-                <p class="text-xs text-slate-500 max-w-xs">Your credit history will appear here after your first
-                  session. New users get a free 20-credit welcome bonus on signup.</p>
+                <p class="text-xs text-slate-500 max-w-xs">Your credit history will appear here. New users get +100 Welcome Bonus on signup.</p>
               </div>
             </div>
-            <!-- Transaction rows injected by JS -->
-            <div id="ledger-rows" class="px-5 hidden"></div>
+
+            <!-- Transaction rows -->
+            <div id="ledger-rows" class="divide-y divide-slate-50 hidden"></div>
           </div>
         </section>
 
@@ -884,9 +999,325 @@
     </div>
   </div>
 
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     lucide.createIcons();
+
+    // ── Supabase client ───────────────────────────────────────────────
+    const SUPABASE_URL  = 'https://bpfjlpjwspzlcsowespc.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
+    const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // ── Greeting helper ───────────────────────────────────────────────
+    function getGreeting() {
+      const h = new Date().getHours();
+      if (h < 12) return 'Good morning';
+      if (h < 17) return 'Good afternoon';
+      return 'Good evening';
+    }
+
+    // ── Avatar initials ───────────────────────────────────────────────
+    function initials(name) {
+      if (!name) return '?';
+      return name.trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    }
+
+    // ── Level config ──────────────────────────────────────────────────
+    const LEVELS = [
+      { level: 1, name: 'Learner',          minXp: 0,    maxXp: 499  },
+      { level: 2, name: 'Contributor',      minXp: 500,  maxXp: 1499 },
+      { level: 3, name: 'Mentor',           minXp: 1500, maxXp: 2999 },
+      { level: 4, name: 'Knowledge Builder',minXp: 3000, maxXp: 5999 },
+      { level: 5, name: 'GyanSetu Pro',     minXp: 6000, maxXp: 99999}
+    ];
+    function getLevelInfo(xp) {
+      xp = xp || 0;
+      const l = LEVELS.slice().reverse().find(l => xp >= l.minXp) || LEVELS[0];
+      const next = LEVELS.find(n => n.level === l.level + 1);
+      const pct  = next ? Math.min(((xp - l.minXp) / (next.minXp - l.minXp)) * 100, 100) : 100;
+      return { ...l, nextXp: next ? next.minXp : l.maxXp, pct };
+    }
+
+    // ── Badge definitions ─────────────────────────────────────────────
+    const BADGE_DEFS = [
+      { key: 'first_session',   icon: '🎓', label: 'First Session',      color: 'bg-blue-50 text-blue-700'   },
+      { key: 'first_teaching',  icon: '👑', label: 'First Teaching',     color: 'bg-purple-50 text-purple-700'},
+      { key: 'note_maker',      icon: '📚', label: 'Note Maker',         color: 'bg-amber-50 text-amber-700' },
+      { key: 'helpful_mentor',  icon: '🤝', label: 'Helpful Mentor',     color: 'bg-green-50 text-green-700' },
+      { key: 'streak_7',        icon: '🔥', label: '7-Day Streak',       color: 'bg-orange-50 text-orange-700'},
+      { key: 'welcome',         icon: '🎉', label: 'Early Adopter',      color: 'bg-lime-50 text-[#2F6F11]'  },
+      { key: 'fast_solver',     icon: '⚡', label: 'Fast Solver',        color: 'bg-yellow-50 text-yellow-700'},
+      { key: 'verified_mentor', icon: '✅', label: 'Verified Mentor',    color: 'bg-teal-50 text-teal-700'   },
+    ];
+
+    // ── All ledger data (for filter) ─────────────────────────────────
+    let _allLedger = [];
+
+    // ── Notification toast ────────────────────────────────────────────
+    function showToast(msg, type = 'success') {
+      const t = document.createElement('div');
+      const colors = type === 'success'
+        ? 'bg-[#0B1F17] text-[#B9F044]'
+        : type === 'error'
+        ? 'bg-red-600 text-white'
+        : 'bg-slate-800 text-white';
+      t.className = `fixed bottom-6 right-6 z-[100] flex items-center gap-2.5 rounded-2xl ${colors} px-5 py-3 text-sm font-bold shadow-2xl transition-all`;
+      t.style.cssText += 'animation: slideUp .3s ease';
+      t.innerHTML = msg;
+      document.body.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(8px)'; setTimeout(() => t.remove(), 300); }, 3500);
+    }
+
+    // ── Render user info ──────────────────────────────────────────────
+    function renderUser(profile, email) {
+      const name    = profile?.full_name || email?.split('@')[0] || 'User';
+      const dept    = profile?.department || 'GyanSetu Member';
+      const credits = profile?.credits ?? 0;
+      const role    = profile?.role || 'learner';
+      const xp      = profile?.xp ?? 0;
+      const ini     = initials(name);
+      const lvl     = getLevelInfo(xp);
+
+      // Topbar greeting
+      document.getElementById('topbar-greeting').textContent = `${getGreeting()}, ${name.split(' ')[0]} 👋`;
+      document.getElementById('topbar-subtext').textContent =
+        role === 'mentor' ? 'Ready to teach someone today?' : 'What would you like to learn today?';
+
+      // Sidebar
+      document.getElementById('sidebar-name').textContent = name;
+      document.getElementById('sidebar-name').classList.remove('text-slate-400');
+      document.getElementById('sidebar-dept').textContent = dept;
+      document.getElementById('sidebar-credits').textContent = credits;
+      document.getElementById('stat-credits').textContent = credits;
+      document.getElementById('bar-credits').style.width = Math.min((credits / 200) * 100, 100) + '%';
+
+      // Ledger balance + stats
+      document.getElementById('ledger-balance').textContent     = credits;
+      document.getElementById('ledger-total-earned').textContent = profile?.total_earned ?? 0;
+      document.getElementById('ledger-total-spent').textContent  = profile?.total_spent  ?? 0;
+      document.getElementById('ledger-pending').textContent      = profile?.pending_credits ?? 0;
+      document.getElementById('ledger-xp').textContent          = xp;
+      document.getElementById('ledger-xp-next').textContent     = lvl.nextXp;
+      document.getElementById('ledger-level-label').textContent = `Level ${lvl.level} — ${lvl.name}`;
+      setTimeout(() => { document.getElementById('ledger-xp-bar').style.width = lvl.pct + '%'; }, 300);
+
+      // Sidebar avatar
+      const sideAvatar = document.getElementById('sidebar-avatar');
+      sideAvatar.textContent = ini;
+      sideAvatar.classList.remove('avatar-ph');
+      sideAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
+      sideAvatar.style.color = '#0B1F17';
+
+      // Topbar avatar
+      const topAvatar = document.getElementById('topbar-avatar');
+      topAvatar.innerHTML = '';
+      topAvatar.textContent = ini;
+      topAvatar.classList.remove('avatar-ph');
+      topAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
+      topAvatar.style.color = '#0B1F17';
+
+      const profileAvatar = document.getElementById('profile-avatar');
+      profileAvatar.innerHTML = '';
+      profileAvatar.textContent = ini;
+      profileAvatar.classList.remove('avatar-ph');
+      profileAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
+      profileAvatar.style.color = '#0B1F17';
+
+      // Dropdown fields
+      document.getElementById('dropdown-avatar').textContent      = ini;
+      document.getElementById('dropdown-name').textContent        = name;
+      document.getElementById('dropdown-email').textContent       = email || '—';
+      document.getElementById('dropdown-role-badge').textContent  = role.charAt(0).toUpperCase() + role.slice(1);
+      document.getElementById('dropdown-credits').textContent     = credits;
+      document.getElementById('dropdown-streak').textContent      = profile?.streak ?? 0;
+
+      // Badges
+      renderBadges(profile?.badges || []);
+    }
+
+    // ── Render badges ─────────────────────────────────────────────────
+    function renderBadges(earnedKeys) {
+      const container = document.getElementById('badges-container');
+      const earned = BADGE_DEFS.filter(b => earnedKeys.includes(b.key));
+      if (earned.length === 0) return;
+      container.innerHTML = earned.map(b =>
+        `<span class="inline-flex items-center gap-1.5 rounded-full ${b.color} border border-current/20 px-3 py-1.5 text-[11px] font-bold">
+          ${b.icon} ${b.label}
+        </span>`).join('');
+    }
+
+    // ── Render sessions ───────────────────────────────────────────────
+    function renderSessions(sessions) {
+      if (!sessions || sessions.length === 0) return;
+      const upcomingEl = document.getElementById('sessions-upcoming');
+      const pastEl     = document.getElementById('sessions-past');
+      const upcoming   = sessions.filter(s => s.status === 'active' || s.status === 'pending');
+      const past       = sessions.filter(s => s.status === 'complete' || s.status === 'completed');
+
+      if (upcoming.length > 0) {
+        upcomingEl.innerHTML = upcoming.map(s => `
+          <div class="flex items-center gap-3 border-b border-slate-100 px-5 py-4 last:border-0">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#B9F044]/15 text-[#2F6F11]">
+              <i data-lucide="zap" class="h-4 w-4"></i>
+            </span>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-extrabold truncate">${s.topic || 'Session'}</p>
+              <p class="text-xs text-slate-500">with ${s.mentor_name || s.learner_name || 'Peer'} &bull; ${s.credits_offered || 0} credits</p>
+            </div>
+            <span class="badge badge-lime">${s.status}</span>
+          </div>`).join('');
+        lucide.createIcons();
+      }
+
+      if (past.length > 0) {
+        pastEl.innerHTML = past.map(s => `
+          <div class="flex items-center gap-3 border-b border-slate-100 px-5 py-4 last:border-0">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+              <i data-lucide="check-circle-2" class="h-4 w-4"></i>
+            </span>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-extrabold truncate">${s.topic || 'Session'}</p>
+              <p class="text-xs text-slate-500">with ${s.mentor_name || s.learner_name || 'Peer'} &bull; ${new Date(s.created_at).toLocaleDateString('en-IN')}</p>
+            </div>
+            <span class="badge badge-mist">+${s.credits_offered || 0}</span>
+          </div>`).join('');
+        const sessCount = past.length;
+        document.getElementById('stat-sessions').textContent        = sessCount;
+        document.getElementById('bar-sessions').style.width         = Math.min(sessCount * 10, 100) + '%';
+        document.getElementById('dropdown-sessions').textContent    = sessCount;
+        lucide.createIcons();
+      }
+    }
+
+    // ── Render credit ledger ──────────────────────────────────────────
+    function renderLedger(logs) {
+      _allLedger = logs || [];
+      renderLedgerRows(_allLedger);
+    }
+
+    function renderLedgerRows(logs) {
+      if (!logs || logs.length === 0) {
+        document.getElementById('ledger-empty').classList.remove('hidden');
+        document.getElementById('ledger-rows').classList.add('hidden');
+        return;
+      }
+      document.getElementById('ledger-empty').classList.add('hidden');
+      const container = document.getElementById('ledger-rows');
+      container.classList.remove('hidden');
+
+      // Calculate week earned
+      const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const weekEarned = logs
+        .filter(l => l.amount > 0 && new Date(l.created_at).getTime() > oneWeekAgo)
+        .reduce((sum, l) => sum + l.amount, 0);
+      document.getElementById('ledger-week-earned').textContent = weekEarned;
+
+      container.innerHTML = logs.map(l => {
+        const isEarn    = l.amount > 0;
+        const isPending = l.status === 'PENDING';
+        const typeIcon  = isEarn ? '🟢' : '🔴';
+        const amtClass  = isPending ? 'text-amber-500' : isEarn ? 'text-green-600' : 'text-red-500';
+        const amtPrefix = isEarn ? '+' : '';
+        const statusBadge = isPending
+          ? '<span class="ml-1.5 inline-block rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-600">PENDING</span>'
+          : '';
+        const date = new Date(l.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+        return `
+          <div class="flex items-center gap-3 px-5 py-3.5 hover:bg-slate-50 transition">
+            <span class="text-base shrink-0">${typeIcon}</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-bold text-slate-700 truncate">${l.reason || 'Transaction'}${statusBadge}</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">${date} &bull; ${l.reference_type || l.type || ''}</p>
+            </div>
+            <p class="text-sm font-extrabold shrink-0 ${amtClass}">${amtPrefix}${l.amount}</p>
+          </div>`;
+      }).join('');
+    }
+
+    // ── Filter ledger ─────────────────────────────────────────────────
+    function filterLedger(filter, btn) {
+      btn.closest('#ledger-filters').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (filter === 'all') {
+        renderLedgerRows(_allLedger);
+      } else if (filter === 'PENDING') {
+        renderLedgerRows(_allLedger.filter(l => l.status === 'PENDING'));
+      } else if (filter === 'EARN') {
+        renderLedgerRows(_allLedger.filter(l => l.amount > 0 && l.status !== 'PENDING'));
+      } else if (filter === 'SPEND') {
+        renderLedgerRows(_allLedger.filter(l => l.amount < 0));
+      }
+    }
+
+    // ── Main load function ────────────────────────────────────────────
+    async function loadDashboard() {
+      const { data: { session } } = await sbClient.auth.getSession();
+      if (!session) { window.location.href = 'login.html'; return; }
+
+      const userId = session.user.id;
+      const email  = session.user.email;
+
+      // Fetch profile
+      const { data: profile } = await sbClient
+        .from('profiles').select('*').eq('id', userId).single();
+      renderUser(profile, email);
+
+      // Check if welcome bonus was just received (first load)
+      if (profile && !profile.welcome_bonus_given) {
+        const { data: bonus } = await sbClient.rpc('give_welcome_bonus', { p_user_id: userId });
+        if (bonus?.success) {
+          showToast('🎉 +100 Welcome Bonus! Welcome to GyanSetu!');
+          // Refresh profile to show updated balance
+          const { data: updated } = await sbClient.from('profiles').select('*').eq('id', userId).single();
+          renderUser(updated, email);
+        }
+      }
+
+      // Fetch sessions
+      const { data: sessions } = await sbClient
+        .from('sessions').select('*')
+        .or(`learner_id.eq.${userId},mentor_id.eq.${userId}`)
+        .order('created_at', { ascending: false }).limit(20);
+      renderSessions(sessions);
+
+      // Fetch credit ledger (from new credit_ledger table)
+      const { data: ledger } = await sbClient
+        .from('credit_ledger').select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false }).limit(50);
+      renderLedger(ledger);
+
+      // Remove skeletons
+      setTimeout(() => {
+        ['skeleton-1','skeleton-2','skeleton-3'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.remove();
+        });
+      }, 800);
+    }
+
+    // ── Profile dropdown toggle ───────────────────────────────────────
+    function toggleProfileDropdown() {
+      const dd = document.getElementById('profile-dropdown');
+      dd.classList.toggle('hidden');
+      lucide.createIcons();
+    }
+    function closeProfileDropdown() {
+      document.getElementById('profile-dropdown').classList.add('hidden');
+    }
+    document.addEventListener('click', e => {
+      const avatar = document.getElementById('topbar-avatar');
+      const dd     = document.getElementById('profile-dropdown');
+      if (dd && !avatar.contains(e.target) && !dd.contains(e.target)) dd.classList.add('hidden');
+    });
+
+    // ── Logout ────────────────────────────────────────────────────────
+    async function logout() {
+      await sbClient.auth.signOut();
+      window.location.href = 'login.html';
+    }
 
     /* ── Sidebar active nav ── */
     document.querySelectorAll('.sidebar-link').forEach(link => {
@@ -914,7 +1345,6 @@
 
     /* ── Booking modal ── */
     function bookMentor() {
-      // Generate time slots for next 3 hours
       const grid = document.getElementById('slot-grid');
       grid.innerHTML = '';
       const now = new Date();
@@ -948,12 +1378,12 @@
       closeModal();
       const toast = document.createElement('div');
       toast.className = 'fixed bottom-6 right-6 z-50 rounded-2xl bg-[#0B1F17] px-5 py-3 text-sm font-bold text-[#B9F044] shadow-2xl';
-      toast.textContent = '&#10003; Session booked! Joining room\u2026';
+      toast.textContent = '✓ Session booked! Joining room…';
       document.body.appendChild(toast);
       setTimeout(() => { toast.remove(); window.location.href = 'room.html'; }, 2000);
     }
 
-    /* ── Animate progress bars on load ── */
+    /* ── Animate progress bars ── */
     window.addEventListener('load', () => {
       document.querySelectorAll('.progress-bar-fill').forEach(el => {
         const target = el.style.width;
@@ -962,29 +1392,6 @@
       });
     });
 
-    /*
-     * ── DATA LAYER (stub) ──────────────────────────────────────────
-     * Replace the block below with real API/Supabase calls.
-     * All UI elements above read from these functions — no data
-     * is hardcoded in the HTML anymore.
-     * ─────────────────────────────────────────────────────────────── */
-    async function loadDashboard() {
-      /* Example: fetch from Supabase or your backend here.
-         For now we show the empty/skeleton state permanently
-         until a real integration is wired up. */
-
-      // Remove skeletons after a short delay to show "no results" state
-      setTimeout(() => {
-        ['skeleton-1', 'skeleton-2', 'skeleton-3'].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.remove();
-        });
-        // If no real mentors loaded, we leave the become-a-mentor CTA alone.
-        // To inject mentor cards, call renderMentorCard(data) for each result.
-      }, 1200);
-    }
-
-    /* Call on page load */
     loadDashboard();
   </script>
   <script>

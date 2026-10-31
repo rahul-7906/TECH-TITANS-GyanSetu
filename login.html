@@ -280,53 +280,177 @@
     </div>
   </div>
 
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     lucide.createIcons();
 
-    // Tab switching
+    // ── Supabase client ──────────────────────────────────────────────
+    const SUPABASE_URL  = 'https://bpfjlpjwspzlcsowespc.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
+    const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // ── Agar user pehle se logged in hai toh dashboard pe bhejo ─────
+    sbClient.auth.getSession().then(({ data: { session } }) => {
+      if (session) window.location.href = 'dashboard.html';
+    });
+
+    // ── Tab switching ────────────────────────────────────────────────
     function switchTab(tab) {
       const isSignin = tab === 'signin';
       document.getElementById('form-signin').classList.toggle('hidden', !isSignin);
       document.getElementById('form-signup').classList.toggle('hidden', isSignin);
       document.getElementById('tab-signin').className = `flex-1 rounded-lg py-2 text-sm font-extrabold transition-all ${isSignin ? 'tab-active' : 'tab-inactive'}`;
       document.getElementById('tab-signup').className = `flex-1 rounded-lg py-2 text-sm font-extrabold transition-all ${!isSignin ? 'tab-active' : 'tab-inactive'}`;
+      clearError();
     }
 
     // Check hash for signup deep link
     if (window.location.hash === '#signup') switchTab('signup');
 
-    // Toggle password visibility
+    // ── Password toggle ──────────────────────────────────────────────
     function togglePassword(id) {
       const el = document.getElementById(id);
       el.type = el.type === 'password' ? 'text' : 'password';
     }
 
-    // Google auth handler (demo — replace with real Firebase/Supabase OAuth)
-    function handleGoogleAuth() {
+    // ── Error/Success helpers ────────────────────────────────────────
+    function showError(msg) {
+      let el = document.getElementById('auth-message');
+      if (!el) {
+        el = document.createElement('p');
+        el.id = 'auth-message';
+        el.style.cssText = 'text-align:center;font-size:0.8rem;font-weight:600;margin-top:0.75rem;padding:0.6rem 1rem;border-radius:0.6rem;';
+        // Insert after whichever form is visible
+        const visibleForm = document.getElementById('form-signin').classList.contains('hidden')
+          ? document.getElementById('form-signup')
+          : document.getElementById('form-signin');
+        visibleForm.appendChild(el);
+      }
+      el.style.background = '#FEF2F2';
+      el.style.color = '#DC2626';
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function showSuccess(msg) {
+      let el = document.getElementById('auth-message');
+      if (!el) {
+        el = document.createElement('p');
+        el.id = 'auth-message';
+        el.style.cssText = 'text-align:center;font-size:0.8rem;font-weight:600;margin-top:0.75rem;padding:0.6rem 1rem;border-radius:0.6rem;';
+        const visibleForm = document.getElementById('form-signin').classList.contains('hidden')
+          ? document.getElementById('form-signup')
+          : document.getElementById('form-signin');
+        visibleForm.appendChild(el);
+      }
+      el.style.background = '#F0FDF4';
+      el.style.color = '#16A34A';
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function clearError() {
+      const el = document.getElementById('auth-message');
+      if (el) el.classList.add('hidden');
+    }
+
+    function setLoading(btn, loading, defaultText) {
+      btn.disabled = loading;
+      btn.textContent = loading ? 'Please wait…' : defaultText;
+    }
+
+    // ── Google OAuth ─────────────────────────────────────────────────
+    async function handleGoogleAuth() {
+      clearError();
       const btn = event.currentTarget;
       btn.disabled = true;
-      btn.innerHTML = '<svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#e2e8f0" stroke-width="3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#B9F044" stroke-width="3" stroke-linecap="round"/></svg> Connecting to Google...';
-      // Simulate then redirect
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+      btn.innerHTML = '<svg class="animate-spin h-4 w-4 inline-block mr-2" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#e2e8f0" stroke-width="3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#B9F044" stroke-width="3" stroke-linecap="round"/></svg> Connecting to Google…';
+
+      const { error } = await sbClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/dashboard.html'
+        }
+      });
+
+      if (error) {
+        showError(error.message);
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.185l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg> Continue with Google';
+      }
+      // Agar success → Supabase automatically Google login page pe redirect karega
     }
 
-    // Sign in handler (demo)
-    function handleSignIn(e) {
+    // ── Email + Password Sign In ──────────────────────────────────────
+    async function handleSignIn(e) {
       e.preventDefault();
-      const btn = e.target.querySelector('button[type=submit]');
-      btn.textContent = 'Signing in...';
-      btn.disabled = true;
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+      clearError();
+      const form  = e.target;
+      const email = form.querySelector('input[type=email]').value.trim();
+      const pass  = form.querySelector('input[type=password]').value;
+      const btn   = form.querySelector('button[type=submit]');
+
+      setLoading(btn, true, 'Sign In to GyanSetu');
+
+      const { error } = await sbClient.auth.signInWithPassword({ email, password: pass });
+
+      if (error) {
+        showError(error.message === 'Invalid login credentials'
+          ? '❌ Email ya password galat hai. Dobara try karo.'
+          : error.message);
+        setLoading(btn, false, 'Sign In to GyanSetu');
+        return;
+      }
+
+      showSuccess('✅ Login successful! Redirecting…');
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
     }
 
-    // Sign up handler (demo)
-    function handleSignUp(e) {
+    // ── Email + Password Sign Up ──────────────────────────────────────
+    async function handleSignUp(e) {
       e.preventDefault();
-      const btn = e.target.querySelector('button[type=submit]');
-      btn.textContent = 'Creating account...';
-      btn.disabled = true;
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+      clearError();
+      const form      = e.target;
+      const firstName = form.querySelectorAll('input[type=text]')[0].value.trim();
+      const lastName  = form.querySelectorAll('input[type=text]')[1].value.trim();
+      const dept      = form.querySelectorAll('input[type=text]')[2].value.trim();
+      const email     = form.querySelector('input[type=email]').value.trim();
+      const pass      = form.querySelector('input[type=password]').value;
+      const role      = form.querySelector('input[name=role]:checked').value;
+      const btn       = form.querySelector('button[type=submit]');
+
+      if (pass.length < 8) {
+        showError('❌ Password kam se kam 8 characters ka hona chahiye.');
+        return;
+      }
+
+      setLoading(btn, true, 'Create Free Account →');
+
+      const { error } = await sbClient.auth.signUp({
+        email,
+        password: pass,
+        options: {
+          data: {
+            full_name : firstName + ' ' + lastName,
+            department: dept,
+            role      : role
+          },
+          emailRedirectTo: window.location.origin + '/dashboard.html'
+        }
+      });
+
+      if (error) {
+        showError(error.message === 'User already registered'
+          ? '⚠️ Yeh email already registered hai. Sign In karo.'
+          : error.message);
+        setLoading(btn, false, 'Create Free Account →');
+        return;
+      }
+
+      showSuccess('✅ Account bana diya! Apni email check karo aur confirmation link pe click karo.');
+      setLoading(btn, false, 'Create Free Account →');
     }
   </script>
 </body>
