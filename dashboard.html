@@ -84,7 +84,8 @@
         <a href="room.html"  class="sidebar-link"><i data-lucide="monitor" class="lucide"></i> Live Room</a>
         <div class="mt-3 border-t border-slate-100 pt-3">
           <a href="#" class="sidebar-link"><i data-lucide="settings" class="lucide"></i> Settings</a>
-          <a href="index.html" class="sidebar-link"><i data-lucide="log-out" class="lucide"></i> Back to Home</a>
+          <a href="index.html" class="sidebar-link"><i data-lucide="home" class="lucide"></i> Back to Home</a>
+          <a href="#" onclick="logout()" class="sidebar-link text-red-500 hover:bg-red-50 hover:text-red-600"><i data-lucide="log-out" class="lucide"></i> Logout</a>
         </div>
       </nav>
     </aside>
@@ -102,8 +103,8 @@
             <span class="text-base font-extrabold">GyanSetu</span>
           </a>
           <div class="hidden lg:block">
-            <h1 class="text-base font-extrabold">Welcome to GyanSetu &#128075;</h1>
-            <p class="text-[11px] text-slate-500">What would you like to learn today?</p>
+            <h1 class="text-base font-extrabold" id="topbar-greeting">Welcome to GyanSetu 👋</h1>
+            <p class="text-[11px] text-slate-500" id="topbar-subtext">What would you like to learn today?</p>
           </div>
         </div>
 
@@ -422,9 +423,184 @@
     </div>
   </div>
 
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     lucide.createIcons();
+
+    // ── Supabase client ───────────────────────────────────────────────
+    const SUPABASE_URL  = 'https://bpfjlpjwspzlcsowespc.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
+    const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // ── Greeting helper ───────────────────────────────────────────────
+    function getGreeting() {
+      const h = new Date().getHours();
+      if (h < 12) return 'Good morning';
+      if (h < 17) return 'Good afternoon';
+      return 'Good evening';
+    }
+
+    // ── Avatar initials ───────────────────────────────────────────────
+    function initials(name) {
+      if (!name) return '?';
+      return name.trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    }
+
+    // ── Render user info on page ──────────────────────────────────────
+    function renderUser(profile, email) {
+      const name = profile?.full_name || email?.split('@')[0] || 'User';
+      const dept = profile?.department || 'GyanSetu Member';
+      const credits = profile?.credits ?? 0;
+      const role = profile?.role || 'learner';
+      const ini = initials(name);
+
+      // Topbar greeting
+      document.getElementById('topbar-greeting').textContent = `${getGreeting()}, ${name.split(' ')[0]} 👋`;
+      document.getElementById('topbar-subtext').textContent =
+        role === 'mentor' ? 'Ready to teach someone today?' : 'What would you like to learn today?';
+
+      // Sidebar
+      document.getElementById('sidebar-name').textContent = name;
+      document.getElementById('sidebar-name').classList.remove('text-slate-400');
+      document.getElementById('sidebar-dept').textContent = dept;
+      document.getElementById('sidebar-credits').textContent = credits;
+      document.getElementById('ledger-balance').textContent = credits;
+      document.getElementById('stat-credits').textContent = credits;
+      document.getElementById('bar-credits').style.width = Math.min(credits * 2, 100) + '%';
+
+      // Sidebar avatar
+      const sideAvatar = document.getElementById('sidebar-avatar');
+      sideAvatar.textContent = ini;
+      sideAvatar.classList.remove('avatar-ph');
+      sideAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
+      sideAvatar.style.color = '#0B1F17';
+
+      // Topbar avatar
+      const topAvatar = document.getElementById('topbar-avatar');
+      topAvatar.textContent = ini;
+      topAvatar.classList.remove('avatar-ph');
+      topAvatar.style.background = 'linear-gradient(135deg,#B9F044,#2F6F11)';
+      topAvatar.style.color = '#0B1F17';
+      topAvatar.innerHTML = ''; // clear icon
+      topAvatar.textContent = ini;
+    }
+
+    // ── Render past sessions ──────────────────────────────────────────
+    function renderSessions(sessions) {
+      if (!sessions || sessions.length === 0) return;
+
+      const upcomingEl = document.getElementById('sessions-upcoming');
+      const pastEl     = document.getElementById('sessions-past');
+
+      const upcoming = sessions.filter(s => s.status === 'active' || s.status === 'pending');
+      const past     = sessions.filter(s => s.status === 'completed');
+
+      if (upcoming.length > 0) {
+        upcomingEl.innerHTML = upcoming.map(s => `
+          <div class="flex items-center gap-3 border-b border-slate-100 px-5 py-4 last:border-0">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#B9F044]/15 text-[#2F6F11]">
+              <i data-lucide="zap" class="h-4 w-4"></i>
+            </span>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-extrabold truncate">${s.topic || 'Session'}</p>
+              <p class="text-xs text-slate-500">with ${s.mentor_name || s.learner_name || 'Peer'} &bull; ${s.credits_offered || 0} credits</p>
+            </div>
+            <span class="badge badge-lime">${s.status}</span>
+          </div>`).join('');
+        lucide.createIcons();
+      }
+
+      if (past.length > 0) {
+        pastEl.innerHTML = past.map(s => `
+          <div class="flex items-center gap-3 border-b border-slate-100 px-5 py-4 last:border-0">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+              <i data-lucide="check-circle-2" class="h-4 w-4"></i>
+            </span>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-extrabold truncate">${s.topic || 'Session'}</p>
+              <p class="text-xs text-slate-500">with ${s.mentor_name || s.learner_name || 'Peer'} &bull; ${new Date(s.created_at).toLocaleDateString('en-IN')}</p>
+            </div>
+            <span class="badge badge-mist">+${s.credits_offered || 0}</span>
+          </div>`).join('');
+
+        const sessCount = past.length;
+        document.getElementById('stat-sessions').textContent = sessCount;
+        document.getElementById('bar-sessions').style.width = Math.min(sessCount * 10, 100) + '%';
+        lucide.createIcons();
+      }
+    }
+
+    // ── Render credit ledger ──────────────────────────────────────────
+    function renderLedger(logs) {
+      if (!logs || logs.length === 0) return;
+      document.getElementById('ledger-empty').classList.add('hidden');
+      const container = document.getElementById('ledger-rows');
+      container.classList.remove('hidden');
+      container.innerHTML = logs.map(l => `
+        <div class="ledger-row">
+          <p class="text-xs font-semibold text-slate-700">${l.description || 'Transaction'}</p>
+          <p class="text-xs text-slate-400 text-right">${new Date(l.created_at).toLocaleDateString('en-IN')}</p>
+          <p class="text-xs font-extrabold text-right ${l.amount > 0 ? 'text-green-600' : 'text-red-500'}">${l.amount > 0 ? '+' : ''}${l.amount}</p>
+        </div>`).join('');
+    }
+
+    // ── Main load function ────────────────────────────────────────────
+    async function loadDashboard() {
+      // 1. Check session
+      const { data: { session } } = await sbClient.auth.getSession();
+      if (!session) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const userId = session.user.id;
+      const email  = session.user.email;
+
+      // 2. Fetch profile
+      const { data: profile } = await sbClient
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      renderUser(profile, email);
+
+      // 3. Fetch sessions (learner or mentor)
+      const { data: sessions } = await sbClient
+        .from('sessions')
+        .select('*')
+        .or(`learner_id.eq.${userId},mentor_id.eq.${userId}`)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      renderSessions(sessions);
+
+      // 4. Fetch credit log
+      const { data: logs } = await sbClient
+        .from('credit_log')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(15);
+
+      renderLedger(logs);
+
+      // 5. Remove skeletons
+      setTimeout(() => {
+        ['skeleton-1','skeleton-2','skeleton-3'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.remove();
+        });
+      }, 800);
+    }
+
+    // ── Logout ────────────────────────────────────────────────────────
+    async function logout() {
+      await sbClient.auth.signOut();
+      window.location.href = 'login.html';
+    }
 
     /* ── Sidebar active nav ── */
     document.querySelectorAll('.sidebar-link').forEach(link => {
@@ -452,7 +628,6 @@
 
     /* ── Booking modal ── */
     function bookMentor() {
-      // Generate time slots for next 3 hours
       const grid = document.getElementById('slot-grid');
       grid.innerHTML = '';
       const now = new Date();
@@ -486,12 +661,12 @@
       closeModal();
       const toast = document.createElement('div');
       toast.className = 'fixed bottom-6 right-6 z-50 rounded-2xl bg-[#0B1F17] px-5 py-3 text-sm font-bold text-[#B9F044] shadow-2xl';
-      toast.textContent = '&#10003; Session booked! Joining room\u2026';
+      toast.textContent = '✓ Session booked! Joining room…';
       document.body.appendChild(toast);
       setTimeout(() => { toast.remove(); window.location.href = 'room.html'; }, 2000);
     }
 
-    /* ── Animate progress bars on load ── */
+    /* ── Animate progress bars ── */
     window.addEventListener('load', () => {
       document.querySelectorAll('.progress-bar-fill').forEach(el => {
         const target = el.style.width;
@@ -500,29 +675,6 @@
       });
     });
 
-    /*
-     * ── DATA LAYER (stub) ──────────────────────────────────────────
-     * Replace the block below with real API/Supabase calls.
-     * All UI elements above read from these functions — no data
-     * is hardcoded in the HTML anymore.
-     * ─────────────────────────────────────────────────────────────── */
-    async function loadDashboard() {
-      /* Example: fetch from Supabase or your backend here.
-         For now we show the empty/skeleton state permanently
-         until a real integration is wired up. */
-
-      // Remove skeletons after a short delay to show "no results" state
-      setTimeout(() => {
-        ['skeleton-1','skeleton-2','skeleton-3'].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.remove();
-        });
-        // If no real mentors loaded, we leave the become-a-mentor CTA alone.
-        // To inject mentor cards, call renderMentorCard(data) for each result.
-      }, 1200);
-    }
-
-    /* Call on page load */
     loadDashboard();
   </script>
 </body>
