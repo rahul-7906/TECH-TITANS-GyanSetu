@@ -11,96 +11,142 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="js/tailwind.config.js"></script>
-  <link rel="stylesheet" href="css/session.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .input-field {
+      display: block; width: 100%; border-radius: 0.75rem;
+      border: 1.5px solid #e2e8f0; background: #f8fafc;
+      padding: 0.625rem 1rem; font-size: 0.875rem; font-family: inherit;
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .input-field:focus { border-color: #B9F044; box-shadow: 0 0 0 3px rgba(185,240,68,0.2); }
+    .input-field::placeholder { color: #94a3b8; }
+    .label-text {
+      display: block; margin-bottom: 0.4rem;
+      font-size: 0.6875rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; color: #64748b;
+    }
+    .role-btn {
+      cursor: pointer; transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+    }
+    .role-btn.selected {
+      border-color: #B9F044; background-color: rgba(185,240,68,0.12); color: #2F6F11;
+    }
+    .session-step { animation: stepFade 0.22s ease both; }
+    @keyframes stepFade {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .request-card { transition: box-shadow 0.15s, border-color 0.15s; }
+    .request-card:hover { box-shadow: 0 6px 20px -6px rgba(11,31,23,0.14); border-color: #B9F044; }
+    .quiz-option:has(input[type=radio]:checked) {
+      background: rgba(185,240,68,0.12); border-color: #B9F044; border-radius: 0.5rem;
+    }
+  </style>
 </head>
 
-<body class="font-sans antialiased bg-[#F7F8FA] text-[#1f2328] min-h-screen">
+<body class="font-sans antialiased text-ink" style="background:#F7FAF3; min-height:100vh;">
 
-  <!-- ── TOP NAV ── -->
-  <header class="sticky top-0 z-30 flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-white shadow-sm">
-    <a href="index.html" class="flex items-center gap-2 text-sm font-bold text-[#2F6F11] hover:opacity-80 transition">
-      <i data-lucide="arrow-left" class="h-4 w-4"></i> GyanSetu
+  <!-- ============================================================
+       TOP NAV
+       ============================================================ -->
+  <header class="sticky top-0 z-30 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-3 shadow-sm sm:px-8">
+    <a href="dashboard.html" class="flex items-center gap-2 text-sm font-bold text-[#2F6F11] hover:opacity-80 transition">
+      <i data-lucide="arrow-left" class="h-4 w-4"></i>
+      <span class="hidden sm:inline">Dashboard</span>
     </a>
-    <span class="text-xs font-bold text-slate-500">Session Booking</span>
-    <!-- Credit balance chip -->
-    <div id="credit-chip" class="flex items-center gap-1.5 rounded-full bg-[#B9F044]/20 border border-[#B9F044]/40 px-3 py-1 text-xs font-extrabold text-[#2F6F11]">
+
+    <a href="index.html" class="flex items-center gap-2">
+      <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11]">
+        <i data-lucide="graduation-cap" class="h-4 w-4 text-[#0B1F17]"></i>
+      </span>
+      <span class="text-base font-extrabold tracking-tight text-[#0B1F17]">GyanSetu</span>
+    </a>
+
+    <div id="credit-chip" class="flex items-center gap-1.5 rounded-full border border-[#B9F044]/40 bg-[#B9F044]/10 px-3 py-1 text-xs font-extrabold text-[#2F6F11]">
       <i data-lucide="coins" class="h-3.5 w-3.5"></i>
-      <span id="credit-display">—</span> credits
+      <span id="credit-display">&mdash;</span>&nbsp;credits
     </div>
   </header>
 
-  <!-- ── IDENTITY OVERLAY (shown until user sets name + role) ── -->
-  <div id="identity-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm">
+  <!-- ============================================================
+       IDENTITY OVERLAY
+       ============================================================ -->
+  <div id="identity-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm px-4">
     <div class="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-8 shadow-2xl">
+
       <div class="mb-5 flex items-center gap-2.5">
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11] text-white">
-          <i data-lucide="graduation-cap" class="h-5 w-5"></i>
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11]">
+          <i data-lucide="graduation-cap" class="h-5 w-5 text-[#0B1F17]"></i>
         </span>
         <span class="text-lg font-extrabold">GyanSetu</span>
       </div>
-      <p class="mb-5 text-xs leading-5 text-slate-500">Enter your name and choose your role to continue.</p>
+
+      <h2 class="text-xl font-extrabold text-[#0B1F17] mb-1">Welcome to Sessions</h2>
+      <p class="mb-5 text-xs leading-5 text-slate-500">Enter your name and choose your role to continue to the session board.</p>
 
       <label class="block mb-3">
-        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Your Name</span>
-        <input id="input-name" type="text" placeholder="e.g. Aarav" maxlength="20"
-          class="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-[#B9F044] focus:ring-1 focus:ring-[#B9F044]" />
+        <span class="label-text">Your Name</span>
+        <input id="input-name" type="text" placeholder="e.g. Priya or Rahul" maxlength="20" class="input-field" />
       </label>
 
       <label class="block mb-5">
-        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">I am a…</span>
-        <div class="mt-1.5 grid grid-cols-2 gap-2">
-          <button data-role="learner" class="role-btn selected rounded-xl border-2 border-[#B9F044] bg-[#B9F044]/10 py-2.5 text-sm font-extrabold text-[#2F6F11]">
-            🎓 Learner
+        <span class="label-text">I am a&hellip;</span>
+        <div class="mt-2 grid grid-cols-2 gap-2">
+          <button data-role="learner" class="role-btn selected flex flex-col items-center gap-1.5 rounded-xl border-2 border-[#B9F044] bg-[#B9F044]/10 py-3 text-sm font-extrabold text-[#2F6F11]">
+            <i data-lucide="graduation-cap" class="h-5 w-5"></i>
+            Learner
           </button>
-          <button data-role="mentor" class="role-btn rounded-xl border-2 border-slate-200 bg-white py-2.5 text-sm font-extrabold text-slate-600">
-            👑 Mentor
+          <button data-role="mentor" class="role-btn flex flex-col items-center gap-1.5 rounded-xl border-2 border-slate-200 bg-white py-3 text-sm font-extrabold text-slate-500">
+            <i data-lucide="star" class="h-5 w-5"></i>
+            Mentor
           </button>
         </div>
       </label>
 
-      <button id="identity-btn"
-        class="w-full rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-3 text-sm font-extrabold text-[#0B1F17] transition hover:brightness-110 active:scale-95">
-        Continue →
+      <button id="identity-btn" class="btn-pill w-full rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-3 text-sm font-extrabold text-[#0B1F17] transition hover:brightness-110 active:scale-95">
+        Continue &rarr;
       </button>
-      <p id="identity-error" class="mt-2 hidden text-center text-xs text-red-500">Please enter your name.</p>
+      <p id="identity-error" class="mt-2 hidden text-center text-xs text-red-500">Please enter your name to continue.</p>
     </div>
   </div>
 
-  <!-- ── MAIN ── -->
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
   <main class="mx-auto max-w-2xl px-4 py-8" id="main-content" style="display:none">
 
-    <!-- ═══════════════════════════ LEARNER VIEW ═══════════════════════════ -->
+    <!-- ======================================================
+         LEARNER VIEW
+         ====================================================== -->
     <div id="learner-view">
 
       <!-- Step 1: Book a session -->
       <div id="step-book" class="session-step">
-        <h1 class="text-xl font-extrabold mb-1">Book a Session</h1>
-        <p class="text-xs text-slate-500 mb-6">Tell your mentor what you need help with. Credits are deducted only after the session is marked complete.</p>
+        <div class="mb-6">
+          <h1 class="text-xl font-extrabold text-[#0B1F17]">Book a Session</h1>
+          <p class="mt-1 text-xs text-slate-500">Tell your mentor what you need help with. Credits are deducted only after the session is marked complete.</p>
+        </div>
 
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
           <label class="block">
-            <span class="label-text">Mentor's Name / ID</span>
-            <input id="mentor-name-input" type="text" placeholder="e.g. Priya or room ID"
-              class="input-field" />
+            <span class="label-text">Mentor&rsquo;s Name or ID</span>
+            <input id="mentor-name-input" type="text" placeholder="e.g. username or room ID" class="input-field" />
           </label>
           <label class="block">
             <span class="label-text">Topic / Subject</span>
-            <input id="topic-input" type="text" placeholder="e.g. Binary Trees in DSA"
-              class="input-field" />
+            <input id="topic-input" type="text" placeholder="e.g. Binary Trees in DSA" class="input-field" />
           </label>
           <label class="block">
             <span class="label-text">Credits to offer</span>
-            <input id="credits-input" type="number" min="1" max="50" value="10"
-              class="input-field" />
+            <input id="credits-input" type="number" min="1" max="50" value="10" class="input-field" />
           </label>
           <label class="block">
             <span class="label-text">Note (optional)</span>
-            <textarea id="note-input" rows="2" placeholder="Anything specific you want covered…"
-              class="input-field resize-none"></textarea>
+            <textarea id="note-input" rows="2" placeholder="Anything specific you want covered&hellip;" class="input-field resize-none"></textarea>
           </label>
-          <button id="request-btn"
-            class="w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] hover:bg-[#14532D] transition">
-            Request Session →
+          <button id="request-btn" class="btn-pill w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">
+            Request Session &rarr;
           </button>
           <p id="request-error" class="hidden text-center text-xs text-red-500"></p>
         </div>
@@ -112,14 +158,14 @@
           <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
             <i data-lucide="clock" class="h-7 w-7 animate-pulse"></i>
           </div>
-          <p class="text-base font-extrabold mb-1">Waiting for Mentor…</p>
+          <p class="text-base font-extrabold mb-1 text-[#0B1F17]">Waiting for Mentor&hellip;</p>
           <p class="text-xs text-slate-500 mb-4">Your request has been sent. The mentor will accept shortly.</p>
           <p class="text-xs text-slate-400">Session ID: <span id="session-id-display" class="font-mono font-bold text-slate-600"></span></p>
           <button id="cancel-request-btn" class="mt-4 text-xs text-red-500 underline hover:text-red-700">Cancel Request</button>
         </div>
       </div>
 
-      <!-- Step 3: Session active — waiting for quiz -->
+      <!-- Step 3: Session active -->
       <div id="step-active" class="session-step hidden">
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div class="flex items-center gap-3 mb-4">
@@ -127,36 +173,45 @@
               <i data-lucide="zap" class="h-5 w-5"></i>
             </span>
             <div>
-              <p class="text-sm font-extrabold">Session in Progress</p>
+              <p class="text-sm font-extrabold text-[#0B1F17]">Session in Progress</p>
               <p class="text-xs text-slate-500">Mentor: <span id="active-mentor-name" class="font-bold text-slate-700"></span></p>
             </div>
-            <span class="ml-auto flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold text-green-700">
-              <span class="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span> Live
+            <span class="ml-auto flex items-center gap-1.5 rounded-full bg-[#B9F044]/15 px-3 py-1 text-[11px] font-bold text-[#2F6F11]">
+              <span class="live-dot h-1.5 w-1.5 rounded-full bg-[#2F6F11]"></span> Live
             </span>
           </div>
-          <p class="text-xs text-slate-500 bg-slate-50 rounded-xl p-3">
-            Topic: <strong id="active-topic" class="text-slate-700"></strong>
+          <p class="text-xs text-slate-500 rounded-xl bg-[#F4FBEA] p-3">
+            Topic: <strong id="active-topic" class="text-[#0B1F17]"></strong>
           </p>
-          <div class="mt-4 rounded-xl bg-[#B9F044]/10 border border-[#B9F044]/30 p-4">
-            <p class="text-xs font-bold text-[#2F6F11]">⏳ Waiting for mentor to send you a verification quiz…</p>
-            <p class="text-[11px] text-slate-500 mt-1">Once you complete the quiz, the mentor marks the session done and credits are transferred.</p>
+          <div class="mt-4 rounded-xl border border-[#B9F044]/30 bg-[#B9F044]/8 p-4">
+            <div class="flex items-center gap-2 mb-1">
+              <i data-lucide="clock" class="h-4 w-4 text-[#2F6F11]"></i>
+              <p class="text-xs font-bold text-[#2F6F11]">Waiting for mentor to send you a verification quiz&hellip;</p>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1 ml-6">Once you complete the quiz, the mentor marks the session done and credits are transferred.</p>
           </div>
           <a id="open-collab-btn" href="#" target="_blank"
-            class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/5 py-2.5 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044]/20 transition">
+            class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#B9F044]/40 bg-[#F4FBEA] py-2.5 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044]/20 transition">
             <i data-lucide="code-2" class="h-4 w-4"></i> Open Live Collab Room
           </a>
         </div>
       </div>
 
-      <!-- Step 4: Quiz sent by mentor -->
+      <!-- Step 4: Quiz from mentor -->
       <div id="step-quiz" class="session-step hidden">
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p class="text-sm font-extrabold mb-1">📝 Mentor sent you a quiz!</p>
-          <p class="text-xs text-slate-500 mb-5">Answer correctly to prove you understood the topic. Credits transfer only on passing.</p>
+          <div class="flex items-center gap-2.5 mb-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0B1F17] text-[#B9F044]">
+              <i data-lucide="file-question" class="h-5 w-5"></i>
+            </span>
+            <div>
+              <p class="text-sm font-extrabold text-[#0B1F17]">Mentor sent you a quiz!</p>
+              <p class="text-xs text-slate-500">Answer correctly to prove you understood the topic.</p>
+            </div>
+          </div>
           <div id="quiz-questions-container" class="space-y-5"></div>
-          <button id="submit-quiz-btn"
-            class="mt-6 w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] hover:bg-[#14532D] transition">
-            Submit Answers
+          <button id="submit-quiz-btn" class="btn-pill mt-6 w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">
+            Submit Answers &rarr;
           </button>
           <p id="quiz-result-msg" class="hidden mt-3 text-center text-sm font-bold rounded-xl py-2"></p>
         </div>
@@ -164,29 +219,40 @@
 
       <!-- Step 5: Session complete -->
       <div id="step-done" class="session-step hidden">
-        <div class="rounded-2xl border border-green-200 bg-green-50 p-8 text-center">
-          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 text-green-600">
+        <div class="rounded-3xl border border-[#B9F044]/40 bg-gradient-to-br from-[#F4FBEA] to-white p-10 text-center shadow-sm">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
             <i data-lucide="check-circle-2" class="h-8 w-8"></i>
           </div>
-          <p class="text-lg font-extrabold text-green-800 mb-1">Session Complete!</p>
-          <p id="done-msg" class="text-xs text-green-700 mb-5"></p>
-          <button onclick="location.href='session.html'" class="rounded-xl bg-[#0B1F17] px-6 py-2.5 text-xs font-extrabold text-[#B9F044] hover:bg-[#14532D] transition">
-            Book Another Session
-          </button>
+          <p class="text-xl font-extrabold text-[#0B1F17] mb-1">Session Complete!</p>
+          <p id="done-msg" class="text-xs text-slate-500 mb-6"></p>
+          <div class="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+            <a href="session.html" class="rounded-xl bg-[#0B1F17] px-6 py-2.5 text-xs font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Book Another Session</a>
+            <a href="dashboard.html" class="rounded-xl border border-slate-200 px-6 py-2.5 text-xs font-extrabold text-[#0B1F17] transition hover:border-[#B9F044]">Go to Dashboard</a>
+          </div>
         </div>
       </div>
 
     </div><!-- /learner-view -->
 
-    <!-- ═══════════════════════════ MENTOR VIEW ═══════════════════════════ -->
+    <!-- ======================================================
+         MENTOR VIEW
+         ====================================================== -->
     <div id="mentor-view" class="hidden">
 
       <!-- Incoming requests list -->
       <div id="mentor-requests-panel">
-        <h1 class="text-xl font-extrabold mb-1">Incoming Session Requests</h1>
-        <p class="text-xs text-slate-500 mb-6">Accept a request to start a session. You'll send a quiz at the end to verify the learner understood.</p>
+        <div class="mb-6">
+          <h1 class="text-xl font-extrabold text-[#0B1F17]">Incoming Session Requests</h1>
+          <p class="mt-1 text-xs text-slate-500">Accept a request to start a session. You&rsquo;ll send a quiz at the end to verify the learner understood.</p>
+        </div>
         <div id="requests-list" class="space-y-3">
-          <p class="text-xs text-slate-400 text-center py-8" id="no-requests-msg">No pending requests yet. Waiting…</p>
+          <div class="rounded-2xl border border-dashed border-slate-200 bg-white p-8 text-center" id="no-requests-msg">
+            <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#F4FBEA] text-[#2F6F11]">
+              <i data-lucide="inbox" class="h-5 w-5"></i>
+            </div>
+            <p class="text-sm font-extrabold text-[#0B1F17]">No pending requests yet</p>
+            <p class="mt-1 text-xs text-slate-400">Listening for incoming learner requests&hellip;</p>
+          </div>
         </div>
       </div>
 
@@ -198,51 +264,58 @@
               <i data-lucide="users" class="h-5 w-5"></i>
             </span>
             <div>
-              <p class="text-sm font-extrabold">Active Session</p>
+              <p class="text-sm font-extrabold text-[#0B1F17]">Active Session</p>
               <p class="text-xs text-slate-500">Learner: <span id="active-learner-name" class="font-bold text-slate-700"></span></p>
             </div>
-            <span class="ml-auto flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold text-green-700">
-              <span class="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span> Live
+            <span class="ml-auto flex items-center gap-1.5 rounded-full bg-[#B9F044]/15 px-3 py-1 text-[11px] font-bold text-[#2F6F11]">
+              <span class="live-dot h-1.5 w-1.5 rounded-full bg-[#2F6F11]"></span> Live
             </span>
           </div>
-          <p class="text-xs text-slate-500 bg-slate-50 rounded-xl p-3 mb-4">
-            Topic: <strong id="mentor-active-topic" class="text-slate-700"></strong> &nbsp;·&nbsp;
+
+          <p class="text-xs text-slate-500 rounded-xl bg-[#F4FBEA] p-3 mb-4">
+            Topic: <strong id="mentor-active-topic" class="text-[#0B1F17]"></strong>
+            &nbsp;&bull;&nbsp;
             Offered: <strong id="mentor-active-credits" class="text-[#2F6F11]"></strong> credits
           </p>
+
           <a id="mentor-open-collab" href="#" target="_blank"
-            class="flex items-center justify-center gap-2 rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/5 py-2.5 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044]/20 transition mb-4">
+            class="flex items-center justify-center gap-2 rounded-xl border border-[#B9F044]/40 bg-[#F4FBEA] py-2.5 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044]/20 transition mb-4">
             <i data-lucide="code-2" class="h-4 w-4"></i> Open Live Collab Room
           </a>
 
           <!-- Quiz builder -->
           <div class="border-t border-slate-100 pt-4">
-            <p class="text-xs font-extrabold mb-3">📝 Build Verification Quiz</p>
-            <p class="text-[11px] text-slate-500 mb-3">Add up to 3 MCQ questions. Learner must pass to get credits deducted.</p>
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="file-pen-line" class="h-4 w-4 text-[#2F6F11]"></i>
+              <p class="text-xs font-extrabold text-[#0B1F17]">Build Verification Quiz</p>
+            </div>
+            <p class="text-[11px] text-slate-500 mb-3">Add up to 3 MCQ questions. The learner must pass to confirm the session.</p>
             <div id="quiz-builder" class="space-y-4"></div>
-            <button id="add-question-btn"
-              class="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#2F6F11] hover:underline">
+            <button id="add-question-btn" class="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#2F6F11] hover:underline">
               <i data-lucide="plus-circle" class="h-4 w-4"></i> Add Question
             </button>
-            <button id="send-quiz-btn"
-              class="mt-4 w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] hover:bg-[#14532D] transition">
-              Send Quiz to Learner →
+            <button id="send-quiz-btn" class="btn-pill mt-4 w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">
+              Send Quiz to Learner &rarr;
             </button>
-            <p id="quiz-sent-msg" class="hidden mt-2 text-center text-xs text-green-600 font-bold">✅ Quiz sent! Waiting for learner's response…</p>
+            <p id="quiz-sent-msg" class="hidden mt-2 text-center text-xs text-[#2F6F11] font-bold">
+              <i data-lucide="check" class="inline h-3.5 w-3.5"></i> Quiz sent! Waiting for learner&rsquo;s response&hellip;
+            </p>
           </div>
         </div>
       </div>
 
       <!-- Mentor: session complete -->
       <div id="mentor-done-panel" class="hidden mt-6">
-        <div class="rounded-2xl border border-green-200 bg-green-50 p-8 text-center">
-          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 text-green-600">
+        <div class="rounded-3xl border border-[#B9F044]/40 bg-gradient-to-br from-[#F4FBEA] to-white p-10 text-center shadow-sm">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
             <i data-lucide="check-circle-2" class="h-8 w-8"></i>
           </div>
-          <p class="text-lg font-extrabold text-green-800 mb-1">Session Complete!</p>
-          <p id="mentor-done-msg" class="text-xs text-green-700 mb-5"></p>
-          <button onclick="location.reload()" class="rounded-xl bg-[#0B1F17] px-6 py-2.5 text-xs font-extrabold text-[#B9F044] hover:bg-[#14532D] transition">
-            Accept Next Session
-          </button>
+          <p class="text-xl font-extrabold text-[#0B1F17] mb-1">Session Complete!</p>
+          <p id="mentor-done-msg" class="text-xs text-slate-500 mb-6"></p>
+          <div class="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+            <button onclick="location.reload()" class="rounded-xl bg-[#0B1F17] px-6 py-2.5 text-xs font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Accept Next Session</button>
+            <a href="dashboard.html" class="rounded-xl border border-slate-200 px-6 py-2.5 text-xs font-extrabold text-[#0B1F17] transition hover:border-[#B9F044]">Go to Dashboard</a>
+          </div>
         </div>
       </div>
 
@@ -250,13 +323,16 @@
 
   </main>
 
-  <!-- ── SCRIPTS ── -->
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
     var SUPABASE_URL  = 'https://bpfjlpjwspzlcsowespc.supabase.co';
     var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons();</script>
   <script src="js/session.js"></script>
 </body>
 </html>

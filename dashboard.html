@@ -80,6 +80,7 @@
         <a href="#sessions"  class="sidebar-link" id="nav-sessions"><i data-lucide="calendar" class="lucide"></i> My Sessions</a>
         <a href="#ledger"    class="sidebar-link" id="nav-ledger"><i data-lucide="coins" class="lucide"></i> Credit Ledger</a>
         <a href="#duels"     class="sidebar-link" id="nav-duels"><i data-lucide="trophy" class="lucide"></i> Skill Duels</a>
+        <a href="session.html" class="sidebar-link"><i data-lucide="calendar-plus" class="lucide"></i> Book Session</a>
         <a href="room.html"  class="sidebar-link"><i data-lucide="monitor" class="lucide"></i> Live Room</a>
         <div class="mt-3 border-t border-slate-100 pt-3">
           <a href="#" class="sidebar-link"><i data-lucide="settings" class="lucide"></i> Settings</a>
@@ -130,6 +131,9 @@
             <span class="arrow-circle flex h-7 w-7 items-center justify-center rounded-full bg-[#B9F044] text-[#0B1F17]">
               <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>
             </span>
+          </a>
+          <a href="session.html" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
+            <i data-lucide="calendar-plus" class="h-4 w-4"></i> Book a Session
           </a>
           <a href="#mentors" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
             <i data-lucide="users" class="h-4 w-4"></i> Find a Mentor
@@ -281,7 +285,7 @@
                 <button class="tab-btn active" onclick="switchSessionTab('upcoming',this)">Upcoming</button>
                 <button class="tab-btn" onclick="switchSessionTab('past',this)">Past</button>
               </div>
-              <a href="room.html" class="text-xs font-bold text-[#2F6F11] hover:underline">+ New Session</a>
+              <a href="session.html" class="text-xs font-bold text-[#2F6F11] hover:underline">+ New Session</a>
             </div>
 
             <!-- Upcoming — empty state -->
