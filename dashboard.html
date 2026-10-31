@@ -12,6 +12,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="js/tailwind.config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/demo-data.js"></script>
   <link rel="stylesheet" href="css/style.css" />
   <style>
     body {
@@ -317,10 +318,26 @@
       background: #E2E8F0;
       color: #94A3B8;
     }
+
+    /* Consistent navigation motion: anchors scroll, page links transition. */
+    html { scroll-behavior: smooth; }
+    .sidebar-link { position: relative; }
+    .sidebar-link.nav-transitioning { opacity: .65; pointer-events: none; }
+    #page-transition {
+      position: fixed; inset: 0; z-index: 200; pointer-events: none;
+      background: rgba(247, 250, 243, .94); backdrop-filter: blur(8px);
+      opacity: 0; transition: opacity .28s ease;
+    }
+    #page-transition.is-visible { opacity: 1; }
+    .nav-section-label {
+      padding: .65rem .875rem .3rem; font-size: .6rem; font-weight: 800;
+      letter-spacing: .16em; text-transform: uppercase; color: #94a3b8;
+    }
   </style>
 </head>
 
 <body class="font-sans text-ink antialiased bg-[#EDE7F6]">
+  <div id="page-transition" aria-hidden="true"></div>
 
   <div class="sticky top-0 z-50 mx-3 mt-3 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/80 bg-white/95 px-4 py-3 shadow-lg shadow-violet-200/40 backdrop-blur sm:mx-6 sm:px-6 md:flex-nowrap">
     <a href="dashboard.html" class="flex items-center gap-2" aria-label="GyanSetu dashboard">
@@ -386,23 +403,26 @@
         </div>
       </div>
 
-      <!-- Nav links -->
-      <nav class="mt-4 flex-1 space-y-0.5 px-3">
-        <a href="#overview" class="sidebar-link active" id="nav-overview"><i data-lucide="layout-dashboard"
-            class="lucide"></i> Overview</a>
-        <a href="#mentors" class="sidebar-link" id="nav-mentors"><i data-lucide="users" class="lucide"></i> Find
-          Mentors</a>
-        <a href="#sessions" class="sidebar-link" id="nav-sessions"><i data-lucide="calendar" class="lucide"></i> My
-          Sessions</a>
-        <a href="#ledger" class="sidebar-link" id="nav-ledger"><i data-lucide="coins" class="lucide"></i> Credit
-          Ledger</a>
-        <a href="#duels" class="sidebar-link" id="nav-duels"><i data-lucide="trophy" class="lucide"></i> Skill Duels</a>
-        <a href="session.html" class="sidebar-link"><i data-lucide="calendar-plus" class="lucide"></i> Book Session</a>
-        <a href="room.html" class="sidebar-link"><i data-lucide="monitor" class="lucide"></i> Live Room</a>
+      <!-- Nav links: local sections are grouped separately from page destinations -->
+      <nav class="mt-4 flex-1 px-3">
+        <p class="nav-section-label">Dashboard</p>
+        <div class="space-y-0.5">
+          <a href="#overview" class="sidebar-link active" id="nav-overview"><i data-lucide="layout-dashboard" class="lucide"></i> Overview</a>
+          <a href="#mentors" class="sidebar-link" id="nav-mentors"><i data-lucide="users" class="lucide"></i> Find Mentors</a>
+          <a href="#sessions" class="sidebar-link" id="nav-sessions"><i data-lucide="calendar" class="lucide"></i> My Sessions</a>
+          <a href="#ledger" class="sidebar-link" id="nav-ledger"><i data-lucide="coins" class="lucide"></i> Credit Ledger</a>
+          <a href="#duels" class="sidebar-link" id="nav-duels"><i data-lucide="trophy" class="lucide"></i> Skill Duels</a>
+        </div>
+        <p class="nav-section-label mt-3 border-t border-slate-100 pt-4">Workspace</p>
+        <div class="space-y-0.5">
+          <a href="peers.html" class="sidebar-link page-link"><i data-lucide="search-check" class="lucide"></i> Smart Match <span class="ml-auto text-[9px] text-slate-400">OPEN</span></a>
+          <a href="session.html" class="sidebar-link page-link"><i data-lucide="calendar-plus" class="lucide"></i> Book Session <span class="ml-auto text-[9px] text-slate-400">OPEN</span></a>
+          <a href="room.html" class="sidebar-link page-link"><i data-lucide="monitor" class="lucide"></i> Live Room <span class="ml-auto text-[9px] text-slate-400">OPEN</span></a>
+        </div>
         <div class="mt-3 border-t border-slate-100 pt-3">
-          <a href="#" class="sidebar-link"><i data-lucide="settings" class="lucide"></i> Settings</a>
+          <button type="button" class="sidebar-link w-full text-left" onclick="showToast('Settings are coming soon.', 'info')"><i data-lucide="settings" class="lucide"></i> Settings</button>
           <a href="index.html" class="sidebar-link"><i data-lucide="home" class="lucide"></i> Back to Home</a>
-          <a href="#" onclick="logout()" class="sidebar-link text-red-500 hover:bg-red-50 hover:text-red-600"><i data-lucide="log-out" class="lucide"></i> Logout</a>
+          <button type="button" onclick="logout()" class="sidebar-link w-full text-left text-red-500 hover:bg-red-50 hover:text-red-600"><i data-lucide="log-out" class="lucide"></i> Logout</button>
         </div>
       </nav>
     </aside>
@@ -584,7 +604,7 @@
                 <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-lime-100 text-xl">💰</span>
                 <span class="rounded-full bg-lime-50 px-3 py-1 text-[11px] font-bold text-green-700">Balance</span>
               </div>
-              <p class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900" id="stat-credits">0</p>
+              <p class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900" id="stat-credits">&mdash;</p>
               <p class="text-xs font-semibold text-slate-500">Knowledge Credits</p>
               <p class="mt-2 text-xs font-bold text-emerald-600">+120 this week ↗</p>
               <div class="mt-4 flex h-8 items-end gap-1.5" aria-label="Weekly credits trending upward">
@@ -597,7 +617,7 @@
                 <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-100 text-xl">📅</span>
                 <span class="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold text-violet-700">Sessions</span>
               </div>
-              <p class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900" id="stat-sessions">0</p>
+              <p class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900" id="stat-sessions">&mdash;</p>
               <p class="text-xs font-semibold text-slate-500">Sessions Completed</p>
               <p class="mt-2 text-xs font-bold text-emerald-600">+4 this week ↗</p>
               <div class="mt-4 flex h-8 items-end gap-1.5" aria-hidden="true">
@@ -612,7 +632,7 @@
               </div>
               <div class="mt-3 flex items-center justify-between gap-2">
                 <div>
-                  <p class="text-3xl font-extrabold tracking-tight text-slate-900"><span id="stat-streak">12</span> <span class="text-base font-bold">Days</span></p>
+                  <p class="text-3xl font-extrabold tracking-tight text-slate-900"><span id="stat-streak">&mdash;</span> <span class="text-base font-bold">Days</span></p>
                   <p class="mt-1 text-xs font-semibold text-slate-500">3 days to level up!</p>
                 </div>
                 <div class="grid h-[76px] w-[76px] shrink-0 place-items-center rounded-full" style="background:conic-gradient(#FF9A5C 0 75%, #FFEDD5 75% 100%)">
@@ -823,13 +843,13 @@
             <div class="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p class="text-[11px] font-extrabold uppercase tracking-widest text-[#B9F044]/60 mb-1">Current Balance</p>
-                <p class="text-4xl font-extrabold text-white tracking-tight"><span id="ledger-balance">0</span> <span class="text-[#B9F044]">Credits</span></p>
+                <p class="text-4xl font-extrabold text-white tracking-tight"><span id="ledger-balance">&mdash;</span> <span class="text-[#B9F044]">Credits</span></p>
                 <p id="ledger-level-label" class="mt-2 text-xs font-bold text-emerald-200/70">Level 1 — Learner</p>
               </div>
               <div class="flex flex-col items-end gap-2">
                 <div class="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5">
                   <i data-lucide="trending-up" class="h-3.5 w-3.5 text-[#B9F044]"></i>
-                  <span class="text-[11px] font-bold text-white">+<span id="ledger-week-earned">0</span> this week</span>
+                  <span class="text-[11px] font-bold text-white">+<span id="ledger-week-earned">&mdash;</span> this week</span>
                 </div>
                 <a href="#ledger" class="rounded-xl border border-white/20 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-white/10 transition">View History ↓</a>
               </div>
@@ -838,8 +858,8 @@
             <!-- XP Progress bar -->
             <div class="mt-5">
               <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-bold text-emerald-200/70"><span id="ledger-xp">0</span> XP</span>
-                <span class="text-[11px] font-bold text-emerald-200/70">Next level: <span id="ledger-xp-next">500</span> XP</span>
+                <span class="text-[11px] font-bold text-emerald-200/70"><span id="ledger-xp">&mdash;</span> XP</span>
+                <span class="text-[11px] font-bold text-emerald-200/70">Next level: <span id="ledger-xp-next">&mdash;</span> XP</span>
               </div>
               <div class="h-1.5 w-full rounded-full bg-white/10">
                 <div id="ledger-xp-bar" class="h-1.5 rounded-full bg-gradient-to-r from-[#B9F044] to-[#8FD420] transition-all duration-700" style="width:0%"></div>
@@ -849,15 +869,15 @@
             <!-- Stats row -->
             <div class="mt-5 grid grid-cols-3 gap-3">
               <div class="rounded-xl bg-white/8 px-3 py-2.5 text-center">
-                <p class="text-base font-extrabold text-white"><span id="ledger-total-earned">0</span></p>
+                <p class="text-base font-extrabold text-white"><span id="ledger-total-earned">&mdash;</span></p>
                 <p class="text-[10px] text-emerald-200/60 mt-0.5">Total Earned</p>
               </div>
               <div class="rounded-xl bg-white/8 px-3 py-2.5 text-center">
-                <p class="text-base font-extrabold text-white"><span id="ledger-total-spent">0</span></p>
+                <p class="text-base font-extrabold text-white"><span id="ledger-total-spent">&mdash;</span></p>
                 <p class="text-[10px] text-emerald-200/60 mt-0.5">Total Spent</p>
               </div>
               <div class="rounded-xl bg-white/8 px-3 py-2.5 text-center">
-                <p class="text-base font-extrabold text-white"><span id="ledger-pending">0</span></p>
+                <p class="text-base font-extrabold text-white"><span id="ledger-pending">&mdash;</span></p>
                 <p class="text-[10px] text-emerald-200/60 mt-0.5">Pending</p>
               </div>
             </div>
@@ -891,7 +911,7 @@
               <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="receipt" class="h-6 w-6"></i></div>
                 <p class="text-sm font-extrabold text-[#0B1F17]">No transactions yet</p>
-                <p class="text-xs text-slate-500 max-w-xs">Your credit history will appear here. New users get +100 Welcome Bonus on signup.</p>
+                <p class="text-xs text-slate-500 max-w-xs">Your credit history will appear here after your first completed transaction.</p>
               </div>
             </div>
 
@@ -913,7 +933,7 @@
               <div class="empty-state py-8">
                 <div class="empty-state-icon"><i data-lucide="swords" class="h-6 w-6"></i></div>
                 <p class="text-sm font-extrabold text-[#0B1F17]">No active duels right now</p>
-                <p class="text-xs text-slate-500 max-w-xs">New skill duels are posted weekly. Check back on Monday for
+                <p class="text-xs text-slate-500 max-w-xs">New skill duels are posted weekly. Check back when a duel is published for
                   the next round of challenges and earn bonus credits.</p>
                 <button
                   class="mt-1 rounded-xl border border-slate-200 px-4 py-2 text-xs font-extrabold text-ink transition hover:border-[#B9F044] hover:text-[#2F6F11]">Notify
@@ -1149,6 +1169,42 @@
     }
 
     // ── Render sessions ───────────────────────────────────────────────
+    function renderMentors(mentors) {
+      const grid = document.getElementById('mentors-grid');
+      const empty = document.getElementById('mentors-empty');
+      if (!grid) return;
+      const cta = document.getElementById('become-mentor-card');
+      grid.querySelectorAll('.mentor-card:not(#become-mentor-card)').forEach(card => card.remove());
+      if (!mentors || mentors.length === 0) {
+        empty?.classList.remove('hidden');
+        return;
+      }
+      empty?.classList.add('hidden');
+      mentors.forEach(mentor => {
+        const name = mentor.full_name || 'Unnamed mentor';
+        const initials = name.split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase();
+        const topics = Array.isArray(mentor.topics) ? mentor.topics : [];
+        const card = document.createElement('article');
+        card.className = 'mentor-card';
+        card.innerHTML = `<div class="flex items-center gap-3"><div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#B9F044] text-sm font-extrabold">${initials}</div><div class="min-w-0"><p class="truncate text-sm font-extrabold">${escapeHtml(name)}</p><p class="text-xs text-slate-500">${escapeHtml(mentor.department || '')}${mentor.year ? ` · ${escapeHtml(mentor.year)}` : ''}</p></div></div><div class="mt-3 flex flex-wrap gap-1.5">${topics.map(topic => `<span class="tag">${escapeHtml(topic)}</span>`).join('')}</div><p class="mt-3 text-xs text-slate-500">${escapeHtml(mentor.bio || '')}</p>`;
+        grid.insertBefore(card, cta);
+      });
+    }
+
+    function renderLeaderboard(rows) {
+      const container = document.getElementById('leaderboard-rows');
+      if (!container) return;
+      if (!rows || rows.length === 0) {
+        container.innerHTML = '<p class="py-5 text-center text-xs text-slate-400">Leaderboard data will appear after members complete activities.</p>';
+        return;
+      }
+      container.innerHTML = rows.slice(0, 10).map((row, index) => `<div class="flex items-center gap-2.5"><span class="w-5 text-right text-xs font-extrabold ${index === 0 ? 'text-amber-500' : 'text-slate-400'}">${index + 1}</span><div class="flex h-7 w-7 items-center justify-center rounded-full bg-violet-100 text-[10px] font-extrabold text-violet-700">${escapeHtml((row.full_name || '?').slice(0, 2).toUpperCase())}</div><span class="flex-1 truncate text-xs font-bold text-slate-700">${escapeHtml(row.full_name || 'Unnamed member')}</span><span class="rounded-full bg-violet-50 px-2 py-1 text-[10px] font-bold text-violet-700">${Number(row.xp) || 0} XP</span></div>`).join('');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[character]);
+    }
+
     function renderSessions(sessions) {
       if (!sessions || sessions.length === 0) return;
       const upcomingEl = document.getElementById('sessions-upcoming');
@@ -1252,7 +1308,35 @@
     }
 
     // ── Main load function ────────────────────────────────────────────
+    function renderDemoDashboard() {
+      const demo = window.GYANSETU_DEMO;
+      renderUser(demo.profile, 'demo@gyansetu.local');
+      renderSessions(demo.sessions);
+      renderLedger(demo.ledger);
+      document.getElementById('stat-sessions').textContent = '3';
+      document.getElementById('stat-streak').textContent = demo.profile.streak;
+      document.getElementById('duel-rank').textContent = '12';
+      document.querySelectorAll('.skeleton').forEach(element => element.remove());
+      const empty = document.getElementById('mentors-empty');
+      if (empty) empty.classList.add('hidden');
+      const grid = document.getElementById('mentors-grid');
+      if (grid) {
+        const cta = document.getElementById('become-mentor-card');
+        grid.querySelectorAll('.mentor-card:not(#become-mentor-card)').forEach(card => card.remove());
+        demo.mentors.forEach(mentor => {
+          const card = document.createElement('div');
+          card.className = 'mentor-card';
+          card.innerHTML = `<div class="flex items-center gap-3"><div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#B9F044] text-sm font-extrabold">${mentor.avatar}</div><div><p class="text-sm font-extrabold">${mentor.name}</p><p class="text-xs text-slate-500">${mentor.department} · ${mentor.year}</p></div></div><div class="mt-3 flex flex-wrap gap-1.5">${mentor.topics.map(topic => `<span class="tag">${topic}</span>`).join('')}</div><p class="mt-3 text-xs text-slate-500">${mentor.bio}</p>`;
+          grid.insertBefore(card, cta);
+        });
+      }
+    }
+
     async function loadDashboard() {
+      if (new URLSearchParams(window.location.search).get('demo') === '1') {
+        renderDemoDashboard();
+        return;
+      }
       const { data: { session } } = await sbClient.auth.getSession();
       if (!session) { window.location.href = 'login.html'; return; }
 
@@ -1264,23 +1348,21 @@
         .from('profiles').select('*').eq('id', userId).single();
       renderUser(profile, email);
 
-      // Check if welcome bonus was just received (first load)
-      if (profile && !profile.welcome_bonus_given) {
-        const { data: bonus } = await sbClient.rpc('give_welcome_bonus', { p_user_id: userId });
-        if (bonus?.success) {
-          showToast('🎉 +100 Welcome Bonus! Welcome to GyanSetu!');
-          // Refresh profile to show updated balance
-          const { data: updated } = await sbClient.from('profiles').select('*').eq('id', userId).single();
-          renderUser(updated, email);
-        }
-      }
+      // Fetch live mentor directory, sessions, and leaderboard data.
+      const { data: mentors } = await sbClient.from('profiles')
+        .select('id, full_name, department, year, topics, bio, role, availability')
+        .eq('role', 'mentor').neq('id', userId).order('full_name');
+      renderMentors(mentors);
 
-      // Fetch sessions
       const { data: sessions } = await sbClient
         .from('sessions').select('*')
         .or(`learner_id.eq.${userId},mentor_id.eq.${userId}`)
         .order('created_at', { ascending: false }).limit(20);
       renderSessions(sessions);
+
+      const { data: leaderboard } = await sbClient.from('profiles')
+        .select('full_name, xp').order('xp', { ascending: false }).limit(10);
+      renderLeaderboard(leaderboard);
 
       // Fetch credit ledger (from new credit_ledger table)
       const { data: ledger } = await sbClient
@@ -1288,6 +1370,10 @@
         .eq('user_id', userId)
         .order('created_at', { ascending: false }).limit(50);
       renderLedger(ledger);
+      const rank = (leaderboard || []).findIndex(row => row.id === userId);
+      document.getElementById('duel-rank').textContent = rank >= 0 ? rank + 1 : '—';
+      document.getElementById('stat-streak').textContent = profile?.streak ?? '—';
+      document.getElementById('sidebar-streak').textContent = profile?.streak ?? '—';
 
       // Remove skeletons
       setTimeout(() => {
@@ -1319,13 +1405,21 @@
       window.location.href = 'login.html';
     }
 
-    /* ── Sidebar active nav ── */
-    document.querySelectorAll('.sidebar-link').forEach(link => {
+    /* ── Navigation: sections scroll smoothly; destinations get a soft transition ── */
+    const pageTransition = document.getElementById('page-transition');
+    document.querySelectorAll('.sidebar-link[href^="#"]').forEach(link => {
       link.addEventListener('click', function () {
-        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-        if (!this.href.includes('room.html') && !this.href.includes('index.html')) {
-          this.classList.add('active');
-        }
+        document.querySelectorAll('.sidebar-link').forEach(item => item.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    document.querySelectorAll('.sidebar-link.page-link').forEach(link => {
+      link.addEventListener('click', function (event) {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        this.classList.add('nav-transitioning');
+        pageTransition.classList.add('is-visible');
+        window.setTimeout(() => { window.location.href = this.href; }, 280);
       });
     });
 
@@ -1374,13 +1468,14 @@
       });
       btn.classList.add('bg-[#0B1F17]', 'text-[#B9F044]', 'border-[#0B1F17]');
     }
-    function confirmBooking() {
+    async function confirmBooking() {
+      const { data: { session } } = await sbClient.auth.getSession();
+      if (!session) { window.location.href = 'login.html'; return; }
+      const selected = document.querySelector('#slot-grid button.bg-\\[\\#0B1F17\\]');
+      if (!selected) { showToast('Select an available time slot first.', 'info'); return; }
       closeModal();
-      const toast = document.createElement('div');
-      toast.className = 'fixed bottom-6 right-6 z-50 rounded-2xl bg-[#0B1F17] px-5 py-3 text-sm font-bold text-[#B9F044] shadow-2xl';
-      toast.textContent = '✓ Session booked! Joining room…';
-      document.body.appendChild(toast);
-      setTimeout(() => { toast.remove(); window.location.href = 'room.html'; }, 2000);
+      showToast('Booking request saved. Credits remain protected until completion.');
+      setTimeout(() => { window.location.href = 'session.html'; }, 900);
     }
 
     /* ── Animate progress bars ── */
@@ -1396,6 +1491,9 @@
   </script>
   <script>
     const performanceCanvas = document.getElementById('performanceChart');
+    const chartValues = new URLSearchParams(window.location.search).get('demo') === '1'
+      ? window.GYANSETU_DEMO.chart
+      : [];
     if (window.Chart && performanceCanvas) {
       const chartContext = performanceCanvas.getContext('2d');
       const chartFill = chartContext.createLinearGradient(0, 0, 0, 260);
@@ -1408,7 +1506,7 @@
           labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           datasets: [{
             label: 'Credits earned',
-            data: [2, 5, 3, 8, 6, 9, 12],
+            data: chartValues,
             borderColor: '#7C3AED',
             backgroundColor: chartFill,
             fill: true,

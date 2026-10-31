@@ -1,0 +1,138 @@
+/* =============================================
+   GyanSetu — Smart Matching Dashboard Styles
+   ============================================= */
+
+/* Search input field */
+.search-input {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-input:focus {
+  border-color: #B9F044;
+  box-shadow: 0 0 0 3px rgba(185, 240, 68, 0.18);
+}
+.search-input::placeholder { color: #94a3b8; }
+
+/* Filter select dropdowns */
+.filter-select {
+  appearance: none;
+  border-radius: 0.75rem;
+  border: 1.5px solid #e2e8f0;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+  padding: 0.6rem 2.25rem 0.6rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.filter-select:focus {
+  border-color: #B9F044;
+}
+
+/* Peer cards */
+.peer-card {
+  border-radius: 1.25rem;
+  border: 1.5px solid #f1f5f9;
+  background: #fff;
+  padding: 1.25rem;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+.peer-card:hover {
+  transform: translateY(-4px);
+  border-color: #B9F044;
+  box-shadow: 0 12px 32px -10px rgba(11, 31, 23, 0.14);
+}
+
+/* Availability indicator dot */
+.avail-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.avail-online  { background: #22c55e; box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2); }
+.avail-busy    { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
+.avail-offline { background: #cbd5e1; }
+
+/* Skill tag */
+.skill-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.5rem;
+  background: #f1f5f9;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #64748b;
+  transition: background 0.15s, color 0.15s;
+}
+.skill-tag:hover {
+  background: rgba(185, 240, 68, 0.2);
+  color: #2F6F11;
+}
+
+/* Active filter tag (selected) */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-chip:hover {
+  border-color: #B9F044;
+  background: rgba(185, 240, 68, 0.1);
+  color: #2F6F11;
+}
+.filter-chip.active {
+  border-color: #B9F044;
+  background: #B9F044;
+  color: #0B1F17;
+}
+
+/* Results count label */
+.results-count {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #64748b;
+}
+.results-count strong {
+  color: #0B1F17;
+}
+
+/* Empty state */
+.peers-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+/* Fade-in animation for cards */
+@keyframes peerFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.peer-card-enter {
+  animation: peerFadeIn 0.3s ease both;
+}

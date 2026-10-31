@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function ensureCreditAccount() {
     // Upsert: if user doesn't exist, give them 50 starter credits
     const { error } = await sb.from('credits').upsert(
-      { username: myName, balance: 50 },
+      { username: myName, balance: 0 },
       { onConflict: 'username', ignoreDuplicates: true }
     );
     if (error) console.warn('ensureCreditAccount:', error.message);
@@ -181,14 +181,16 @@ document.addEventListener('DOMContentLoaded', () => {
       // Broadcast result to mentor
       channel.send({ type: 'broadcast', event: 'quiz-result', payload: { passed: true, correct, total } });
 
-      // Deduct credits from learner and credit mentor — done via DB RPC
-      await transferCredits(sessionData.learner_name, sessionData.mentor_name, sessionData.credits_offered, sessionId);
-      await sb.from('sessions').update({ status: 'complete', quiz_passed: true }).eq('id', sessionId);
-      await refreshCreditDisplay();
-
-      const deducted = sessionData.credits_offered;
+      // Passing the quiz only unlocks completion; credits remain protected until the mentor confirms.
+      const { error: awaitingError } = await sb.from('sessions').update({ quiz_passed: true, status: 'awaiting_completion' }).eq('id', sessionId);
+      if (awaitingError) {
+        resultEl.textContent = 'The quiz passed, but the session could not be updated. Please try again.';
+        resultEl.className = 'mt-3 text-center text-sm font-bold rounded-xl py-2 bg-red-50 text-red-600';
+        return;
+      }
+      channel.send({ type: 'broadcast', event: 'quiz-passed', payload: { correct, total } });
       document.getElementById('done-msg').textContent =
-        `${deducted} credits transferred to ${sessionData.mentor_name}. Great work!`;
+        `Your mentor is confirming completion. Your ${sessionData.credits_offered} credits remain protected until then.`;
       setTimeout(() => showStep('step-done'), 1200);
 
     } else {
@@ -217,6 +219,20 @@ document.addEventListener('DOMContentLoaded', () => {
       quizData = payload;
       renderQuizForLearner(payload.questions);
       showStep('step-quiz');
+    });
+
+    channel.on('broadcast', { event: 'session-complete' }, async () => {
+      sessionData = { ...sessionData, status: 'complete', credits_released: true };
+      await refreshCreditDisplay();
+      document.getElementById('done-msg').textContent =
+        `${sessionData.credits_offered} credits released to ${sessionData.mentor_name}. Thanks for learning!`;
+      const protectionNotice = document.querySelector('#step-done .border-amber-200');
+      if (protectionNotice) {
+        protectionNotice.classList.replace('border-amber-200', 'border-green-200');
+        protectionNotice.classList.replace('bg-amber-50', 'bg-green-50');
+        protectionNotice.innerHTML = '<div class="flex items-center gap-2 font-extrabold text-green-800"><i data-lucide="badge-check" class="h-4 w-4"></i> Credits released securely</div><p class="mt-1 text-green-700">The session is complete and the mentor received the agreed credits.</p>';
+        lucide.createIcons();
+      }
     });
 
     channel.subscribe();
@@ -441,14 +457,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('send-quiz-btn').disabled = true;
     document.getElementById('quiz-sent-msg').classList.remove('hidden');
 
-    // Listen for quiz result
-    channel.on('broadcast', { event: 'quiz-result' }, async ({ payload }) => {
+    // Listen for quiz result. Passing unlocks the mentor's explicit completion step.
+    channel.on('broadcast', { event: 'quiz-result' }, ({ payload }) => {
       if (payload.passed) {
-        await refreshCreditDisplay();
-        document.getElementById('mentor-done-msg').textContent =
-          `${sessionData.credits_offered} credits earned from ${sessionData.learner_name}. Well done!`;
-        document.getElementById('mentor-active-panel').classList.add('hidden');
-        document.getElementById('mentor-done-panel').classList.remove('hidden');
+        document.getElementById('quiz-sent-msg').classList.add('hidden');
+        document.getElementById('mentor-completion-actions').classList.remove('hidden');
+        document.getElementById('send-quiz-btn').disabled = true;
+        lucide.createIcons();
       } else {
         showToast(`Learner failed (${payload.correct}/${payload.total}). Quiz stays open for retry.`);
         document.getElementById('send-quiz-btn').disabled = false;
@@ -457,30 +472,72 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Mentor confirmation is the only event that releases protected credits.
+  document.getElementById('complete-session-btn').addEventListener('click', async () => {
+    if (!activeSessionId || !sessionData) return;
+    const button = document.getElementById('complete-session-btn');
+    button.disabled = true;
+    button.textContent = 'Releasing protected credits…';
+
+    const { error } = await transferCredits(
+      sessionData.learner_name,
+      sessionData.mentor_name,
+      sessionData.credits_offered,
+      activeSessionId
+    );
+    if (error) {
+      button.disabled = false;
+      button.textContent = 'Mark Session Complete & Release Credits';
+      showToast('Credits were not moved. Please try again.');
+      return;
+    }
+
+    const { error: statusError } = await sb.from('sessions')
+      .update({ status: 'complete', completed_at: new Date().toISOString(), credits_released: true })
+      .eq('id', activeSessionId)
+      .eq('status', 'awaiting_completion');
+    if (statusError) {
+      button.disabled = false;
+      button.textContent = 'Mark Session Complete & Release Credits';
+      showToast('Could not finalize the session.');
+      return;
+    }
+
+    await refreshCreditDisplay();
+    document.getElementById('mentor-done-msg').textContent =
+      `${sessionData.credits_offered} credits released to ${sessionData.mentor_name}. Session closed securely.`;
+    document.getElementById('mentor-active-panel').classList.add('hidden');
+    document.getElementById('mentor-done-panel').classList.remove('hidden');
+    channel.send({ type: 'broadcast', event: 'session-complete', payload: { credits_released: true } });
+  });
+
   // ═══════════════════════════════════════════════════════════════════════════
   // CREDIT TRANSFER  (client-side with optimistic DB writes)
   // ═══════════════════════════════════════════════════════════════════════════
   async function transferCredits(from, to, amount, sid) {
-    // 1. Deduct from learner
-    const { data: fromRow } = await sb.from('credits').select('balance').eq('username', from).single();
-    await sb.from('credits').update({ balance: fromRow.balance - amount }).eq('username', from);
+    // Guard against duplicate release and surface every database failure.
+    const { data: existingLog, error: logCheckError } = await sb.from('credit_log')
+      .select('id').eq('session_id', sid).eq('reason', 'session_complete').maybeSingle();
+    if (logCheckError) return { error: logCheckError };
+    if (existingLog) return { error: new Error('Credits already released for this session.') };
 
-    // 2. Credit mentor
-    const { data: toRow } = await sb.from('credits').select('balance').eq('username', to).maybeSingle();
-    if (toRow) {
-      await sb.from('credits').update({ balance: toRow.balance + amount }).eq('username', to);
-    } else {
-      await sb.from('credits').insert({ username: to, balance: 50 + amount });
-    }
+    const { data: fromRow, error: fromError } = await sb.from('credits').select('balance').eq('username', from).single();
+    if (fromError || !fromRow || fromRow.balance < amount) return { error: fromError || new Error('Insufficient learner credits.') };
+    const { error: debitError } = await sb.from('credits').update({ balance: fromRow.balance - amount }).eq('username', from).gte('balance', amount);
+    if (debitError) return { error: debitError };
 
-    // 3. Log the transfer
-    await sb.from('credit_log').insert({
-      session_id  : sid,
-      from_user   : from,
-      to_user     : to,
-      amount,
-      reason      : 'session_complete',
+    const { data: toRow, error: mentorReadError } = await sb.from('credits').select('balance').eq('username', to).maybeSingle();
+    if (mentorReadError) return { error: mentorReadError };
+    const mentorWrite = toRow
+      ? sb.from('credits').update({ balance: toRow.balance + amount }).eq('username', to)
+      : sb.from('credits').insert({ username: to, balance: amount });
+    const { error: mentorError } = await mentorWrite;
+    if (mentorError) return { error: mentorError };
+
+    const { error: transferLogError } = await sb.from('credit_log').insert({
+      session_id: sid, from_user: from, to_user: to, amount, reason: 'session_complete'
     });
+    return { error: transferLogError || null };
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

@@ -87,7 +87,7 @@
 
       <label class="block mb-3">
         <span class="label-text">Your Name</span>
-        <input id="input-name" type="text" placeholder="e.g. Priya or Rahul" maxlength="20" class="input-field" />
+        <input id="input-name" type="text" placeholder="Enter your name" maxlength="20" class="input-field" />
       </label>
 
       <label class="block mb-5">
@@ -139,7 +139,7 @@
           </label>
           <label class="block">
             <span class="label-text">Credits to offer</span>
-            <input id="credits-input" type="number" min="1" max="50" value="10" class="input-field" />
+            <input id="credits-input" type="number" min="1" max="50" placeholder="Enter credits to offer" class="input-field" />
           </label>
           <label class="block">
             <span class="label-text">Note (optional)</span>
@@ -188,7 +188,7 @@
               <i data-lucide="clock" class="h-4 w-4 text-[#2F6F11]"></i>
               <p class="text-xs font-bold text-[#2F6F11]">Waiting for mentor to send you a verification quiz&hellip;</p>
             </div>
-            <p class="text-[11px] text-slate-500 mt-1 ml-6">Once you complete the quiz, the mentor marks the session done and credits are transferred.</p>
+            <p class="text-[11px] text-slate-500 mt-1 ml-6">Pass the quiz, then your mentor confirms completion. Credits stay protected until that final confirmation.</p>
           </div>
           <a id="open-collab-btn" href="#" target="_blank"
             class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#B9F044]/40 bg-[#F4FBEA] py-2.5 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044]/20 transition">
@@ -224,7 +224,11 @@
             <i data-lucide="check-circle-2" class="h-8 w-8"></i>
           </div>
           <p class="text-xl font-extrabold text-[#0B1F17] mb-1">Session Complete!</p>
-          <p id="done-msg" class="text-xs text-slate-500 mb-6"></p>
+          <p id="done-msg" class="text-xs text-slate-500 mb-3"></p>
+          <div class="mx-auto mb-6 max-w-sm rounded-xl border border-amber-200 bg-amber-50 p-3 text-left text-[11px] text-amber-800">
+            <div class="flex items-center gap-2 font-extrabold"><i data-lucide="lock-keyhole" class="h-4 w-4"></i> Credits remain protected</div>
+            <p class="mt-1">Your mentor must confirm completion before the transfer is released.</p>
+          </div>
           <div class="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
             <a href="session.html" class="rounded-xl bg-[#0B1F17] px-6 py-2.5 text-xs font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Book Another Session</a>
             <a href="dashboard.html" class="rounded-xl border border-slate-200 px-6 py-2.5 text-xs font-extrabold text-[#0B1F17] transition hover:border-[#B9F044]">Go to Dashboard</a>
@@ -284,12 +288,16 @@
           </a>
 
           <!-- Quiz builder -->
+          <div id="mentor-completion-bar" class="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-[11px] text-amber-800">
+            <div class="flex items-center gap-2 font-extrabold"><i data-lucide="shield-check" class="h-4 w-4"></i> Credits protected in escrow</div>
+            <p class="mt-1">Credits move only after the learner passes and you confirm the session is complete.</p>
+          </div>
           <div class="border-t border-slate-100 pt-4">
             <div class="flex items-center gap-2 mb-3">
               <i data-lucide="file-pen-line" class="h-4 w-4 text-[#2F6F11]"></i>
               <p class="text-xs font-extrabold text-[#0B1F17]">Build Verification Quiz</p>
             </div>
-            <p class="text-[11px] text-slate-500 mb-3">Add up to 3 MCQ questions. The learner must pass to confirm the session.</p>
+            <p class="text-[11px] text-slate-500 mb-3">Add up to 3 MCQ questions. The learner must pass, then you confirm completion to release the protected credits.</p>
             <div id="quiz-builder" class="space-y-4"></div>
             <button id="add-question-btn" class="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#2F6F11] hover:underline">
               <i data-lucide="plus-circle" class="h-4 w-4"></i> Add Question
@@ -300,6 +308,11 @@
             <p id="quiz-sent-msg" class="hidden mt-2 text-center text-xs text-[#2F6F11] font-bold">
               <i data-lucide="check" class="inline h-3.5 w-3.5"></i> Quiz sent! Waiting for learner&rsquo;s response&hellip;
             </p>
+            <div id="mentor-completion-actions" class="hidden mt-4 rounded-xl border border-green-200 bg-green-50 p-4">
+              <div class="flex items-center gap-2 text-xs font-extrabold text-green-800"><i data-lucide="badge-check" class="h-4 w-4"></i> Learner passed the verification</div>
+              <p class="mt-1 text-[11px] text-green-700">Confirm the session is complete to release the protected credits.</p>
+              <button id="complete-session-btn" class="mt-3 w-full rounded-xl bg-green-700 py-2.5 text-xs font-extrabold text-white transition hover:bg-green-800">Mark Session Complete &amp; Release Credits</button>
+            </div>
           </div>
         </div>
       </div>
