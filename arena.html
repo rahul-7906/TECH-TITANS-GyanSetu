@@ -310,19 +310,26 @@
         <h3 id="winner-title" class="text-2xl font-black text-white">Team ByteForce Wins!</h3>
         <p id="winner-desc" class="text-xs text-slate-300 mt-2 mb-6">Incredible teamwork on the rapid algorithmic sprint!</p>
 
-        <!-- Credit Award Card -->
+        <!-- Victory Rewards Card -->
         <div id="credit-award-box" class="mx-auto mb-6 rounded-2xl border border-[#B9F044]/30 bg-[#B9F044]/10 p-4 text-center">
           <p class="text-[11px] font-bold uppercase tracking-wider text-[#B9F044]">Team Victory Reward</p>
-          <p class="text-2xl font-black text-white mt-1"><span id="reward-credits-amount">+20</span> Credits</p>
-          <p class="text-[10px] text-emerald-200/70 mt-1">Recorded in your official Credit Ledger</p>
+          <div class="flex items-center justify-center gap-4 mt-1">
+            <p class="text-2xl font-black text-white"><span id="reward-credits-amount">+20</span> <span class="text-xs text-[#B9F044]">Credits</span></p>
+            <span class="text-slate-500">|</span>
+            <p class="text-2xl font-black text-white"><span id="reward-rr-amount">+25</span> <span class="text-xs text-[#B9F044]">RR</span></p>
+          </div>
+          <p class="text-[10px] text-emerald-200/70 mt-1">Recorded in your Credit &amp; Competitive RR Ledgers</p>
         </div>
 
-        <div class="flex gap-3 justify-center">
-          <button onclick="resetMatch()" class="rounded-xl bg-[#0B1F17] border border-[#B9F044] px-5 py-2.5 text-xs font-extrabold text-[#B9F044] hover:bg-[#0B1F17]/80 transition">
+        <div class="flex flex-wrap gap-2.5 justify-center">
+          <button onclick="resetMatch()" class="rounded-xl bg-[#0B1F17] border border-[#B9F044] px-4 py-2.5 text-xs font-extrabold text-[#B9F044] hover:bg-[#0B1F17]/80 transition">
             Rematch 🔄
           </button>
-          <a href="dashboard.html" class="rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-6 py-2.5 text-xs font-extrabold text-[#0B1F17] hover:brightness-105 transition shadow-sm">
-            Go to Dashboard &rarr;
+          <a href="ranking.html" class="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-white/20 transition">
+            Leaderboard 🏆
+          </a>
+          <a href="dashboard.html" class="rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-5 py-2.5 text-xs font-extrabold text-[#0B1F17] hover:brightness-105 transition shadow-sm">
+            Dashboard &rarr;
           </a>
         </div>
       </div>
@@ -335,6 +342,7 @@
   <script src="js/supabase-config.js"></script>
   <script src="js/demo-data.js"></script>
   <script src="js/credits-config.js"></script>
+  <script src="js/rr-config.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>lucide.createIcons();</script>
 
@@ -638,13 +646,16 @@
         confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
       }
 
-      // If user's team won, award real platform credits!
+      // If user's team won, award real platform credits & RR!
       const awardBox = document.getElementById('credit-award-box');
       if (isMyTeamWinner && myUser) {
         awardBox.classList.remove('hidden');
         document.getElementById('reward-credits-amount').textContent = `+${CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE}`;
+        const rrRewardAmount = (typeof RR_CONFIG !== 'undefined') ? RR_CONFIG.REWARDS.TEAM_CHALLENGE_WIN : 25;
+        const rewardRrEl = document.getElementById('reward-rr-amount');
+        if (rewardRrEl) rewardRrEl.textContent = `+${rrRewardAmount}`;
 
-        // Call centralized transaction engine
+        // Call centralized credit transaction engine
         const res = await window.recordCreditTransaction(sb, {
           userId: myUser.id,
           amount: CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE,
@@ -658,9 +669,39 @@
           document.getElementById('user-balance-display').textContent = res.newBalance;
           addCombatLog(`🎉 +${CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE} Platform Credits deposited into your ledger!`);
         }
-      } else {
-        if (!isMyTeamWinner) {
-          awardBox.classList.add('hidden');
+
+        // Call centralized competitive RR transaction engine (+25 RR)
+        if (typeof window.recordRRTransaction === 'function') {
+          const rrRes = await window.recordRRTransaction(sb, {
+            userId: myUser.id,
+            amount: rrRewardAmount,
+            reason: `Team Race Victory: ${winner.name}`,
+            referenceType: 'TEAM_CHALLENGE',
+            referenceId: `race_win_${Date.now()}`
+          });
+          if (rrRes.success) {
+            addCombatLog(`🏆 +${rrRewardAmount} Competitive RR awarded! (${rrRes.newRR} RR &bull; ${rrRes.newRank.fullName})`);
+          }
+        }
+      } else if (!isMyTeamWinner && myUser) {
+        awardBox.classList.add('hidden');
+        // Competitive match loss: -15 RR (subject to rank protection buffer)
+        if (typeof window.recordRRTransaction === 'function') {
+          const lossAmount = (typeof RR_CONFIG !== 'undefined') ? RR_CONFIG.LOSSES.TEAM_CHALLENGE_LOSS : 15;
+          const lossRes = await window.recordRRTransaction(sb, {
+            userId: myUser.id,
+            amount: -lossAmount,
+            reason: `Team Race Defeat to ${winner.name}`,
+            referenceType: 'TEAM_CHALLENGE',
+            referenceId: `race_loss_${Date.now()}`
+          });
+          if (lossRes.success) {
+            if (lossRes.protectionUsed) {
+              addCombatLog(`🛡️ Rank Protection Buffer activated! Demotion absorbed.`);
+            } else {
+              addCombatLog(`📉 Match Defeat: -${lossAmount} RR (${lossRes.newRR} RR)`);
+            }
+          }
         }
       }
 

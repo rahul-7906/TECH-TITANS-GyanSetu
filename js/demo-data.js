@@ -14,12 +14,20 @@ const DEMO_PROFILES = [
     role: 'learner',
     credits: 155,
     xp: 680,
-    streak: 5,
+    streak: 12,
     total_earned: 260,
     total_spent: 105,
     pending_credits: 0,
     welcome_bonus_given: true,
-    badges: ['welcome', 'first_session', 'note_maker', 'fast_solver']
+    rr: 1245,
+    highest_rr: 1245,
+    rank_protection_count: 1,
+    challenge_wins: 14,
+    country: 'India',
+    state: 'Uttarakhand',
+    city: 'Haldwani',
+    college: 'Graphic Era Hill University',
+    badges: ['welcome', 'first_session', 'note_maker', 'fast_solver', 'rank_climber']
   },
   {
     id: 'demo-user-2',
@@ -34,7 +42,15 @@ const DEMO_PROFILES = [
     total_spent: 140,
     pending_credits: 0,
     welcome_bonus_given: true,
-    badges: ['welcome', 'first_session', 'first_teaching', 'helpful_mentor', 'streak_7']
+    rr: 1840,
+    highest_rr: 1880,
+    rank_protection_count: 1,
+    challenge_wins: 22,
+    country: 'India',
+    state: 'Uttarakhand',
+    city: 'Dehradun',
+    college: 'Graphic Era University',
+    badges: ['welcome', 'first_session', 'first_teaching', 'helpful_mentor', 'streak_7', 'rank_climber']
   },
   {
     id: 'demo-user-3',
@@ -49,6 +65,14 @@ const DEMO_PROFILES = [
     total_spent: 110,
     pending_credits: 0,
     welcome_bonus_given: true,
+    rr: 1680,
+    highest_rr: 1720,
+    rank_protection_count: 1,
+    challenge_wins: 18,
+    country: 'India',
+    state: 'Uttarakhand',
+    city: 'Haldwani',
+    college: 'Graphic Era Hill University',
     badges: ['welcome', 'first_session', 'note_maker', 'fast_solver']
   }
 ];
@@ -196,13 +220,198 @@ window.GYANSETU_DEMO = {
       created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
     }
   ],
+  rr_ledger: [
+    {
+      id: 'rr-tx-1',
+      user_id: currentDemoProfile.id,
+      amount: 20,
+      previous_rr: 1225,
+      new_rr: 1245,
+      reason: 'Challenge Won: Rotated Array Binary Search',
+      reference_type: 'CHALLENGE',
+      reference_id: 'chal_dsa',
+      status: 'COMPLETED',
+      created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'rr-tx-2',
+      user_id: currentDemoProfile.id,
+      amount: 25,
+      previous_rr: 1200,
+      new_rr: 1225,
+      reason: 'Team Race Victory: Team ByteForce',
+      reference_type: 'TEAM_CHALLENGE',
+      reference_id: 'race_arena_1',
+      status: 'COMPLETED',
+      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'rr-tx-3',
+      user_id: currentDemoProfile.id,
+      amount: -10,
+      previous_rr: 1210,
+      new_rr: 1200,
+      reason: 'Challenge Lost: Distributed Cache Consistency',
+      reference_type: 'CHALLENGE',
+      reference_id: 'chal_cache_loss',
+      status: 'COMPLETED',
+      created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'rr-tx-4',
+      user_id: currentDemoProfile.id,
+      amount: 15,
+      previous_rr: 1195,
+      new_rr: 1210,
+      reason: 'Successful Live Learning: Dynamic Programming with Aarav Sharma',
+      reference_type: 'SESSION',
+      reference_id: 'demo-sess-1',
+      status: 'COMPLETED',
+      created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+    }
+  ],
   chart: [15, 30, 25, 45, 60, 90, 155],
   leaderboard: [
-    { id: 'lead-1', full_name: 'Aarav Sharma', xp: 1420 },
-    { id: 'lead-2', full_name: 'Priya Mehta', xp: 980 },
-    { id: currentDemoProfile.id, full_name: currentDemoProfile.full_name, xp: currentDemoProfile.xp },
-    { id: 'lead-4', full_name: 'Rohan Gupta', xp: 310 },
-    { id: 'lead-5', full_name: 'Sneha Patil', xp: 240 }
+    {
+      id: 'lead-1',
+      full_name: 'Arjun Rawat',
+      rr: 3120,
+      xp: 3850,
+      streak: 18,
+      challenge_wins: 48,
+      weekly_rr: 125,
+      monthly_rr: 340,
+      country: 'India',
+      state: 'Uttarakhand',
+      city: 'Haldwani',
+      college: 'Graphic Era Hill University'
+    },
+    {
+      id: 'lead-2',
+      full_name: 'Devika Sen',
+      rr: 2890,
+      xp: 3200,
+      streak: 21,
+      challenge_wins: 41,
+      weekly_rr: 95,
+      monthly_rr: 280,
+      country: 'India',
+      state: 'Uttarakhand',
+      city: 'Roorkee',
+      college: 'IIT Roorkee'
+    },
+    {
+      id: 'lead-3',
+      full_name: 'Rohan Gupta',
+      rr: 2350,
+      xp: 2600,
+      streak: 14,
+      challenge_wins: 32,
+      weekly_rr: 65,
+      monthly_rr: 190,
+      country: 'India',
+      state: 'Uttarakhand',
+      city: 'Haldwani',
+      college: 'Graphic Era Hill University'
+    },
+    {
+      id: 'lead-4',
+      full_name: 'Riya Sharma',
+      rr: 1840,
+      xp: 1950,
+      streak: 8,
+      challenge_wins: 24,
+      weekly_rr: 80,
+      monthly_rr: 210,
+      country: 'India',
+      state: 'Uttarakhand',
+      city: 'Dehradun',
+      college: 'Graphic Era University'
+    },
+    {
+      id: 'lead-5',
+      full_name: 'Aarav Sharma',
+      rr: 1680,
+      xp: 1820,
+      streak: 9,
+      challenge_wins: 20,
+      weekly_rr: 45,
+      monthly_rr: 150,
+      country: 'India',
+      state: 'Uttarakhand',
+      city: 'Haldwani',
+      college: 'Graphic Era Hill University'
+    },
+    {
+      id: 'lead-6',
+      full_name: 'Sneha Deshmukh',
+      rr: 1540,
+      xp: 1420,
+      streak: 11,
+      challenge_wins: 19,
+      weekly_rr: 55,
+      monthly_rr: 170,
+      country: 'India',
+      state: 'Maharashtra',
+      city: 'Pune',
+      college: 'COEP Tech University'
+    },
+    {
+      id: 'lead-7',
+      full_name: 'Kunal Verma',
+      rr: 1390,
+      xp: 1150,
+      streak: 7,
+      challenge_wins: 16,
+      weekly_rr: 40,
+      monthly_rr: 120,
+      country: 'India',
+      state: 'Delhi',
+      city: 'New Delhi',
+      college: 'Delhi Technological University'
+    },
+    {
+      id: currentDemoProfile.id,
+      full_name: currentDemoProfile.full_name,
+      rr: currentDemoProfile.rr || 1245,
+      xp: currentDemoProfile.xp || 680,
+      streak: currentDemoProfile.streak || 12,
+      challenge_wins: currentDemoProfile.challenge_wins || 14,
+      weekly_rr: 45,
+      monthly_rr: 140,
+      country: currentDemoProfile.country || 'India',
+      state: currentDemoProfile.state || 'Uttarakhand',
+      city: currentDemoProfile.city || 'Haldwani',
+      college: currentDemoProfile.college || 'Graphic Era Hill University'
+    },
+    {
+      id: 'lead-9',
+      full_name: 'Tanvi Kulkarni',
+      rr: 1120,
+      xp: 890,
+      streak: 5,
+      challenge_wins: 11,
+      weekly_rr: 30,
+      monthly_rr: 95,
+      country: 'India',
+      state: 'Maharashtra',
+      city: 'Mumbai',
+      college: 'VJTI Mumbai'
+    },
+    {
+      id: 'lead-10',
+      full_name: 'Devansh Roy',
+      rr: 960,
+      xp: 720,
+      streak: 4,
+      challenge_wins: 9,
+      weekly_rr: 25,
+      monthly_rr: 80,
+      country: 'India',
+      state: 'Karnataka',
+      city: 'Bengaluru',
+      college: 'BMS College of Engineering'
+    }
   ]
 };
 
@@ -227,12 +436,20 @@ window.setDemoCustomUser = function(email, fullName, dept) {
     role: 'learner',
     credits: 155,
     xp: 750,
-    streak: 4,
+    streak: 12,
     total_earned: 260,
     total_spent: 105,
     pending_credits: 0,
     welcome_bonus_given: true,
-    badges: ['welcome', 'first_session', 'note_maker', 'fast_solver']
+    rr: 1245,
+    highest_rr: 1245,
+    rank_protection_count: 1,
+    challenge_wins: 14,
+    country: 'India',
+    state: 'Uttarakhand',
+    city: 'Haldwani',
+    college: 'Graphic Era Hill University',
+    badges: ['welcome', 'first_session', 'note_maker', 'fast_solver', 'rank_climber']
   };
   sessionStorage.setItem('gyansetu_demo_custom_user', JSON.stringify(custom));
   sessionStorage.setItem('gyansetu_demo_mode', 'true');

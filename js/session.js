@@ -635,8 +635,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }).eq('id', sessionId);
 
         channel?.send({ type: 'broadcast', event: 'student-satisfaction', payload: { satisfaction: 'yes' } });
+
+        // Award +15 RR for successful verified live learning
+        if (typeof window.recordRRTransaction === 'function') {
+          const { data: authData } = await sb.auth.getSession();
+          const uid = authData?.session?.user?.id || (sessionStorage.getItem('gyansetu_demo_mode') === 'true' ? 'demo-user-1' : null);
+          if (uid) {
+            await window.recordRRTransaction(sb, {
+              userId: uid,
+              amount: (typeof RR_CONFIG !== 'undefined') ? RR_CONFIG.REWARDS.SUCCESSFUL_LIVE_LEARNING : 15,
+              reason: 'Successful Live Learning Session Verified',
+              referenceType: 'SESSION',
+              referenceId: sessionId
+            });
+          }
+        }
       }
-      showToast('Thank you! Your confirmation and credit transfer are finalized.');
+      showToast('Thank you! Your confirmation and credit transfer are finalized (+15 RR awarded).');
     });
   }
 

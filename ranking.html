@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GyanSetu | Competitive Ranking & Leaderboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.config.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/credits-config.js"></script>
+  <script src="js/rr-config.js"></script>
+  <script src="js/demo-data.js"></script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAF6; color: #0B1F17; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .shadow-glow { box-shadow: 0 0 25px rgba(185, 240, 68, 0.25); }
+    .podium-card { transition: transform .25s ease, box-shadow .25s ease; }
+    .podium-card:hover { transform: translateY(-4px); }
+    .tab-active { background: #0B1F17; color: #B9F044; }
+    .tab-inactive { background: #FFFFFF; color: #475569; border: 1px solid #E2E8F0; }
+    .filter-chip.active { background: #0B1F17; color: #B9F044; border-color: #0B1F17; }
+    .filter-chip { background: #FFFFFF; color: #334155; border: 1px solid #E2E8F0; }
+    .filter-chip:hover:not(.active) { border-color: #B9F044; background: #F4FBEA; color: #2F6F11; }
+    /* Floating pinned user bar */
+    .user-pinned-bar {
+      box-shadow: 0 -8px 30px rgba(11, 31, 23, 0.12);
+      backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-28">
+
+  <!-- TOP NAV BAR -->
+  <header class="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 py-3.5 backdrop-blur-md sm:px-8">
+    <div class="flex items-center gap-3">
+      <a href="dashboard.html" class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0B1F17] text-[#B9F044] hover:bg-[#14532D] transition">
+        <i data-lucide="arrow-left" class="h-4 w-4"></i>
+      </a>
+      <div class="flex items-center gap-2">
+        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#B9F044] to-[#2F6F11]">
+          <i data-lucide="trophy" class="h-4 w-4 text-[#0B1F17]"></i>
+        </span>
+        <div>
+          <h1 class="text-base font-extrabold tracking-tight text-[#0B1F17] leading-none">Competitive Ladder</h1>
+          <p class="text-[11px] font-semibold text-slate-400 mt-0.5">Rank Rating &bull; Zero Credits Confusion</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats in Nav -->
+    <div class="flex items-center gap-2.5">
+      <div class="hidden sm:flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700">
+        <span>🪙 <strong id="nav-user-credits">155</strong> Credits</span>
+        <span class="text-slate-300">|</span>
+        <span>⭐ <strong id="nav-user-xp">680</strong> XP</span>
+      </div>
+      <div class="flex items-center gap-2 rounded-xl bg-[#0B1F17] px-3.5 py-1.5 text-xs font-black text-[#B9F044] shadow-sm">
+        <span id="nav-user-emblem" class="inline-block scale-75 origin-center"></span>
+        <span id="nav-user-rr">1,245 RR</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MOBILE VIEW TOGGLE (Leaderboard vs How Ranking Works) -->
+  <div class="lg:hidden mx-4 mt-4 flex rounded-xl border border-slate-200 bg-slate-100 p-1">
+    <button id="mobile-tab-board" onclick="switchMobileTab('board')" class="flex-1 rounded-lg py-2 text-xs font-extrabold tab-active transition">
+      🏆 Leaderboard
+    </button>
+    <button id="mobile-tab-rules" onclick="switchMobileTab('rules')" class="flex-1 rounded-lg py-2 text-xs font-extrabold text-slate-600 transition">
+      📘 How Ranking Works
+    </button>
+  </div>
+
+  <!-- MAIN CONTAINER (2-Column Layout on Desktop) -->
+  <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
+
+      <!-- ============================================================ -->
+      <!-- LEFT / MAIN: LEADERBOARD SYSTEM (7 Cols on LG, 8 on XL)     -->
+      <!-- ============================================================ -->
+      <section id="panel-leaderboard" class="lg:col-span-7 xl:col-span-8 space-y-6">
+
+        <!-- Banner Card -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#06130E] via-[#0B2A1E] to-[#14532D] p-6 sm:p-7 text-white shadow-card border border-[#B9F044]/20">
+          <div class="absolute -right-8 -top-8 w-44 h-44 rounded-full bg-[#B9F044]/15 blur-2xl pointer-events-none"></div>
+          <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="rounded-full bg-[#B9F044] px-2.5 py-0.5 text-[10px] font-black text-[#0B1F17] uppercase tracking-wider">Official Ladder</span>
+                <span class="text-xs font-semibold text-emerald-200">Verified Competitive Rating</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-white">Campus Champions 🏆</h2>
+              <p class="text-xs text-emerald-100/75 mt-1 max-w-md">Real-time leaderboard updated through verified quizzes, live rooms, notes, and squad battles.</p>
+            </div>
+            <a href="arena.html" class="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-4 py-2.5 text-xs font-black text-[#0B1F17] shadow-glow hover:brightness-110 transition">
+              <span>🏎️ Race for +25 RR</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- SCOPE & TIME FILTERS -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          
+          <!-- Scope Chips -->
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Territory Scope:</span>
+            <div class="flex flex-wrap items-center gap-1.5" id="scope-chips">
+              <button onclick="setScope('global')" class="filter-chip active rounded-xl px-3 py-1.5 text-xs font-bold transition" data-scope="global">
+                🌐 Global
+              </button>
+              <button onclick="setScope('country')" class="filter-chip rounded-xl px-3 py-1.5 text-xs font-bold transition" data-scope="country">
+                🇮🇳 India
+              </button>
+              <button onclick="setScope('state')" class="filter-chip rounded-xl px-3 py-1.5 text-xs font-bold transition" data-scope="state">
+                🏔️ Uttarakhand
+              </button>
+              <button onclick="setScope('city')" class="filter-chip rounded-xl px-3 py-1.5 text-xs font-bold transition" data-scope="city">
+                📍 Haldwani
+              </button>
+              <button onclick="setScope('college')" class="filter-chip rounded-xl px-3 py-1.5 text-xs font-bold transition" data-scope="college">
+                🎓 Graphic Era
+              </button>
+            </div>
+          </div>
+
+          <div class="h-px bg-slate-100"></div>
+
+          <!-- Time Frame & Search Bar -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl" id="time-filters">
+              <button onclick="setTimeFilter('all_time')" class="tab-btn active rounded-lg px-3 py-1.5 text-xs font-extrabold transition" data-time="all_time">
+                All-Time
+              </button>
+              <button onclick="setTimeFilter('weekly')" class="tab-btn rounded-lg px-3 py-1.5 text-xs font-extrabold text-slate-600 transition" data-time="weekly">
+                Weekly ⚡
+              </button>
+              <button onclick="setTimeFilter('monthly')" class="tab-btn rounded-lg px-3 py-1.5 text-xs font-extrabold text-slate-600 transition" data-time="monthly">
+                Monthly 📅
+              </button>
+            </div>
+
+            <!-- Search input -->
+            <div class="relative flex-1 max-w-xs">
+              <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400"></i>
+              <input type="text" id="leaderboard-search" placeholder="Search learner or college…" oninput="handleSearch(this.value)" class="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-1.5 text-xs outline-none focus:border-[#B9F044] focus:bg-white transition" />
+            </div>
+          </div>
+        </div>
+
+        <!-- TOP 3 PODIUM CARDS -->
+        <div id="podium-section" class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2">
+          <!-- Injected dynamically: #2 Silver (Left), #1 Gold (Center), #3 Bronze (Right) -->
+        </div>
+
+        <!-- LEADERBOARD TABLE -->
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div class="border-b border-slate-100 bg-slate-50/75 px-5 py-3 text-[11px] font-black uppercase tracking-wider text-slate-400 grid grid-cols-12 gap-2 items-center">
+            <span class="col-span-2 sm:col-span-1 text-center">Rank</span>
+            <span class="col-span-6 sm:col-span-6">Learner & Institution</span>
+            <span class="col-span-4 sm:col-span-3 text-right">Rating</span>
+            <span class="hidden sm:block sm:col-span-2 text-right">Activity</span>
+          </div>
+
+          <div id="leaderboard-list" class="divide-y divide-slate-100">
+            <!-- Rows injected dynamically -->
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- RIGHT: "HOW RANKING WORKS" PANEL (5 Cols on LG, 4 on XL)     -->
+      <!-- ============================================================ -->
+      <aside id="panel-rules" class="lg:col-span-5 xl:col-span-4 space-y-5 lg:sticky lg:top-20">
+
+        <!-- Core Distinction Card: Credits vs XP vs RR -->
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3.5">
+          <div class="flex items-center gap-2">
+            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#0B1F17] text-[#B9F044] text-sm">
+              <i data-lucide="scale" class="h-4 w-4"></i>
+            </span>
+            <div>
+              <h3 class="text-sm font-black text-[#0B1F17] uppercase tracking-wide">Keep 3 Things Separate</h3>
+              <p class="text-[11px] font-semibold text-slate-400">Core Progression Architecture</p>
+            </div>
+          </div>
+
+          <div class="space-y-2.5 text-xs">
+            <!-- Credits -->
+            <div class="rounded-2xl border border-amber-200/80 bg-amber-50/50 p-3">
+              <div class="flex items-center justify-between font-extrabold text-amber-950">
+                <span class="flex items-center gap-1.5">🪙 Credits</span>
+                <span class="text-[10px] rounded-full bg-amber-200/60 px-2 py-0.5">Currency</span>
+              </div>
+              <p class="text-[11px] text-amber-900/80 mt-1">Platform internal currency. Can be earned & spent. <strong>Spending credits NEVER reduces your rank!</strong></p>
+            </div>
+
+            <!-- XP -->
+            <div class="rounded-2xl border border-violet-200/80 bg-violet-50/50 p-3">
+              <div class="flex items-center justify-between font-extrabold text-violet-950">
+                <span class="flex items-center gap-1.5">⭐ XP</span>
+                <span class="text-[10px] rounded-full bg-violet-200/60 px-2 py-0.5">Lifetime</span>
+              </div>
+              <p class="text-[11px] text-violet-900/80 mt-1">Represents cumulative lifetime learning effort. <strong>XP never decreases even if competitive rank drops.</strong></p>
+            </div>
+
+            <!-- RR -->
+            <div class="rounded-2xl border border-emerald-300/80 bg-[#F4FBEA] p-3">
+              <div class="flex items-center justify-between font-extrabold text-[#0B1F17]">
+                <span class="flex items-center gap-1.5">🏆 RR (Rank Rating)</span>
+                <span class="text-[10px] rounded-full bg-[#B9F044] px-2 py-0.5 text-[#0B1F17]">Competitive</span>
+              </div>
+              <p class="text-[11px] text-slate-700 mt-1">Sole metric that determines your competitive rank ladder. <strong>Gains on verified wins, decreases on competitive losses.</strong></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RR Earning & Loss Rules -->
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+          <h3 class="text-sm font-black text-[#0B1F17] uppercase tracking-wide flex items-center gap-2">
+            <i data-lucide="zap" class="h-4 w-4 text-[#2F6F11]"></i> RR Earning & Loss Rules
+          </h3>
+
+          <div class="space-y-2 text-xs">
+            <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">How to Earn RR:</p>
+            <div class="divide-y divide-slate-100 rounded-xl border border-slate-100 bg-slate-50 p-2.5">
+              <div class="flex justify-between py-1 font-semibold text-slate-700">
+                <span>Complete Lesson Quiz</span>
+                <span class="font-bold text-emerald-600 font-mono">+5 RR</span>
+              </div>
+              <div class="flex justify-between py-1 font-semibold text-slate-700">
+                <span>Solve Skill Challenge</span>
+                <span class="font-bold text-emerald-600 font-mono">+20 RR</span>
+              </div>
+              <div class="flex justify-between py-1 font-semibold text-slate-700">
+                <span>Win Team Race Arena</span>
+                <span class="font-bold text-emerald-600 font-mono">+25 RR</span>
+              </div>
+              <div class="flex justify-between py-1 font-semibold text-slate-700">
+                <span>Successful Live Learning Session</span>
+                <span class="font-bold text-emerald-600 font-mono">+15 RR</span>
+              </div>
+              <div class="flex justify-between py-1 font-semibold text-slate-700">
+                <span>Contribute Verified Notes</span>
+                <span class="font-bold text-emerald-600 font-mono">+10 RR</span>
+              </div>
+            </div>
+
+            <p class="text-[11px] font-bold uppercase tracking-wider text-rose-700 pt-1">When RR is Reduced:</p>
+            <div class="divide-y divide-slate-100 rounded-xl border border-rose-100 bg-rose-50/40 p-2.5">
+              <div class="flex justify-between py-1 font-semibold text-slate-700">
+                <span>Challenge Match Loss</span>
+                <span class="font-bold text-rose-600 font-mono">-10 RR</span>
+              </div>
+              <div class="flex justify-between py-1 font-semibold text-slate-700">
+                <span>Team Race Defeat</span>
+                <span class="font-bold text-rose-600 font-mono">-15 RR</span>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400 italic">No RR loss for watching lectures, opening notes, or normal inactivity.</p>
+          </div>
+        </div>
+
+        <!-- Rank Ladder & Original Emblems Showcase -->
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3.5">
+          <h3 class="text-sm font-black text-[#0B1F17] uppercase tracking-wide flex items-center gap-2">
+            <i data-lucide="shield-check" class="h-4 w-4 text-[#2F6F11]"></i> Official Rank Ladder
+          </h3>
+
+          <div class="space-y-2" id="rules-ladder-showcase">
+            <!-- 7 Ranks Injected via JS with original SVGs -->
+          </div>
+        </div>
+
+        <!-- Promotion, Demotion & Protection Details -->
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3 text-xs leading-relaxed text-slate-600">
+          <h3 class="text-sm font-black text-[#0B1F17] uppercase tracking-wide flex items-center gap-2">
+            <i data-lucide="shield-alert" class="h-4 w-4 text-[#2F6F11]"></i> Promotion &amp; Protection
+          </h3>
+          <p><strong>Automatic Promotion:</strong> Reaching the exact RR threshold triggers an instant division promotion (e.g., Gold II &rarr; Gold I) and celebration.</p>
+          <p><strong>Rank Protection Buffer:</strong> Upon reaching a major tier (Silver, Gold, Platinum, Diamond, Master), learners receive <strong>1 Rank Protection Buffer</strong>. If a loss would otherwise drop you to the lower tier, the protection is consumed once to preserve your rank.</p>
+          <p><strong>Deterministic Tie-Breaking:</strong> If two peers have equal RR, ties are broken strictly by: (1) Total Verified Challenge Wins &rarr; (2) Lifetime XP &rarr; (3) Earlier achievement date.</p>
+        </div>
+
+        <!-- FAQ Accordion -->
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-2 text-xs">
+          <h3 class="text-sm font-black text-[#0B1F17] uppercase tracking-wide mb-3 flex items-center gap-2">
+            <i data-lucide="help-circle" class="h-4 w-4 text-[#2F6F11]"></i> Frequently Asked Questions
+          </h3>
+
+          <details class="group rounded-xl border border-slate-100 bg-slate-50/80 p-3 [&_summary::-webkit-details-marker]:hidden cursor-pointer">
+            <summary class="font-extrabold text-slate-800 flex items-center justify-between">
+              <span>Does spending credits reduce my rank?</span>
+              <span class="transition group-open:rotate-180">&darr;</span>
+            </summary>
+            <p class="mt-2 text-slate-600 text-[11px] leading-relaxed">No! Credits are learning currency used for unlocking notes and booking sessions. Spending them does not touch your RR or rank ladder position.</p>
+          </details>
+
+          <details class="group rounded-xl border border-slate-100 bg-slate-50/80 p-3 [&_summary::-webkit-details-marker]:hidden cursor-pointer">
+            <summary class="font-extrabold text-slate-800 flex items-center justify-between">
+              <span>Does XP decrease when I lose a challenge?</span>
+              <span class="transition group-open:rotate-180">&darr;</span>
+            </summary>
+            <p class="mt-2 text-slate-600 text-[11px] leading-relaxed">No. XP represents lifetime learning effort and knowledge accumulated. XP only increases.</p>
+          </details>
+
+          <details class="group rounded-xl border border-slate-100 bg-slate-50/80 p-3 [&_summary::-webkit-details-marker]:hidden cursor-pointer">
+            <summary class="font-extrabold text-slate-800 flex items-center justify-between">
+              <span>Can I manipulate my RR from frontend?</span>
+              <span class="transition group-open:rotate-180">&darr;</span>
+            </summary>
+            <p class="mt-2 text-slate-600 text-[11px] leading-relaxed">No. Every RR change requires an atomic ledger entry with idempotency key verification on the server. Client-side numbers are read-only displays.</p>
+          </details>
+        </div>
+
+      </aside>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================ -->
+  <!-- PINNED CURRENT USER POSITION BAR (Always Visible at Bottom) -->
+  <!-- ============================================================ -->
+  <div id="pinned-user-bar" class="fixed bottom-0 inset-x-0 z-50 user-pinned-bar border-t border-slate-200/90 bg-white/95 px-4 py-3 sm:px-8">
+    <div class="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- User info & Rank -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div id="bar-user-emblem" class="shrink-0 flex items-center justify-center">
+          <!-- Emblem SVG injected -->
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <p id="bar-user-name" class="text-sm font-black text-ink truncate">You (Aditya Verma)</p>
+            <span id="bar-user-rank-badge" class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold text-amber-800">
+              Gold II
+            </span>
+          </div>
+          <p id="bar-user-meta" class="text-[11px] font-semibold text-slate-500 truncate">
+            Global #<strong id="bar-global-rank" class="text-ink">8</strong> &bull; College #<strong id="bar-college-rank" class="text-ink">4</strong> &bull; Graphic Era Hill University
+          </p>
+        </div>
+      </div>
+
+      <!-- Rating & Progress bar to Next Rank -->
+      <div class="flex items-center gap-6 shrink-0">
+        <div class="hidden md:block w-44">
+          <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+            <span>Next: <strong id="bar-next-rank" class="text-ink">Gold I</strong></span>
+            <span id="bar-rr-needed">89 RR needed</span>
+          </div>
+          <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+            <div id="bar-rr-fill" class="h-full rounded-full bg-gradient-to-r from-[#B9F044] to-[#2F6F11] transition-all duration-500" style="width: 47%"></div>
+          </div>
+        </div>
+
+        <div class="text-right">
+          <p id="bar-rr-display" class="text-lg font-black text-ink font-mono tracking-tight">1,245 RR</p>
+          <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600">
+            🔥 <span id="bar-user-streak">12</span>-Day Streak
+          </span>
+        </div>
+
+        <a href="arena.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-[#0B1F17] px-4 py-2 text-xs font-black text-[#B9F044] hover:bg-[#14532D] transition shadow-sm">
+          <span>Play Challenge &rarr;</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================ -->
+  <!-- JAVASCRIPT LEADERBOARD LOGIC & REALTIME INTEGRATION         -->
+  <!-- ============================================================ -->
+  <script>
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    let activeScope = 'global';
+    let activeTimeFilter = 'all_time';
+    let searchQuery = '';
+    let currentProfile = null;
+    let allPeers = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      lucide.createIcons();
+      renderLadderShowcase();
+      await loadProfileAndLeaderboard();
+    });
+
+    // ── Load User & Peers ──────────────────────────────────────────────
+    async function loadProfileAndLeaderboard() {
+      const isDemo = (new URLSearchParams(window.location.search).get('demo') === '1') || 
+                     (sessionStorage.getItem('gyansetu_demo_mode') === 'true');
+
+      if (isDemo || typeof window.GYANSETU_DEMO !== 'undefined') {
+        const demo = window.GYANSETU_DEMO;
+        currentProfile = demo?.profile || {
+          id: 'demo-user-1',
+          full_name: 'Aditya Verma',
+          rr: 1245,
+          xp: 680,
+          credits: 155,
+          streak: 12,
+          college: 'Graphic Era Hill University',
+          city: 'Haldwani',
+          state: 'Uttarakhand',
+          country: 'India',
+          challenge_wins: 14
+        };
+        allPeers = demo?.leaderboard || [];
+      } else {
+        try {
+          const { data: { session } } = await sb.auth.getSession();
+          if (session?.user) {
+            const { data: prof } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+            currentProfile = prof || { id: session.user.id, full_name: session.user.email.split('@')[0], rr: 1245, xp: 680, credits: 155, streak: 12 };
+          }
+          // Fetch real peers from Supabase
+          const { data: peers } = await sb.from('profiles').select('*').order('rr', { ascending: false }).limit(50);
+          if (peers && peers.length > 0) {
+            allPeers = peers;
+          } else {
+            allPeers = window.GYANSETU_DEMO?.leaderboard || [];
+          }
+        } catch (e) {
+          console.warn('Network issue reading Supabase, falling back to rich demo dataset:', e);
+          allPeers = window.GYANSETU_DEMO?.leaderboard || [];
+          currentProfile = window.GYANSETU_DEMO?.profile;
+        }
+      }
+
+      // Ensure current user is in peer list
+      if (currentProfile && !allPeers.some(p => p.id === currentProfile.id || p.full_name === currentProfile.full_name)) {
+        allPeers.push(currentProfile);
+      }
+
+      updateUserNavAndPinnedBar();
+      renderLeaderboardUI();
+    }
+
+    // ── Render Pinned User Bar ────────────────────────────────────────
+    function updateUserNavAndPinnedBar() {
+      if (!currentProfile) return;
+      const rankInfo = calculateRank(currentProfile.rr || 1245);
+
+      // Nav bar
+      document.getElementById('nav-user-credits').textContent = currentProfile.credits ?? 155;
+      document.getElementById('nav-user-xp').textContent = currentProfile.xp ?? 680;
+      document.getElementById('nav-user-rr').textContent = `${(currentProfile.rr || 1245).toLocaleString()} RR`;
+      document.getElementById('nav-user-emblem').innerHTML = renderRankEmblem(rankInfo.tierKey, 24);
+
+      // Pinned bottom bar
+      document.getElementById('bar-user-emblem').innerHTML = renderRankEmblem(rankInfo.tierKey, 40);
+      document.getElementById('bar-user-name').textContent = `You (${currentProfile.full_name})`;
+      document.getElementById('bar-user-rank-badge').textContent = rankInfo.fullName;
+      document.getElementById('bar-user-rank-badge').className = `rounded-full px-2 py-0.5 text-[10px] font-extrabold border ${rankInfo.badgeBg}`;
+      document.getElementById('bar-rr-display').textContent = `${(currentProfile.rr || 1245).toLocaleString()} RR`;
+      document.getElementById('bar-user-streak').textContent = currentProfile.streak ?? 12;
+
+      document.getElementById('bar-next-rank').textContent = rankInfo.nextRankName;
+      document.getElementById('bar-rr-needed').textContent = rankInfo.rrToNext > 0 ? `${rankInfo.rrToNext} RR needed` : 'Max Tier';
+      document.getElementById('bar-rr-fill').style.width = `${rankInfo.progressPct}%`;
+
+      // Calculate position within current territory & college
+      const sortedGlobal = [...allPeers].sort(comparePeers);
+      const globalPos = sortedGlobal.findIndex(p => p.id === currentProfile.id || p.full_name === currentProfile.full_name) + 1;
+      const collegePeers = allPeers.filter(p => (p.college || 'Graphic Era Hill University') === (currentProfile.college || 'Graphic Era Hill University')).sort(comparePeers);
+      const collegePos = collegePeers.findIndex(p => p.id === currentProfile.id || p.full_name === currentProfile.full_name) + 1;
+
+      document.getElementById('bar-global-rank').textContent = globalPos > 0 ? globalPos : 8;
+      document.getElementById('bar-college-rank').textContent = collegePos > 0 ? collegePos : 4;
+      document.getElementById('bar-user-meta').innerHTML = `Global #<strong class="text-ink">${globalPos > 0 ? globalPos : 8}</strong> &bull; College #<strong class="text-ink">${collegePos > 0 ? collegePos : 4}</strong> &bull; ${escapeHtml(currentProfile.college || 'Graphic Era Hill University')}`;
+    }
+
+    // ── Deterministic Peer Comparison (Tie-Breaking) ─────────────────
+    function comparePeers(a, b) {
+      const getScore = (p) => {
+        if (activeTimeFilter === 'weekly') return p.weekly_rr || Math.round((p.rr || 1000) * 0.05);
+        if (activeTimeFilter === 'monthly') return p.monthly_rr || Math.round((p.rr || 1000) * 0.15);
+        return p.rr || 0;
+      };
+
+      const scoreA = getScore(a);
+      const scoreB = getScore(b);
+
+      // 1. Higher Score
+      if (scoreB !== scoreA) return scoreB - scoreA;
+      // 2. More challenge wins
+      const winsA = a.challenge_wins || 0;
+      const winsB = b.challenge_wins || 0;
+      if (winsB !== winsA) return winsB - winsA;
+      // 3. Higher lifetime XP
+      const xpA = a.xp || 0;
+      const xpB = b.xp || 0;
+      if (xpB !== xpA) return xpB - xpA;
+      // 4. Stable tie-breaker
+      return String(a.id || a.full_name).localeCompare(String(b.id || b.full_name));
+    }
+
+    // ── Filter and Render UI ──────────────────────────────────────────
+    function renderLeaderboardUI() {
+      // 1. Filter by territory
+      let filtered = [...allPeers];
+
+      if (activeScope === 'country') {
+        filtered = filtered.filter(p => (p.country || 'India').toLowerCase() === 'india');
+      } else if (activeScope === 'state') {
+        filtered = filtered.filter(p => (p.state || 'Uttarakhand').toLowerCase() === (currentProfile?.state || 'Uttarakhand').toLowerCase());
+      } else if (activeScope === 'city') {
+        filtered = filtered.filter(p => (p.city || 'Haldwani').toLowerCase() === (currentProfile?.city || 'Haldwani').toLowerCase());
+      } else if (activeScope === 'college') {
+        filtered = filtered.filter(p => (p.college || 'Graphic Era Hill University').toLowerCase().includes('graphic era'));
+      }
+
+      // 2. Filter by search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(p => 
+          (p.full_name || '').toLowerCase().includes(q) ||
+          (p.college || '').toLowerCase().includes(q) ||
+          (p.department || '').toLowerCase().includes(q)
+        );
+      }
+
+      // 3. Sort deterministically
+      filtered.sort(comparePeers);
+
+      renderPodium(filtered.slice(0, 3));
+      renderList(filtered);
+      lucide.createIcons();
+    }
+
+    // ── Top 3 Podium Cards ────────────────────────────────────────────
+    function renderPodium(top3) {
+      const container = document.getElementById('podium-section');
+      if (!top3 || top3.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+
+      // Reorder for Olympic Podium style: [Rank 2 (Silver), Rank 1 (Gold), Rank 3 (Bronze)]
+      const first = top3[0];
+      const second = top3[1] || null;
+      const third = top3[2] || null;
+
+      const podiumOrder = [
+        { peer: second, rank: 2, label: '2nd Place', border: 'border-slate-300', bg: 'bg-gradient-to-b from-slate-50 to-white', badge: 'Silver' },
+        { peer: first,  rank: 1, label: '1st Place &bull; Champion', border: 'border-amber-400', bg: 'bg-gradient-to-b from-amber-50/70 via-white to-white shadow-md', badge: 'Gold Champion', glow: true },
+        { peer: third,  rank: 3, label: '3rd Place', border: 'border-amber-700/40', bg: 'bg-gradient-to-b from-amber-900/5 to-white', badge: 'Bronze' }
+      ];
+
+      container.innerHTML = podiumOrder.map(item => {
+        if (!item.peer) return '';
+        const rankInfo = calculateRank(item.peer.rr || 1000);
+        const score = (activeTimeFilter === 'weekly') ? (item.peer.weekly_rr || 95) : 
+                      (activeTimeFilter === 'monthly') ? (item.peer.monthly_rr || 280) : (item.peer.rr || 1000);
+        const isMe = currentProfile && (item.peer.id === currentProfile.id || item.peer.full_name === currentProfile.full_name);
+
+        return `
+          <div class="podium-card relative rounded-2xl border ${item.border} ${item.bg} p-4 text-center flex flex-col items-center justify-between ${item.glow ? 'ring-2 ring-amber-400/40' : ''}">
+            <span class="absolute top-2.5 right-3 text-xs font-black font-mono text-slate-400">#${item.rank}</span>
+
+            <div class="mt-1 flex flex-col items-center">
+              <div class="relative mb-2">
+                ${renderRankEmblem(rankInfo.tierKey, item.rank === 1 ? 58 : 48)}
+              </div>
+              <p class="text-xs font-extrabold text-ink truncate max-w-[130px]">
+                ${escapeHtml(item.peer.full_name)} ${isMe ? '<span class="text-emerald-600">(You)</span>' : ''}
+              </p>
+              <p class="text-[10px] text-slate-400 truncate max-w-[140px]">${escapeHtml(item.peer.college || 'Campus Member')}</p>
+            </div>
+
+            <div class="mt-3 w-full border-t border-slate-100 pt-2 flex items-center justify-between text-xs">
+              <span class="rounded-full px-2 py-0.5 text-[10px] font-extrabold ${rankInfo.badgeBg}">${rankInfo.fullName}</span>
+              <span class="font-black font-mono text-ink">${score.toLocaleString()} RR</span>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // ── Leaderboard Rows ──────────────────────────────────────────────
+    function renderList(peers) {
+      const container = document.getElementById('leaderboard-list');
+      if (!peers || peers.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-xs font-semibold text-slate-400">
+            No learners found for this scope & filter. Try another territory or search term.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = peers.map((peer, idx) => {
+        const rank = idx + 1;
+        const rankInfo = calculateRank(peer.rr || 1000);
+        const score = (activeTimeFilter === 'weekly') ? (peer.weekly_rr || 95) : 
+                      (activeTimeFilter === 'monthly') ? (peer.monthly_rr || 280) : (peer.rr || 1000);
+        const isMe = currentProfile && (peer.id === currentProfile.id || peer.full_name === currentProfile.full_name);
+
+        let rankBadgeClass = 'text-slate-500 font-mono font-bold';
+        if (rank === 1) rankBadgeClass = 'text-amber-500 font-black font-mono text-sm';
+        else if (rank === 2) rankBadgeClass = 'text-slate-400 font-black font-mono text-sm';
+        else if (rank === 3) rankBadgeClass = 'text-amber-800 font-black font-mono text-sm';
+
+        return `
+          <div class="px-5 py-3.5 grid grid-cols-12 gap-2 items-center transition hover:bg-[#F4FBEA]/40 ${isMe ? 'bg-[#B9F044]/15 border-l-4 border-l-[#2F6F11]' : ''}">
+            
+            <!-- Rank # -->
+            <div class="col-span-2 sm:col-span-1 text-center ${rankBadgeClass}">
+              ${rank === 1 ? '🥇 1' : rank === 2 ? '🥈 2' : rank === 3 ? '🥉 3' : rank}
+            </div>
+
+            <!-- Learner & Emblem -->
+            <div class="col-span-6 sm:col-span-6 flex items-center gap-3 min-w-0">
+              <div class="shrink-0 flex items-center justify-center">
+                ${renderRankEmblem(rankInfo.tierKey, 32)}
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs font-extrabold text-ink truncate">
+                  ${escapeHtml(peer.full_name)}
+                  ${isMe ? '<span class="ml-1 inline-block rounded-full bg-[#0B1F17] px-1.5 py-0.2 text-[9px] font-black text-[#B9F044]">YOU</span>' : ''}
+                </p>
+                <p class="text-[10px] text-slate-400 truncate">
+                  ${escapeHtml(peer.college || 'Graphic Era Hill University')} &bull; ${escapeHtml(peer.city || 'Haldwani')}
+                </p>
+              </div>
+            </div>
+
+            <!-- Rating & Rank Badge -->
+            <div class="col-span-4 sm:col-span-3 text-right">
+              <p class="text-xs font-black font-mono text-ink">${score.toLocaleString()} <span class="text-[10px] text-slate-400">RR</span></p>
+              <span class="inline-block rounded-full px-2 py-0.5 text-[9px] font-extrabold ${rankInfo.badgeBg}">
+                ${rankInfo.fullName}
+              </span>
+            </div>
+
+            <!-- Activity Stats -->
+            <div class="hidden sm:block sm:col-span-2 text-right text-xs">
+              <p class="text-[11px] font-bold text-slate-600">🏆 ${peer.challenge_wins || 12} Wins</p>
+              <p class="text-[10px] text-slate-400">🔥 ${peer.streak || 5}d Streak</p>
+            </div>
+
+          </div>`;
+      }).join('');
+    }
+
+    // ── Filter Controls ───────────────────────────────────────────────
+    function setScope(scopeKey) {
+      activeScope = scopeKey;
+      document.querySelectorAll('#scope-chips button').forEach(b => {
+        b.classList.toggle('active', b.dataset.scope === scopeKey);
+      });
+      renderLeaderboardUI();
+    }
+
+    function setTimeFilter(timeKey) {
+      activeTimeFilter = timeKey;
+      document.querySelectorAll('#time-filters button').forEach(b => {
+        b.classList.toggle('active', b.dataset.time === timeKey);
+        b.classList.toggle('text-slate-600', b.dataset.time !== timeKey);
+      });
+      renderLeaderboardUI();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val;
+      renderLeaderboardUI();
+    }
+
+    function switchMobileTab(tab) {
+      const isBoard = tab === 'board';
+      document.getElementById('panel-leaderboard').classList.toggle('hidden', !isBoard);
+      document.getElementById('panel-rules').classList.toggle('hidden', isBoard);
+      document.getElementById('mobile-tab-board').className = `flex-1 rounded-lg py-2 text-xs font-extrabold transition ${isBoard ? 'tab-active' : 'text-slate-600'}`;
+      document.getElementById('mobile-tab-rules').className = `flex-1 rounded-lg py-2 text-xs font-extrabold transition ${!isBoard ? 'tab-active' : 'text-slate-600'}`;
+    }
+
+    // ── Render 7 Rank Emblems in Rules Showcase ───────────────────────
+    function renderLadderShowcase() {
+      const showcase = document.getElementById('rules-ladder-showcase');
+      if (!showcase) return;
+
+      const tiers = [
+        { key: 'bronze', name: 'Bronze', rr: '0 – 499 RR', desc: 'Shield with copper-bronze facets & learner crest' },
+        { key: 'silver', name: 'Silver', rr: '500 – 999 RR', desc: 'Stepped silver chevron with dual crystal blades' },
+        { key: 'gold', name: 'Gold', rr: '1000 – 1499 RR', desc: 'Radiant knight crest with GyanSetu emerald gem' },
+        { key: 'platinum', name: 'Platinum', rr: '1500 – 1999 RR', desc: 'Hexagonal prism with cyan-platinum core' },
+        { key: 'diamond', name: 'Diamond', rr: '2000 – 2499 RR', desc: 'Brilliant-cut faceted diamond with starlight halo' },
+        { key: 'master', name: 'Master', rr: '2500 – 2999 RR', desc: 'Prestigious royal crown with dual gold mantles' },
+        { key: 'grandmaster', name: 'Grand Master', rr: '3000+ RR', desc: 'Apex stellar crest with radiant emerald halo' }
+      ];
+
+      showcase.innerHTML = tiers.map(t => `
+        <div class="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-[#F4FBEA]/60 transition">
+          <div class="shrink-0 flex items-center justify-center">
+            ${renderRankEmblem(t.key, 36)}
+          </div>
+          <div class="flex-1 min-w-0 text-xs">
+            <div class="flex items-center justify-between">
+              <strong class="font-extrabold text-[#0B1F17]">${t.name}</strong>
+              <span class="font-mono font-bold text-slate-500 text-[11px]">${t.rr}</span>
+            </div>
+            <p class="text-[10px] text-slate-400 truncate mt-0.5">${t.desc}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[m]);
+    }
+  </script>
+</body>
+</html>

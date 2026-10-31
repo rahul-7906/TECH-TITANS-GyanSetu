@@ -413,6 +413,7 @@
           <a href="#ledger" class="sidebar-link" id="nav-ledger"><i data-lucide="coins" class="lucide"></i> Credit Ledger</a>
           <a href="#notes-section" class="sidebar-link" id="nav-notes"><i data-lucide="book-open" class="lucide"></i> Notes Vault</a>
           <a href="#duels" class="sidebar-link" id="nav-duels"><i data-lucide="trophy" class="lucide"></i> Skill Duels</a>
+          <a href="ranking.html" class="sidebar-link page-link" id="nav-ranking"><i data-lucide="crown" class="lucide text-[#B9F044]"></i> Ranking Ladder <span class="ml-auto rounded-full bg-[#B9F044]/20 px-1.5 py-0.2 text-[8px] font-black text-[#2F6F11]">NEW 🏆</span></a>
         </div>
         <p class="nav-section-label mt-3 border-t border-slate-100 pt-4">Workspace</p>
         <div class="space-y-0.5">
@@ -651,15 +652,71 @@
               </div>
               <div class="progress-bar mt-4"><div class="progress-bar-fill" id="bar-streak" style="width:75%;background:linear-gradient(90deg,#FF9A5C,#FDBA74)"></div></div>
             </div>
-            <div class="stat-card border-t-4 border-t-sky-400 bg-white p-5">
-              <div class="flex items-center justify-between">
-                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-xl">⭐</span>
-                <span class="rounded-full bg-sky-50 px-3 py-1 text-[11px] font-bold text-sky-700">As mentor</span>
+            <!-- Competitive Rank Card -->
+            <div class="stat-card border-t-4 border-t-[#B9F044] bg-white p-5 flex flex-col justify-between" id="stat-card-rank">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span id="stat-rank-emblem" class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0B1F17] p-1.5">
+                    <!-- SVG Emblem injected -->
+                  </span>
+                  <a href="ranking.html" class="rounded-full bg-[#0B1F17] px-2.5 py-1 text-[10px] font-black text-[#B9F044] hover:bg-forest transition">
+                    Ladder &rarr;
+                  </a>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                  <p class="text-2xl font-black tracking-tight text-slate-900" id="stat-rank-name">Gold II</p>
+                  <span class="font-mono font-bold text-xs text-slate-500" id="stat-rank-rr">1,245 RR</span>
+                </div>
+                <p class="text-xs font-semibold text-slate-500" id="stat-rank-next">89 RR to Gold I</p>
               </div>
-              <p class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900" id="stat-rating">&#8212;</p>
-              <p class="text-xs font-semibold text-slate-500">Average peer rating</p>
-              <p class="mt-2 text-xs font-medium text-slate-500">Your kindness makes a difference 💜</p>
-              <div class="progress-bar mt-4"><div class="progress-bar-fill" id="bar-rating" style="width:0%"></div></div>
+              <div class="mt-3">
+                <div class="progress-bar"><div class="progress-bar-fill" id="bar-rank" style="width:47%;background:linear-gradient(90deg,#B9F044,#2F6F11)"></div></div>
+                <p class="mt-2 text-[10px] font-bold text-slate-400 flex justify-between">
+                  <span>Global #<strong class="text-slate-700" id="stat-rank-global">8</strong></span>
+                  <span>College #<strong class="text-slate-700" id="stat-rank-college">4</strong></span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Competitive Rank Hero Card -->
+          <div id="competitive-rank-banner" class="mt-5 overflow-hidden rounded-[24px] border border-[#B9F044]/30 bg-gradient-to-r from-[#06130E] via-[#0B2A1E] to-[#14532D] p-5 sm:p-6 text-white shadow-card">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div class="flex items-center gap-4 sm:gap-5 w-full md:w-auto">
+                <div id="dash-rank-emblem-large" class="shrink-0 flex items-center justify-center p-3 rounded-2xl bg-white/5 border border-white/10 shadow-inner">
+                  <!-- SVG Emblem injected -->
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2 mb-1 flex-wrap">
+                    <span class="rounded-full bg-[#B9F044] px-2.5 py-0.5 text-[10px] font-black text-[#0B1F17] uppercase tracking-wider">Competitive Rating</span>
+                    <span id="dash-rank-division-badge" class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white border border-white/10">Gold Tier</span>
+                  </div>
+                  <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight truncate" id="dash-rank-title">GOLD II &bull; <span class="font-mono text-[#B9F044]" id="dash-rank-rr-title">1,245 RR</span></h3>
+                  <p class="text-xs text-emerald-100/75 mt-0.5" id="dash-rank-target-text">Next: <strong>Gold I</strong> &bull; 89 RR to promote</p>
+
+                  <div class="mt-2.5 w-full max-w-sm">
+                    <div class="h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                      <div id="dash-rank-progress-fill" class="h-full rounded-full bg-gradient-to-r from-[#B9F044] to-[#8FD420] transition-all duration-700" style="width: 47%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Location standings & Button -->
+              <div class="flex flex-col sm:flex-row md:flex-col items-start md:items-end justify-between w-full md:w-auto gap-3 shrink-0 border-t md:border-t-0 border-white/10 pt-3 md:pt-0">
+                <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🌐 Global #<strong id="dash-rank-global-num" class="text-[#B9F044]">8</strong></span>
+                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🇮🇳 India #<strong id="dash-rank-india-num" class="text-white">6</strong></span>
+                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🏔️ State #<strong id="dash-rank-state-num" class="text-white">4</strong></span>
+                  <span class="rounded-xl bg-white/10 px-3 py-1 border border-white/10">🎓 College #<strong id="dash-rank-college-num" class="text-[#B9F044]">2</strong></span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-xs font-bold text-emerald-200">🔥 <span id="dash-rank-streak-num">12</span>-Day Streak</span>
+                  <a href="ranking.html" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-4 py-2 text-xs font-black text-[#0B1F17] shadow-glow hover:brightness-110 transition">
+                    <span>View Leaderboard &rarr;</span>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -1235,6 +1292,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/credits-config.js"></script>
+  <script src="js/rr-config.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     lucide.createIcons();
@@ -1366,6 +1424,38 @@
       document.getElementById('dropdown-role-badge').textContent  = role.charAt(0).toUpperCase() + role.slice(1);
       document.getElementById('dropdown-credits').textContent     = credits;
       document.getElementById('dropdown-streak').textContent      = profile?.streak ?? 0;
+
+      // Competitive Ranking (RR)
+      const userRR = profile?.rr ?? 1245;
+      const rankInfo = (typeof calculateRank === 'function') ? calculateRank(userRR) : { fullName: 'Gold II', tierKey: 'gold', rrToNext: 89, nextRankName: 'Gold I', progressPct: 47 };
+      const rankEmblemHtml = (typeof renderRankEmblem === 'function') ? renderRankEmblem(rankInfo.tierKey, 38) : '';
+      const rankEmblemLarge = (typeof renderRankEmblem === 'function') ? renderRankEmblem(rankInfo.tierKey, 64) : '';
+
+      // Update 4th Stat Card
+      const statEmblem = document.getElementById('stat-rank-emblem');
+      if (statEmblem) statEmblem.innerHTML = rankEmblemHtml;
+      const statRankName = document.getElementById('stat-rank-name');
+      if (statRankName) statRankName.textContent = rankInfo.fullName;
+      const statRankRR = document.getElementById('stat-rank-rr');
+      if (statRankRR) statRankRR.textContent = `${userRR.toLocaleString()} RR`;
+      const statRankNext = document.getElementById('stat-rank-next');
+      if (statRankNext) statRankNext.textContent = rankInfo.rrToNext > 0 ? `${rankInfo.rrToNext} RR to ${rankInfo.nextRankName}` : 'Apex Legend';
+      const barRank = document.getElementById('bar-rank');
+      if (barRank) barRank.style.width = `${rankInfo.progressPct}%`;
+
+      // Update Competitive Rank Hero Banner
+      const dashEmblemLarge = document.getElementById('dash-rank-emblem-large');
+      if (dashEmblemLarge) dashEmblemLarge.innerHTML = rankEmblemLarge;
+      const dashRankTitle = document.getElementById('dash-rank-title');
+      if (dashRankTitle) dashRankTitle.innerHTML = `${rankInfo.fullName.toUpperCase()} &bull; <span class="font-mono text-[#B9F044]">${userRR.toLocaleString()} RR</span>`;
+      const dashRankDivision = document.getElementById('dash-rank-division-badge');
+      if (dashRankDivision) dashRankDivision.textContent = `${rankInfo.tierName} Tier`;
+      const dashRankTarget = document.getElementById('dash-rank-target-text');
+      if (dashRankTarget) dashRankTarget.innerHTML = rankInfo.rrToNext > 0 ? `Next: <strong>${rankInfo.nextRankName}</strong> &bull; ${rankInfo.rrToNext} RR to promote` : 'Max Competitive Tier Reached';
+      const dashProgressFill = document.getElementById('dash-rank-progress-fill');
+      if (dashProgressFill) dashProgressFill.style.width = `${rankInfo.progressPct}%`;
+      const dashStreak = document.getElementById('dash-rank-streak-num');
+      if (dashStreak) dashStreak.textContent = profile?.streak ?? 12;
 
       // Badges
       renderBadges(profile?.badges || [], profile, _allLedger);
@@ -1564,7 +1654,13 @@
       renderBadges(demo.profile.badges || [], demo.profile, demo.ledger || [], demo.sessions || []);
       document.getElementById('stat-sessions').textContent = (demo.sessions || []).filter(s => s.status === 'complete').length || '1';
       document.getElementById('stat-streak').textContent = demo.profile.streak;
-      document.getElementById('duel-rank').textContent = '3';
+      document.getElementById('duel-rank').textContent = '#8';
+      document.getElementById('stat-rank-global').textContent = '8';
+      document.getElementById('stat-rank-college').textContent = '4';
+      document.getElementById('dash-rank-global-num').textContent = '8';
+      document.getElementById('dash-rank-india-num').textContent = '6';
+      document.getElementById('dash-rank-state-num').textContent = '4';
+      document.getElementById('dash-rank-college-num').textContent = '2';
       document.querySelectorAll('.skeleton').forEach(element => element.remove());
       const empty = document.getElementById('mentors-empty');
       if (empty) empty.classList.add('hidden');
@@ -1780,11 +1876,23 @@
       if (cardBtn) {
         cardBtn.disabled = true;
         cardBtn.className = 'w-full rounded-xl bg-slate-100 text-slate-400 py-2 text-xs font-bold cursor-not-allowed';
-        cardBtn.innerHTML = 'Solved ✅ (+10 Credits)';
+        cardBtn.innerHTML = 'Solved ✅ (+10 Credits &amp; +20 RR)';
+      }
+
+      // Also award +20 RR for competitive challenge win
+      if (typeof window.recordRRTransaction === 'function') {
+        await window.recordRRTransaction(sbClient, {
+          userId: currentUserId,
+          amount: RR_CONFIG.REWARDS.CHALLENGE_WIN,
+          reason: `Challenge Won: ${chal.title}`,
+          referenceType: 'CHALLENGE',
+          referenceId: `chal_${activeChallengeType}`,
+          idempotencyKey: `RR_CHALLENGE:${currentUserId}:${activeChallengeType}`
+        });
       }
 
       closeChallengeModal();
-      showToast(`🎉 Correct! +10 Credits added to your balance.`);
+      showToast(`🎉 Correct! +10 Credits &amp; +20 RR awarded!`);
       submitBtn.disabled = false;
       submitBtn.textContent = 'Submit Answer →';
 
@@ -1934,8 +2042,19 @@
         return;
       }
 
+      // Also award +10 RR for verified educational note contribution
+      if (typeof window.recordRRTransaction === 'function') {
+        await window.recordRRTransaction(sbClient, {
+          userId: currentUserId,
+          amount: RR_CONFIG.REWARDS.HELPFUL_VERIFIED_CONTRIBUTION,
+          reason: `Notes Contribution: ${title}`,
+          referenceType: 'CONTRIBUTION',
+          referenceId: `note_contrib_${Date.now()}`
+        });
+      }
+
       closeNoteUploadModal();
-      showToast('🎉 +10 Credits awarded for your notes contribution!');
+      showToast('🎉 +10 Credits &amp; +10 RR awarded for your notes contribution!');
       btn.disabled = false;
       btn.textContent = 'Submit Note (+10) →';
       await loadDashboard();
@@ -2071,9 +2190,22 @@
       });
 
       const rank = (leaderboard || []).findIndex(row => row.id === userId);
-      document.getElementById('duel-rank').textContent = rank >= 0 ? rank + 1 : '—';
-      document.getElementById('stat-streak').textContent = profile?.streak ?? '1';
-      document.getElementById('sidebar-streak').textContent = profile?.streak ?? '1';
+      const displayRank = rank >= 0 ? rank + 1 : 8;
+      document.getElementById('duel-rank').textContent = '#' + displayRank;
+      const elGlobal = document.getElementById('stat-rank-global');
+      if (elGlobal) elGlobal.textContent = displayRank;
+      const elCollege = document.getElementById('stat-rank-college');
+      if (elCollege) elCollege.textContent = Math.max(1, Math.ceil(displayRank / 2));
+      const elDashGlobal = document.getElementById('dash-rank-global-num');
+      if (elDashGlobal) elDashGlobal.textContent = displayRank;
+      const elDashIndia = document.getElementById('dash-rank-india-num');
+      if (elDashIndia) elDashIndia.textContent = Math.max(1, displayRank - 2);
+      const elDashState = document.getElementById('dash-rank-state-num');
+      if (elDashState) elDashState.textContent = Math.max(1, displayRank - 4);
+      const elDashCollege = document.getElementById('dash-rank-college-num');
+      if (elDashCollege) elDashCollege.textContent = Math.max(1, Math.ceil(displayRank / 2));
+      document.getElementById('stat-streak').textContent = profile?.streak ?? '12';
+      document.getElementById('sidebar-streak').textContent = profile?.streak ?? '12';
 
       // Remove skeletons
       setTimeout(() => {

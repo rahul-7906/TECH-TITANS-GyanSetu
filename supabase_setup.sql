@@ -265,3 +265,96 @@ UPDATE auth.users
 SET email_confirmed_at = COALESCE(email_confirmed_at, now())
 WHERE email_confirmed_at IS NULL;
 
+-- ── 11. COMPETITIVE LEARNING RANKING SYSTEM (RR) ─────────────────────
+-- Add RR, highest_rr, protection, and location fields to profiles
+DO $$
+BEGIN
+  ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS rr integer DEFAULT 1245;
+  ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS highest_rr integer DEFAULT 1245;
+  ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS rank_protection_count integer DEFAULT 1;
+  ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS country text DEFAULT 'India';
+  ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS state text DEFAULT 'Uttarakhand';
+  ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS city text DEFAULT 'Haldwani';
+  ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS college text DEFAULT 'Graphic Era Hill University';
+  ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS challenge_wins integer DEFAULT 0;
+EXCEPTION WHEN OTHERS THEN
+  NULL;
+END $$;
+
+-- ── 12. RR LEDGER / TRANSACTION AUDIT TABLE ─────────────────────────
+CREATE TABLE IF NOT EXISTS public.rr_ledger (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid,
+  amount integer NOT NULL,
+  previous_rr integer NOT NULL,
+  new_rr integer NOT NULL,
+  reason text NOT NULL,
+  reference_type text,
+  reference_id text,
+  idempotency_key text,
+  status text DEFAULT 'COMPLETED',
+  created_at timestamptz DEFAULT now()
+);
+
+-- Safely add columns if table existed
+DO $$
+BEGIN
+  ALTER TABLE public.rr_ledger ADD COLUMN IF NOT EXISTS user_id uuid;
+  ALTER TABLE public.rr_ledger ADD COLUMN IF NOT EXISTS amount integer;
+  ALTER TABLE public.rr_ledger ADD COLUMN IF NOT EXISTS previous_rr integer DEFAULT 1245;
+  ALTER TABLE public.rr_ledger ADD COLUMN IF NOT EXISTS new_rr integer DEFAULT 1245;
+  ALTER TABLE public.rr_ledger ADD COLUMN IF NOT EXISTS reason text;
+  ALTER TABLE public.rr_ledger ADD COLUMN IF NOT EXISTS reference_type text;
+  ALTER TABLE public.rr_ledger ADD COLUMN IF NOT EXISTS reference_id text;
+  ALTER TABLE public.rr_ledger ADD COLUMN IF NOT EXISTS idempotency_key text;
+  ALTER TABLE public.rr_ledger ADD COLUMN IF NOT EXISTS status text DEFAULT 'COMPLETED';
+  ALTER TABLE public.rr_ledger ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
+EXCEPTION WHEN OTHERS THEN
+  NULL;
+END $$;
+
+-- Idempotency unique index & performance indexes
+CREATE UNIQUE INDEX IF NOT EXISTS idx_rr_ledger_idempotency 
+  ON public.rr_ledger(idempotency_key) 
+  WHERE idempotency_key IS NOT NULL AND idempotency_key <> '';
+
+CREATE INDEX IF NOT EXISTS idx_profiles_rr_desc ON public.profiles(rr DESC);
+CREATE INDEX IF NOT EXISTS idx_profiles_location ON public.profiles(country, state, city, college);
+CREATE INDEX IF NOT EXISTS idx_rr_ledger_user ON public.rr_ledger(user_id, created_at DESC);
+
+-- Enable RLS & policies for rr_ledger
+ALTER TABLE public.rr_ledger ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public rr_ledger read" ON public.rr_ledger;
+CREATE POLICY "Public rr_ledger read" ON public.rr_ledger FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public rr_ledger insert" ON public.rr_ledger;
+CREATE POLICY "Public rr_ledger insert" ON public.rr_ledger FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Public rr_ledger update" ON public.rr_ledger;
+CREATE POLICY "Public rr_ledger update" ON public.rr_ledger FOR UPDATE USING (true);
+
+-- Seed realistic campus peers across Uttarakhand, Delhi, Maharashtra for authentic multi-scope leaderboard
+DO $$
+BEGIN
+  INSERT INTO public.profiles (
+    id, full_name, email, department, year, role, credits, xp, streak, rating, sessions_count,
+    rr, highest_rr, rank_protection_count, country, state, city, college, challenge_wins
+  ) VALUES
+    ('b0000000-0000-0000-0000-000000000001', 'Arjun Rawat', 'arjun.rawat@gehu.ac.in', 'CSE', '4th Year', 'learner', 210, 1850, 14, 4.9, 85, 3120, 3120, 2, 'India', 'Uttarakhand', 'Haldwani', 'Graphic Era Hill University', 42),
+    ('b0000000-0000-0000-0000-000000000002', 'Devika Sen', 'devika.sen@iitr.ac.in', 'AI & DS', '3rd Year', 'mentor', 340, 2400, 21, 5.0, 160, 2890, 2950, 1, 'India', 'Uttarakhand', 'Roorkee', 'IIT Roorkee', 38),
+    ('b0000000-0000-0000-0000-000000000003', 'Rohan Gupta', 'rohan@gyansetu.edu', 'AIML', '4th Year', 'mentor', 310, 2100, 12, 4.7, 210, 2350, 2410, 1, 'India', 'Uttarakhand', 'Haldwani', 'Graphic Era Hill University', 29),
+    ('b0000000-0000-0000-0000-000000000004', 'Priya Mehta', 'priya@gyansetu.edu', 'IT', '2nd Year', 'mentor', 190, 980, 5, 4.8, 97, 1840, 1880, 1, 'India', 'Uttarakhand', 'Dehradun', 'Graphic Era University', 22),
+    ('b0000000-0000-0000-0000-000000000005', 'Aarav Sharma', 'aarav@gyansetu.edu', 'CSE', '3rd Year', 'mentor', 250, 1420, 7, 4.9, 142, 1680, 1720, 1, 'India', 'Uttarakhand', 'Haldwani', 'Graphic Era Hill University', 18),
+    ('b0000000-0000-0000-0000-000000000006', 'Sneha Deshmukh', 'sneha.deshmukh@coep.ac.in', 'Computer Tech', '3rd Year', 'learner', 160, 920, 9, 4.8, 34, 1490, 1530, 1, 'India', 'Maharashtra', 'Pune', 'COEP Tech University', 15),
+    ('b0000000-0000-0000-0000-000000000007', 'Kunal Verma', 'kunal.verma@dtu.ac.in', 'Software Engg', '2nd Year', 'learner', 140, 810, 6, 4.6, 28, 1280, 1310, 1, 'India', 'Delhi', 'New Delhi', 'Delhi Technological University', 12)
+  ON CONFLICT (id) DO UPDATE SET
+    rr = EXCLUDED.rr,
+    highest_rr = EXCLUDED.highest_rr,
+    country = EXCLUDED.country,
+    state = EXCLUDED.state,
+    city = EXCLUDED.city,
+    college = EXCLUDED.college,
+    challenge_wins = EXCLUDED.challenge_wins;
+EXCEPTION WHEN OTHERS THEN
+  NULL;
+END $$;
+
+
