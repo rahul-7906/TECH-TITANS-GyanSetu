@@ -207,33 +207,53 @@
     applyFilters();
   };
 
-  // ── Load only real peer records from Supabase ───────────────────
+  // ── Load peer records from Supabase ───────────────────
   async function loadPeers() {
-    if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_ANON) {
-      renderPeers([]);
-      return;
+    let peerRows = [];
+    if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON && !window.SUPABASE_ANON.includes('*')) {
+      try {
+        const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON);
+        const { data, error } = await client.from('profiles')
+          .select('*')
+          .eq('role', 'mentor');
+        if (!error && Array.isArray(data) && data.length > 0) {
+          peerRows = data;
+        }
+      } catch (e) {
+        console.warn('Could not load peers from Supabase:', e);
+      }
     }
-    const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON);
-    const { data, error } = await client.from('profiles')
-      .select('id, full_name, department, year, topics, languages, availability, bio, rating, sessions_count')
-      .eq('role', 'mentor');
-    if (error || !Array.isArray(data)) {
-      renderPeers([]);
-      return;
+
+    // Fallback to demo mentors if database has no mentors yet
+    if (peerRows.length === 0 && window.GYANSETU_DEMO && Array.isArray(window.GYANSETU_DEMO.mentors)) {
+      peerRows = window.GYANSETU_DEMO.mentors.map(m => ({
+        id: m.id,
+        full_name: m.name || m.full_name,
+        department: m.department,
+        year: m.year,
+        rating: m.rating,
+        sessions_count: m.sessions,
+        topics: m.topics,
+        languages: m.languages,
+        availability: m.availability,
+        bio: m.bio
+      }));
     }
-    PEERS = data.map((peer, index) => ({
-      id: peer.id,
-      name: peer.full_name,
-      avatar: String(peer.full_name || '?').split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase(),
-      department: peer.department || '',
-      year: peer.year || '',
-      rating: Number(peer.rating) || 0,
-      sessions: Number(peer.sessions_count) || 0,
-      topics: Array.isArray(peer.topics) ? peer.topics : [],
-      languages: Array.isArray(peer.languages) ? peer.languages : [],
-      availability: peer.availability || 'offline',
-      bio: peer.bio || ''
+
+    PEERS = peerRows.map((peer) => ({
+      id: peer.id || 'mentor-' + Math.random(),
+      name: peer.full_name || peer.name || 'Mentor',
+      avatar: String(peer.full_name || peer.name || '?').split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase(),
+      department: peer.department || 'Engineering',
+      year: peer.year || '3rd Year',
+      rating: Number(peer.rating) || 4.8,
+      sessions: Number(peer.sessions_count || peer.sessions) || 10,
+      topics: Array.isArray(peer.topics) ? peer.topics : (peer.topics ? String(peer.topics).split(',') : ['DSA', 'Web Dev']),
+      languages: Array.isArray(peer.languages) ? peer.languages : ['English', 'Hindi'],
+      availability: peer.availability || 'online',
+      bio: peer.bio || 'Available for peer guidance and mentoring.'
     }));
+
     ALL_TOPICS.splice(0, ALL_TOPICS.length, ...new Set(PEERS.flatMap(p => p.topics)).sort());
     ALL_LANGUAGES.splice(0, ALL_LANGUAGES.length, ...new Set(PEERS.flatMap(p => p.languages)).sort());
     ALL_TOPICS.forEach(t => topicFilter.append(new Option(t, t)));

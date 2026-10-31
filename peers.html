@@ -226,9 +226,10 @@
        SCRIPTS
        ============================================================ -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
   <script>
-    window.SUPABASE_URL = 'https://bpfjlpjwspzlcsowespc.supabase.co';
-    window.SUPABASE_ANON = '******';
+    window.SUPABASE_URL = typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL : '';
+    window.SUPABASE_ANON = typeof SUPABASE_ANON !== 'undefined' ? SUPABASE_ANON : '';
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
@@ -272,6 +273,7 @@
       })
     );
   </script>
+  <script src="js/demo-data.js"></script>
   <script src="js/peers.js"></script>
 </body>
 </html>

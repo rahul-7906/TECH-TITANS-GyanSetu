@@ -331,14 +331,15 @@
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     lucide.createIcons();
 
     // ── Supabase client ──────────────────────────────────────────────
-    const SUPABASE_URL  = 'https://bpfjlpjwspzlcsowespc.supabase.co';
-    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
-    const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const _SB_URL  = (typeof SUPABASE_URL !== 'undefined') ? SUPABASE_URL : 'https://bpfjlpjwspzlcsowespc.supabase.co';
+    const _SB_ANON = (typeof SUPABASE_ANON !== 'undefined') ? SUPABASE_ANON : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
+    const sbClient = window.supabase.createClient(_SB_URL, _SB_ANON);
 
     // ── Agar user pehle se logged in hai toh dashboard pe bhejo ─────
     sbClient.auth.getSession().then(({ data: { session } }) => {
@@ -484,7 +485,7 @@
 
       setLoading(btn, true, 'Create Free Account →');
 
-      const { error } = await sbClient.auth.signUp({
+      const { data, error } = await sbClient.auth.signUp({
         email,
         password: pass,
         options: {
@@ -498,15 +499,24 @@
       });
 
       if (error) {
-        showError(error.message === 'User already registered'
-          ? '⚠️ Yeh email already registered hai. Sign In karo.'
-          : error.message);
+        let msg = error.message;
+        if (msg === 'User already registered') {
+          msg = '⚠️ Yeh email already registered hai. Sign In karo.';
+        } else if (msg.includes('Database error saving new user')) {
+          msg = '⚠️ Supabase Database setup incomplete. Please run supabase_setup.sql in your Supabase SQL Editor.';
+        }
+        showError(msg);
         setLoading(btn, false, 'Create Free Account →');
         return;
       }
 
-      showSuccess('✅ Account bana diya! Apni email check karo aur confirmation link pe click karo.');
-      setLoading(btn, false, 'Create Free Account →');
+      if (data?.session) {
+        showSuccess('✅ Account created! Redirecting to dashboard…');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+      } else {
+        showSuccess('✅ Account bana diya! Apni email check karo aur confirmation link pe click karo.');
+        setLoading(btn, false, 'Create Free Account →');
+      }
     }
   </script>
 </body>

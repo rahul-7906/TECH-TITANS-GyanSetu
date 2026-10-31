@@ -1021,14 +1021,15 @@
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     lucide.createIcons();
 
     // ── Supabase client ───────────────────────────────────────────────
-    const SUPABASE_URL  = 'https://bpfjlpjwspzlcsowespc.supabase.co';
-    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
-    const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const _SB_URL  = (typeof SUPABASE_URL !== 'undefined') ? SUPABASE_URL : 'https://bpfjlpjwspzlcsowespc.supabase.co';
+    const _SB_ANON = (typeof SUPABASE_ANON !== 'undefined') ? SUPABASE_ANON : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
+    const sbClient = window.supabase.createClient(_SB_URL, _SB_ANON);
 
     // ── Greeting helper ───────────────────────────────────────────────
     function getGreeting() {
@@ -1343,37 +1344,89 @@
       const userId = session.user.id;
       const email  = session.user.email;
 
-      // Fetch profile
-      const { data: profile } = await sbClient
-        .from('profiles').select('*').eq('id', userId).single();
+      // Fetch profile safely
+      let profile = null;
+      try {
+        const { data } = await sbClient
+          .from('profiles').select('*').eq('id', userId).maybeSingle();
+        profile = data;
+      } catch (e) {
+        console.warn('Error reading profile:', e);
+      }
+
+      // If user profile doesn't exist yet, construct fallback or upsert
+      if (!profile) {
+        const fallbackName = session.user.user_metadata?.full_name || email.split('@')[0];
+        profile = {
+          id: userId,
+          email: email,
+          full_name: fallbackName,
+          department: session.user.user_metadata?.department || 'Member',
+          role: session.user.user_metadata?.role || 'learner',
+          credits: 100,
+          xp: 50,
+          streak: 1
+        };
+        // Best-effort insert
+        sbClient.from('profiles').insert(profile).then(() => {}).catch(() => {});
+      }
       renderUser(profile, email);
 
-      // Fetch live mentor directory, sessions, and leaderboard data.
-      const { data: mentors } = await sbClient.from('profiles')
-        .select('id, full_name, department, year, topics, bio, role, availability')
-        .eq('role', 'mentor').neq('id', userId).order('full_name');
+      // Fetch live mentor directory safely
+      let mentors = [];
+      try {
+        const { data } = await sbClient.from('profiles')
+          .select('*')
+          .eq('role', 'mentor').neq('id', userId);
+        if (data && data.length > 0) mentors = data;
+      } catch (e) {
+        console.warn('Error fetching mentors:', e);
+      }
+      if (mentors.length === 0 && window.GYANSETU_DEMO?.mentors) {
+        mentors = window.GYANSETU_DEMO.mentors;
+      }
       renderMentors(mentors);
 
-      const { data: sessions } = await sbClient
-        .from('sessions').select('*')
-        .or(`learner_id.eq.${userId},mentor_id.eq.${userId}`)
-        .order('created_at', { ascending: false }).limit(20);
-      renderSessions(sessions);
+      // Fetch sessions safely
+      try {
+        const { data: allSessions } = await sbClient
+          .from('sessions').select('*')
+          .order('created_at', { ascending: false }).limit(30);
+        const mySessions = (allSessions || []).filter(s =>
+          s.learner_id === userId || s.mentor_id === userId ||
+          s.learner_name === profile.full_name || s.mentor_name === profile.full_name
+        );
+        renderSessions(mySessions);
+      } catch (e) {
+        console.warn('Error fetching sessions:', e);
+      }
 
-      const { data: leaderboard } = await sbClient.from('profiles')
-        .select('full_name, xp').order('xp', { ascending: false }).limit(10);
-      renderLeaderboard(leaderboard);
+      // Fetch leaderboard
+      let leaderboard = [];
+      try {
+        const { data } = await sbClient.from('profiles')
+          .select('id, full_name, xp').order('xp', { ascending: false }).limit(10);
+        leaderboard = data || [];
+        renderLeaderboard(leaderboard);
+      } catch (e) {
+        console.warn('Error fetching leaderboard:', e);
+      }
 
-      // Fetch credit ledger (from new credit_ledger table)
-      const { data: ledger } = await sbClient
-        .from('credit_ledger').select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false }).limit(50);
-      renderLedger(ledger);
+      // Fetch credit ledger safely
+      try {
+        const { data: ledger } = await sbClient
+          .from('credit_ledger').select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false }).limit(50);
+        renderLedger(ledger || []);
+      } catch (e) {
+        console.warn('Error fetching ledger:', e);
+      }
+
       const rank = (leaderboard || []).findIndex(row => row.id === userId);
       document.getElementById('duel-rank').textContent = rank >= 0 ? rank + 1 : '—';
-      document.getElementById('stat-streak').textContent = profile?.streak ?? '—';
-      document.getElementById('sidebar-streak').textContent = profile?.streak ?? '—';
+      document.getElementById('stat-streak').textContent = profile?.streak ?? '1';
+      document.getElementById('sidebar-streak').textContent = profile?.streak ?? '1';
 
       // Remove skeletons
       setTimeout(() => {

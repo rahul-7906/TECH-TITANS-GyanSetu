@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function ensureCreditAccount() {
     // Upsert: if user doesn't exist, give them 50 starter credits
     const { error } = await sb.from('credits').upsert(
-      { username: myName, balance: 0 },
+      { username: myName, balance: 50 },
       { onConflict: 'username', ignoreDuplicates: true }
     );
     if (error) console.warn('ensureCreditAccount:', error.message);
