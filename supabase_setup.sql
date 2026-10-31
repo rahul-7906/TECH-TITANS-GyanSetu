@@ -246,3 +246,9 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
   NULL;
 END $$;
+
+-- ── 10. AUTO-CONFIRM EXISTING USERS ─────────────────────────────────
+UPDATE auth.users
+SET email_confirmed_at = COALESCE(email_confirmed_at, now())
+WHERE email_confirmed_at IS NULL;
+
