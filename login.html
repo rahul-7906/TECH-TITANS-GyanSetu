@@ -289,10 +289,10 @@
     // ── Supabase client ──────────────────────────────────────────────
     const SUPABASE_URL  = 'https://bpfjlpjwspzlcsowespc.supabase.co';
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
     // ── Agar user pehle se logged in hai toh dashboard pe bhejo ─────
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    sbClient.auth.getSession().then(({ data: { session } }) => {
       if (session) window.location.href = 'dashboard.html';
     });
 
@@ -368,7 +368,7 @@
       btn.disabled = true;
       btn.innerHTML = '<svg class="animate-spin h-4 w-4 inline-block mr-2" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#e2e8f0" stroke-width="3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#B9F044" stroke-width="3" stroke-linecap="round"/></svg> Connecting to Google…';
 
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { error } = await sbClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin + '/dashboard.html'
@@ -394,7 +394,7 @@
 
       setLoading(btn, true, 'Sign In to GyanSetu');
 
-      const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+      const { error } = await sbClient.auth.signInWithPassword({ email, password: pass });
 
       if (error) {
         showError(error.message === 'Invalid login credentials'
@@ -428,7 +428,7 @@
 
       setLoading(btn, true, 'Create Free Account →');
 
-      const { error } = await supabase.auth.signUp({
+      const { error } = await sbClient.auth.signUp({
         email,
         password: pass,
         options: {
