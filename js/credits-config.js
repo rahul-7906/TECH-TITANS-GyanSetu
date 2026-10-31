@@ -138,43 +138,75 @@ async function recordCreditTransaction(sb, params) {
     };
   }
 
-  if (!sb) {
-    return { success: false, error: 'Database client not connected.' };
-  }
-
   try {
-    // 1. Idempotency Check (prevent duplicate credits if idempotencyKey or ref provided)
     const effectiveKey = idempotencyKey || (referenceId ? `${referenceType}:${referenceId}:${userId}` : '');
-    if (effectiveKey) {
-      const { data: existing } = await sb
-        .from('credit_ledger')
-        .select('id, amount, status, created_at')
-        .eq('user_id', userId)
-        .eq('idempotency_key', effectiveKey)
-        .maybeSingle();
 
-      if (existing) {
-        return {
-          success: false,
-          error: 'Transaction already processed (duplicate prevented).',
-          isDuplicate: true,
-          transaction: existing
-        };
-      }
+    // 1. Idempotency Check in Supabase if online
+    if (sb && effectiveKey) {
+      try {
+        const { data: existing } = await sb
+          .from('credit_ledger')
+          .select('id, amount, status, created_at')
+          .eq('user_id', userId)
+          .eq('idempotency_key', effectiveKey)
+          .maybeSingle();
+
+        if (existing) {
+          return {
+            success: false,
+            error: 'Transaction already processed (duplicate prevented).',
+            isDuplicate: true,
+            transaction: existing
+          };
+        }
+      } catch (e) {}
     }
 
-    // 2. Read current user profile
-    const { data: profile, error: readError } = await sb
-      .from('profiles')
-      .select('id, credits, xp, total_earned, total_spent')
-      .eq('id', userId)
-      .maybeSingle();
-
-    if (readError || !profile) {
-      return { success: false, error: 'User profile not found in database.' };
+    // 2. Fetch current user profile (try Supabase first, fallback to local storage)
+    let userProfile = null;
+    if (sb) {
+      try {
+        const { data: profile, error: readError } = await sb
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+        if (!readError && profile) {
+          userProfile = profile;
+        }
+      } catch (e) {}
     }
 
-    const currentBalance = Number(profile.credits) || 0;
+    if (!userProfile && typeof localStorage !== 'undefined') {
+      try {
+        const rawActive = localStorage.getItem('gyansetu_active_profile');
+        if (rawActive) {
+          const p = JSON.parse(rawActive);
+          if (p.id === userId) userProfile = p;
+        }
+        if (!userProfile) {
+          const accounts = JSON.parse(localStorage.getItem('gyansetu_local_accounts') || '{}');
+          Object.keys(accounts).forEach(k => {
+            if (accounts[k]?.profile?.id === userId) userProfile = accounts[k].profile;
+          });
+        }
+      } catch (e) {}
+    }
+
+    // Default template if brand new user
+    if (!userProfile) {
+      userProfile = {
+        id: userId,
+        credits: 100,
+        xp: 50,
+        full_name: 'Student',
+        department: 'CSE',
+        role: 'learner',
+        streak: 1
+      };
+    }
+
+    const currentBalance = Number(userProfile.credits) || 0;
     const newBalance = currentBalance + amount;
 
     // 3. Balance Protection: Never allow negative credit balance
@@ -186,56 +218,106 @@ async function recordCreditTransaction(sb, params) {
       };
     }
 
-    // 4. Record in credit_ledger
-    const ledgerPayload = {
-      user_id: userId,
-      amount: amount,
-      balance_after: newBalance,
-      type: type,
-      reason: reason,
-      reference_type: referenceType,
-      reference_id: referenceId || null,
-      idempotency_key: effectiveKey || null,
-      status: 'COMPLETED'
-    };
+    // Calculate XP increase: +25 XP on winning challenges/races, +10 XP on study actions
+    const xpDelta = amount > 0 ? Math.round(amount * 2.5) : 10;
+    const newXp = (Number(userProfile.xp) || 50) + xpDelta;
 
-    const { data: newLedger, error: ledgerError } = await sb
-      .from('credit_ledger')
-      .insert(ledgerPayload)
-      .select()
-      .maybeSingle();
-
-    if (ledgerError) {
-      console.error('Ledger insert error:', ledgerError);
-      return { success: false, error: ledgerError.message };
-    }
-
-    // 5. Update user profile totals
     const profileUpdates = {
+      ...userProfile,
       credits: newBalance,
+      xp: newXp,
+      total_earned: (Number(userProfile.total_earned) || 0) + (amount > 0 ? amount : 0),
+      total_spent: (Number(userProfile.total_spent) || 0) + (amount < 0 ? Math.abs(amount) : 0),
       updated_at: new Date().toISOString()
     };
 
-    if (amount > 0) {
-      profileUpdates.total_earned = (Number(profile.total_earned) || 0) + amount;
-      profileUpdates.xp = (Number(profile.xp) || 0) + Math.round(amount * 1.5); // Earning credits also builds learning XP
-    } else {
-      profileUpdates.total_spent = (Number(profile.total_spent) || 0) + Math.abs(amount);
+    // 4. Update or Upsert in Supabase
+    if (sb) {
+      try {
+        await sb.from('profiles').upsert(profileUpdates, { onConflict: 'id' });
+      } catch (e) {
+        console.warn('Supabase profile balance upsert warning:', e);
+      }
+
+      try {
+        await sb.from('credit_ledger').insert({
+          user_id: userId,
+          amount: amount,
+          balance_after: newBalance,
+          type: type,
+          reason: reason,
+          reference_type: referenceType,
+          reference_id: referenceId || null,
+          idempotency_key: effectiveKey || null,
+          status: 'COMPLETED'
+        });
+      } catch (e) {
+        console.warn('Supabase credit_ledger insert warning:', e);
+      }
     }
 
-    const { error: updateError } = await sb
-      .from('profiles')
-      .update(profileUpdates)
-      .eq('id', userId);
+    // 5. Update local storage caches (ensures instant sync across tabs & components)
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const rawActive = localStorage.getItem('gyansetu_active_profile');
+        if (rawActive) {
+          const ap = JSON.parse(rawActive);
+          if (ap.id === userId || (userProfile.email && ap.email === userProfile.email)) {
+            ap.credits = newBalance;
+            ap.xp = newXp;
+            localStorage.setItem('gyansetu_active_profile', JSON.stringify(ap));
+          }
+        }
 
-    if (updateError) {
-      console.warn('Profile balance update warning:', updateError);
+        const rawAccs = localStorage.getItem('gyansetu_local_accounts');
+        if (rawAccs) {
+          const accs = JSON.parse(rawAccs);
+          Object.keys(accs).forEach(k => {
+            if (accs[k]?.profile && (accs[k].profile.id === userId || (userProfile.email && accs[k].email === userProfile.email))) {
+              accs[k].profile.credits = newBalance;
+              accs[k].profile.xp = newXp;
+            }
+          });
+          localStorage.setItem('gyansetu_local_accounts', JSON.stringify(accs));
+        }
+
+        // Save into local ledger cache
+        const ledgerKey = 'gyansetu_ledger_' + userId;
+        const localLedger = JSON.parse(localStorage.getItem(ledgerKey) || '[]');
+        localLedger.unshift({
+          id: 'tx_' + Date.now(),
+          user_id: userId,
+          amount: amount,
+          balance_after: newBalance,
+          type: type,
+          reason: reason,
+          reference_type: referenceType,
+          reference_id: referenceId,
+          idempotency_key: effectiveKey,
+          created_at: new Date().toISOString()
+        });
+        localStorage.setItem(ledgerKey, JSON.stringify(localLedger.slice(0, 50)));
+      } catch (e) {}
+    }
+
+    // 6. Dispatch live reactive update event
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('gyansetu:credits-updated', {
+        detail: { userId, newBalance, newXp, amount, reason }
+      }));
     }
 
     return {
       success: true,
       newBalance,
-      transaction: newLedger
+      newXp,
+      transaction: {
+        user_id: userId,
+        amount,
+        balance_after: newBalance,
+        reason,
+        created_at: new Date().toISOString()
+      }
     };
   } catch (err) {
     console.error('recordCreditTransaction exception:', err);

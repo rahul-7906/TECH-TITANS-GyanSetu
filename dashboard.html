@@ -1812,7 +1812,38 @@
         container.innerHTML = '<p class="py-5 text-center text-xs text-slate-400">Leaderboard data will appear after members complete activities.</p>';
         return;
       }
-      container.innerHTML = rows.slice(0, 10).map((row, index) => `<div class="flex items-center gap-2.5"><span class="w-5 text-right text-xs font-extrabold ${index === 0 ? 'text-amber-500' : 'text-slate-400'}">${index + 1}</span><div class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-[10px] font-extrabold text-[#2F6F11]">${escapeHtml((row.full_name || '?').slice(0, 2).toUpperCase())}</div><span class="flex-1 truncate text-xs font-bold text-slate-700">${escapeHtml(row.full_name || 'Unnamed member')}</span><span class="rounded-full bg-[#F4FBEA] border border-[#B9F044]/30 px-2 py-1 text-[10px] font-bold text-[#2F6F11]">${Number(row.xp) || 0} XP</span></div>`).join('');
+
+      container.innerHTML = rows.slice(0, 10).map((row, index) => {
+        const isMe = currentUserId && (row.id === currentUserId || (row.email && currentProfile?.email && row.email.toLowerCase() === currentProfile.email.toLowerCase()));
+        const rankMedal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : `${index + 1}`));
+        const initials = (row.full_name || 'U').split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase() || 'U';
+        const credits = Number(row.credits) || 0;
+        const xp = Number(row.xp) || 0;
+
+        return `
+          <div class="flex items-center gap-2.5 rounded-xl p-2 transition ${isMe ? 'bg-[#F4FBEA] border border-[#B9F044]/70 shadow-sm' : 'hover:bg-slate-50'}">
+            <span class="w-6 text-center text-xs font-black ${index === 0 ? 'text-amber-500 text-sm' : (index < 3 ? 'text-slate-700 font-bold' : 'text-slate-400')}">${rankMedal}</span>
+            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${isMe ? 'bg-[#B9F044] text-[#0B1F17]' : 'bg-emerald-100 text-[#2F6F11]'} text-[10px] font-black shadow-inner">
+              ${escapeHtml(initials)}
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-xs font-extrabold text-[#0B1F17]">
+                ${escapeHtml(row.full_name || 'Student')}
+                ${isMe ? '<span class="ml-1 rounded-full bg-[#0B1F17] px-1.5 py-0.2 text-[9px] font-black text-[#B9F044]">You</span>' : ''}
+              </p>
+              <p class="truncate text-[10px] text-slate-400">${escapeHtml(row.department || 'CSE')}${row.role === 'mentor' ? ' · Mentor' : ''}</p>
+            </div>
+            <div class="text-right flex items-center gap-1.5">
+              <span class="inline-flex items-center gap-0.5 rounded-full bg-amber-50 border border-amber-200/70 px-2 py-0.5 text-[10px] font-black text-amber-700">
+                🪙 ${credits}
+              </span>
+              <span class="inline-flex items-center rounded-full bg-[#F4FBEA] border border-[#B9F044]/40 px-2 py-0.5 text-[10px] font-black text-[#2F6F11]">
+                ⚡ ${xp} XP
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function escapeHtml(value) {
@@ -2178,6 +2209,12 @@
         });
       }
 
+      if (res.success && currentProfile) {
+        currentProfile.credits = res.newBalance;
+        if (res.newXp) currentProfile.xp = res.newXp;
+        renderUser(currentProfile);
+      }
+
       closeChallengeModal();
       showToast(`🎉 Correct! +10 Credits &amp; +20 RR awarded!`);
       submitBtn.disabled = false;
@@ -2250,6 +2287,12 @@
           <button onclick="openNoteViewModal('${noteId}', '${escapeHtml(title)}')" class="w-full rounded-xl bg-[#0B1F17] text-[#B9F044] py-2 text-xs font-bold transition">
             View Note ✅
           </button>`;
+      }
+
+      if (res.success && currentProfile) {
+        currentProfile.credits = res.newBalance;
+        if (res.newXp) currentProfile.xp = res.newXp;
+        renderUser(currentProfile);
       }
 
       showToast(`Note unlocked! -${cost} credits deducted.`);
@@ -2457,10 +2500,19 @@
       try {
         if (window.GyanSetuAuth?.getAllRegisteredUsers) {
           const allStudents = await window.GyanSetuAuth.getAllRegisteredUsers();
-          leaderboard = allStudents.sort((a, b) => (Number(b.xp) || 0) - (Number(a.xp) || 0)).slice(0, 10);
+          // Ensure current user profile is present with latest credits & XP
+          if (profile && !allStudents.some(s => s.id === userId || (s.email && email && s.email.toLowerCase() === email.toLowerCase()))) {
+            allStudents.push(profile);
+          }
+          // Sort by XP descending, then Credits descending
+          leaderboard = allStudents.sort((a, b) => {
+            const xpDiff = (Number(b.xp) || 0) - (Number(a.xp) || 0);
+            if (xpDiff !== 0) return xpDiff;
+            return (Number(b.credits) || 0) - (Number(a.credits) || 0);
+          }).slice(0, 10);
         } else {
           const { data } = await sbClient.from('profiles')
-            .select('id, full_name, xp').order('xp', { ascending: false }).limit(10);
+            .select('*').order('xp', { ascending: false }).limit(10);
           leaderboard = data || [];
         }
         renderLeaderboard(leaderboard);
@@ -2654,6 +2706,15 @@
         el.style.width = '0%';
         setTimeout(() => { el.style.width = target; }, 200);
       });
+    });
+
+    window.addEventListener('gyansetu:credits-updated', (e) => {
+      if (e.detail?.userId === currentUserId && currentProfile) {
+        currentProfile.credits = e.detail.newBalance;
+        if (e.detail.newXp) currentProfile.xp = e.detail.newXp;
+        renderUser(currentProfile);
+      }
+      loadDashboard();
     });
 
     loadDashboard();

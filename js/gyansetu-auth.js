@@ -490,17 +490,29 @@
       var sb = getSupabaseClient();
       var usersMap = new Map();
 
+      // Helper to merge or insert user into map taking the latest/highest values
+      function mergeUser(p) {
+        if (!p || !p.id || String(p.id).startsWith('demo-')) return;
+        var key = (p.email || p.id).toLowerCase();
+        var existing = usersMap.get(key);
+        if (!existing) {
+          usersMap.set(key, { ...p });
+        } else {
+          existing.credits = Math.max(Number(existing.credits) || 0, Number(p.credits) || 0);
+          existing.xp = Math.max(Number(existing.xp) || 0, Number(p.xp) || 0);
+          existing.rr = Math.max(Number(existing.rr) || 1000, Number(p.rr) || 1000);
+          if (p.full_name) existing.full_name = p.full_name;
+          if (p.department) existing.department = p.department;
+          if (p.role) existing.role = p.role;
+        }
+      }
+
       // 1. Fetch from Supabase profiles table
       if (sb) {
         try {
           var { data, error } = await sb.from('profiles').select('*');
           if (!error && Array.isArray(data)) {
-            data.forEach(function (p) {
-              if (p && p.id && !String(p.id).startsWith('demo-')) {
-                var key = (p.email || p.id).toLowerCase();
-                usersMap.set(key, p);
-              }
-            });
+            data.forEach(mergeUser);
           }
         } catch (e) {
           console.warn('[GyanSetuAuth] Fetch profiles error:', e);
@@ -513,23 +525,16 @@
         Object.keys(accounts).forEach(function (email) {
           var item = accounts[email];
           if (item && item.profile) {
-            var prof = item.profile;
-            var key = (prof.email || prof.id || email).toLowerCase();
-            if (!usersMap.has(key)) {
-              usersMap.set(key, prof);
-            }
+            mergeUser(item.profile);
           }
         });
       } catch (e) {}
 
-      // 3. Ensure active user profile is included
+      // 3. Ensure active user profile is included with latest real-time credits
       try {
         var activeProf = JSON.parse(localStorage.getItem(STORAGE_KEYS.ACTIVE_PROFILE) || 'null');
         if (activeProf && activeProf.id && !String(activeProf.id).startsWith('demo-')) {
-          var key = (activeProf.email || activeProf.id).toLowerCase();
-          if (!usersMap.has(key)) {
-            usersMap.set(key, activeProf);
-          }
+          mergeUser(activeProf);
         }
       } catch (e) {}
 

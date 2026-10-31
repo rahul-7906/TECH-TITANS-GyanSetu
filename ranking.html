@@ -397,6 +397,9 @@
       lucide.createIcons();
       renderLadderShowcase();
       await loadProfileAndLeaderboard();
+      window.addEventListener('gyansetu:credits-updated', () => {
+        loadProfileAndLeaderboard();
+      });
     });
 
     // ── Load User & Peers ──────────────────────────────────────────────
