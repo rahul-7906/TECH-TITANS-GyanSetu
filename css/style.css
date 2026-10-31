@@ -1,35 +1,103 @@
-/* Page background: soft green wash like the reference */
+/* =============================================
+   GyanSetu — Shared Base Styles
+   ============================================= */
+
+/* Page background: soft green wash */
 body {
   background:
-    radial-gradient(900px 500px at -10% 10%, rgba(185,240,68,0.22), transparent 60%),
-    radial-gradient(800px 500px at 110% 40%, rgba(185,240,68,0.16), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, rgba(185,240,68,0.18), transparent 60%),
+    radial-gradient(800px 500px at 110% 40%, rgba(185,240,68,0.12), transparent 60%),
     #EEF6E4;
 }
 
-/* Floating motion for the hero illustration */
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+
+/* Floating motion for hero illustration */
 @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 .float-slow { animation: floaty 6s ease-in-out infinite; }
 
-/* Slow rotation for the orbit ring and gear */
+/* Slow rotation for orbit ring / gear */
 @keyframes spin-slow { to { transform: rotate(360deg); } }
 .spin-slow { animation: spin-slow 28s linear infinite; transform-origin: center; transform-box: fill-box; }
 
-/* Pulsing live dot */
-@keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(185,240,68,0.7); } 100% { box-shadow: 0 0 0 14px rgba(185,240,68,0); } }
+/* Pulsing live indicator dot */
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(185,240,68,0.7); }
+  100% { box-shadow: 0 0 0 14px rgba(185,240,68,0); }
+}
 .live-dot { animation: pulseRing 1.6s infinite; }
 
-/* Arrow circles slide slightly on hover */
-.arrow-circle { transition: transform 0.25s ease; }
-.btn-pill:hover .arrow-circle, .card-hover:hover .arrow-circle { transform: translateX(3px); }
+/* Fade in up — for cards and sections */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeInUp .45s ease both; }
 
-/* Grid texture used on dark banners */
+/* =============================================
+   INTERACTIVE COMPONENTS
+   ============================================= */
+
+/* Arrow circles slide on hover of btn-pill or card-hover parent */
+.arrow-circle { transition: transform 0.25s ease; }
+.btn-pill:hover .arrow-circle,
+.card-hover:hover .arrow-circle { transform: translateX(3px); }
+
+/* Card hover lift effect */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+}
+
+/* =============================================
+   PATTERNS & TEXTURES
+   ============================================= */
+
+/* Grid texture — used on dark banners */
 .grid-tex {
-  background-image: linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+  background-image:
+    linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
   background-size: 34px 34px;
 }
 
+/* =============================================
+   FORM ELEMENTS (shared across login + dashboard)
+   ============================================= */
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  font-family: inherit;
+}
+
+/* Focus ring for interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid #B9F044;
+  outline-offset: 2px;
+}
+
+/* =============================================
+   SCROLLBAR STYLING
+   ============================================= */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+/* =============================================
+   REDUCED MOTION
+   ============================================= */
 @media (prefers-reduced-motion: reduce) {
-  .float-slow, .spin-slow, .live-dot { animation: none; }
+  .float-slow,
+  .spin-slow,
+  .live-dot,
+  .animate-fade-in { animation: none; }
   html { scroll-behavior: auto; }
 }

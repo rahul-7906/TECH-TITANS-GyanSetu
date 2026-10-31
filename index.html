@@ -5,546 +5,712 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GyanSetu | Peer-to-Peer Student Mentorship</title>
   <meta name="description" content="GyanSetu connects campus peers for fast 15-minute micro-mentorship sessions. Earn credits by teaching, spend them by learning." />
-
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-  <!-- Tailwind CSS via CDN (no build step needed) -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="js/tailwind.config.js"></script>
-
-  <!-- Custom styles -->
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Full-screen hero */
+    html, body { margin: 0; padding: 0; width: 100%; }
+
+    /* Floating glass navbar */
+    .navbar-glass {
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      background: rgba(255,255,255,0.82);
+      border-bottom: 1px solid rgba(255,255,255,0.6);
+    }
+    .navbar-scrolled {
+      background: rgba(255,255,255,0.96);
+      box-shadow: 0 4px 24px -8px rgba(11,31,23,0.12);
+    }
+
+    /* Active nav link underline */
+    .nav-link { position: relative; }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 2px; border-radius: 2px; background: #B9F044;
+      transition: width .25s ease;
+    }
+    .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+
+    /* Hero gradient background */
+    .hero-bg {
+      background:
+        radial-gradient(ellipse 80% 60% at 20% -10%, rgba(185,240,68,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 30%, rgba(185,240,68,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 50% 100%, rgba(6,78,59,0.06) 0%, transparent 60%),
+        #FAFDF6;
+    }
+
+    /* Section alt bg */
+    .section-alt { background: #F4FBEA; }
+
+    /* Feature card */
+    .feat-card {
+      border: 1.5px solid #f1f5f9;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      background: #fff;
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .feat-card:hover {
+      transform: translateY(-5px);
+      border-color: #B9F044;
+      box-shadow: 0 16px 40px -12px rgba(11,31,23,0.14);
+    }
+
+    /* Step connector line */
+    .step-line { position: absolute; top: 22px; left: calc(50% + 28px); right: calc(-50% + 28px); height: 2px; background: linear-gradient(90deg, #B9F044, #8FD420); }
+
+    /* Stat counter */
+    .stat-num { font-size: 2.75rem; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+
+    /* Testimonial card */
+    .testimonial-card {
+      border: 1.5px solid #f1f5f9;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      background: #fff;
+    }
+
+    /* CTA section */
+    .cta-section {
+      background: linear-gradient(135deg, #06130E 0%, #0B2A1E 50%, #14532D 100%);
+    }
+
+    /* Mobile menu transition */
+    #mobile-menu { transition: max-height .3s ease, opacity .3s ease; overflow: hidden; }
+    #mobile-menu.hidden { max-height: 0; opacity: 0; }
+    #mobile-menu.open { max-height: 600px; opacity: 1; }
+
+    /* Smooth scroll offset for sticky nav */
+    [id] { scroll-margin-top: 80px; }
+
+    /* Avatar stack */
+    .avatar-stack > div { margin-left: -8px; border: 2px solid #fff; border-radius: 999px; }
+    .avatar-stack > div:first-child { margin-left: 0; }
+  </style>
 </head>
+<body class="font-sans text-ink antialiased overflow-x-hidden">
 
-<body class="font-sans text-ink antialiased">
+  <!-- ============================================================
+       NAVBAR — sticky, glassmorphism
+       ============================================================ -->
+  <header id="navbar" class="navbar-glass fixed inset-x-0 top-0 z-50 transition-all duration-300">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3.5 sm:px-8 lg:px-10">
 
-  <!-- Big rounded white "sheet" that holds the whole page, like the reference -->
-  <div class="mx-auto my-4 max-w-6xl overflow-hidden rounded-[2rem] border border-white bg-white/90 shadow-soft sm:my-8">
+      <!-- Brand -->
+      <a href="index.html" class="flex items-center gap-2.5 shrink-0" aria-label="GyanSetu home">
+        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11] shadow-sm">
+          <i data-lucide="graduation-cap" class="h-4.5 w-4.5 text-[#0B1F17]" style="width:18px;height:18px;"></i>
+        </span>
+        <span class="text-[1.1rem] font-extrabold tracking-tight text-ink">GyanSetu</span>
+      </a>
 
-    <!-- =====================================================
-         1. HEADER / NAVBAR
-         ===================================================== -->
-    <header class="relative z-20">
-      <nav class="flex items-center justify-between px-5 py-5 sm:px-8">
+      <!-- Desktop nav links -->
+      <ul class="hidden items-center gap-7 text-[13px] font-semibold text-slate-600 lg:flex">
+        <li><a href="#features" class="nav-link transition hover:text-ink">Features</a></li>
+        <li><a href="#how-it-works" class="nav-link transition hover:text-ink">How It Works</a></li>
+        <li><a href="#testimonials" class="nav-link transition hover:text-ink">Reviews</a></li>
+        <li><a href="#impact" class="nav-link transition hover:text-ink">Impact</a></li>
+        <li>
+          <a href="room.html" class="inline-flex items-center gap-1.5 rounded-full bg-[#B9F044]/20 px-3.5 py-1.5 text-xs font-extrabold text-[#2F6F11] transition hover:bg-[#B9F044] hover:text-ink">
+            <span class="h-1.5 w-1.5 rounded-full bg-[#2F6F11] animate-pulse"></span>Live Room
+          </a>
+        </li>
+      </ul>
 
-        <!-- Brand logo: lime badge with graduation cap -->
-        <a href="#top" class="flex items-center gap-2.5" aria-label="GyanSetu home">
-          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-lime-brand to-leaf text-ink shadow-card">
-            <i data-lucide="graduation-cap" class="h-5 w-5"></i>
+      <!-- Desktop CTAs -->
+      <div class="hidden items-center gap-2.5 lg:flex">
+        <a href="login.html" class="rounded-full border border-slate-200 px-4 py-2 text-[13px] font-semibold text-slate-600 transition hover:border-[#2F6F11] hover:text-[#2F6F11]">Sign In</a>
+        <a href="login.html#signup" class="btn-pill inline-flex items-center gap-2 rounded-full bg-[#0B1F17] py-2 pl-5 pr-1.5 text-[13px] font-bold text-white transition hover:bg-[#064E3B]">
+          Get Started Free
+          <span class="arrow-circle flex h-6 w-6 items-center justify-center rounded-full bg-[#B9F044] text-[#0B1F17]">
+            <i data-lucide="arrow-right" class="h-3 w-3"></i>
           </span>
-          <span class="text-xl font-extrabold tracking-tight">GyanSetu</span>
-        </a>
-
-        <!-- Desktop links -->
-        <ul class="hidden items-center gap-7 text-[13px] font-semibold text-slate-700 lg:flex">
-          <li><a href="#how-it-works" class="transition hover:text-leaf">How It Works</a></li>
-          <li><a href="#mentors" class="transition hover:text-leaf">Find a Mentor</a></li>
-          <li><a href="#duels" class="transition hover:text-leaf">Skill Duels</a></li>
-          <li><a href="#ledger" class="transition hover:text-leaf">Credit Ledger</a></li>
-          <li><a href="#community" class="transition hover:text-leaf">Community</a></li>
-          <li>
-            <a href="room.html" class="inline-flex items-center gap-1.5 rounded-full bg-lime-brand/20 px-3 py-1 text-xs font-extrabold text-leaf transition hover:bg-lime-brand hover:text-ink">
-              <span class="h-1.5 w-1.5 rounded-full bg-leaf animate-pulse"></span> Live Collab
-            </a>
-          </li>
-        </ul>
-
-        <!-- Right CTA: dark pill with lime arrow circle -->
-        <a href="#book" class="btn-pill group hidden items-center gap-3 rounded-full bg-ink py-1.5 pl-5 pr-1.5 text-xs font-bold text-white transition hover:bg-forest lg:inline-flex">
-          Book a 15-Min Session
-          <span class="arrow-circle flex h-7 w-7 items-center justify-center rounded-full bg-lime-brand text-ink">
-            <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>
-          </span>
-        </a>
-
-        <!-- Mobile menu button -->
-        <button id="menu-btn" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white lg:hidden" aria-label="Toggle menu" aria-expanded="false">
-          <i data-lucide="menu" class="h-5 w-5"></i>
-        </button>
-      </nav>
-
-      <!-- Mobile dropdown -->
-      <div id="mobile-menu" class="hidden border-t border-slate-100 bg-white px-5 pb-5 lg:hidden">
-        <ul class="flex flex-col gap-1 py-3 text-sm font-semibold text-slate-700">
-          <li><a href="#how-it-works" class="block rounded-xl px-3 py-2.5 hover:bg-mist">How It Works</a></li>
-          <li><a href="#mentors" class="block rounded-xl px-3 py-2.5 hover:bg-mist">Find a Mentor</a></li>
-          <li><a href="#duels" class="block rounded-xl px-3 py-2.5 hover:bg-mist">Skill Duels</a></li>
-          <li><a href="#ledger" class="block rounded-xl px-3 py-2.5 hover:bg-mist">Credit Ledger</a></li>
-          <li><a href="#community" class="block rounded-xl px-3 py-2.5 hover:bg-mist">Community</a></li>
-          <li><a href="room.html" class="block rounded-xl px-3 py-2.5 font-extrabold text-leaf hover:bg-mist">⚡ Live Collab Room</a></li>
-        </ul>
-        <a href="#book" class="mt-2 flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white">
-          Book a 15-Min Session <i data-lucide="arrow-right" class="h-4 w-4 text-lime-brand"></i>
         </a>
       </div>
-    </header>
 
-    <main id="top">
+      <!-- Mobile hamburger -->
+      <button id="menu-btn" class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white/80 backdrop-blur-sm lg:hidden" aria-label="Toggle menu" aria-expanded="false">
+        <i data-lucide="menu" id="menu-icon" class="h-4.5 w-4.5" style="width:18px;height:18px;"></i>
+      </button>
+    </nav>
 
-      <!-- =====================================================
-           2. HERO SECTION
-           ===================================================== -->
-      <section class="relative px-5 pb-10 pt-6 sm:px-8 lg:pt-10">
-        <div class="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+    <!-- Mobile dropdown -->
+    <div id="mobile-menu" class="hidden border-t border-slate-100/80 bg-white/95 backdrop-blur-xl">
+      <div class="mx-auto max-w-7xl px-5 pb-5 pt-3">
+        <ul class="flex flex-col gap-0.5 text-sm font-semibold text-slate-600">
+          <li><a href="#features" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Features</a></li>
+          <li><a href="#how-it-works" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">How It Works</a></li>
+          <li><a href="#testimonials" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Reviews</a></li>
+          <li><a href="#impact" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Impact</a></li>
+          <li><a href="room.html" class="block rounded-xl px-3 py-2.5 font-extrabold text-[#2F6F11] hover:bg-[#F4FBEA]">&#9889; Live Collab Room</a></li>
+        </ul>
+        <div class="mt-3 flex gap-2.5">
+          <a href="login.html" class="flex-1 rounded-xl border border-slate-200 py-2.5 text-center text-sm font-bold text-ink">Sign In</a>
+          <a href="login.html#signup" class="flex-1 rounded-xl bg-[#0B1F17] py-2.5 text-center text-sm font-bold text-[#B9F044]">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </header>
 
-          <!-- Left: text -->
-          <div>
-            <span class="inline-flex items-center gap-1.5 rounded-md border border-lime-brand/70 bg-lime-brand/15 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-leaf">
-              🚀 Revolutionizing Campus Learning
-            </span>
 
-            <h1 class="mt-5 text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.4rem]">
-              Master Any Subject<br class="hidden sm:block" />
-              with Peer-to-Peer<br class="hidden sm:block" />
-              <span class="relative inline-block text-leaf">
-                Mentorship
-                <!-- hand-drawn style underline -->
-                <svg class="absolute -bottom-2 left-0 w-full" viewBox="0 0 320 14" fill="none" aria-hidden="true">
-                  <path d="M3 10 C 90 2, 220 2, 317 8" stroke="#B9F044" stroke-width="5" stroke-linecap="round"/>
-                  <path d="M20 12 C 110 6, 210 6, 300 11" stroke="#B9F044" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
-                </svg>
-              </span>
-            </h1>
+  <!-- ============================================================
+       HERO — full viewport height
+       ============================================================ -->
+  <section class="hero-bg relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-5 pb-16 pt-28 sm:px-8 lg:pt-20">
 
-            <p class="mt-7 max-w-md text-sm leading-7 text-slate-600">
-              Connect with verified campus peers for fast 15-minute micro-learning sessions. Earn knowledge credits, clear semester doubts, and level up together.
-            </p>
+    <!-- Decorative blobs -->
+    <div class="pointer-events-none absolute left-0 top-0 h-[70vh] w-[70vw] -translate-x-1/3 -translate-y-1/4 rounded-full bg-[#B9F044]/10 blur-3xl"></div>
+    <div class="pointer-events-none absolute bottom-0 right-0 h-[50vh] w-[50vw] translate-x-1/4 translate-y-1/4 rounded-full bg-[#064E3B]/8 blur-3xl"></div>
+    <div class="pointer-events-none absolute right-1/4 top-1/3 h-[30vw] w-[30vw] rounded-full bg-[#B9F044]/6 blur-3xl"></div>
 
-            <!-- Dual CTAs -->
-            <div class="mt-8 flex flex-wrap items-center gap-3">
-              <a href="#mentors" class="btn-pill inline-flex items-center gap-3 rounded-xl bg-ink py-2 pl-5 pr-2 text-xs font-bold text-white shadow-card transition hover:bg-forest">
-                Find a Peer Mentor
-                <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-lime-brand text-ink">
-                  <i data-lucide="arrow-right" class="h-4 w-4"></i>
-                </span>
-              </a>
-              <a href="#how-it-works" class="btn-pill inline-flex items-center gap-3 rounded-xl border border-slate-200 bg-white py-2 pl-5 pr-2 text-xs font-bold text-ink shadow-card transition hover:border-leaf">
-                Explore Topics
-                <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full border border-lime-brand text-leaf">
-                  <i data-lucide="chevron-right" class="h-4 w-4"></i>
-                </span>
-              </a>
-              <a href="room.html" class="btn-pill inline-flex items-center gap-3 rounded-xl border border-lime-brand/60 bg-lime-brand/10 py-2 pl-5 pr-2 text-xs font-bold text-leaf shadow-card transition hover:bg-lime-brand hover:text-ink">
-                ⚡ Start Live Collab
-                <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-leaf text-white">
-                  <i data-lucide="arrow-right" class="h-4 w-4"></i>
-                </span>
-              </a>
-            </div>
+    <div class="relative mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
 
-            <!-- Mentor mini-card (mock) with floating milestone chips -->
-            <div class="relative mt-10 max-w-sm">
-              <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-soft">
-                <div class="flex items-center gap-3">
-                  <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-forest to-leaf text-sm font-extrabold text-white">AS</div>
-                  <div class="min-w-0">
-                    <p class="flex items-center gap-1 text-sm font-extrabold">Aarav S. <i data-lucide="badge-check" class="h-4 w-4 text-leaf"></i></p>
-                    <p class="mt-1 inline-flex items-center gap-1.5 rounded-full bg-lime-brand/30 px-2.5 py-0.5 text-[11px] font-bold text-forest">
-                      <i data-lucide="code-2" class="h-3 w-3"></i> DSA in C++ • 4.9★
-                    </p>
-                  </div>
-                  <span class="ml-auto inline-flex items-center gap-1.5 rounded-full bg-mist px-2.5 py-1 text-[10px] font-bold text-leaf">
-                    <span class="live-dot h-1.5 w-1.5 rounded-full bg-leaf"></span> Live
-                  </span>
-                </div>
-              </div>
-              <div class="mt-3 flex flex-wrap gap-2">
-                <span class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold shadow-card">🔥 Streak: 5 Days</span>
-                <span class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold shadow-card">🪙 Credits: <span class="text-leaf">+150</span></span>
-                <span class="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-[11px] font-bold text-white shadow-card">✅ Doubt Solved in 12m</span>
-              </div>
-            </div>
-          </div>
+      <!-- Left: copy -->
+      <div>
+        <!-- Pill badge -->
+        <div class="inline-flex items-center gap-2 rounded-full border border-[#B9F044]/50 bg-[#B9F044]/10 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">
+          <span class="h-1.5 w-1.5 rounded-full bg-[#2F6F11] animate-pulse"></span>
+          Campus Learning — Reimagined
+        </div>
 
-          <!-- Right: hero illustration with orbit nodes -->
-          <div class="relative mx-auto h-[420px] w-full max-w-[520px] sm:h-[460px]">
-
-            <!-- Dashed orbit curve connecting the nodes -->
-            <svg class="absolute inset-0 h-full w-full" viewBox="0 0 520 460" fill="none" aria-hidden="true">
-              <path d="M388 40 C 470 110, 490 200, 462 270 S 400 380, 372 420" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="4 5" opacity=".7"/>
+        <!-- Headline -->
+        <h1 class="mt-6 text-[2.8rem] font-extrabold leading-[1.08] tracking-tight text-[#0B1F17] sm:text-5xl lg:text-[3.6rem] xl:text-[4rem]">
+          Learn Anything.<br/>
+          Teach What You Know.<br/>
+          <span class="relative inline-block">
+            <span class="text-[#2F6F11]">Earn While You Grow.</span>
+            <svg class="absolute -bottom-2 left-0 w-full" viewBox="0 0 500 12" fill="none" aria-hidden="true" preserveAspectRatio="none">
+              <path d="M4 8 C 130 2, 360 2, 496 7" stroke="#B9F044" stroke-width="5" stroke-linecap="round"/>
+              <path d="M20 10 C 140 5, 350 5, 480 10" stroke="#B9F044" stroke-width="2.5" stroke-linecap="round" opacity=".5"/>
             </svg>
+          </span>
+        </h1>
 
-            <!-- Main illustration: graduation cap on books -->
-            <div class="float-slow absolute left-0 top-6 h-[360px] w-[360px] sm:h-[400px] sm:w-[400px]">
-              <svg viewBox="0 0 400 400" class="h-full w-full" fill="none" aria-hidden="true">
-                <defs>
-                  <linearGradient id="capTop" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stop-color="#14532D"/><stop offset="1" stop-color="#0B1F17"/>
-                  </linearGradient>
-                  <linearGradient id="capSideL" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0" stop-color="#064E3B"/><stop offset="1" stop-color="#0B3B2C"/>
-                  </linearGradient>
-                  <linearGradient id="capSideR" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0" stop-color="#0B3B2C"/><stop offset="1" stop-color="#14532D"/>
-                  </linearGradient>
-                  <linearGradient id="blob" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stop-color="#DCF5C4"/><stop offset="1" stop-color="#EAF7DD"/>
-                  </linearGradient>
-                  <linearGradient id="bookLime" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0" stop-color="#B9F044"/><stop offset="1" stop-color="#8FD420"/>
-                  </linearGradient>
-                  <radialGradient id="glowC" cx=".5" cy=".5" r=".5">
-                    <stop offset="0" stop-color="#B9F044" stop-opacity=".55"/><stop offset="1" stop-color="#B9F044" stop-opacity="0"/>
-                  </radialGradient>
-                </defs>
+        <!-- Subheadline -->
+        <p class="mt-7 max-w-xl text-[16px] leading-[1.75] text-slate-600">
+          GyanSetu connects you with verified campus peers for instant 15-minute micro-sessions. No waiting for office hours. Just book, connect, and clear your doubt now.
+        </p>
 
-                <!-- soft background blob + glow -->
-                <path d="M70 210 C 40 120, 130 50, 230 62 S 380 130, 350 250 S 230 370, 140 330 S 90 270, 70 210Z" fill="url(#blob)"/>
-                <circle cx="200" cy="200" r="150" fill="url(#glowC)"/>
-
-                <!-- orbit ring -->
-                <g class="spin-slow">
-                  <ellipse cx="200" cy="215" rx="165" ry="62" stroke="#B9F044" stroke-width="2.5" transform="rotate(-18 200 215)" opacity=".9"/>
-                  <circle cx="352" cy="190" r="6" fill="#B9F044"/>
-                </g>
-
-                <!-- books -->
-                <rect x="95" y="288" width="210" height="34" rx="10" fill="#FFFFFF" stroke="#D5EAB8" stroke-width="2"/>
-                <rect x="108" y="296" width="150" height="6" rx="3" fill="#B9F044"/>
-                <rect x="108" y="308" width="100" height="5" rx="2.5" fill="#E2E8F0"/>
-                <rect x="120" y="258" width="180" height="32" rx="10" fill="url(#bookLime)"/>
-                <rect x="134" y="268" width="90" height="6" rx="3" fill="#0B1F17" opacity=".75"/>
-                <rect x="134" y="279" width="60" height="5" rx="2.5" fill="#0B1F17" opacity=".35"/>
-
-                <!-- cap: skull part -->
-                <path d="M128 188 L128 238 Q200 282 272 238 L272 188 L200 214 Z" fill="url(#capSideL)"/>
-                <path d="M128 238 Q200 282 272 238" stroke="#B9F044" stroke-width="3" fill="none" opacity=".8"/>
-
-                <!-- cap: board (diamond top with thickness) -->
-                <polygon points="60,150 200,206 200,226 60,170" fill="url(#capSideL)"/>
-                <polygon points="200,206 340,150 340,170 200,226" fill="url(#capSideR)"/>
-                <polygon points="200,92 340,150 200,206 60,150" fill="url(#capTop)"/>
-                <polygon points="200,92 340,150 200,206 60,150" stroke="#B9F044" stroke-width="3" stroke-linejoin="round"/>
-                <polygon points="200,112 296,150 200,188 104,150" fill="#FFFFFF" opacity=".08"/>
-
-                <!-- button + tassel -->
-                <ellipse cx="200" cy="150" rx="13" ry="7" fill="#B9F044"/>
-                <path d="M200 150 L330 158 L330 215" stroke="#B9F044" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="330" cy="222" r="9" fill="#B9F044"/>
-                <path d="M324 228 L322 246 M330 230 L330 250 M336 228 L338 246" stroke="#B9F044" stroke-width="3" stroke-linecap="round"/>
-
-                <!-- sparkles -->
-                <circle cx="92" cy="118" r="5" fill="#B9F044"/>
-                <circle cx="318" cy="84" r="4" fill="#B9F044" opacity=".8"/>
-                <path d="M62 250 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4z" fill="#B9F044" opacity=".9"/>
-              </svg>
-            </div>
-
-            <!-- Orbit nodes (circle icon + label), positioned along the dashed curve -->
-            <div class="absolute right-[18%] top-2 flex items-center gap-2">
-              <span class="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-white shadow-soft"><i data-lucide="message-circle" class="h-5 w-5"></i></span>
-              <span class="text-[11px] font-bold">Ask</span>
-            </div>
-            <div class="absolute right-0 top-[27%] flex items-center gap-2">
-              <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-lime-brand to-leaf text-ink shadow-soft"><i data-lucide="trending-up" class="h-5 w-5"></i></span>
-              <span class="text-[11px] font-bold">Learn</span>
-            </div>
-            <div class="absolute right-[3%] top-[52%] flex items-center gap-2">
-              <span class="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-lime-brand shadow-soft"><i data-lucide="coins" class="h-5 w-5"></i></span>
-              <span class="text-[11px] font-bold">Earn</span>
-            </div>
-            <div class="absolute bottom-3 right-[16%] flex items-center gap-2">
-              <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-lime-brand to-leaf text-ink shadow-soft"><i data-lucide="trophy" class="h-5 w-5"></i></span>
-              <span class="text-[11px] font-bold">Level Up</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Trust bar: rounded white strip with simple text badges (no real logos) -->
-        <div class="mt-12 rounded-2xl border border-slate-100 bg-white px-4 py-5 shadow-soft sm:px-8">
-          <p class="mb-4 text-center text-[10px] font-extrabold uppercase tracking-[0.25em] text-slate-400">Built for campus tech communities</p>
-          <div class="grid grid-cols-2 items-center gap-4 text-center text-slate-500 sm:grid-cols-4">
-            <span class="text-lg font-extrabold tracking-tight">ACM Chapter</span>
-            <span class="text-lg font-extrabold italic tracking-tight">CodeChef Campus</span>
-            <span class="text-lg font-extrabold tracking-tight">GDSC</span>
-            <span class="text-lg font-extrabold uppercase tracking-tight">Cisco NetAcad</span>
-          </div>
-        </div>
-      </section>
-
-
-      <!-- =====================================================
-           3. FEATURE / SERVICE CARDS
-           ===================================================== -->
-      <section id="how-it-works" class="px-5 py-12 sm:px-8 lg:py-16">
-        <div class="mx-auto max-w-2xl text-center">
-          <p class="text-[10px] font-extrabold uppercase tracking-[0.25em] text-leaf">How GyanSetu Empowers Students</p>
-          <h2 class="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl">Tools to Learn Faster, Together</h2>
-          <p class="mx-auto mt-3 max-w-sm text-sm leading-6 text-slate-600">Everything you need to ask, learn, earn and compete, all in one campus platform.</p>
-        </div>
-
-        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-
-          <!-- Card 1: Rapid Doubts -->
-          <article id="mentors" class="card-hover group flex flex-col rounded-3xl border border-slate-100 bg-gradient-to-br from-mist to-white p-5 shadow-card transition duration-300 hover:-translate-y-1.5 hover:shadow-soft">
-            <div class="flex h-28 items-center justify-center">
-              <svg viewBox="0 0 120 100" class="h-full" fill="none" aria-hidden="true">
-                <circle cx="56" cy="48" r="34" fill="#F0FCD9" stroke="#B9F044" stroke-width="7"/>
-                <circle cx="56" cy="48" r="24" fill="#FFFFFF"/>
-                <path d="M56 33 V49 L67 56" stroke="#0B1F17" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                <polygon points="94,50 82,70 90,70 86,88 100,64 92,64" fill="#2F6F11"/>
-                <rect x="14" y="78" width="8" height="12" rx="2" fill="#B9F044"/>
-                <rect x="26" y="70" width="8" height="20" rx="2" fill="#8FD420"/>
-              </svg>
-            </div>
-            <h3 class="mt-4 text-[15px] font-extrabold leading-snug">15-Min Rapid Doubts</h3>
-            <p class="mt-2 flex-1 text-xs leading-5 text-slate-600">Quick 1-on-1 peer sessions for urgent code errors or exam concepts.</p>
-            <div class="mt-5 flex items-center justify-between">
-              <a href="#" class="text-xs font-bold">Learn more</a>
-              <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-leaf text-white"><i data-lucide="arrow-right" class="h-4 w-4"></i></span>
-            </div>
-          </article>
-
-          <!-- Card 2: Live Collaborative Sync -->
-          <article class="card-hover group flex flex-col rounded-3xl border border-slate-100 bg-gradient-to-br from-white to-mist p-5 shadow-card transition duration-300 hover:-translate-y-1.5 hover:shadow-soft">
-            <div class="flex h-28 items-center justify-center">
-              <svg viewBox="0 0 140 100" class="h-full" fill="none" aria-hidden="true">
-                <rect x="10" y="14" width="100" height="68" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
-                <rect x="10" y="14" width="100" height="16" rx="9" fill="#0B1F17"/>
-                <circle cx="22" cy="22" r="2.5" fill="#B9F044"/><circle cx="31" cy="22" r="2.5" fill="#64748B"/><circle cx="40" cy="22" r="2.5" fill="#64748B"/>
-                <rect x="20" y="40" width="42" height="5" rx="2.5" fill="#B9F044"/>
-                <rect x="20" y="51" width="64" height="5" rx="2.5" fill="#CBD5E1"/>
-                <rect x="30" y="62" width="48" height="5" rx="2.5" fill="#94A3B8"/>
-                <rect x="20" y="72" width="30" height="5" rx="2.5" fill="#CBD5E1"/>
-                <path d="M96 52 L96 82 L104 75 L111 90 L117 87 L110 73 L121 73 Z" fill="#B9F044" stroke="#2F6F11" stroke-width="2" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <h3 class="mt-4 text-[15px] font-extrabold leading-snug">Live Collaborative Sync</h3>
-            <p class="mt-2 flex-1 text-xs leading-5 text-slate-600">Dual-window shared code editor and interactive whiteboard.</p>
-            <div class="mt-5 flex items-center justify-between">
-              <a href="#" class="text-xs font-bold">Learn more</a>
-              <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-leaf text-white"><i data-lucide="arrow-right" class="h-4 w-4"></i></span>
-            </div>
-          </article>
-
-          <!-- Card 3: Passbook & Credit Ledger -->
-          <article id="ledger" class="card-hover group flex flex-col rounded-3xl border border-slate-100 bg-gradient-to-br from-mist to-white p-5 shadow-card transition duration-300 hover:-translate-y-1.5 hover:shadow-soft">
-            <div class="flex h-28 items-center justify-center">
-              <svg viewBox="0 0 140 100" class="h-full" fill="none" aria-hidden="true">
-                <rect x="22" y="12" width="70" height="78" rx="9" fill="#064E3B"/>
-                <rect x="30" y="12" width="62" height="78" rx="7" fill="#0B1F17"/>
-                <rect x="40" y="26" width="38" height="5" rx="2.5" fill="#B9F044"/>
-                <rect x="40" y="38" width="30" height="4" rx="2" fill="#475569"/>
-                <rect x="40" y="48" width="34" height="4" rx="2" fill="#475569"/>
-                <rect x="40" y="58" width="24" height="4" rx="2" fill="#475569"/>
-                <ellipse cx="98" cy="78" rx="22" ry="8" fill="#8FD420"/>
-                <rect x="76" y="62" width="44" height="16" fill="#8FD420"/>
-                <ellipse cx="98" cy="62" rx="22" ry="8" fill="#B9F044"/>
-                <ellipse cx="98" cy="48" rx="22" ry="8" fill="#8FD420"/>
-                <rect x="76" y="32" width="44" height="16" fill="#8FD420"/>
-                <ellipse cx="98" cy="32" rx="22" ry="8" fill="#B9F044"/>
-                <path d="M92 32 h12 M98 28 v8" stroke="#2F6F11" stroke-width="2.5" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <h3 class="mt-4 text-[15px] font-extrabold leading-snug">Passbook &amp; Credit Ledger</h3>
-            <p class="mt-2 flex-1 text-xs leading-5 text-slate-600">Secure double-entry coin system; earn by teaching, spend by learning.</p>
-            <div class="mt-5 flex items-center justify-between">
-              <a href="#" class="text-xs font-bold">Learn more</a>
-              <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-leaf text-white"><i data-lucide="arrow-right" class="h-4 w-4"></i></span>
-            </div>
-          </article>
-
-          <!-- Card 4: Competitive Skill Duels -->
-          <article id="duels" class="card-hover group flex flex-col rounded-3xl border border-slate-100 bg-gradient-to-br from-white to-mist p-5 shadow-card transition duration-300 hover:-translate-y-1.5 hover:shadow-soft">
-            <div class="flex h-28 items-center justify-center">
-              <svg viewBox="0 0 140 100" class="h-full" fill="none" aria-hidden="true">
-                <rect x="20" y="62" width="30" height="28" rx="5" fill="#8FD420"/>
-                <rect x="55" y="44" width="30" height="46" rx="5" fill="#0B1F17"/>
-                <rect x="90" y="70" width="30" height="20" rx="5" fill="#B9F044"/>
-                <text x="35" y="82" text-anchor="middle" font-size="13" font-weight="800" fill="#0B1F17" font-family="sans-serif">2</text>
-                <text x="70" y="70" text-anchor="middle" font-size="15" font-weight="800" fill="#B9F044" font-family="sans-serif">1</text>
-                <text x="105" y="84" text-anchor="middle" font-size="12" font-weight="800" fill="#0B1F17" font-family="sans-serif">3</text>
-                <path d="M60 14 h20 v14 a10 10 0 0 1 -20 0z" fill="#B9F044" stroke="#2F6F11" stroke-width="2"/>
-                <path d="M60 18 h-7 v6 a7 7 0 0 0 7 7 M80 18 h7 v6 a7 7 0 0 1 -7 7" stroke="#2F6F11" stroke-width="2" fill="none"/>
-                <rect x="66" y="38" width="8" height="5" fill="#2F6F11"/>
-                <circle cx="116" cy="22" r="4" fill="#B9F044"/><circle cx="22" cy="30" r="3" fill="#B9F044" opacity=".8"/>
-              </svg>
-            </div>
-            <h3 class="mt-4 text-[15px] font-extrabold leading-snug">Competitive Skill Duels</h3>
-            <p class="mt-2 flex-1 text-xs leading-5 text-slate-600">Gaming-inspired leaderboard, streak badges, and weekly peer battles.</p>
-            <div class="mt-5 flex items-center justify-between">
-              <a href="#" class="text-xs font-bold">Learn more</a>
-              <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-leaf text-white"><i data-lucide="arrow-right" class="h-4 w-4"></i></span>
-            </div>
-          </article>
-        </div>
-      </section>
-
-
-      <!-- =====================================================
-           4. DARK CONTRAST CALLOUT BANNER
-           ===================================================== -->
-      <section id="book" class="px-5 sm:px-8">
-        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#06130E] via-[#0B2A1E] to-[#14532D] px-6 py-10 sm:px-10 lg:py-12">
-          <div class="grid-tex absolute inset-0 opacity-60 [mask-image:linear-gradient(to_right,transparent,black_60%)]"></div>
-          <div class="absolute -right-10 top-0 h-64 w-64 rounded-full bg-lime-brand/25 blur-3xl"></div>
-
-          <div class="relative grid items-center gap-8 md:grid-cols-[1.2fr_1fr]">
-
-            <!-- Left: text + lime pill button -->
-            <div>
-              <h2 class="text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-3xl">
-                Stuck on a Semester Bug? Don't Wait for Office Hours.
-              </h2>
-              <p class="mt-3 max-w-sm text-xs leading-6 text-emerald-100/75">
-                A peer who cleared the same problem last semester is one click away.
-              </p>
-              <a href="#" class="btn-pill mt-6 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-lime-brand to-[#8FD420] py-1.5 pl-5 pr-1.5 text-xs font-extrabold text-ink shadow-glow transition hover:brightness-110">
-                Request Live Help Now
-                <span class="arrow-circle flex h-7 w-7 items-center justify-center rounded-full bg-ink text-lime-brand"><i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></span>
-              </a>
-            </div>
-
-            <!-- Right: glowing lightbulb + live badge -->
-            <div class="relative mx-auto flex h-48 w-full max-w-xs items-center justify-center">
-              <div class="absolute h-44 w-44 rounded-full bg-lime-brand/30 blur-2xl"></div>
-              <svg viewBox="0 0 200 200" class="relative h-full" fill="none" aria-hidden="true">
-                <defs>
-                  <radialGradient id="bulb" cx=".5" cy=".4" r=".6">
-                    <stop offset="0" stop-color="#F7FFD6"/><stop offset=".6" stop-color="#D5F56B"/><stop offset="1" stop-color="#8FD420"/>
-                  </radialGradient>
-                </defs>
-                <g class="spin-slow">
-                  <ellipse cx="100" cy="100" rx="88" ry="30" stroke="#B9F044" stroke-width="1.5" opacity=".7" transform="rotate(-20 100 100)"/>
-                  <circle cx="176" cy="78" r="4" fill="#B9F044"/>
-                </g>
-                <path d="M100 26 a46 46 0 0 1 26 84 c-6 5 -8 10 -8 18 h-36 c0 -8 -2 -13 -8 -18 A46 46 0 0 1 100 26z" fill="url(#bulb)"/>
-                <path d="M84 70 q16 -20 32 0 M100 54 v40" stroke="#6B8E23" stroke-width="2" opacity=".6" stroke-linecap="round"/>
-                <rect x="82" y="130" width="36" height="8" rx="3" fill="#CBD5E1"/>
-                <rect x="85" y="140" width="30" height="8" rx="3" fill="#94A3B8"/>
-                <rect x="90" y="150" width="20" height="7" rx="3" fill="#64748B"/>
-                <!-- gear -->
-                <g class="spin-slow" opacity=".95">
-                  <circle cx="156" cy="146" r="17" fill="#14532D" stroke="#B9F044" stroke-width="2"/>
-                  <circle cx="156" cy="146" r="6" fill="#0B1F17" stroke="#B9F044" stroke-width="2"/>
-                  <path d="M156 124 v6 M156 162 v6 M134 146 h6 M172 146 h6 M140 130 l4 4 M168 158 l4 4 M172 130 l-4 4 M144 158 l-4 4" stroke="#B9F044" stroke-width="3.5" stroke-linecap="round"/>
-                </g>
-              </svg>
-              <!-- Live mentors badge -->
-              <div class="absolute -bottom-3 left-0 rounded-2xl border border-lime-brand/40 bg-black/40 px-4 py-2.5 text-white backdrop-blur-md sm:-left-4">
-                <p class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-lime-brand">
-                  <span class="live-dot h-2 w-2 rounded-full bg-lime-brand"></span> Active Mentors Online: 24
-                </p>
-                <p class="mt-1 text-[11px] text-emerald-100/70">Next free slot in <span id="countdown" class="font-mono font-bold text-lime-brand">02:00</span></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      <!-- =====================================================
-           5. SOCIAL PROOF / METRICS (dark 3-column card)
-           ===================================================== -->
-      <section id="community" class="px-5 py-12 sm:px-8 lg:py-16">
-        <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div>
-            <p class="text-[10px] font-extrabold uppercase tracking-[0.25em] text-leaf">Proof of Impact</p>
-            <h2 class="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Real Impact Across Campus</h2>
-          </div>
-          <p class="max-w-[16rem] text-xs leading-5 text-slate-600">See how peer mentoring is clearing doubts and building trust, one session at a time.</p>
-        </div>
-
-        <div class="mt-6 grid overflow-hidden rounded-3xl bg-gradient-to-br from-[#06130E] to-[#0B2A1E] text-white shadow-soft md:grid-cols-3">
-
-          <!-- Metric 1 -->
-          <div class="border-b border-white/10 p-7 md:border-b-0 md:border-r">
-            <p class="flex items-center gap-2 text-xs font-bold">
-              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-lime-brand/20 text-lime-brand"><i data-lucide="trending-up" class="h-4 w-4"></i></span>
-              Doubt Resolution Rate
-            </p>
-            <p class="mt-4 text-4xl font-extrabold text-lime-brand">+94%</p>
-            <p class="mt-2 text-xs leading-5 text-slate-300">Average session duration under 18 mins</p>
-            <a href="#" class="mt-5 inline-flex items-center gap-2 text-[11px] font-bold">Learn more
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-lime-brand text-ink"><i data-lucide="arrow-right" class="h-3 w-3"></i></span>
-            </a>
-          </div>
-
-          <!-- Metric 2 -->
-          <div class="border-b border-white/10 p-7 md:border-b-0 md:border-r">
-            <p class="flex items-center gap-2 text-xs font-bold">
-              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-lime-brand/20 text-lime-brand"><i data-lucide="repeat" class="h-4 w-4"></i></span>
-              Credits Exchanged
-            </p>
-            <p class="mt-4 text-4xl font-extrabold text-lime-brand">1,200+</p>
-            <p class="mt-2 text-xs leading-5 text-slate-300">100% transparent audit ledger</p>
-            <a href="#" class="mt-5 inline-flex items-center gap-2 text-[11px] font-bold">Learn more
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-lime-brand text-ink"><i data-lucide="arrow-right" class="h-3 w-3"></i></span>
-            </a>
-          </div>
-
-          <!-- Metric 3 -->
-          <div class="p-7">
-            <p class="flex items-center gap-2 text-xs font-bold">
-              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-lime-brand/20 text-lime-brand"><i data-lucide="shield-check" class="h-4 w-4"></i></span>
-              Hallucination
-            </p>
-            <p class="mt-4 text-4xl font-extrabold text-lime-brand">Zero</p>
-            <p class="mt-2 text-xs leading-5 text-slate-300">Peer-verified, real student code reviews</p>
-            <a href="#" class="mt-5 inline-flex items-center gap-2 text-[11px] font-bold">Learn more
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-lime-brand text-ink"><i data-lucide="arrow-right" class="h-3 w-3"></i></span>
-            </a>
-          </div>
-        </div>
-
-        <!-- Light green CTA strip -->
-        <div class="mt-5 flex flex-col items-start justify-between gap-4 rounded-2xl bg-gradient-to-r from-lime-brand/40 via-mist to-white px-5 py-4 sm:flex-row sm:items-center">
-          <div class="flex items-center gap-3">
-            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ink text-lime-brand"><i data-lucide="rocket" class="h-5 w-5"></i></span>
-            <div>
-              <p class="text-sm font-extrabold">Ready to clear your next doubt in 15 minutes?</p>
-              <p class="text-xs text-slate-600">Join GyanSetu and turn what you know into credits.</p>
-            </div>
-          </div>
-          <a href="#book" class="btn-pill inline-flex items-center gap-3 rounded-xl bg-ink px-5 py-2.5 text-xs font-bold text-white transition hover:bg-forest">
-            Let's Talk <span class="arrow-circle flex h-5 w-5 items-center justify-center rounded-full bg-lime-brand text-ink"><i data-lucide="arrow-right" class="h-3 w-3"></i></span>
+        <!-- CTAs -->
+        <div class="mt-9 flex flex-wrap items-center gap-3">
+          <a href="login.html#signup" class="btn-pill inline-flex items-center gap-3 rounded-2xl bg-[#0B1F17] py-3.5 pl-7 pr-2.5 text-[14px] font-bold text-white shadow-[0_8px_32px_-8px_rgba(11,31,23,0.4)] transition hover:bg-[#064E3B] hover:shadow-[0_12px_36px_-8px_rgba(11,31,23,0.5)]">
+            Start Learning — It&rsquo;s Free
+            <span class="arrow-circle flex h-9 w-9 items-center justify-center rounded-xl bg-[#B9F044] text-[#0B1F17]">
+              <i data-lucide="arrow-right" class="h-4 w-4"></i>
+            </span>
+          </a>
+          <a href="room.html" class="inline-flex items-center gap-2.5 rounded-2xl border-2 border-[#0B1F17]/15 bg-white/70 px-6 py-3.5 text-[14px] font-bold text-[#0B1F17] backdrop-blur-sm transition hover:border-[#B9F044] hover:bg-white">
+            <span class="h-2 w-2 rounded-full bg-[#2F6F11] animate-pulse"></span>
+            Try Live Room
           </a>
         </div>
-      </section>
-    </main>
 
-
-    <!-- =====================================================
-         6. FOOTER
-         ===================================================== -->
-    <footer class="border-t border-slate-100 px-5 py-8 sm:px-8">
-      <div class="flex flex-col items-center justify-between gap-6 lg:flex-row">
-        <a href="#top" class="flex items-center gap-2.5">
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-lime-brand to-leaf text-ink">
-            <i data-lucide="graduation-cap" class="h-4 w-4"></i>
-          </span>
-          <span class="text-lg font-extrabold tracking-tight">GyanSetu</span>
-        </a>
-
-        <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600">
-          <li><a href="#how-it-works" class="hover:text-leaf">How It Works</a></li>
-          <li><a href="#mentors" class="hover:text-leaf">Find a Mentor</a></li>
-          <li><a href="#duels" class="hover:text-leaf">Skill Duels</a></li>
-          <li><a href="#ledger" class="hover:text-leaf">Credit Ledger</a></li>
-          <li><a href="#community" class="hover:text-leaf">Community</a></li>
-        </ul>
-
-        <div class="flex gap-2.5">
-          <a href="#" aria-label="Email" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-ink shadow-card transition hover:bg-ink hover:text-lime-brand"><i data-lucide="mail" class="h-4 w-4"></i></a>
-          <a href="#" aria-label="Community chat" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-ink shadow-card transition hover:bg-ink hover:text-lime-brand"><i data-lucide="message-circle" class="h-4 w-4"></i></a>
-          <a href="#" aria-label="Website" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-ink shadow-card transition hover:bg-ink hover:text-lime-brand"><i data-lucide="globe" class="h-4 w-4"></i></a>
-          <a href="#" aria-label="Share" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-ink shadow-card transition hover:bg-ink hover:text-lime-brand"><i data-lucide="share-2" class="h-4 w-4"></i></a>
+        <!-- Social proof / stats -->
+        <div class="mt-10 flex flex-wrap items-center gap-6 sm:gap-8">
+          <!-- Avatar stack -->
+          <div class="flex items-center gap-3">
+            <div class="avatar-stack flex">
+              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#064E3B] to-[#2F6F11] text-xs font-extrabold text-white">AS</div>
+              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#7C3AED] to-[#4F46E5] text-xs font-extrabold text-white">PK</div>
+              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#0891B2] to-[#0E7490] text-xs font-extrabold text-white">RV</div>
+              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#D97706] to-[#B45309] text-xs font-extrabold text-white">SM</div>
+            </div>
+            <div>
+              <p class="text-[13px] font-extrabold text-[#0B1F17]">500+ Peers Active</p>
+              <p class="text-[11px] text-slate-500">Across your campus</p>
+            </div>
+          </div>
+          <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="flex items-center gap-2.5">
+            <div class="flex items-center gap-0.5">
+              <span class="text-amber-400">&#9733;</span>
+              <span class="text-amber-400">&#9733;</span>
+              <span class="text-amber-400">&#9733;</span>
+              <span class="text-amber-400">&#9733;</span>
+              <span class="text-amber-400">&#9733;</span>
+            </div>
+            <p class="text-[13px] font-bold text-[#0B1F17]">4.9 <span class="text-slate-500 font-normal">avg rating</span></p>
+          </div>
         </div>
       </div>
 
-      <div class="mt-6 border-t border-slate-100 pt-5 text-[11px] leading-5 text-slate-400">
-        <p><strong class="text-slate-500">Disclaimer:</strong> GyanSetu is a hackathon prototype built by students. All profiles, names and figures on this page are sample data for demonstration. Club and community names describe the audience we are building for and do not imply any partnership or endorsement.</p>
-        <p class="mt-2">&copy; 2026 GyanSetu. Built for INNOVISTA.</p>
+      <!-- Right: interactive preview card -->
+      <div class="relative lg:pl-4">
+        <!-- Main card -->
+        <div class="relative rounded-3xl border border-slate-200/80 bg-white/90 p-5 shadow-[0_24px_64px_-16px_rgba(11,31,23,0.18)] backdrop-blur-sm">
+
+          <!-- Card header -->
+          <div class="mb-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="h-2.5 w-2.5 rounded-full bg-[#B9F044]"></div>
+              <span class="text-[13px] font-extrabold text-[#0B1F17]">Live Session in Progress</span>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#0B1F17] px-3 py-1 text-[10px] font-extrabold tracking-wide text-[#B9F044]">
+              <span class="live-dot h-1.5 w-1.5 rounded-full bg-[#B9F044]"></span> LIVE
+            </span>
+          </div>
+
+          <!-- Mentor row -->
+          <div class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-[#F4FBEA] p-3">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#064E3B] to-[#2F6F11] text-sm font-extrabold text-white">AS</div>
+            <div class="min-w-0">
+              <p class="flex items-center gap-1 text-[13px] font-extrabold text-[#0B1F17]">
+                Aarav Singh <i data-lucide="badge-check" class="h-4 w-4 text-[#2F6F11]"></i>
+              </p>
+              <p class="truncate text-[11px] text-slate-500">DSA &amp; Algorithms &nbsp;&#183;&nbsp; 4.9 &#9733; &nbsp;&#183;&nbsp; 120 sessions</p>
+            </div>
+            <span class="ml-auto shrink-0 rounded-full bg-[#B9F044] px-3 py-1 text-[11px] font-extrabold text-[#0B1F17]">Mentor</span>
+          </div>
+
+          <!-- Code snippet -->
+          <div class="mt-3 overflow-hidden rounded-2xl bg-[#0B1F17] p-4">
+            <div class="mb-2 flex items-center gap-1.5">
+              <div class="h-2.5 w-2.5 rounded-full bg-[#B9F044]/50"></div>
+              <div class="h-2.5 w-2.5 rounded-full bg-white/20"></div>
+              <div class="h-2.5 w-2.5 rounded-full bg-white/20"></div>
+              <span class="ml-2 text-[10px] font-bold text-[#B9F044]/70">shared-editor.py</span>
+            </div>
+            <div class="font-mono text-[12px] leading-6">
+              <p><span class="text-[#B9F044]">def</span> <span class="text-white">bfs</span><span class="text-slate-400">(graph, start):</span></p>
+              <p class="pl-4"><span class="text-slate-400">visited</span> <span class="text-[#B9F044]">=</span> <span class="text-white">set</span><span class="text-slate-400">()</span></p>
+              <p class="pl-4"><span class="text-slate-400">queue</span> <span class="text-[#B9F044]">=</span> <span class="text-white">deque</span><span class="text-slate-400">([start])</span></p>
+              <p class="pl-4"><span class="text-[#B9F044]">while</span> <span class="text-slate-400">queue:</span></p>
+              <p class="pl-8 text-slate-500"># traverse level by level&#x2026;</p>
+            </div>
+          </div>
+
+          <!-- Bottom chips -->
+          <div class="mt-3 grid grid-cols-2 gap-2">
+            <div class="rounded-xl border border-slate-100 bg-white p-2.5 text-center">
+              <p class="text-[10px] font-semibold text-slate-500">Session time</p>
+              <p class="text-[14px] font-extrabold text-[#0B1F17]">12:34 <span class="text-[#2F6F11]">min</span></p>
+            </div>
+            <div class="rounded-xl border border-slate-100 bg-white p-2.5 text-center">
+              <p class="text-[10px] font-semibold text-slate-500">Credits earned</p>
+              <p class="text-[14px] font-extrabold text-[#2F6F11]">+3 <span class="text-slate-400 font-normal text-[11px]">coins</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating notification badges -->
+        <div class="absolute -top-5 left-6 rounded-2xl border border-[#B9F044]/40 bg-white px-4 py-2.5 shadow-[0_8px_24px_-8px_rgba(11,31,23,0.14)]">
+          <p class="flex items-center gap-2 text-[12px] font-extrabold text-[#0B1F17]">
+            <span class="live-dot h-2 w-2 rounded-full bg-[#2F6F11]"></span>24 mentors online now
+          </p>
+        </div>
+        <div class="absolute -bottom-5 right-6 rounded-2xl border border-slate-100 bg-white px-4 py-2.5 shadow-[0_8px_24px_-8px_rgba(11,31,23,0.14)]">
+          <p class="text-[12px] font-extrabold text-[#2F6F11]">&#10003; Doubt cleared in 12 min</p>
+        </div>
       </div>
-    </footer>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 opacity-40">
+      <span class="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Scroll</span>
+      <div class="h-7 w-4 rounded-full border-2 border-slate-400 flex justify-center pt-1">
+        <div class="h-2 w-1 rounded-full bg-slate-400 animate-bounce"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       TRUST BAR
+       ============================================================ -->
+  <div class="border-y border-slate-100 bg-white px-5 py-5 sm:px-8">
+    <div class="mx-auto max-w-7xl">
+      <p class="mb-4 text-center text-[10px] font-extrabold uppercase tracking-[0.3em] text-slate-400">Trusted by student communities at</p>
+      <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-slate-500">
+        <span class="flex items-center gap-2 text-sm font-extrabold"><i data-lucide="code-2" class="h-4 w-4 text-[#B9F044]"></i> ACM Chapter</span>
+        <span class="flex items-center gap-2 text-sm font-extrabold"><i data-lucide="zap" class="h-4 w-4 text-[#B9F044]"></i> CodeChef Campus</span>
+        <span class="flex items-center gap-2 text-sm font-extrabold"><i data-lucide="globe" class="h-4 w-4 text-[#B9F044]"></i> GDSC</span>
+        <span class="flex items-center gap-2 text-sm font-extrabold"><i data-lucide="wifi" class="h-4 w-4 text-[#B9F044]"></i> Cisco NetAcad</span>
+        <span class="flex items-center gap-2 text-sm font-extrabold"><i data-lucide="cpu" class="h-4 w-4 text-[#B9F044]"></i> IEEE Student Branch</span>
+      </div>
+    </div>
   </div>
 
 
-  <!-- Lucide icons + app logic -->
+  <!-- ============================================================
+       FEATURES — 4 cards full-width
+       ============================================================ -->
+  <section id="features" class="section-alt px-5 py-20 sm:px-8">
+    <div class="mx-auto max-w-7xl">
+      <div class="mx-auto mb-14 max-w-2xl text-center">
+        <span class="inline-block rounded-full bg-[#B9F044]/20 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">Platform Features</span>
+        <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl">Everything You Need to<br/>Learn Smarter Together</h2>
+        <p class="mx-auto mt-4 max-w-md text-[15px] leading-7 text-slate-500">Four powerful tools, one seamless campus platform. Ask, earn, collab, compete.</p>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <!-- Card 1 -->
+        <div class="feat-card group flex flex-col">
+          <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B1F17] text-[#B9F044] shadow-sm">
+            <i data-lucide="zap" class="h-7 w-7"></i>
+          </div>
+          <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">15-Min Rapid Sessions</h3>
+          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Book an instant 1-on-1 session with a peer who already solved your exact problem.</p>
+          <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+            <a href="dashboard.html" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Find mentors &rarr;</a>
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
+              <i data-lucide="arrow-right" class="h-4 w-4"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="feat-card group flex flex-col">
+          <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044] text-[#0B1F17] shadow-sm">
+            <i data-lucide="monitor" class="h-7 w-7"></i>
+          </div>
+          <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Live Collab Room</h3>
+          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Real-time shared code editor, interactive whiteboard, and peer chat — all in one room.</p>
+          <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+            <a href="room.html" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Open room &rarr;</a>
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
+              <i data-lucide="arrow-right" class="h-4 w-4"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="feat-card group flex flex-col">
+          <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B1F17] text-[#B9F044] shadow-sm">
+            <i data-lucide="coins" class="h-7 w-7"></i>
+          </div>
+          <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Credit Ledger</h3>
+          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">A transparent coin economy — earn credits by teaching, spend them by learning. Full audit trail.</p>
+          <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+            <a href="dashboard.html#ledger" class="text-[12px] font-bold text-[#2F6F11] hover:underline">View ledger &rarr;</a>
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
+              <i data-lucide="arrow-right" class="h-4 w-4"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="feat-card group flex flex-col">
+          <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044] text-[#0B1F17] shadow-sm">
+            <i data-lucide="trophy" class="h-7 w-7"></i>
+          </div>
+          <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Skill Duels</h3>
+          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Weekly peer battles, streak badges, and a campus leaderboard. Knowledge becomes competition.</p>
+          <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+            <a href="dashboard.html#duels" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Join duels &rarr;</a>
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
+              <i data-lucide="arrow-right" class="h-4 w-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       HOW IT WORKS — 3 steps
+       ============================================================ -->
+  <section id="how-it-works" class="bg-white px-5 py-20 sm:px-8">
+    <div class="mx-auto max-w-7xl">
+      <div class="mx-auto mb-14 max-w-xl text-center">
+        <span class="inline-block rounded-full bg-[#B9F044]/20 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">Simple Process</span>
+        <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl">From Doubt to Solved in 3 Steps</h2>
+        <p class="mx-auto mt-4 max-w-md text-[15px] leading-7 text-slate-500">No complicated onboarding. Be up and learning in under 2 minutes.</p>
+      </div>
+
+      <div class="relative grid gap-8 sm:grid-cols-3">
+        <!-- Connector lines (desktop) -->
+        <div class="absolute top-12 hidden w-full sm:block" aria-hidden="true">
+          <div class="mx-auto flex max-w-[66%] justify-between px-[16.67%]">
+            <div class="h-0.5 flex-1 bg-gradient-to-r from-[#B9F044] to-[#B9F044]/30"></div>
+            <div class="h-0.5 flex-1 bg-gradient-to-r from-[#B9F044]/30 to-[#B9F044]"></div>
+          </div>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="relative flex flex-col items-center text-center">
+          <div class="relative z-10 flex h-24 w-24 flex-col items-center justify-center rounded-3xl bg-[#0B1F17] shadow-[0_8px_24px_-8px_rgba(11,31,23,0.35)]">
+            <i data-lucide="user-plus" class="h-8 w-8 text-[#B9F044]"></i>
+            <span class="mt-1 text-[10px] font-extrabold uppercase tracking-widest text-[#B9F044]/60">Step 1</span>
+          </div>
+          <h3 class="mt-5 text-lg font-extrabold text-[#0B1F17]">Sign Up &amp; Set Profile</h3>
+          <p class="mt-2 max-w-xs text-[13px] leading-6 text-slate-500">List the subjects you know and the ones you need help with. Takes 2 minutes.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="relative flex flex-col items-center text-center">
+          <div class="relative z-10 flex h-24 w-24 flex-col items-center justify-center rounded-3xl bg-[#B9F044] shadow-[0_8px_24px_-8px_rgba(185,240,68,0.5)]">
+            <i data-lucide="search" class="h-8 w-8 text-[#0B1F17]"></i>
+            <span class="mt-1 text-[10px] font-extrabold uppercase tracking-widest text-[#0B1F17]/50">Step 2</span>
+          </div>
+          <h3 class="mt-5 text-lg font-extrabold text-[#0B1F17]">Match &amp; Book</h3>
+          <p class="mt-2 max-w-xs text-[13px] leading-6 text-slate-500">Browse verified peer mentors by subject, filter by availability, and book a 15-min slot.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="relative flex flex-col items-center text-center">
+          <div class="relative z-10 flex h-24 w-24 flex-col items-center justify-center rounded-3xl bg-[#0B1F17] shadow-[0_8px_24px_-8px_rgba(11,31,23,0.35)]">
+            <i data-lucide="graduation-cap" class="h-8 w-8 text-[#B9F044]"></i>
+            <span class="mt-1 text-[10px] font-extrabold uppercase tracking-widest text-[#B9F044]/60">Step 3</span>
+          </div>
+          <h3 class="mt-5 text-lg font-extrabold text-[#0B1F17]">Learn &amp; Earn Credits</h3>
+          <p class="mt-2 max-w-xs text-[13px] leading-6 text-slate-500">Join the live collab room, get your doubt solved, rate the session, earn or spend credits.</p>
+        </div>
+      </div>
+
+      <div class="mt-14 flex justify-center">
+        <a href="login.html#signup" class="btn-pill inline-flex items-center gap-3 rounded-2xl bg-[#0B1F17] py-3.5 pl-7 pr-2.5 text-[14px] font-bold text-white shadow-[0_8px_32px_-8px_rgba(11,31,23,0.4)] transition hover:bg-[#064E3B]">
+          Get Started Free
+          <span class="arrow-circle flex h-9 w-9 items-center justify-center rounded-xl bg-[#B9F044] text-[#0B1F17]">
+            <i data-lucide="arrow-right" class="h-4 w-4"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       TESTIMONIALS
+       ============================================================ -->
+  <section id="testimonials" class="section-alt px-5 py-20 sm:px-8">
+    <div class="mx-auto max-w-7xl">
+      <div class="mb-12 text-center">
+        <span class="inline-block rounded-full bg-[#B9F044]/20 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">Student Reviews</span>
+        <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl">What Campus Peers Say</h2>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="testimonial-card">
+          <div class="flex gap-0.5 text-amber-400 mb-3">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="text-[14px] leading-7 text-slate-600 italic">&ldquo;Cleared my DSA tree traversal doubt in 12 minutes flat. Spent 3 credits, saved 3 hours of solo debugging. This is a game-changer for exam prep.&rdquo;</p>
+          <div class="mt-4 flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#064E3B] to-[#2F6F11] text-sm font-extrabold text-white">PK</div>
+            <div>
+              <p class="text-[13px] font-extrabold text-[#0B1F17]">Priya Kaur</p>
+              <p class="text-[11px] text-slate-500">B.Tech CSE, 2nd Year</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card border-[#B9F044]/40 bg-gradient-to-br from-[#F4FBEA] to-white">
+          <div class="flex gap-0.5 text-amber-400 mb-3">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="text-[14px] leading-7 text-slate-600 italic">&ldquo;Teaching on GyanSetu helped me earn 80+ credits in a month. It also reinforced my own understanding of subjects I thought I had forgotten.&rdquo;</p>
+          <div class="mt-4 flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#7C3AED] to-[#4F46E5] text-sm font-extrabold text-white">RV</div>
+            <div>
+              <p class="text-[13px] font-extrabold text-[#0B1F17]">Rahul Verma</p>
+              <p class="text-[11px] text-slate-500">B.Tech IT, 4th Year</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="flex gap-0.5 text-amber-400 mb-3">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+          <p class="text-[14px] leading-7 text-slate-600 italic">&ldquo;The whiteboard + code editor combo is incredibly useful. We debug together in real time. Way better than dropping questions in group chats and waiting.&rdquo;</p>
+          <div class="mt-4 flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#0891B2] to-[#0E7490] text-sm font-extrabold text-white">SM</div>
+            <div>
+              <p class="text-[13px] font-extrabold text-[#0B1F17]">Sneha Mehta</p>
+              <p class="text-[11px] text-slate-500">B.Tech ECE, 3rd Year</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       IMPACT STATS — dark full-width banner
+       ============================================================ -->
+  <section id="impact" class="cta-section px-5 py-20 sm:px-8">
+    <div class="grid-tex absolute inset-0 opacity-30 pointer-events-none" style="position:relative;"></div>
+    <div class="mx-auto max-w-7xl">
+      <div class="mb-12 text-center">
+        <span class="inline-block rounded-full border border-[#B9F044]/30 bg-[#B9F044]/10 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#B9F044]">Proof of Impact</span>
+        <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Numbers Don&rsquo;t Lie</h2>
+      </div>
+
+      <div class="grid gap-0 overflow-hidden rounded-3xl border border-white/10 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="border-b border-r border-white/10 p-8 sm:border-b-0 text-center">
+          <p class="stat-num text-[#B9F044]">94%</p>
+          <p class="mt-2 text-[14px] font-bold text-white">Doubt Resolution</p>
+          <p class="mt-1 text-[12px] text-slate-400">Avg session under 18 min</p>
+        </div>
+        <div class="border-b border-r border-white/10 p-8 sm:border-b-0 text-center">
+          <p class="stat-num text-[#B9F044]">1.2k+</p>
+          <p class="mt-2 text-[14px] font-bold text-white">Credits Exchanged</p>
+          <p class="mt-1 text-[12px] text-slate-400">Full transparent audit log</p>
+        </div>
+        <div class="border-b border-r border-white/10 p-8 sm:border-b-0 text-center">
+          <p class="stat-num text-[#B9F044]">500+</p>
+          <p class="mt-2 text-[14px] font-bold text-white">Verified Mentors</p>
+          <p class="mt-1 text-[12px] text-slate-400">Across 12+ departments</p>
+        </div>
+        <div class="p-8 text-center">
+          <p class="stat-num text-[#B9F044]">4.9</p>
+          <p class="mt-2 text-[14px] font-bold text-white">Avg Session Rating</p>
+          <p class="mt-1 text-[12px] text-slate-400">Peer-reviewed &amp; verified</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       FINAL CTA BANNER
+       ============================================================ -->
+  <section class="bg-white px-5 py-20 sm:px-8">
+    <div class="mx-auto max-w-3xl text-center">
+      <h2 class="text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl lg:text-5xl">
+        Stuck on a problem?<br/>
+        <span class="text-[#2F6F11]">A peer who solved it is online.</span>
+      </h2>
+      <p class="mx-auto mt-6 max-w-lg text-[15px] leading-7 text-slate-500">Don&rsquo;t wait for office hours. Book a 15-minute peer session right now and clear your doubt before it blocks your progress.</p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <a href="login.html#signup" class="btn-pill inline-flex items-center gap-3 rounded-2xl bg-[#0B1F17] py-4 pl-8 pr-3 text-[15px] font-bold text-white shadow-[0_12px_36px_-10px_rgba(11,31,23,0.45)] transition hover:bg-[#064E3B]">
+          Start for Free Today
+          <span class="arrow-circle flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9F044] text-[#0B1F17]">
+            <i data-lucide="arrow-right" class="h-5 w-5"></i>
+          </span>
+        </a>
+        <a href="dashboard.html" class="inline-flex items-center gap-2.5 rounded-2xl border-2 border-slate-200 px-7 py-4 text-[15px] font-bold text-[#0B1F17] transition hover:border-[#B9F044]">
+          Explore Platform
+        </a>
+      </div>
+      <p class="mt-5 text-[12px] text-slate-400">No credit card needed &nbsp;&#183;&nbsp; Free 20 credits on signup &nbsp;&#183;&nbsp; Cancel anytime</p>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="border-t border-slate-100 bg-[#F4FBEA] px-5 py-10 sm:px-8">
+    <div class="mx-auto max-w-7xl">
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Brand -->
+        <div>
+          <a href="index.html" class="flex items-center gap-2.5">
+            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11]">
+              <i data-lucide="graduation-cap" class="h-4 w-4 text-[#0B1F17]"></i>
+            </span>
+            <span class="text-lg font-extrabold tracking-tight text-[#0B1F17]">GyanSetu</span>
+          </a>
+          <p class="mt-3 text-[13px] leading-6 text-slate-500">Peer-to-peer campus mentorship platform. Learn faster, earn while teaching.</p>
+          <div class="mt-4 flex gap-2">
+            <a href="#" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-[#0B1F17] hover:text-[#B9F044]"><i data-lucide="mail" class="h-3.5 w-3.5"></i></a>
+            <a href="#" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-[#0B1F17] hover:text-[#B9F044]"><i data-lucide="message-circle" class="h-3.5 w-3.5"></i></a>
+            <a href="#" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-[#0B1F17] hover:text-[#B9F044]"><i data-lucide="share-2" class="h-3.5 w-3.5"></i></a>
+          </div>
+        </div>
+        <!-- Platform -->
+        <div>
+          <p class="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Platform</p>
+          <ul class="space-y-2 text-[13px] font-semibold text-slate-600">
+            <li><a href="#features" class="hover:text-[#2F6F11]">Features</a></li>
+            <li><a href="#how-it-works" class="hover:text-[#2F6F11]">How It Works</a></li>
+            <li><a href="dashboard.html" class="hover:text-[#2F6F11]">Dashboard</a></li>
+            <li><a href="room.html" class="hover:text-[#2F6F11]">Live Collab Room</a></li>
+          </ul>
+        </div>
+        <!-- Community -->
+        <div>
+          <p class="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Community</p>
+          <ul class="space-y-2 text-[13px] font-semibold text-slate-600">
+            <li><a href="dashboard.html#mentors" class="hover:text-[#2F6F11]">Find Mentors</a></li>
+            <li><a href="dashboard.html#duels" class="hover:text-[#2F6F11]">Skill Duels</a></li>
+            <li><a href="dashboard.html#ledger" class="hover:text-[#2F6F11]">Credit Ledger</a></li>
+            <li><a href="#impact" class="hover:text-[#2F6F11]">Impact Stats</a></li>
+          </ul>
+        </div>
+        <!-- Auth -->
+        <div>
+          <p class="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Get Started</p>
+          <ul class="space-y-2 text-[13px] font-semibold text-slate-600">
+            <li><a href="login.html" class="hover:text-[#2F6F11]">Sign In</a></li>
+            <li><a href="login.html#signup" class="hover:text-[#2F6F11]">Create Account</a></li>
+          </ul>
+          <a href="login.html#signup" class="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#0B1F17] px-5 py-2.5 text-[13px] font-bold text-[#B9F044] transition hover:bg-[#064E3B]">
+            Join Free <i data-lucide="arrow-right" class="h-4 w-4"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-8 border-t border-slate-200/60 pt-6 flex flex-col items-center justify-between gap-3 sm:flex-row text-[11px] text-slate-400">
+        <p>&copy; 2026 GyanSetu &nbsp;&#183;&nbsp; Built for INNOVISTA by Team Tech Titans</p>
+        <p class="italic">Hackathon prototype &mdash; profiles and figures are sample data</p>
+      </div>
+    </div>
+  </footer>
+
+
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="js/main.js"></script>
+  <script>
+    lucide.createIcons();
+
+    // Navbar: sticky scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('navbar-scrolled', window.scrollY > 40);
+    });
+
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    let menuOpen = false;
+    menuBtn.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      if (menuOpen) {
+        mobileMenu.classList.remove('hidden');
+        mobileMenu.classList.add('open');
+        menuBtn.setAttribute('aria-expanded', 'true');
+        menuIcon.setAttribute('data-lucide', 'x');
+      } else {
+        mobileMenu.classList.remove('open');
+        mobileMenu.classList.add('hidden');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        menuIcon.setAttribute('data-lucide', 'menu');
+      }
+      lucide.createIcons();
+    });
+
+    // Close mobile menu when a link is clicked
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        mobileMenu.classList.add('hidden');
+        menuOpen = false;
+        menuBtn.setAttribute('aria-expanded', 'false');
+        menuIcon.setAttribute('data-lucide', 'menu');
+        lucide.createIcons();
+      });
+    });
+
+    // Active nav highlighting on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + entry.target.id) {
+              link.classList.add('active');
+            }
+          });
+        }
+      });
+    }, { threshold: 0.4 });
+    sections.forEach(s => observer.observe(s));
+  </script>
 </body>
 </html>

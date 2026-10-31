@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GyanSetu | Sign In / Sign Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.config.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .tab-active { background:#0B1F17; color:#B9F044; }
+    .tab-inactive { background:transparent; color:#64748B; }
+    .input-field {
+      width:100%; border-radius:0.75rem; border:1.5px solid #e2e8f0;
+      background:#f8fafc; padding:0.65rem 1rem; font-size:0.875rem;
+      outline:none; transition:border-color .2s;
+    }
+    .input-field:focus { border-color:#B9F044; background:#fff; }
+    .input-field::placeholder { color:#94a3b8; }
+    .social-btn {
+      display:flex; align-items:center; justify-content:center; gap:0.625rem;
+      width:100%; border-radius:0.75rem; border:1.5px solid #e2e8f0;
+      background:#fff; padding:0.7rem 1rem; font-size:0.875rem; font-weight:700;
+      color:#1f2328; cursor:pointer; transition:border-color .2s, box-shadow .2s;
+    }
+    .social-btn:hover { border-color:#B9F044; box-shadow:0 4px 16px -4px rgba(185,240,68,0.3); }
+  </style>
+</head>
+<body class="font-sans text-ink antialiased min-h-screen flex items-center justify-center">
+
+  <!-- background -->
+  <div class="pointer-events-none fixed inset-0 -z-10">
+    <div class="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-lime-brand/10 blur-3xl"></div>
+    <div class="absolute -right-40 bottom-0 h-[500px] w-[500px] rounded-full bg-lime-brand/8 blur-3xl"></div>
+  </div>
+
+  <div class="w-full max-w-6xl mx-auto my-6 px-4 sm:px-6">
+    <div class="grid min-h-[86vh] overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-soft lg:grid-cols-[1fr_1fr]">
+
+      <!-- LEFT: Branding Panel -->
+      <div class="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-[#06130E] via-[#0B2A1E] to-[#14532D] p-10 lg:flex">
+        <div class="grid-tex absolute inset-0 opacity-40 pointer-events-none"></div>
+        <div class="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-lime-brand/20 blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-16 bottom-16 h-64 w-64 rounded-full bg-lime-brand/15 blur-3xl pointer-events-none"></div>
+
+        <!-- Logo -->
+        <a href="index.html" class="relative flex items-center gap-3">
+          <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-lime-brand to-[#8FD420] text-ink">
+            <i data-lucide="graduation-cap" class="h-6 w-6"></i>
+          </span>
+          <span class="text-xl font-extrabold tracking-tight text-white">GyanSetu</span>
+        </a>
+
+        <!-- Hero text -->
+        <div class="relative">
+          <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-white xl:text-4xl">
+            Turn What You Know<br/>Into Credits.<br/>
+            <span class="text-lime-brand">Learn What You Don't.</span>
+          </h2>
+          <p class="mt-4 text-sm leading-6 text-emerald-100/70">
+            Join 500+ verified campus peers on GyanSetu. Book 15-min micro-sessions, earn credits by teaching, and compete on skill leaderboards.
+          </p>
+
+          <!-- Feature pills -->
+          <div class="mt-7 flex flex-wrap gap-2.5">
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-[12px] font-semibold text-white backdrop-blur-sm">
+              <i data-lucide="zap" class="h-3.5 w-3.5 text-lime-brand"></i> 15-Min Sessions
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-[12px] font-semibold text-white backdrop-blur-sm">
+              <i data-lucide="coins" class="h-3.5 w-3.5 text-lime-brand"></i> Credit System
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-[12px] font-semibold text-white backdrop-blur-sm">
+              <i data-lucide="monitor" class="h-3.5 w-3.5 text-lime-brand"></i> Live Collab Room
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-[12px] font-semibold text-white backdrop-blur-sm">
+              <i data-lucide="trophy" class="h-3.5 w-3.5 text-lime-brand"></i> Skill Duels
+            </span>
+          </div>
+
+          <!-- Peer testimonial -->
+          <div class="mt-8 rounded-2xl border border-white/10 bg-white/6 p-5 backdrop-blur-sm">
+            <p class="text-sm leading-6 text-emerald-50/80 italic">"Cleared my DSA tree problem in 12 minutes. Spent 3 credits, saved 3 hours of debugging alone."</p>
+            <div class="mt-3 flex items-center gap-3">
+              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-lime-brand to-[#8FD420] text-xs font-extrabold text-ink">PK</div>
+              <div>
+                <p class="text-xs font-bold text-white">Priya K.</p>
+                <p class="text-[11px] text-slate-400">B.Tech CSE, 2nd Year</p>
+              </div>
+              <div class="ml-auto flex gap-0.5">
+                <span class="text-lime-brand text-sm">★★★★★</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="relative mt-4 grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
+          <div>
+            <p class="text-xl font-extrabold text-lime-brand">500+</p>
+            <p class="text-[11px] text-slate-400">Active Peers</p>
+          </div>
+          <div>
+            <p class="text-xl font-extrabold text-lime-brand">94%</p>
+            <p class="text-[11px] text-slate-400">Resolved Fast</p>
+          </div>
+          <div>
+            <p class="text-xl font-extrabold text-lime-brand">1.2k+</p>
+            <p class="text-[11px] text-slate-400">Credits Earned</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Auth Form -->
+      <div class="flex flex-col justify-center px-6 py-10 sm:px-10 lg:px-12">
+
+        <!-- Mobile logo -->
+        <a href="index.html" class="mb-8 flex items-center gap-2.5 lg:hidden">
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-lime-brand to-leaf text-ink">
+            <i data-lucide="graduation-cap" class="h-5 w-5"></i>
+          </span>
+          <span class="text-lg font-extrabold">GyanSetu</span>
+        </a>
+
+        <!-- Tab switcher -->
+        <div class="flex rounded-xl bg-slate-100 p-1 mb-7">
+          <button id="tab-signin" onclick="switchTab('signin')" class="flex-1 rounded-lg py-2 text-sm font-extrabold transition-all tab-active">Sign In</button>
+          <button id="tab-signup" onclick="switchTab('signup')" class="flex-1 rounded-lg py-2 text-sm font-extrabold transition-all tab-inactive">Sign Up</button>
+        </div>
+
+        <!-- SIGN IN FORM -->
+        <div id="form-signin">
+          <h1 class="text-2xl font-extrabold tracking-tight text-ink">Welcome back 👋</h1>
+          <p class="mt-1.5 text-sm text-slate-500">Sign in to continue your learning journey.</p>
+
+          <!-- Google Sign In -->
+          <div class="mt-6">
+            <button class="social-btn" onclick="handleGoogleAuth()">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+                <path d="M9 18c2.43 0 4.467-.806 5.956-2.185l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+                <path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/>
+                <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+              </svg>
+              Continue with Google
+            </button>
+          </div>
+
+          <div class="my-5 flex items-center gap-3">
+            <div class="flex-1 h-px bg-slate-200"></div>
+            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">or</span>
+            <div class="flex-1 h-px bg-slate-200"></div>
+          </div>
+
+          <form onsubmit="handleSignIn(event)" class="space-y-4">
+            <div>
+              <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Email Address</label>
+              <input type="email" placeholder="you@college.edu" class="input-field" required />
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
+                <a href="#" class="text-[11px] font-semibold text-leaf hover:underline">Forgot password?</a>
+              </div>
+              <div class="relative">
+                <input id="signin-password" type="password" placeholder="Enter your password" class="input-field pr-10" required />
+                <button type="button" onclick="togglePassword('signin-password')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-ink">
+                  <i data-lucide="eye" class="h-4 w-4"></i>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="remember" class="h-4 w-4 rounded accent-leaf cursor-pointer" />
+              <label for="remember" class="text-xs text-slate-500 cursor-pointer">Remember me on this device</label>
+            </div>
+            <button type="submit" class="btn-pill w-full rounded-xl bg-ink py-3 text-sm font-extrabold text-white transition hover:bg-forest">
+              Sign In to GyanSetu
+            </button>
+          </form>
+
+          <p class="mt-5 text-center text-xs text-slate-500">
+            Don't have an account? <button onclick="switchTab('signup')" class="font-bold text-leaf hover:underline">Create one free →</button>
+          </p>
+        </div>
+
+        <!-- SIGN UP FORM -->
+        <div id="form-signup" class="hidden">
+          <h1 class="text-2xl font-extrabold tracking-tight text-ink">Join GyanSetu 🎓</h1>
+          <p class="mt-1.5 text-sm text-slate-500">Create your free account and start learning with peers.</p>
+
+          <!-- Google Sign Up -->
+          <div class="mt-6">
+            <button class="social-btn" onclick="handleGoogleAuth()">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+                <path d="M9 18c2.43 0 4.467-.806 5.956-2.185l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+                <path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/>
+                <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+              </svg>
+              Sign up with Google
+            </button>
+          </div>
+
+          <div class="my-5 flex items-center gap-3">
+            <div class="flex-1 h-px bg-slate-200"></div>
+            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">or</span>
+            <div class="flex-1 h-px bg-slate-200"></div>
+          </div>
+
+          <form onsubmit="handleSignUp(event)" class="space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">First Name</label>
+                <input type="text" placeholder="Aarav" class="input-field" required />
+              </div>
+              <div>
+                <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Last Name</label>
+                <input type="text" placeholder="Singh" class="input-field" required />
+              </div>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">College Email</label>
+              <input type="email" placeholder="you@college.edu" class="input-field" required />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Department & Year</label>
+              <input type="text" placeholder="e.g. CSE, 2nd Year" class="input-field" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
+              <div class="relative">
+                <input id="signup-password" type="password" placeholder="Min. 8 characters" class="input-field pr-10" required minlength="8" />
+                <button type="button" onclick="togglePassword('signup-password')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-ink">
+                  <i data-lucide="eye" class="h-4 w-4"></i>
+                </button>
+              </div>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">I am a</label>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="role-option flex cursor-pointer items-center gap-2 rounded-xl border-2 border-slate-200 p-3 transition hover:border-lime-brand has-[:checked]:border-leaf has-[:checked]:bg-mist">
+                  <input type="radio" name="role" value="learner" class="accent-leaf" checked />
+                  <div>
+                    <p class="text-xs font-bold">Learner</p>
+                    <p class="text-[10px] text-slate-500">Spend credits to learn</p>
+                  </div>
+                </label>
+                <label class="role-option flex cursor-pointer items-center gap-2 rounded-xl border-2 border-slate-200 p-3 transition hover:border-lime-brand has-[:checked]:border-leaf has-[:checked]:bg-mist">
+                  <input type="radio" name="role" value="mentor" class="accent-leaf" />
+                  <div>
+                    <p class="text-xs font-bold">Mentor</p>
+                    <p class="text-[10px] text-slate-500">Earn credits by teaching</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="flex items-start gap-2">
+              <input type="checkbox" id="terms" class="mt-0.5 h-4 w-4 rounded accent-leaf cursor-pointer" required />
+              <label for="terms" class="text-xs text-slate-500 cursor-pointer leading-5">I agree to GyanSetu's <a href="#" class="font-semibold text-leaf hover:underline">Terms of Service</a> and <a href="#" class="font-semibold text-leaf hover:underline">Privacy Policy</a></label>
+            </div>
+            <button type="submit" class="btn-pill w-full rounded-xl bg-gradient-to-r from-lime-brand to-[#8FD420] py-3 text-sm font-extrabold text-ink transition hover:brightness-105 shadow-glow">
+              Create Free Account →
+            </button>
+          </form>
+
+          <p class="mt-5 text-center text-xs text-slate-500">
+            Already have an account? <button onclick="switchTab('signin')" class="font-bold text-leaf hover:underline">Sign in →</button>
+          </p>
+        </div>
+
+        <!-- Back link -->
+        <p class="mt-8 text-center text-xs text-slate-400">
+          <a href="index.html" class="inline-flex items-center gap-1 hover:text-ink transition">
+            <i data-lucide="arrow-left" class="h-3 w-3"></i> Back to homepage
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+
+    // Tab switching
+    function switchTab(tab) {
+      const isSignin = tab === 'signin';
+      document.getElementById('form-signin').classList.toggle('hidden', !isSignin);
+      document.getElementById('form-signup').classList.toggle('hidden', isSignin);
+      document.getElementById('tab-signin').className = `flex-1 rounded-lg py-2 text-sm font-extrabold transition-all ${isSignin ? 'tab-active' : 'tab-inactive'}`;
+      document.getElementById('tab-signup').className = `flex-1 rounded-lg py-2 text-sm font-extrabold transition-all ${!isSignin ? 'tab-active' : 'tab-inactive'}`;
+    }
+
+    // Check hash for signup deep link
+    if (window.location.hash === '#signup') switchTab('signup');
+
+    // Toggle password visibility
+    function togglePassword(id) {
+      const el = document.getElementById(id);
+      el.type = el.type === 'password' ? 'text' : 'password';
+    }
+
+    // Google auth handler (demo — replace with real Firebase/Supabase OAuth)
+    function handleGoogleAuth() {
+      const btn = event.currentTarget;
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#e2e8f0" stroke-width="3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#B9F044" stroke-width="3" stroke-linecap="round"/></svg> Connecting to Google...';
+      // Simulate then redirect
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+    }
+
+    // Sign in handler (demo)
+    function handleSignIn(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type=submit]');
+      btn.textContent = 'Signing in...';
+      btn.disabled = true;
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+    }
+
+    // Sign up handler (demo)
+    function handleSignUp(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type=submit]');
+      btn.textContent = 'Creating account...';
+      btn.disabled = true;
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+    }
+  </script>
+</body>
+</html>

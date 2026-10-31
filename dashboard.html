@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GyanSetu | Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.config.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .sidebar-link { display:flex; align-items:center; gap:0.625rem; padding:0.6rem 0.875rem; border-radius:0.75rem; font-size:0.8125rem; font-weight:600; color:#475569; transition:all .15s; }
+    .sidebar-link:hover { background:#F4FBEA; color:#2F6F11; }
+    .sidebar-link.active { background:#0B1F17; color:#B9F044; }
+    .sidebar-link .lucide { width:1rem; height:1rem; }
+    .stat-card { border-radius:1.25rem; padding:1.25rem; border:1.5px solid #f1f5f9; background:#fff; }
+    .section-title { font-size:0.625rem; font-weight:800; text-transform:uppercase; letter-spacing:.25em; color:#2F6F11; margin-bottom:.75rem; }
+    .mentor-card { border-radius:1.25rem; border:1.5px solid #f1f5f9; background:#fff; padding:1rem; transition:all .2s; cursor:pointer; }
+    .mentor-card:hover { border-color:#B9F044; box-shadow:0 8px 24px -8px rgba(11,31,23,.12); }
+    .badge { display:inline-flex; align-items:center; gap:.35rem; border-radius:9999px; padding:.25rem .7rem; font-size:.6875rem; font-weight:700; }
+    .badge-lime { background:#B9F044; color:#0B1F17; }
+    .badge-mist { background:#F4FBEA; color:#2F6F11; }
+    .badge-dark { background:#0B1F17; color:#B9F044; }
+    .tag { display:inline-flex; align-items:center; padding:.2rem .6rem; border-radius:.5rem; background:#f1f5f9; font-size:.6875rem; font-weight:600; color:#64748b; }
+    .progress-bar { height:6px; border-radius:999px; background:#f1f5f9; overflow:hidden; }
+    .progress-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,#B9F044,#8FD420); transition:width 1s ease; }
+    .duel-card { border-radius:1.25rem; border:1.5px solid #f1f5f9; background:#fff; padding:1.25rem; transition:all .2s; }
+    .duel-card:hover { border-color:#B9F044; transform:translateY(-2px); box-shadow:0 8px 24px -8px rgba(11,31,23,.12); }
+    .tab-btn { padding:.5rem 1.1rem; font-size:.8125rem; font-weight:700; color:#94a3b8; border-radius:.75rem; transition:all .15s; }
+    .tab-btn.active { background:#0B1F17; color:#B9F044; }
+    .ledger-row { display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:.75rem; padding:.75rem 0; border-bottom:1px solid #f1f5f9; }
+    .ledger-row:last-child { border-bottom:none; }
+    /* Empty state */
+    .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:3rem 1rem; text-align:center; gap:.75rem; }
+    .empty-state-icon { width:3.5rem; height:3.5rem; border-radius:1rem; background:#F4FBEA; display:flex; align-items:center; justify-content:center; color:#2F6F11; }
+    /* Skeleton shimmer */
+    .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e8f0e0 50%, #f1f5f9 75%); background-size:400% 100%; animation: shimmer 1.6s infinite; border-radius:.5rem; }
+    @keyframes shimmer { 0%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    /* Avatar placeholder */
+    .avatar-ph { background:#E2E8F0; color:#94A3B8; }
+  </style>
+</head>
+<body class="font-sans text-ink antialiased bg-[#F7FAF3]">
+
+  <div class="flex min-h-screen">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="hidden w-60 shrink-0 flex-col border-r border-slate-100 bg-white lg:flex" style="position:sticky;top:0;height:100vh;">
+      <!-- Brand -->
+      <div class="flex items-center gap-2.5 border-b border-slate-100 px-5 py-5">
+        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11]">
+          <i data-lucide="graduation-cap" class="h-5 w-5 text-[#0B1F17]"></i>
+        </span>
+        <span class="text-lg font-extrabold tracking-tight">GyanSetu</span>
+      </div>
+
+      <!-- User profile — shows initials from auth, no hardcoded name -->
+      <div class="mx-3 mt-4 rounded-xl border border-slate-100 bg-[#F4FBEA] p-3">
+        <div class="flex items-center gap-2.5">
+          <div id="sidebar-avatar" class="flex h-10 w-10 items-center justify-center rounded-xl avatar-ph text-sm font-extrabold">
+            <i data-lucide="user" class="h-5 w-5"></i>
+          </div>
+          <div class="min-w-0">
+            <p id="sidebar-name" class="text-sm font-extrabold truncate text-slate-400">Your Name</p>
+            <p id="sidebar-dept" class="text-[11px] text-slate-400">Department &bull; Year</p>
+          </div>
+        </div>
+        <div class="mt-2.5 flex items-center justify-between">
+          <span class="badge badge-dark"><i data-lucide="coins" class="h-3 w-3"></i> <span id="sidebar-credits">0</span> credits</span>
+          <span class="badge badge-mist"><i data-lucide="flame" class="h-3 w-3"></i> <span id="sidebar-streak">0</span>-day</span>
+        </div>
+      </div>
+
+      <!-- Nav links -->
+      <nav class="mt-4 flex-1 space-y-0.5 px-3">
+        <a href="#overview"  class="sidebar-link active" id="nav-overview"><i data-lucide="layout-dashboard" class="lucide"></i> Overview</a>
+        <a href="#mentors"   class="sidebar-link" id="nav-mentors"><i data-lucide="users" class="lucide"></i> Find Mentors</a>
+        <a href="#sessions"  class="sidebar-link" id="nav-sessions"><i data-lucide="calendar" class="lucide"></i> My Sessions</a>
+        <a href="#ledger"    class="sidebar-link" id="nav-ledger"><i data-lucide="coins" class="lucide"></i> Credit Ledger</a>
+        <a href="#duels"     class="sidebar-link" id="nav-duels"><i data-lucide="trophy" class="lucide"></i> Skill Duels</a>
+        <a href="room.html"  class="sidebar-link"><i data-lucide="monitor" class="lucide"></i> Live Room</a>
+        <div class="mt-3 border-t border-slate-100 pt-3">
+          <a href="#" class="sidebar-link"><i data-lucide="settings" class="lucide"></i> Settings</a>
+          <a href="index.html" class="sidebar-link"><i data-lucide="log-out" class="lucide"></i> Back to Home</a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <div class="flex-1 min-w-0">
+
+      <!-- TOP BAR -->
+      <header class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-3 sm:px-7">
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="flex items-center gap-2 lg:hidden">
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#B9F044] to-[#2F6F11]">
+              <i data-lucide="graduation-cap" class="h-4 w-4 text-[#0B1F17]"></i>
+            </span>
+            <span class="text-base font-extrabold">GyanSetu</span>
+          </a>
+          <div class="hidden lg:block">
+            <h1 class="text-base font-extrabold">Welcome to GyanSetu &#128075;</h1>
+            <p class="text-[11px] text-slate-500">What would you like to learn today?</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <div class="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 sm:flex">
+            <i data-lucide="search" class="h-3.5 w-3.5 text-slate-400"></i>
+            <input type="text" placeholder="Search mentors, topics&hellip;" class="w-44 bg-transparent text-xs outline-none placeholder-slate-400" />
+          </div>
+          <button class="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-[#F4FBEA] transition">
+            <i data-lucide="bell" class="h-4 w-4"></i>
+          </button>
+          <div id="topbar-avatar" class="flex h-9 w-9 items-center justify-center rounded-xl avatar-ph text-xs font-extrabold">
+            <i data-lucide="user" class="h-4 w-4"></i>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTENT -->
+      <main class="px-5 py-7 sm:px-7">
+
+        <!-- Quick action bar -->
+        <div class="mb-7 flex flex-wrap items-center gap-3">
+          <a href="room.html" class="btn-pill inline-flex items-center gap-2.5 rounded-xl bg-[#0B1F17] py-2 pl-4 pr-2 text-xs font-bold text-white transition hover:bg-[#064E3B] shadow-card">
+            &#9889; Start Live Session
+            <span class="arrow-circle flex h-7 w-7 items-center justify-center rounded-full bg-[#B9F044] text-[#0B1F17]">
+              <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>
+            </span>
+          </a>
+          <a href="#mentors" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
+            <i data-lucide="users" class="h-4 w-4"></i> Find a Mentor
+          </a>
+          <a href="#duels" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:border-[#2F6F11] hover:text-[#2F6F11] shadow-card">
+            <i data-lucide="trophy" class="h-4 w-4"></i> Join a Duel
+          </a>
+        </div>
+
+        <!-- ===== OVERVIEW STATS ===== -->
+        <section id="overview" class="mb-8">
+          <p class="section-title">Overview</p>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="stat-card shadow-card">
+              <div class="flex items-center justify-between">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9F044]/15 text-[#2F6F11]"><i data-lucide="coins" class="h-5 w-5"></i></span>
+                <span class="badge badge-mist">Balance</span>
+              </div>
+              <p class="mt-3 text-2xl font-extrabold" id="stat-credits">0</p>
+              <p class="text-xs font-semibold text-slate-500">Knowledge Credits</p>
+              <div class="progress-bar mt-3"><div class="progress-bar-fill" id="bar-credits" style="width:0%"></div></div>
+            </div>
+            <div class="stat-card shadow-card">
+              <div class="flex items-center justify-between">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0B1F17]/8 text-[#0B1F17]"><i data-lucide="calendar-check" class="h-5 w-5"></i></span>
+                <span class="badge badge-mist">This month</span>
+              </div>
+              <p class="mt-3 text-2xl font-extrabold" id="stat-sessions">0</p>
+              <p class="text-xs font-semibold text-slate-500">Sessions Completed</p>
+              <div class="progress-bar mt-3"><div class="progress-bar-fill" id="bar-sessions" style="width:0%"></div></div>
+            </div>
+            <div class="stat-card shadow-card">
+              <div class="flex items-center justify-between">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9F044]/15 text-[#2F6F11]"><i data-lucide="flame" class="h-5 w-5"></i></span>
+                <span class="badge badge-mist">Streak</span>
+              </div>
+              <p class="mt-3 text-2xl font-extrabold" id="stat-streak">0</p>
+              <p class="text-xs font-semibold text-slate-500">Day Streak</p>
+              <div class="progress-bar mt-3"><div class="progress-bar-fill" id="bar-streak" style="width:0%"></div></div>
+            </div>
+            <div class="stat-card shadow-card">
+              <div class="flex items-center justify-between">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0B1F17]/8 text-[#0B1F17]"><i data-lucide="star" class="h-5 w-5"></i></span>
+                <span class="badge badge-mist">As mentor</span>
+              </div>
+              <p class="mt-3 text-2xl font-extrabold" id="stat-rating">&#8212;</p>
+              <p class="text-xs font-semibold text-slate-500">Avg Rating</p>
+              <div class="progress-bar mt-3"><div class="progress-bar-fill" id="bar-rating" style="width:0%"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== FIND MENTORS ===== -->
+        <section id="mentors" class="mb-8">
+          <div class="mb-4 flex items-center justify-between">
+            <p class="section-title mb-0">Find Peer Mentors</p>
+            <div class="flex gap-1.5">
+              <button class="tab-btn active" onclick="filterMentors('all',this)">All</button>
+              <button class="tab-btn" onclick="filterMentors('live',this)">&#128994; Live</button>
+              <button class="tab-btn" onclick="filterMentors('top',this)">&#11088; Top Rated</button>
+            </div>
+          </div>
+
+          <!-- Subject filter chips -->
+          <div class="mb-4 flex flex-wrap gap-2">
+            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">DSA</button>
+            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">Python</button>
+            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">Web Dev</button>
+            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">DBMS</button>
+            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">OS</button>
+            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">Machine Learning</button>
+            <button class="tag hover:bg-[#B9F044]/20 hover:text-[#2F6F11] transition">CN</button>
+          </div>
+
+          <!-- Mentor grid — empty state until real data loads -->
+          <div id="mentors-grid" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+
+            <!-- Skeleton cards (shown while loading) -->
+            <div class="mentor-card" id="skeleton-1">
+              <div class="flex items-center gap-3">
+                <div class="skeleton h-12 w-12 rounded-xl"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="skeleton h-3.5 w-28 rounded"></div>
+                  <div class="skeleton h-3 w-20 rounded"></div>
+                </div>
+              </div>
+              <div class="mt-3 flex gap-1.5">
+                <div class="skeleton h-5 w-14 rounded-lg"></div>
+                <div class="skeleton h-5 w-14 rounded-lg"></div>
+              </div>
+              <div class="mt-3 skeleton h-4 w-40 rounded"></div>
+            </div>
+            <div class="mentor-card" id="skeleton-2">
+              <div class="flex items-center gap-3">
+                <div class="skeleton h-12 w-12 rounded-xl"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="skeleton h-3.5 w-24 rounded"></div>
+                  <div class="skeleton h-3 w-18 rounded"></div>
+                </div>
+              </div>
+              <div class="mt-3 flex gap-1.5">
+                <div class="skeleton h-5 w-16 rounded-lg"></div>
+                <div class="skeleton h-5 w-12 rounded-lg"></div>
+              </div>
+              <div class="mt-3 skeleton h-4 w-36 rounded"></div>
+            </div>
+            <div class="mentor-card" id="skeleton-3">
+              <div class="flex items-center gap-3">
+                <div class="skeleton h-12 w-12 rounded-xl"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="skeleton h-3.5 w-28 rounded"></div>
+                  <div class="skeleton h-3 w-16 rounded"></div>
+                </div>
+              </div>
+              <div class="mt-3 flex gap-1.5">
+                <div class="skeleton h-5 w-20 rounded-lg"></div>
+                <div class="skeleton h-5 w-14 rounded-lg"></div>
+              </div>
+              <div class="mt-3 skeleton h-4 w-44 rounded"></div>
+            </div>
+
+            <!-- Become a mentor CTA — always visible -->
+            <div class="mentor-card flex flex-col items-center justify-center border-dashed border-2 border-[#B9F044]/40 bg-[#F4FBEA] text-center" id="become-mentor-card">
+              <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#B9F044]/20 text-[#2F6F11] mb-3">
+                <i data-lucide="plus" class="h-6 w-6"></i>
+              </div>
+              <p class="text-sm font-extrabold">Become a Mentor</p>
+              <p class="mt-1 text-xs text-slate-500 max-w-[160px]">Teach what you know, earn credits every session.</p>
+              <button class="mt-4 rounded-xl bg-[#B9F044] px-4 py-1.5 text-xs font-extrabold text-[#0B1F17] transition hover:brightness-95">Apply Now</button>
+            </div>
+          </div>
+
+          <!-- Empty state shown when no mentors found -->
+          <div id="mentors-empty" class="hidden rounded-2xl border border-slate-100 bg-white">
+            <div class="empty-state">
+              <div class="empty-state-icon"><i data-lucide="users" class="h-6 w-6"></i></div>
+              <p class="text-sm font-extrabold text-[#0B1F17]">No mentors available right now</p>
+              <p class="text-xs text-slate-500 max-w-xs">Check back shortly or broaden your subject filter to find available peers.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== MY SESSIONS ===== -->
+        <section id="sessions" class="mb-8">
+          <p class="section-title">My Sessions</p>
+          <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
+            <div class="border-b border-slate-100 px-5 py-3 flex items-center justify-between">
+              <div class="flex gap-1">
+                <button class="tab-btn active" onclick="switchSessionTab('upcoming',this)">Upcoming</button>
+                <button class="tab-btn" onclick="switchSessionTab('past',this)">Past</button>
+              </div>
+              <a href="room.html" class="text-xs font-bold text-[#2F6F11] hover:underline">+ New Session</a>
+            </div>
+
+            <!-- Upcoming — empty state -->
+            <div id="sessions-upcoming">
+              <div class="empty-state">
+                <div class="empty-state-icon"><i data-lucide="calendar" class="h-6 w-6"></i></div>
+                <p class="text-sm font-extrabold text-[#0B1F17]">No upcoming sessions</p>
+                <p class="text-xs text-slate-500 max-w-xs">Book a session with a peer mentor to get started. Your upcoming sessions will appear here.</p>
+                <a href="#mentors" class="mt-1 rounded-xl bg-[#0B1F17] px-4 py-2 text-xs font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Find a Mentor</a>
+              </div>
+            </div>
+
+            <!-- Past — empty state -->
+            <div id="sessions-past" class="hidden">
+              <div class="empty-state">
+                <div class="empty-state-icon"><i data-lucide="clock" class="h-6 w-6"></i></div>
+                <p class="text-sm font-extrabold text-[#0B1F17]">No past sessions yet</p>
+                <p class="text-xs text-slate-500 max-w-xs">Once you complete a session, it will show up here with a full summary.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== CREDIT LEDGER ===== -->
+        <section id="ledger" class="mb-8">
+          <div class="mb-4 flex items-center justify-between">
+            <p class="section-title mb-0">Credit Ledger</p>
+            <span class="badge badge-dark"><i data-lucide="coins" class="h-3 w-3"></i> Balance: <span id="ledger-balance">0</span> credits</span>
+          </div>
+          <div class="rounded-2xl border border-slate-100 bg-white shadow-card">
+            <!-- Header row -->
+            <div class="ledger-row px-5 border-b border-slate-100">
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Description</p>
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Date</p>
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Amount</p>
+            </div>
+            <!-- Empty state -->
+            <div id="ledger-empty" class="px-5">
+              <div class="empty-state">
+                <div class="empty-state-icon"><i data-lucide="receipt" class="h-6 w-6"></i></div>
+                <p class="text-sm font-extrabold text-[#0B1F17]">No transactions yet</p>
+                <p class="text-xs text-slate-500 max-w-xs">Your credit history will appear here after your first session. New users get a free 20-credit welcome bonus on signup.</p>
+              </div>
+            </div>
+            <!-- Transaction rows injected by JS -->
+            <div id="ledger-rows" class="px-5 hidden"></div>
+          </div>
+        </section>
+
+        <!-- ===== SKILL DUELS ===== -->
+        <section id="duels" class="mb-8">
+          <div class="mb-4 flex items-center justify-between">
+            <p class="section-title mb-0">Skill Duels</p>
+            <span class="badge badge-mist">&#127942; Campus Rank: <span id="duel-rank">&mdash;</span></span>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <!-- Active duels empty state -->
+            <div class="duel-card col-span-full sm:col-span-2" id="duels-empty">
+              <div class="empty-state py-8">
+                <div class="empty-state-icon"><i data-lucide="swords" class="h-6 w-6"></i></div>
+                <p class="text-sm font-extrabold text-[#0B1F17]">No active duels right now</p>
+                <p class="text-xs text-slate-500 max-w-xs">New skill duels are posted weekly. Check back on Monday for the next round of challenges and earn bonus credits.</p>
+                <button class="mt-1 rounded-xl border border-slate-200 px-4 py-2 text-xs font-extrabold text-ink transition hover:border-[#B9F044] hover:text-[#2F6F11]">Notify Me When Next Duel Starts</button>
+              </div>
+            </div>
+
+            <!-- Leaderboard card — shows structure, no fake names -->
+            <div class="duel-card">
+              <p class="text-xs font-extrabold mb-4">&#127942; Campus Leaderboard</p>
+              <div id="leaderboard-rows" class="space-y-2">
+                <!-- Skeleton rows -->
+                <div class="flex items-center gap-2.5">
+                  <span class="w-5 text-xs font-extrabold text-amber-500 text-right">1</span>
+                  <div class="skeleton h-7 w-7 rounded-full"></div>
+                  <div class="skeleton flex-1 h-3.5 rounded"></div>
+                  <div class="skeleton h-5 w-16 rounded-full"></div>
+                </div>
+                <div class="flex items-center gap-2.5">
+                  <span class="w-5 text-xs font-extrabold text-slate-400 text-right">2</span>
+                  <div class="skeleton h-7 w-7 rounded-full"></div>
+                  <div class="skeleton flex-1 h-3.5 rounded"></div>
+                  <div class="skeleton h-5 w-14 rounded-full"></div>
+                </div>
+                <div class="flex items-center gap-2.5">
+                  <span class="w-5 text-xs font-extrabold text-slate-400 text-right">3</span>
+                  <div class="skeleton h-7 w-7 rounded-full"></div>
+                  <div class="skeleton flex-1 h-3.5 rounded"></div>
+                  <div class="skeleton h-5 w-16 rounded-full"></div>
+                </div>
+              </div>
+              <p class="mt-4 text-center text-[11px] text-slate-400">Complete a duel to appear on the leaderboard</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== LIVE ROOM CTA ===== -->
+        <section class="mb-4">
+          <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#06130E] via-[#0B2A1E] to-[#14532D] px-6 py-8 sm:px-10">
+            <div class="grid-tex absolute inset-0 opacity-40 pointer-events-none"></div>
+            <div class="absolute -right-10 top-0 h-48 w-48 rounded-full bg-[#B9F044]/25 blur-3xl pointer-events-none"></div>
+            <div class="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="text-xs font-extrabold uppercase tracking-wider text-[#B9F044] mb-2">&#9889; Live Now</p>
+                <h3 class="text-xl font-extrabold text-white">Start or Join a Collaboration Room</h3>
+                <p class="mt-1.5 text-xs leading-5 text-emerald-100/70">Shared code editor + whiteboard + chat. One room ID is all you need.</p>
+              </div>
+              <a href="room.html" class="btn-pill inline-flex shrink-0 items-center gap-3 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-2.5 pl-6 pr-2 text-sm font-extrabold text-[#0B1F17] shadow-glow transition hover:brightness-110">
+                Open Live Room
+                <span class="arrow-circle flex h-8 w-8 items-center justify-center rounded-full bg-[#0B1F17] text-[#B9F044]">
+                  <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div id="booking-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    <div class="w-full max-w-sm rounded-3xl border border-slate-100 bg-white p-7 shadow-2xl">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-base font-extrabold">Book a 15-Min Session</h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-ink"><i data-lucide="x" class="h-5 w-5"></i></button>
+      </div>
+      <p class="text-xs text-slate-500 mb-4">Select a time slot to confirm your session.</p>
+      <div class="grid grid-cols-3 gap-2 mb-5" id="slot-grid">
+        <!-- Slots injected dynamically -->
+      </div>
+      <button onclick="confirmBooking()" class="w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Confirm Booking</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+
+    /* ── Sidebar active nav ── */
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+      link.addEventListener('click', function() {
+        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+        if (!this.href.includes('room.html') && !this.href.includes('index.html')) {
+          this.classList.add('active');
+        }
+      });
+    });
+
+    /* ── Session tabs ── */
+    function switchSessionTab(tab, btn) {
+      document.getElementById('sessions-upcoming').classList.toggle('hidden', tab !== 'upcoming');
+      document.getElementById('sessions-past').classList.toggle('hidden', tab !== 'past');
+      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    /* ── Mentor filter (UI only) ── */
+    function filterMentors(type, btn) {
+      btn.closest('div').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    /* ── Booking modal ── */
+    function bookMentor() {
+      // Generate time slots for next 3 hours
+      const grid = document.getElementById('slot-grid');
+      grid.innerHTML = '';
+      const now = new Date();
+      for (let i = 1; i <= 5; i++) {
+        const d = new Date(now.getTime() + i * 60 * 60 * 1000);
+        const label = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.className = 'rounded-xl border border-slate-200 py-2 text-xs font-bold hover:border-[#B9F044] hover:bg-[#F4FBEA] transition';
+        btn.onclick = () => selectSlot(btn);
+        grid.appendChild(btn);
+      }
+      const full = document.createElement('button');
+      full.textContent = 'Fully booked';
+      full.className = 'rounded-xl bg-slate-100 py-2 text-xs font-bold text-slate-400 cursor-not-allowed';
+      full.disabled = true;
+      grid.appendChild(full);
+      document.getElementById('booking-modal').classList.replace('hidden', 'flex');
+      lucide.createIcons();
+    }
+    function closeModal() {
+      document.getElementById('booking-modal').classList.replace('flex', 'hidden');
+    }
+    function selectSlot(btn) {
+      document.getElementById('slot-grid').querySelectorAll('button:not(:disabled)').forEach(b => {
+        b.classList.remove('bg-[#0B1F17]', 'text-[#B9F044]', 'border-[#0B1F17]');
+      });
+      btn.classList.add('bg-[#0B1F17]', 'text-[#B9F044]', 'border-[#0B1F17]');
+    }
+    function confirmBooking() {
+      closeModal();
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-6 right-6 z-50 rounded-2xl bg-[#0B1F17] px-5 py-3 text-sm font-bold text-[#B9F044] shadow-2xl';
+      toast.textContent = '&#10003; Session booked! Joining room\u2026';
+      document.body.appendChild(toast);
+      setTimeout(() => { toast.remove(); window.location.href = 'room.html'; }, 2000);
+    }
+
+    /* ── Animate progress bars on load ── */
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.progress-bar-fill').forEach(el => {
+        const target = el.style.width;
+        el.style.width = '0%';
+        setTimeout(() => { el.style.width = target; }, 200);
+      });
+    });
+
+    /*
+     * ── DATA LAYER (stub) ──────────────────────────────────────────
+     * Replace the block below with real API/Supabase calls.
+     * All UI elements above read from these functions — no data
+     * is hardcoded in the HTML anymore.
+     * ─────────────────────────────────────────────────────────────── */
+    async function loadDashboard() {
+      /* Example: fetch from Supabase or your backend here.
+         For now we show the empty/skeleton state permanently
+         until a real integration is wired up. */
+
+      // Remove skeletons after a short delay to show "no results" state
+      setTimeout(() => {
+        ['skeleton-1','skeleton-2','skeleton-3'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.remove();
+        });
+        // If no real mentors loaded, we leave the become-a-mentor CTA alone.
+        // To inject mentor cards, call renderMentorCard(data) for each result.
+      }, 1200);
+    }
+
+    /* Call on page load */
+    loadDashboard();
+  </script>
+</body>
+</html>
