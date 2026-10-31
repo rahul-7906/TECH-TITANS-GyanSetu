@@ -17,7 +17,6 @@
   <script src="js/gyansetu-auth.js"></script>
   <script src="js/credits-config.js"></script>
   <script src="js/rr-config.js"></script>
-  <script src="js/demo-data.js"></script>
 
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAF6; color: #0B1F17; }
@@ -401,60 +400,117 @@
 
     // ── Load User & Peers ──────────────────────────────────────────────
     async function loadProfileAndLeaderboard() {
-      const isDemo = (new URLSearchParams(window.location.search).get('demo') === '1') || 
-                     (sessionStorage.getItem('gyansetu_demo_mode') === 'true');
+      try {
+        let userObj = null;
+        let prof = null;
 
-      if (isDemo || typeof window.GYANSETU_DEMO !== 'undefined') {
-        const demo = window.GYANSETU_DEMO;
-        currentProfile = demo?.profile || {
-          id: 'demo-user-1',
-          full_name: 'Aditya Verma',
-          rr: 1245,
-          xp: 680,
-          credits: 155,
-          streak: 12,
-          college: 'Graphic Era Hill University',
-          city: 'Haldwani',
-          state: 'Uttarakhand',
-          country: 'India',
-          challenge_wins: 14
-        };
-        allPeers = demo?.leaderboard || [];
-      } else {
-        try {
-          let userObj = null;
-          if (window.GyanSetuAuth) {
-            const authData = await window.GyanSetuAuth.getCurrentUser();
-            if (authData?.user) userObj = authData.user;
-          }
-          if (!userObj) {
-            const { data: { session } } = await sb.auth.getSession();
-            if (session?.user) userObj = session.user;
-          }
-          if (userObj) {
-            const { data: prof } = await sb.from('profiles').select('*').eq('id', userObj.id).maybeSingle();
-            currentProfile = prof || { id: userObj.id, full_name: userObj.email.split('@')[0], rr: 1245, xp: 680, credits: 155, streak: 12 };
-          }
-          // Fetch real registered peers across Supabase and local storage
-          if (window.GyanSetuAuth?.getAllRegisteredUsers) {
-            allPeers = await window.GyanSetuAuth.getAllRegisteredUsers();
-          } else {
-            const { data: peers } = await sb.from('profiles').select('*').order('rr', { ascending: false }).limit(50);
-            allPeers = peers || [];
-          }
-        } catch (e) {
-          console.warn('Network issue reading Supabase, falling back to local registered peers:', e);
-          if (window.GyanSetuAuth?.getAllRegisteredUsers) {
-            allPeers = await window.GyanSetuAuth.getAllRegisteredUsers();
-          } else {
-            allPeers = [];
+        // 1. Resolve active user from GyanSetuAuth
+        if (window.GyanSetuAuth) {
+          const authData = await window.GyanSetuAuth.getCurrentUser();
+          if (authData?.user) {
+            userObj = authData.user;
+            prof = authData.profile;
           }
         }
-      }
 
-      // Ensure current user is in peer list
-      if (currentProfile && !allPeers.some(p => p.id === currentProfile.id || p.full_name === currentProfile.full_name)) {
-        allPeers.push(currentProfile);
+        // 2. Fallback to localStorage active profile
+        if (!prof) {
+          try {
+            const raw = localStorage.getItem('gyansetu_active_profile');
+            if (raw) prof = JSON.parse(raw);
+          } catch (e) {}
+        }
+
+        // 3. Fallback to Supabase auth session
+        if (!prof && window.sb) {
+          try {
+            const { data: { session } } = await sb.auth.getSession();
+            if (session?.user) {
+              userObj = session.user;
+              const { data: p } = await sb.from('profiles').select('*').eq('id', userObj.id).maybeSingle();
+              prof = p;
+            }
+          } catch (e) {}
+        }
+
+        if (prof) {
+          currentProfile = {
+            id: prof.id,
+            full_name: prof.full_name || (prof.email || userObj?.email || 'Campus Student').split('@')[0],
+            email: prof.email || userObj?.email || '',
+            department: prof.department || 'Computer Science',
+            role: prof.role || 'learner',
+            rr: Number(prof.rr) || (1000 + (Number(prof.xp) || 50) * 2),
+            xp: Number(prof.xp) || 50,
+            credits: Number(prof.credits) || 100,
+            streak: Number(prof.streak) || 1,
+            college: prof.college || prof.department || 'Graphic Era Hill University',
+            city: prof.city || 'Haldwani',
+            state: prof.state || 'Uttarakhand',
+            country: prof.country || 'India',
+            challenge_wins: Number(prof.challenge_wins) || 0
+          };
+        } else {
+          currentProfile = {
+            id: 'guest',
+            full_name: 'Campus Learner',
+            rr: 1000,
+            xp: 50,
+            credits: 100,
+            streak: 1,
+            college: 'Campus Member',
+            city: 'Haldwani',
+            state: 'Uttarakhand',
+            country: 'India',
+            challenge_wins: 0
+          };
+        }
+
+        // 4. Fetch ONLY real registered peers across Supabase & Local Accounts
+        if (window.GyanSetuAuth?.getAllRegisteredUsers) {
+          allPeers = await window.GyanSetuAuth.getAllRegisteredUsers();
+        } else if (window.sb) {
+          const { data: peers } = await sb.from('profiles').select('*').order('rr', { ascending: false }).limit(50);
+          allPeers = peers || [];
+        } else {
+          allPeers = [];
+        }
+
+        // 5. Strictly filter out any mock demo IDs (demo-*, etc.)
+        allPeers = allPeers.filter(p => p && !String(p.id || '').startsWith('demo-'));
+
+        // 6. Normalize fields for all registered peers
+        allPeers = allPeers.map(p => ({
+          ...p,
+          rr: Number(p.rr) || (1000 + (Number(p.xp) || 50) * 2),
+          xp: Number(p.xp) || 50,
+          credits: Number(p.credits) || 100,
+          streak: Number(p.streak) || 1,
+          college: p.college || p.department || 'Graphic Era Hill University',
+          city: p.city || 'Haldwani',
+          state: p.state || 'Uttarakhand',
+          country: p.country || 'India',
+          challenge_wins: Number(p.challenge_wins) || 0
+        }));
+
+        // 7. Ensure active user profile is included with latest real-time credits & XP
+        if (currentProfile && currentProfile.id !== 'guest') {
+          const existingIdx = allPeers.findIndex(p => 
+            p.id === currentProfile.id || 
+            (p.email && currentProfile.email && p.email.toLowerCase() === currentProfile.email.toLowerCase()) ||
+            p.full_name === currentProfile.full_name
+          );
+          if (existingIdx >= 0) {
+            allPeers[existingIdx] = { ...allPeers[existingIdx], ...currentProfile };
+          } else {
+            allPeers.push(currentProfile);
+          }
+        } else if (allPeers.length === 0 && currentProfile) {
+          allPeers.push(currentProfile);
+        }
+
+      } catch (e) {
+        console.warn('Error loading leaderboard profile:', e);
       }
 
       updateUserNavAndPinnedBar();
@@ -464,12 +520,12 @@
     // ── Render Pinned User Bar ────────────────────────────────────────
     function updateUserNavAndPinnedBar() {
       if (!currentProfile) return;
-      const rankInfo = calculateRank(currentProfile.rr || 1245);
+      const rankInfo = calculateRank(currentProfile.rr || 1000);
 
       // Nav bar
-      document.getElementById('nav-user-credits').textContent = currentProfile.credits ?? 155;
-      document.getElementById('nav-user-xp').textContent = currentProfile.xp ?? 680;
-      document.getElementById('nav-user-rr').textContent = `${(currentProfile.rr || 1245).toLocaleString()} RR`;
+      document.getElementById('nav-user-credits').textContent = currentProfile.credits ?? 100;
+      document.getElementById('nav-user-xp').textContent = currentProfile.xp ?? 0;
+      document.getElementById('nav-user-rr').textContent = `${(currentProfile.rr || 1000).toLocaleString()} RR`;
       document.getElementById('nav-user-emblem').innerHTML = renderRankEmblem(rankInfo.tierKey, 24);
 
       // Pinned bottom bar
@@ -477,7 +533,7 @@
       document.getElementById('bar-user-name').textContent = `You (${currentProfile.full_name})`;
       document.getElementById('bar-user-rank-badge').textContent = rankInfo.fullName;
       document.getElementById('bar-user-rank-badge').className = `rounded-full px-2 py-0.5 text-[10px] font-extrabold border ${rankInfo.badgeBg}`;
-      document.getElementById('bar-rr-display').textContent = `${(currentProfile.rr || 1245).toLocaleString()} RR`;
+      document.getElementById('bar-rr-display').textContent = `${(currentProfile.rr || 1000).toLocaleString()} RR`;
       document.getElementById('bar-user-streak').textContent = currentProfile.streak ?? 12;
 
       document.getElementById('bar-next-rank').textContent = rankInfo.nextRankName;

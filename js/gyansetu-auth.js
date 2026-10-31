@@ -492,18 +492,39 @@
 
       // Helper to merge or insert user into map taking the latest/highest values
       function mergeUser(p) {
-        if (!p || !p.id || String(p.id).startsWith('demo-')) return;
+        if (!p || (!p.id && !p.email) || String(p.id || '').startsWith('demo-')) return;
         var key = (p.email || p.id).toLowerCase();
         var existing = usersMap.get(key);
         if (!existing) {
-          usersMap.set(key, { ...p });
+          usersMap.set(key, {
+            id: p.id || ('user_' + key.replace(/[^a-z0-9]/g, '_')),
+            email: p.email || '',
+            full_name: p.full_name || (p.email ? p.email.split('@')[0] : 'Campus Student'),
+            department: p.department || 'Computer Science',
+            role: p.role || 'learner',
+            credits: Number(p.credits) || 100,
+            xp: Number(p.xp) || 50,
+            rr: Number(p.rr) || (1000 + (Number(p.xp) || 50) * 2),
+            streak: Number(p.streak) || 1,
+            college: p.college || p.department || 'Graphic Era Hill University',
+            city: p.city || 'Haldwani',
+            state: p.state || 'Uttarakhand',
+            country: p.country || 'India',
+            challenge_wins: Number(p.challenge_wins) || 0
+          });
         } else {
           existing.credits = Math.max(Number(existing.credits) || 0, Number(p.credits) || 0);
           existing.xp = Math.max(Number(existing.xp) || 0, Number(p.xp) || 0);
-          existing.rr = Math.max(Number(existing.rr) || 1000, Number(p.rr) || 1000);
-          if (p.full_name) existing.full_name = p.full_name;
-          if (p.department) existing.department = p.department;
+          existing.rr = Math.max(Number(existing.rr) || 1000, Number(p.rr) || (1000 + existing.xp * 2));
+          if (p.full_name && (!existing.full_name || existing.full_name === 'Campus Student' || existing.full_name.includes('@'))) {
+            existing.full_name = p.full_name;
+          }
+          if (p.department && (!existing.department || existing.department === 'Computer Science')) {
+            existing.department = p.department;
+          }
           if (p.role) existing.role = p.role;
+          if (p.college) existing.college = p.college;
+          if (p.city) existing.city = p.city;
         }
       }
 
@@ -533,8 +554,27 @@
       // 3. Ensure active user profile is included with latest real-time credits
       try {
         var activeProf = JSON.parse(localStorage.getItem(STORAGE_KEYS.ACTIVE_PROFILE) || 'null');
-        if (activeProf && activeProf.id && !String(activeProf.id).startsWith('demo-')) {
+        if (activeProf && !String(activeProf.id || '').startsWith('demo-')) {
           mergeUser(activeProf);
+        }
+      } catch (e) {}
+
+      // 4. Ensure active user object is included
+      try {
+        var activeUser = JSON.parse(localStorage.getItem(STORAGE_KEYS.ACTIVE_USER) || 'null');
+        if (activeUser && !String(activeUser.id || '').startsWith('demo-')) {
+          var uEmail = activeUser.email || '';
+          var uName = activeUser.user_metadata?.full_name || activeUser.full_name || (uEmail ? uEmail.split('@')[0] : 'Campus Student');
+          mergeUser({
+            id: activeUser.id || generateUUID(),
+            email: uEmail,
+            full_name: uName,
+            department: activeUser.user_metadata?.department || 'Computer Science',
+            role: activeUser.user_metadata?.role || 'learner',
+            credits: 100,
+            xp: 50,
+            rr: 1000
+          });
         }
       } catch (e) {}
 
