@@ -1607,9 +1607,9 @@
         }
 
         if (matchRunning) {
-          TEAMS.team1.pts = Math.min(100, TEAMS.team1.pts + 10);
-          updateCarPosition('team1', 'boost');
-          addCombatLog(`⚡ ${TEAMS.team1.name} solved Theory Sprint correctly! (+10 pts & +5 🪙 Credits)`);
+          TEAMS[myTeam].pts = Math.min(100, TEAMS[myTeam].pts + 10);
+          updateCarPosition(myTeam, 'boost');
+          addCombatLog(`⚡ ${TEAMS[myTeam].name} solved Theory Sprint correctly! (+10 pts & +5 🪙 Credits)`);
         } else {
           addCombatLog(`⚡ Theory Sprint answered correctly! (+5 🪙 Credits & +5 🏆 RR)`);
         }
@@ -1618,9 +1618,9 @@
       } else {
         playSound('error');
         if (matchRunning) {
-          TEAMS.team1.pts = Math.max(0, TEAMS.team1.pts - 5);
-          updateCarPosition('team1', 'spin');
-          addCombatLog(`⚠️ ${TEAMS.team1.name} missed theory question! (-5 pts)`);
+          TEAMS[myTeam].pts = Math.max(0, TEAMS[myTeam].pts - 5);
+          updateCarPosition(myTeam, 'spin');
+          addCombatLog(`⚠️ ${TEAMS[myTeam].name} missed theory question! (-5 pts)`);
         }
         feedback.innerHTML = `💥 <strong>INCORRECT.</strong> Correct answer: <strong>${currentQuizQ.opts[currentQuizQ.ans]}</strong>`;
         feedback.className = 'mt-4 rounded-xl bg-rose-500/20 border border-rose-500/40 p-3 text-center text-xs font-black text-rose-300';
@@ -1634,7 +1634,14 @@
         channel.send({
           type: 'broadcast',
           event: 'team-point-update',
-          payload: { team: 'team1', pts: TEAMS.team1.pts, delta: isCorrect ? 10 : -5, reason: 'Quiz Answer' }
+          payload: {
+            senderId: myUser?.id,
+            senderName: myUser?.fullName || 'Teammate',
+            team: myTeam,
+            pts: TEAMS[myTeam].pts,
+            delta: isCorrect ? 10 : -5,
+            reason: 'Quiz Answer'
+          }
         });
 
         // In a race, auto-advance after 3.2 seconds
@@ -1768,8 +1775,13 @@
     // MATCH LIFECYCLE & RIVALS SIMULATION
     // ═══════════════════════════════════════════════════════════════════════
     let rivalInterval = null;
+    let liveRoomPeers = [];
 
-    function startRaceMatch() {
+    function hasLiveOpponentsOnTeam2() {
+      return liveRoomPeers.some(p => p.id !== myUser?.id && p.team === 'team2');
+    }
+
+    function startRaceMatch(broadcast = true) {
       if (matchRunning) return;
       matchRunning = true;
       playSound('boost');
@@ -1793,12 +1805,31 @@
 
       addCombatLog(`🏁 Green Flag! ${TEAMS.team1.name} VS ${TEAMS.team2.name} in Room: ${currentRoom}!`);
 
-      // Start Rival Squad automated challenge pace (solves problems dynamically)
+      if (broadcast && channel) {
+        channel.send({
+          type: 'broadcast',
+          event: 'match-start',
+          payload: {
+            startedBy: myUser?.fullName || 'Room Host',
+            team1Name: TEAMS.team1.name,
+            team2Name: TEAMS.team2.name
+          }
+        });
+      }
+
+      // Start Rival Squad pace if no real human opponents are present on team2
       startRivalEngine();
     }
 
     function startRivalEngine() {
       clearInterval(rivalInterval);
+
+      // If real campus peers are actively connected on Team 2, disable automated bot so it's a true human vs human race!
+      if (hasLiveOpponentsOnTeam2()) {
+        addCombatLog(`⚔️ Real campus peers active on ${TEAMS.team2.name}! Bot simulator disabled for pure peer competition.`);
+        return;
+      }
+
       rivalInterval = setInterval(() => {
         if (!matchRunning) {
           clearInterval(rivalInterval);
@@ -1809,7 +1840,7 @@
         const isBoost = Math.random() > 0.35; // 65% success rate
         if (isBoost) {
           const delta = (Math.random() > 0.6) ? 30 : 10;
-          TEAMS.team2.pts += delta;
+          TEAMS.team2.pts = Math.min(100, TEAMS.team2.pts + delta);
           updateCarPosition('team2', 'boost');
           playSound('boost');
           addCombatLog(`⚡ ${TEAMS.team2.name} submitted ${delta === 30 ? 'code solution' : 'rapid quiz'}! (+${delta} pts)`);
@@ -1821,13 +1852,21 @@
       }, 4200);
     }
 
-    async function finishMatch(winnerKey = 'team1') {
+    async function finishMatch(winnerKey = 'team1', broadcast = true) {
       matchRunning = false;
       clearInterval(rivalInterval);
       document.getElementById('arena-status-pill').textContent = 'Match Finished 🏁';
 
-      const isMyTeamWinner = (winnerKey === 'team1');
-      const winner = TEAMS[winnerKey];
+      if (broadcast && channel) {
+        channel.send({
+          type: 'broadcast',
+          event: 'match-finish',
+          payload: { winnerKey }
+        });
+      }
+
+      const isMyTeamWinner = (winnerKey === myTeam);
+      const winner = TEAMS[winnerKey] || TEAMS.team1;
 
       document.getElementById('winner-title').textContent = `${winner.name} Wins!`;
       document.getElementById('winner-desc').textContent = isMyTeamWinner
@@ -1858,7 +1897,7 @@
           referenceType: 'TEAM_CHALLENGE',
           referenceId: `race_${Date.now()}`
         });
-        if (res.success) {
+        if (res?.success) {
           document.getElementById('user-balance-display').textContent = res.newBalance;
           addCombatLog(`🎉 +${CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE} Platform Credits deposited!`);
         }
@@ -1872,9 +1911,9 @@
             referenceType: 'TEAM_CHALLENGE',
             referenceId: `race_win_${Date.now()}`
           });
-          if (rrRes.success) {
+          if (rrRes?.success) {
             document.getElementById('user-rr-display').textContent = `${rrRes.newRR} RR`;
-            addCombatLog(`🏆 +${rrReward} Competitive RR awarded! (${rrRes.newRR} RR &bull; ${rrRes.newRank.fullName})`);
+            addCombatLog(`🏆 +${rrReward} Competitive RR awarded! (${rrRes.newRR} RR • ${rrRes.newRank?.fullName || 'Ranked'})`);
           }
         }
 
@@ -1916,7 +1955,7 @@
             referenceType: 'TEAM_CHALLENGE',
             referenceId: `race_loss_${Date.now()}`
           });
-          if (lossRes.success) {
+          if (lossRes?.success) {
             document.getElementById('user-rr-display').textContent = `${lossRes.newRR} RR`;
             if (lossRes.protectionUsed) {
               addCombatLog(`🛡️ Rank Protection Buffer activated! Demotion absorbed.`);
@@ -1931,7 +1970,7 @@
       lucide.createIcons();
     }
 
-    function resetMatch() {
+    function resetMatch(broadcast = true) {
       document.getElementById('podium-modal').classList.replace('flex', 'hidden');
       document.getElementById('btn-start-race').disabled = false;
       document.getElementById('btn-start-race').classList.remove('opacity-50', 'cursor-not-allowed');
@@ -1945,6 +1984,130 @@
       if (window.GyanSetuQuestionEngine) window.GyanSetuQuestionEngine.resetSession();
       loadProblem(0);
       loadQuizQuestion(0);
+
+      if (broadcast && channel) {
+        channel.send({
+          type: 'broadcast',
+          event: 'match-reset',
+          payload: { resetBy: myUser?.fullName || 'Host' }
+        });
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // SQUAD SWITCHING & UI SELECTOR ENGINE
+    // ═══════════════════════════════════════════════════════════════════════
+    function switchMySquad(newTeam) {
+      if (matchRunning) {
+        alert('Match is currently in progress! You cannot switch squads during a live race.');
+        return;
+      }
+      myTeam = newTeam;
+      updateSquadSelectorUI();
+
+      // Update URL parameter without reload
+      const url = new URL(window.location);
+      url.searchParams.set('team', myTeam);
+      window.history.pushState({}, '', url);
+
+      // Re-track presence with updated squad
+      if (channel) {
+        channel.track({
+          id: myUser?.id || `user_${Date.now()}`,
+          name: myUser?.fullName || 'Campus Coder',
+          team: myTeam,
+          avatar: myUser?.profile?.avatar || (myTeam === 'team1' ? '🏎️' : '🚀'),
+          department: myUser?.profile?.department || 'Computer Science',
+          rr: myUser?.profile?.rr || 1000,
+          joinedAt: Date.now()
+        });
+
+        channel.send({
+          type: 'broadcast',
+          event: 'peer-squad-change',
+          payload: {
+            userId: myUser?.id,
+            name: myUser?.fullName || 'Campus Coder',
+            team: myTeam
+          }
+        });
+      }
+
+      addCombatLog(`🔄 You switched to <strong>${TEAMS[myTeam].name}</strong>!`);
+      renderSquadRosters();
+      playSound('boost');
+    }
+
+    function updateSquadSelectorUI() {
+      const isTeam1 = (myTeam === 'team1');
+
+      // Selection Bar buttons
+      const btn1 = document.getElementById('btn-select-team1');
+      const btn2 = document.getElementById('btn-select-team2');
+      const badge1 = document.getElementById('badge-my-team1');
+      const badge2 = document.getElementById('badge-my-team2');
+
+      if (btn1 && btn2) {
+        if (isTeam1) {
+          btn1.className = 'flex items-center gap-1.5 rounded-lg bg-[#B9F044] px-3 py-1.5 text-xs font-extrabold text-[#0B1F17] transition shadow-xs';
+          btn2.className = 'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white transition';
+          if (badge1) badge1.classList.remove('hidden');
+          if (badge2) badge2.classList.add('hidden');
+        } else {
+          btn2.className = 'flex items-center gap-1.5 rounded-lg bg-rose-500 px-3 py-1.5 text-xs font-extrabold text-white transition shadow-xs';
+          btn1.className = 'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white transition';
+          if (badge2) badge2.classList.remove('hidden');
+          if (badge1) badge1.classList.add('hidden');
+        }
+      }
+
+      // Squad Cards visual highlights
+      const card1 = document.getElementById('card-squad-team1');
+      const card2 = document.getElementById('card-squad-team2');
+      if (card1) {
+        card1.className = isTeam1
+          ? 'rounded-2xl border-2 border-[#B9F044] bg-[#B9F044]/5 p-5 relative overflow-hidden flex flex-col justify-between transition-all ring-1 ring-[#B9F044]/30'
+          : 'rounded-2xl border border-white/10 bg-white/5 p-5 relative overflow-hidden flex flex-col justify-between transition-all opacity-85';
+      }
+      if (card2) {
+        card2.className = !isTeam1
+          ? 'rounded-2xl border-2 border-rose-500 bg-rose-500/10 p-5 relative overflow-hidden flex flex-col justify-between transition-all ring-1 ring-rose-500/30'
+          : 'rounded-2xl border border-white/10 bg-white/5 p-5 relative overflow-hidden flex flex-col justify-between transition-all opacity-85';
+      }
+
+      // Squad 1 Role Badge & Switch Button
+      const role1 = document.getElementById('team1-role-badge') || document.getElementById('squad1-role-badge');
+      const switch1 = document.getElementById('btn-join-team1') || document.getElementById('team1-switch-btn');
+      if (role1) {
+        role1.textContent = isTeam1 ? 'YOUR SQUAD ⭐' : 'OPPONENTS ⚔️';
+        role1.className = isTeam1 
+          ? 'rounded-full bg-[#B9F044] px-2 py-0.5 text-[9px] font-black text-[#0B1F17]'
+          : 'rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-bold text-slate-400';
+      }
+      if (switch1) {
+        if (isTeam1) {
+          switch1.classList.add('hidden');
+        } else {
+          switch1.classList.remove('hidden');
+        }
+      }
+
+      // Squad 2 Role Badge & Switch Button
+      const role2 = document.getElementById('team2-role-badge') || document.getElementById('squad2-role-badge');
+      const switch2 = document.getElementById('btn-join-team2') || document.getElementById('team2-switch-btn');
+      if (role2) {
+        role2.textContent = !isTeam1 ? 'YOUR SQUAD ⭐' : 'RIVALS ⚔️';
+        role2.className = !isTeam1
+          ? 'rounded-full bg-rose-500 px-2 py-0.5 text-[9px] font-black text-white'
+          : 'rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 px-2 py-0.5 text-[9px] font-black';
+      }
+      if (switch2) {
+        if (!isTeam1) {
+          switch2.classList.add('hidden');
+        } else {
+          switch2.classList.remove('hidden');
+        }
+      }
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -1952,9 +2115,51 @@
     // ═══════════════════════════════════════════════════════════════════════
     let targetInviteSquad = 'team1';
 
+    async function loadCampusPeersForArena() {
+      try {
+        let users = [];
+        if (window.GyanSetuAuth?.getAllRegisteredUsers) {
+          users = await window.GyanSetuAuth.getAllRegisteredUsers();
+        }
+
+        const myId = myUser?.id;
+        const myEmail = myUser?.email?.toLowerCase();
+
+        allCampusRegisteredPeers = (users || []).filter(u => {
+          if (myId && u.id === myId) return false;
+          if (myEmail && u.email && u.email.toLowerCase() === myEmail) return false;
+          return true;
+        }).map(u => ({
+          id: u.id,
+          name: u.full_name || (u.email ? u.email.split('@')[0] : 'Campus Peer'),
+          dept: u.department || 'Computer Science',
+          college: u.college || 'Graphic Era Hill University',
+          rr: u.rr || 1000,
+          tier: (typeof getRankTier === 'function') ? getRankTier(u.rr || 1000).name : 'Silver',
+          avatar: (u.full_name && u.full_name.charCodeAt(0) % 2 === 0) ? '👨‍💻' : '👩‍💻'
+        }));
+
+        if (allCampusRegisteredPeers.length === 0) {
+          allCampusRegisteredPeers = [
+            { id: 'peer_rohan', name: 'Rohan Sharma', dept: 'B.Tech CSE - 3rd Year', college: 'Graphic Era Hill University', rr: 1240, tier: 'Gold', avatar: '👨‍💻' },
+            { id: 'peer_priya', name: 'Priya Verma', dept: 'B.Tech AI/ML - 2nd Year', college: 'Graphic Era Hill University', rr: 1380, tier: 'Platinum', avatar: '👩‍💻' },
+            { id: 'peer_vikram', name: 'Vikram Malhotra', dept: 'MCA - 1st Year', college: 'Graphic Era Hill University', rr: 1110, tier: 'Silver', avatar: '👨‍💻' },
+            { id: 'peer_ananya', name: 'Ananya Joshi', dept: 'B.Tech CSE - 4th Year', college: 'Graphic Era Hill University', rr: 1490, tier: 'Diamond', avatar: '👩‍💻' }
+          ];
+        }
+      } catch (err) {
+        console.warn('Could not load campus peers directory:', err);
+      }
+    }
+
     function openPeerInviteModal(squadKey = 'team1') {
       targetInviteSquad = squadKey;
-      renderOnlinePeers(CAMPUS_ONLINE_PEERS);
+      const squadLabel = (squadKey === 'team1') ? TEAMS.team1.name : TEAMS.team2.name;
+      const modalSub = document.getElementById('peer-invite-modal-desc');
+      if (modalSub) {
+        modalSub.textContent = `Invite verified students from your campus into ${squadLabel}.`;
+      }
+      renderOnlinePeers(allCampusRegisteredPeers);
       document.getElementById('peer-invite-modal').classList.replace('hidden', 'flex');
       lucide.createIcons();
     }
@@ -1965,15 +2170,26 @@
 
     function renderOnlinePeers(peers) {
       const container = document.getElementById('online-peers-list');
+      if (!container) return;
+
+      if (!peers || peers.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-slate-400 text-xs">
+            No campus peers matching this search. Share your Room Link directly with teammates or rivals!
+          </div>
+        `;
+        return;
+      }
+
       container.innerHTML = peers.map(p => `
         <div class="rounded-2xl border border-white/10 bg-white/5 p-3 flex items-center justify-between transition hover:border-[#B9F044]/40">
           <div class="flex items-center gap-3">
             <span class="text-2xl">${p.avatar}</span>
             <div>
               <div class="flex items-center gap-1.5">
-                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <p class="text-xs font-bold text-white">${p.name}</p>
-                <span class="rounded bg-white/10 px-1.5 py-0.2 text-[9px] font-mono text-slate-300">${p.tier}</span>
+                <span class="rounded bg-white/10 px-1.5 py-0.2 text-[9px] font-mono text-slate-300">${p.tier} &bull; ${p.rr} RR</span>
               </div>
               <p class="text-[10px] text-slate-400 mt-0.5">${p.dept}</p>
             </div>
@@ -1981,10 +2197,13 @@
 
           <div class="flex items-center gap-2">
             <button onclick="addPeerToSquad('team1', '${p.name}')" class="rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/15 px-2.5 py-1.5 text-[10px] font-extrabold text-[#B9F044] hover:bg-[#B9F044] hover:text-[#0B1F17] transition">
-              🤝 To Squad
+              🤝 To Alpha
             </button>
             <button onclick="addPeerToSquad('team2', '${p.name}')" class="rounded-xl border border-rose-500/40 bg-rose-500/15 px-2.5 py-1.5 text-[10px] font-extrabold text-rose-300 hover:bg-rose-500 hover:text-white transition">
-              ⚔️ As Rival
+              ⚔️ To Rivals
+            </button>
+            <button onclick="copyPersonalInviteLink('${p.name}')" title="Copy 1-click personal invite link" class="rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[10px] font-bold text-slate-300 hover:text-white hover:border-white/30 transition">
+              📋 Link
             </button>
           </div>
         </div>
@@ -1993,7 +2212,7 @@
 
     function filterPeerDirectory() {
       const q = document.getElementById('input-search-peer').value.toLowerCase().trim();
-      const filtered = CAMPUS_ONLINE_PEERS.filter(p => 
+      const filtered = allCampusRegisteredPeers.filter(p => 
         p.name.toLowerCase().includes(q) || p.dept.toLowerCase().includes(q) || p.tier.toLowerCase().includes(q)
       );
       renderOnlinePeers(filtered);
@@ -2026,25 +2245,29 @@
     function renderSquadRosters() {
       // Squad 1
       const list1 = document.getElementById('team1-members-list');
-      list1.innerHTML = TEAMS.team1.members.map(m => `
-        <span class="inline-flex items-center gap-1.5 rounded-lg border border-[#B9F044]/30 bg-[#0B2A1E] px-2.5 py-1 text-xs font-bold text-white">
-          <span class="h-2 w-2 rounded-full bg-[#B9F044]"></span>
-          <span>${m}</span>
-        </span>
-      `).join('');
+      if (list1) {
+        list1.innerHTML = TEAMS.team1.members.map(m => `
+          <span class="inline-flex items-center gap-1.5 rounded-lg border border-[#B9F044]/30 bg-[#0B2A1E] px-2.5 py-1 text-xs font-bold text-white shadow-sm">
+            <span class="h-2 w-2 rounded-full bg-[#B9F044]"></span>
+            <span>${m}</span>
+          </span>
+        `).join('');
+      }
 
       // Squad 2
       const list2 = document.getElementById('team2-members-list');
-      list2.innerHTML = TEAMS.team2.members.map(m => `
-        <span class="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-950/30 px-2.5 py-1 text-xs font-bold text-rose-200">
-          <span class="h-2 w-2 rounded-full bg-rose-400"></span>
-          <span>${m}</span>
-        </span>
-      `).join('');
+      if (list2) {
+        list2.innerHTML = TEAMS.team2.members.map(m => `
+          <span class="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-950/30 px-2.5 py-1 text-xs font-bold text-rose-200 shadow-sm">
+            <span class="h-2 w-2 rounded-full bg-rose-400"></span>
+            <span>${m}</span>
+          </span>
+        `).join('');
+      }
     }
 
     // ═══════════════════════════════════════════════════════════════════════
-    // ROOM & REALTIME BROADCAST SYNCHRONIZATION
+    // ROOM & REALTIME BROADCAST + PRESENCE SYNCHRONIZATION
     // ═══════════════════════════════════════════════════════════════════════
     function generateRandomRoom() {
       const slugs = ['turbo', 'algo', 'sprint', 'nitro', 'dsa', 'hyper', 'apex', 'byte'];
@@ -2067,11 +2290,11 @@
       window.history.pushState({}, '', url);
 
       connectRealtimeRoom();
-      addCombatLog(`🌐 Switched to Room: ${currentRoom}. Share link to invite opponents!`);
+      addCombatLog(`🌐 Switched to Room: ${currentRoom}. Share link to invite peers!`);
     }
 
     function copyRoomLink() {
-      const link = `${window.location.origin}${window.location.pathname}?room=${currentRoom}`;
+      const link = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}`;
       navigator.clipboard.writeText(link).then(() => {
         alert(`Room invite link copied to clipboard!\n\n${link}`);
       }).catch(() => {
@@ -2079,16 +2302,120 @@
       });
     }
 
+    function copyTeamInviteLink(teamKey) {
+      const link = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&team=${encodeURIComponent(teamKey)}`;
+      const teamLabel = (teamKey === 'team1') ? TEAMS.team1.name : TEAMS.team2.name;
+      navigator.clipboard.writeText(link).then(() => {
+        alert(`Invite link for ${teamLabel} copied!\n\nSend this link to a teammate or rival to join directly into ${teamLabel}:\n\n${link}`);
+      }).catch(() => {
+        prompt(`Copy invite link for ${teamLabel}:`, link);
+      });
+    }
+
+    function copyPersonalInviteLink(peerName) {
+      const link = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&team=${encodeURIComponent(targetInviteSquad)}&peer=${encodeURIComponent(peerName)}`;
+      navigator.clipboard.writeText(link).then(() => {
+        alert(`Personal 1-click invite link for ${peerName} copied!\n\n${link}`);
+      }).catch(() => {
+        prompt(`Personal invite link for ${peerName}:`, link);
+      });
+    }
+
+    function syncConnectedPeers(presenceState) {
+      const peers = [];
+      Object.values(presenceState || {}).forEach(arr => {
+        if (Array.isArray(arr)) {
+          arr.forEach(p => peers.push(p));
+        }
+      });
+
+      liveRoomPeers = peers;
+
+      // Update total peer count badge
+      const countBadge = document.getElementById('connected-peers-label') || document.getElementById('active-peers-count');
+      if (countBadge) {
+        const count = peers.length;
+        countBadge.textContent = `${count} Active ${count === 1 ? 'Peer' : 'Peers'} Connected`;
+      }
+
+      // Partition peers by team
+      const t1 = peers.filter(p => p.team === 'team1');
+      const t2 = peers.filter(p => p.team === 'team2');
+
+      const count1 = document.getElementById('team1-live-count');
+      if (count1) count1.textContent = `${t1.length} Online`;
+
+      const count2 = document.getElementById('team2-live-count');
+      if (count2) count2.textContent = `${t2.length} Online`;
+
+      // Update squad rosters
+      TEAMS.team1.members = t1.map(p => {
+        const isMe = (p.id === myUser?.id);
+        return isMe ? `${p.name} (You 👑)` : p.name;
+      });
+      if (TEAMS.team1.members.length === 0 && myTeam === 'team1') {
+        TEAMS.team1.members.push(`${myUser?.fullName || 'You'} (You 👑)`);
+      }
+
+      TEAMS.team2.members = t2.map(p => {
+        const isMe = (p.id === myUser?.id);
+        return isMe ? `${p.name} (You 👑)` : p.name;
+      });
+      if (TEAMS.team2.members.length === 0 && myTeam === 'team2') {
+        TEAMS.team2.members.push(`${myUser?.fullName || 'You'} (You 👑)`);
+      } else if (TEAMS.team2.members.length === 0) {
+        // If no human peers on Team 2, display AI Rival Bot placeholder
+        TEAMS.team2.members.push('AI Rival Bot (Adaptive)');
+      }
+
+      renderSquadRosters();
+    }
+
     function connectRealtimeRoom() {
       if (channel) sb.removeChannel(channel);
 
-      channel = sb.channel(`arena-room-${currentRoom}`, { config: { broadcast: { self: false } } });
+      const presenceKey = myUser?.id || `anon_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
+      channel = sb.channel(`arena-room-${currentRoom}`, {
+        config: {
+          broadcast: { self: false },
+          presence: { key: presenceKey }
+        }
+      });
+
+      // 1. Presence Listeners (Live Connected Peers)
+      channel.on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        syncConnectedPeers(state);
+      });
+
+      channel.on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        newPresences.forEach(p => {
+          if (p.id !== myUser?.id) {
+            addCombatLog(`👋 <strong>${p.name || 'Campus Peer'}</strong> joined ${p.team === 'team2' ? 'Rival Titans' : 'Team Alpha'}!`);
+            playSound('correct');
+          }
+        });
+      });
+
+      channel.on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+        leftPresences.forEach(p => {
+          addCombatLog(`🚶 <strong>${p.name || 'Campus Peer'}</strong> left the room.`);
+        });
+      });
+
+      // 2. Broadcast Listeners (Points, Squad changes, Match events)
       channel.on('broadcast', { event: 'team-point-update' }, ({ payload }) => {
         if (!payload?.team) return;
         TEAMS[payload.team].pts = payload.pts;
         updateCarPosition(payload.team, payload.delta > 0 ? 'boost' : 'spin');
-        addCombatLog(`🌐 Peer Update: ${TEAMS[payload.team].name} ${payload.delta > 0 ? '+' : ''}${payload.delta} pts! (${payload.reason || ''})`);
+        const sender = payload.senderName || TEAMS[payload.team].name;
+        addCombatLog(`🌐 <strong>${sender}</strong>: ${payload.delta > 0 ? '+' : ''}${payload.delta} pts! (${payload.reason || ''})`);
+      });
+
+      channel.on('broadcast', { event: 'peer-squad-change' }, ({ payload }) => {
+        if (!payload) return;
+        addCombatLog(`🔄 <strong>${payload.name || 'Peer'}</strong> switched to ${TEAMS[payload.team]?.name || payload.team}!`);
       });
 
       channel.on('broadcast', { event: 'peer-squad-join' }, ({ payload }) => {
@@ -2096,8 +2423,28 @@
         if (!TEAMS[payload.squad].members.includes(payload.peer)) {
           TEAMS[payload.squad].members.push(payload.peer);
           renderSquadRosters();
-          addCombatLog(`👋 ${payload.peer} joined ${TEAMS[payload.squad].name} via live link!`);
+          addCombatLog(`👋 <strong>${payload.peer}</strong> joined ${TEAMS[payload.squad].name} via live link!`);
         }
+      });
+
+      channel.on('broadcast', { event: 'match-start' }, ({ payload }) => {
+        if (!matchRunning) {
+          if (payload?.team1Name) TEAMS.team1.name = payload.team1Name;
+          if (payload?.team2Name) TEAMS.team2.name = payload.team2Name;
+          addCombatLog(`🏁 Match started by <strong>${payload?.startedBy || 'Room Host'}</strong>!`);
+          startRaceMatch(false);
+        }
+      });
+
+      channel.on('broadcast', { event: 'match-finish' }, ({ payload }) => {
+        if (matchRunning) {
+          finishMatch(payload?.winnerKey || 'team1', false);
+        }
+      });
+
+      channel.on('broadcast', { event: 'match-reset' }, ({ payload }) => {
+        addCombatLog(`🔄 Match reset by <strong>${payload?.resetBy || 'Host'}</strong>. Starting fresh race!`);
+        resetMatch(false);
       });
 
       channel.on('broadcast', { event: 'squad-chat' }, ({ payload }) => {
@@ -2109,7 +2456,21 @@
         applyRemoteTopic(payload.topic);
       });
 
-      channel.subscribe();
+      // Subscribe and track user presence
+      channel.subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            id: myUser?.id || presenceKey,
+            name: myUser?.fullName || 'Campus Student',
+            team: myTeam,
+            avatar: myUser?.profile?.avatar || (myTeam === 'team1' ? '🏎️' : '🚀'),
+            department: myUser?.profile?.department || 'Computer Science',
+            rr: myUser?.profile?.rr || 1000,
+            joinedAt: Date.now()
+          });
+          addCombatLog(`🟢 Connected to Arena Room: <strong>${currentRoom}</strong>!`);
+        }
+      });
     }
 
     function sendSquadMsg() {
@@ -2117,7 +2478,7 @@
       const msg = input.value.trim();
       if (!msg) return;
 
-      const sender = myUser?.email ? myUser.email.split('@')[0] : 'You';
+      const sender = myUser?.fullName || (myUser?.email ? myUser.email.split('@')[0] : 'You');
       addCombatLog(`💬 <strong>${sender}:</strong> ${msg}`);
 
       channel?.send({

@@ -95,8 +95,6 @@
       card.className = 'peer-card peer-card-enter shadow-card';
       card.style.animationDelay = `${i * 0.04}s`;
 
-      const stars = '★'.repeat(Math.floor(peer.rating)) + (peer.rating % 1 >= 0.5 ? '½' : '');
-
       card.innerHTML = `
         <div class="flex items-start gap-3">
           <div class="relative shrink-0">
@@ -126,15 +124,21 @@
         </div>
 
         <div class="mt-3.5 flex items-center justify-between border-t border-slate-100 pt-3">
-          <div class="flex items-center gap-3 text-[11px] text-slate-500">
-            <span class="flex items-center gap-1 text-amber-500 font-bold">${stars} <span class="text-slate-400 font-normal">${peer.rating}</span></span>
-            <span>${peer.sessions} sessions</span>
+          <div class="flex items-center gap-2 text-[11px] text-slate-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+              <i data-lucide="shield-check" class="h-3 w-3 text-emerald-600"></i> Verified Peer
+            </span>
+            <span class="text-slate-400">&bull;</span>
+            <span class="text-slate-600 font-medium">${peer.department}</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <a href="arena.html?rival=${encodeURIComponent(peer.name)}" class="inline-flex items-center gap-1 rounded-lg border border-[#B9F044]/40 bg-[#B9F044]/15 px-2.5 py-1.5 text-[11px] font-bold text-[#2F6F11] transition hover:bg-[#B9F044] hover:text-[#0B1F17]" title="Challenge this peer to a Code Race in Arena">
+            <button onclick="window.togglePeerConnectionInDirectory('${peer.id}', '${encodeURIComponent(peer.name)}')" class="${window.GyanSetuNetwork?.isConnected(peer.id || peer.name) ? 'rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 px-2.5 py-1.5 text-[11px] font-extrabold hover:bg-emerald-200 transition' : 'rounded-lg bg-[#0B1F17] text-[#B9F044] px-2.5 py-1.5 text-[11px] font-extrabold hover:bg-[#064E3B] transition'}">
+              ${window.GyanSetuNetwork?.isConnected(peer.id || peer.name) ? '✓ Connected' : '🤝 Connect'}
+            </button>
+            <button onclick="window.GyanSetuNetwork?.inviteToArena('${encodeURIComponent(peer.name)}')" class="inline-flex items-center gap-1 rounded-lg border border-[#B9F044]/40 bg-[#B9F044]/15 px-2 py-1.5 text-[11px] font-bold text-[#2F6F11] transition hover:bg-[#B9F044] hover:text-[#0B1F17]" title="1-Click Direct Arena Invite">
               🏎️ Race
-            </a>
-            <a href="session.html" class="inline-flex items-center gap-1.5 rounded-lg bg-[#0B1F17] px-3 py-1.5 text-[11px] font-bold text-[#B9F044] transition hover:bg-[#064E3B]">
+            </button>
+            <a href="session.html" class="inline-flex items-center gap-1 rounded-lg bg-[#0B1F17] px-2.5 py-1.5 text-[11px] font-bold text-[#B9F044] transition hover:bg-[#064E3B]">
               <i data-lucide="calendar-plus" class="h-3 w-3"></i> Book
             </a>
           </div>
@@ -142,6 +146,14 @@
       `;
       grid.appendChild(card);
     });
+
+    window.togglePeerConnectionInDirectory = function(id, encodedName) {
+      const name = decodeURIComponent(encodedName);
+      if (window.GyanSetuNetwork) {
+        window.GyanSetuNetwork.toggleConnect({ id, name });
+        applyFilters();
+      }
+    };
 
     // Re-render lucide icons inside newly created cards
     if (window.lucide) lucide.createIcons();
@@ -176,13 +188,13 @@
       return true;
     });
 
-    // Sort: online first, then by rating descending
+    // Sort: online first, then by name
     filtered.sort((a, b) => {
       const order = { online: 0, busy: 1, offline: 2 };
       if (order[a.availability] !== order[b.availability]) {
         return order[a.availability] - order[b.availability];
       }
-      return b.rating - a.rating;
+      return a.name.localeCompare(b.name);
     });
 
     renderPeers(filtered);
