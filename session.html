@@ -19,6 +19,12 @@
       padding: 0.625rem 1rem; font-size: 0.875rem; font-family: inherit;
       outline: none; transition: border-color 0.15s, box-shadow 0.15s;
     }
+    @media (max-width: 640px) {
+      .input-field {
+        font-size: 16px !important; /* Prevents auto-zoom on mobile iOS */
+        padding: 0.6rem 0.85rem;
+      }
+    }
     .input-field:focus { border-color: #B9F044; box-shadow: 0 0 0 3px rgba(185,240,68,0.2); }
     .input-field::placeholder { color: #94a3b8; }
     .label-text {
@@ -39,9 +45,16 @@
     }
     .request-card { transition: box-shadow 0.15s, border-color 0.15s; }
     .request-card:hover { box-shadow: 0 6px 20px -6px rgba(11,31,23,0.14); border-color: #B9F044; }
-    .quiz-option:has(input[type=radio]:checked) {
-      background: rgba(185,240,68,0.12); border-color: #B9F044; border-radius: 0.5rem;
+    .quiz-option {
+      transition: all 0.15s ease;
+      touch-action: manipulation;
+      min-height: 44px;
     }
+    .quiz-option:has(input[type=radio]:checked) {
+      background: rgba(185,240,68,0.14); border-color: #B9F044; border-radius: 0.75rem;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 
@@ -50,55 +63,55 @@
   <!-- ============================================================
        TOP NAV
        ============================================================ -->
-  <header class="sticky top-0 z-30 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-3 shadow-sm sm:px-8">
-    <a href="dashboard.html" class="flex items-center gap-2 text-sm font-bold text-[#2F6F11] hover:opacity-80 transition">
+  <header class="sticky top-0 z-30 flex items-center justify-between border-b border-slate-100 bg-white/95 backdrop-blur-sm px-3.5 sm:px-8 py-2.5 sm:py-3 shadow-xs">
+    <a href="dashboard.html" class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#2F6F11] hover:opacity-80 transition py-1">
       <i data-lucide="arrow-left" class="h-4 w-4"></i>
       <span class="hidden sm:inline">Dashboard</span>
     </a>
 
     <a href="index.html" class="flex items-center gap-2">
-      <img src="images/gyansetu-logo.jpg" alt="GyanSetu" class="h-8 w-auto rounded-lg object-contain shadow-xs border border-emerald-900/20" />
+      <img src="images/gyansetu-logo.jpg" alt="GyanSetu" class="h-7 sm:h-8 w-auto rounded-lg object-contain shadow-xs border border-emerald-900/20" />
     </a>
 
-    <div id="credit-chip" class="flex items-center gap-1.5 rounded-full border border-[#B9F044]/40 bg-[#B9F044]/10 px-3 py-1 text-xs font-extrabold text-[#2F6F11]">
+    <div id="credit-chip" class="flex items-center gap-1 rounded-full border border-[#B9F044]/40 bg-[#B9F044]/10 px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-extrabold text-[#2F6F11]">
       <i data-lucide="coins" class="h-3.5 w-3.5"></i>
-      <span id="credit-display">&mdash;</span>&nbsp;credits
+      <span id="credit-display">&mdash;</span><span class="hidden xs:inline sm:inline">&nbsp;credits</span>
     </div>
   </header>
 
   <!-- ============================================================
        IDENTITY OVERLAY
        ============================================================ -->
-  <div id="identity-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm px-4">
-    <div class="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-8 shadow-2xl">
+  <div id="identity-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm px-3 sm:px-4">
+    <div class="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 shadow-2xl">
 
-      <div class="mb-5 flex items-center justify-center">
-        <img src="images/gyansetu-logo.jpg" alt="GyanSetu" class="h-10 w-auto rounded-xl object-contain shadow-sm border border-emerald-900/20" />
+      <div class="mb-4 sm:mb-5 flex items-center justify-center">
+        <img src="images/gyansetu-logo.jpg" alt="GyanSetu" class="h-9 sm:h-10 w-auto rounded-xl object-contain shadow-sm border border-emerald-900/20" />
       </div>
 
-      <h2 class="text-xl font-extrabold text-[#0B1F17] mb-1">Welcome to Sessions</h2>
-      <p class="mb-5 text-xs leading-5 text-slate-500">Enter your name and choose your role to continue to the session board.</p>
+      <h2 class="text-lg sm:text-xl font-extrabold text-[#0B1F17] mb-1">Welcome to Sessions</h2>
+      <p class="mb-4 sm:mb-5 text-xs leading-5 text-slate-500">Enter your name and choose your role to continue to the session board.</p>
 
       <label class="block mb-3">
         <span class="label-text">Your Name</span>
         <input id="input-name" type="text" placeholder="Enter your name" maxlength="20" class="input-field" />
       </label>
 
-      <label class="block mb-5">
+      <label class="block mb-4 sm:mb-5">
         <span class="label-text">I am a&hellip;</span>
         <div class="mt-2 grid grid-cols-2 gap-2">
-          <button data-role="learner" class="role-btn selected flex flex-col items-center gap-1.5 rounded-xl border-2 border-[#B9F044] bg-[#B9F044]/10 py-3 text-sm font-extrabold text-[#2F6F11]">
-            <i data-lucide="graduation-cap" class="h-5 w-5"></i>
+          <button data-role="learner" class="role-btn selected flex flex-col items-center gap-1.5 rounded-xl border-2 border-[#B9F044] bg-[#B9F044]/10 py-2.5 sm:py-3 text-xs sm:text-sm font-extrabold text-[#2F6F11]">
+            <i data-lucide="graduation-cap" class="h-4 w-4 sm:h-5 sm:w-5"></i>
             Learner
           </button>
-          <button data-role="mentor" class="role-btn flex flex-col items-center gap-1.5 rounded-xl border-2 border-slate-200 bg-white py-3 text-sm font-extrabold text-slate-500">
-            <i data-lucide="star" class="h-5 w-5"></i>
+          <button data-role="mentor" class="role-btn flex flex-col items-center gap-1.5 rounded-xl border-2 border-slate-200 bg-white py-2.5 sm:py-3 text-xs sm:text-sm font-extrabold text-slate-500">
+            <i data-lucide="star" class="h-4 w-4 sm:h-5 sm:w-5"></i>
             Mentor
           </button>
         </div>
       </label>
 
-      <button id="identity-btn" class="btn-pill w-full rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-3 text-sm font-extrabold text-[#0B1F17] transition hover:brightness-110 active:scale-95">
+      <button id="identity-btn" class="btn-pill w-full rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-3 text-xs sm:text-sm font-extrabold text-[#0B1F17] transition hover:brightness-110 active:scale-95">
         Continue &rarr;
       </button>
       <p id="identity-error" class="mt-2 hidden text-center text-xs text-red-500">Please enter your name to continue.</p>
@@ -108,7 +121,7 @@
   <!-- ============================================================
        MAIN CONTENT
        ============================================================ -->
-  <main class="mx-auto max-w-2xl px-4 py-8" id="main-content" style="display:none">
+  <main class="mx-auto max-w-3xl lg:max-w-4xl px-3 sm:px-6 py-4 sm:py-8 pb-16 sm:pb-12" id="main-content" style="display:none">
 
     <!-- ======================================================
          LEARNER VIEW
@@ -118,31 +131,70 @@
       <!-- Step 1: Book a session -->
       <div id="step-book" class="session-step">
         <div class="mb-6">
-          <h1 class="text-xl font-extrabold text-[#0B1F17]">Book a Session</h1>
-          <p class="mt-1 text-xs text-slate-500">Tell your mentor what you need help with. Credits are deducted only after the session is marked complete.</p>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#B9F044]/20 border border-[#B9F044]/40 px-3 py-1 text-xs font-extrabold text-[#2F6F11]">
+              <i data-lucide="timer" class="h-3.5 w-3.5"></i> 15-Min Focused Live Sessions
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-800">
+              <i data-lucide="shield-check" class="h-3.5 w-3.5 text-emerald-600"></i> Protected Escrow
+            </span>
+          </div>
+          <h1 class="text-2xl font-black text-[#0B1F17]">Book a 1-on-1 Peer Session</h1>
+          <p class="mt-1 text-xs sm:text-sm text-slate-500">Connect with a peer mentor for a 15-minute focused sprint. Credits move <strong class="text-emerald-700 font-extrabold">only after</strong> the session is marked complete.</p>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
           <label class="block">
             <span class="label-text">Mentor&rsquo;s Name or ID</span>
-            <input id="mentor-name-input" type="text" placeholder="e.g. username or room ID" class="input-field" />
+            <input id="mentor-name-input" type="text" placeholder="e.g. Priya Sharma, Aarav Patel or Room ID" class="input-field" />
           </label>
+
           <label class="block">
             <span class="label-text">Topic / Subject</span>
-            <input id="topic-input" type="text" placeholder="e.g. Binary Trees in DSA" class="input-field" />
+            <input id="topic-input" type="text" placeholder="e.g. Binary Trees & Recursion in DSA" class="input-field" />
+            <!-- Quick topic chips -->
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <span class="text-[11px] font-bold text-slate-400 self-center mr-1">Quick Picks:</span>
+              <button type="button" class="quick-topic-chip rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">Binary Trees</button>
+              <button type="button" class="quick-topic-chip rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">React State &amp; Hooks</button>
+              <button type="button" class="quick-topic-chip rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">System Design Basics</button>
+              <button type="button" class="quick-topic-chip rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">SQL Joins &amp; Indexes</button>
+            </div>
           </label>
+
           <label class="block">
-            <span class="label-text">Credits to offer</span>
-            <input id="credits-input" type="number" min="1" max="50" placeholder="Enter credits to offer" class="input-field" />
+            <div class="flex items-center justify-between mb-1">
+              <span class="label-text mb-0">Credits to offer (Held in Escrow)</span>
+              <span class="text-[11px] text-emerald-700 font-bold">Safe Escrow Guarantee 🔒</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <input id="credits-input" type="number" min="5" max="100" value="15" placeholder="Enter credits" class="input-field flex-1" />
+              <div class="flex gap-1.5 shrink-0">
+                <button type="button" class="credit-preset-btn rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition" data-val="10">10</button>
+                <button type="button" class="credit-preset-btn rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-3 py-2 text-xs font-extrabold text-[#2F6F11] transition" data-val="15">15 (Std)</button>
+                <button type="button" class="credit-preset-btn rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition" data-val="25">25</button>
+              </div>
+            </div>
+            <p class="mt-1 text-[11px] text-slate-400">Standard 15-minute live sprint is typically 15 credits.</p>
           </label>
+
           <label class="block">
-            <span class="label-text">Note (optional)</span>
-            <textarea id="note-input" rows="2" placeholder="Anything specific you want covered&hellip;" class="input-field resize-none"></textarea>
+            <span class="label-text">Note / What you want to solve (optional)</span>
+            <textarea id="note-input" rows="2" placeholder="e.g. Need to understand lowest common ancestor problem with visual explanation..." class="input-field resize-none"></textarea>
           </label>
-          <button id="request-btn" class="btn-pill w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">
-            Request Session &rarr;
+
+          <div class="rounded-2xl border border-emerald-900/10 bg-[#F4FBEA] p-3.5 flex items-start gap-2.5">
+            <i data-lucide="shield-check" class="h-4 w-4 text-[#2F6F11] shrink-0 mt-0.5"></i>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              <strong class="text-[#0B1F17]">Zero-Risk Escrow:</strong> Your credits remain safely locked until the mentor delivers the 15-minute session and you confirm completion.
+            </p>
+          </div>
+
+          <button id="request-btn" class="btn-pill w-full rounded-2xl bg-[#0B1F17] py-3.5 text-sm font-black text-[#B9F044] shadow-md transition hover:bg-[#14532D] hover:shadow-lg active:scale-[0.99] flex items-center justify-center gap-2">
+            <span>Request 15-Min Live Session</span>
+            <i data-lucide="arrow-right" class="h-4 w-4"></i>
           </button>
-          <p id="request-error" class="hidden text-center text-xs text-red-500"></p>
+          <p id="request-error" class="hidden text-center text-xs font-bold text-rose-500"></p>
         </div>
       </div>
 
@@ -160,35 +212,141 @@
       </div>
 
       <!-- Step 3: Session active -->
-      <div id="step-active" class="session-step hidden">
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div class="flex items-center gap-3 mb-4">
-            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9F044]/20 text-[#2F6F11]">
-              <i data-lucide="zap" class="h-5 w-5"></i>
-            </span>
-            <div>
-              <p class="text-sm font-extrabold text-[#0B1F17]">Session in Progress</p>
-              <p class="text-xs text-slate-500">Mentor: <span id="active-mentor-name" class="font-bold text-slate-700"></span></p>
+      <div id="step-active" class="session-step hidden space-y-5">
+
+        <!-- 15-Minute Countdown & Status Header Card -->
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div class="flex items-center gap-3">
+              <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#B9F044]/25 text-[#2F6F11] shadow-inner">
+                <i data-lucide="zap" class="h-6 w-6"></i>
+              </span>
+              <div>
+                <div class="flex items-center gap-2">
+                  <p class="text-base font-black text-[#0B1F17]">15-Min Live Session in Progress</p>
+                  <span class="flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800">
+                    <span class="h-2 w-2 rounded-full bg-emerald-600 animate-pulse"></span> LIVE
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  Mentor: <strong id="active-mentor-name" class="font-bold text-[#0B1F17]"></strong>
+                  &nbsp;&bull;&nbsp;
+                  Topic: <strong id="active-topic" class="font-bold text-[#2F6F11]"></strong>
+                </p>
+              </div>
             </div>
-            <span class="ml-auto flex items-center gap-1.5 rounded-full bg-[#B9F044]/15 px-3 py-1 text-[11px] font-bold text-[#2F6F11]">
-              <span class="live-dot h-1.5 w-1.5 rounded-full bg-[#2F6F11]"></span> Live
-            </span>
-          </div>
-          <p class="text-xs text-slate-500 rounded-xl bg-[#F4FBEA] p-3">
-            Topic: <strong id="active-topic" class="text-[#0B1F17]"></strong>
-          </p>
-          <div class="mt-4 rounded-xl border border-[#B9F044]/30 bg-[#B9F044]/8 p-4">
-            <div class="flex items-center gap-2 mb-1">
-              <i data-lucide="clock" class="h-4 w-4 text-[#2F6F11]"></i>
-              <p class="text-xs font-bold text-[#2F6F11]">Waiting for mentor to send you a verification quiz&hellip;</p>
+
+            <!-- Escrow Badge -->
+            <div class="rounded-xl border border-emerald-900/15 bg-[#F4FBEA] px-3.5 py-2 text-right">
+              <div class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-[#2F6F11]">
+                <i data-lucide="lock" class="h-3 w-3"></i> Escrow Locked
+              </div>
+              <div class="text-xs font-bold text-slate-700">
+                <span id="learner-escrow-amount" class="text-sm font-extrabold text-[#0B1F17]">15</span> credits protected
+              </div>
             </div>
-            <p class="text-[11px] text-slate-500 mt-1 ml-6">Pass the quiz, then your mentor confirms completion. Credits stay protected until that final confirmation.</p>
           </div>
-          <a id="open-collab-btn" href="#" target="_blank"
-            class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#B9F044]/40 bg-[#F4FBEA] py-2.5 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044]/20 transition">
-            <i data-lucide="code-2" class="h-4 w-4"></i> Open Live Collab Room
-          </a>
+
+          <!-- Digital 15:00 Timer Clock Display -->
+          <div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-[#0B1F17] to-slate-900 p-5 text-white shadow-inner">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-[#B9F044] border border-white/10">
+                  <i data-lucide="hourglass" class="h-6 w-6 animate-pulse"></i>
+                </div>
+                <div>
+                  <div class="text-[11px] uppercase tracking-wider font-extrabold text-[#B9F044]">Sprint Timer</div>
+                  <div id="learner-timer-digits" class="font-mono text-3xl sm:text-4xl font-black text-white tracking-widest drop-shadow">15:00</div>
+                </div>
+              </div>
+
+              <div class="text-left sm:text-right">
+                <span id="learner-timer-badge" class="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1 text-xs font-bold text-slate-200">
+                  <i data-lucide="shield-check" class="h-3.5 w-3.5 text-[#B9F044]"></i> Credits Move Only on Completion
+                </span>
+                <p class="text-[11px] text-slate-400 mt-1">Full 15-minute focused sprint with your peer mentor.</p>
+              </div>
+            </div>
+
+            <!-- Timer Progress Bar -->
+            <div class="mt-4">
+              <div class="h-2.5 w-full overflow-hidden rounded-full bg-white/10 p-0.5">
+                <div id="learner-timer-bar" class="h-full rounded-full bg-gradient-to-r from-[#8FD420] via-[#B9F044] to-emerald-400 transition-all duration-1000" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Collab Room CTA -->
+          <div class="mt-4 flex flex-col sm:flex-row items-center gap-3">
+            <a id="open-collab-btn" href="#" target="_blank"
+              class="w-full sm:flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-[#B9F044] bg-[#0B1F17] py-3 text-xs font-black text-[#B9F044] hover:bg-[#14532D] shadow-sm transition active:scale-[0.99]">
+              <i data-lucide="code-2" class="h-4 w-4"></i> Open Live Code &amp; Whiteboard Room &rarr;
+            </a>
+          </div>
         </div>
+
+        <!-- Mentor Study Resources & YouTube Video Hub (Learner View) -->
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm">
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2.5">
+              <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-200">
+                <i data-lucide="youtube" class="h-5 w-5"></i>
+              </span>
+              <div>
+                <h3 class="text-sm font-black text-[#0B1F17]">Mentor's Study Plan &amp; Video Lecture</h3>
+                <p class="text-xs text-slate-500">Live lecture video and key takeaway notes curated by your mentor.</p>
+              </div>
+            </div>
+            <span id="learner-resource-status" class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-600">
+              <i data-lucide="radio" class="h-3 w-3 text-emerald-600"></i> Live Sync
+            </span>
+          </div>
+
+          <!-- YouTube Embed Container -->
+          <div id="learner-video-box" class="hidden mb-4">
+            <div class="relative w-full overflow-hidden rounded-2xl bg-black border border-slate-200 shadow-md" style="padding-top: 56.25%;">
+              <iframe id="learner-youtube-frame" class="absolute inset-0 h-full w-full"
+                src="" title="Mentor YouTube Lecture" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+            </div>
+          </div>
+
+          <!-- Placeholder when mentor hasn't shared video yet -->
+          <div id="learner-video-placeholder" class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-8 text-center mb-4">
+            <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-slate-400 shadow-xs border border-slate-200">
+              <i data-lucide="video" class="h-6 w-6"></i>
+            </div>
+            <p class="text-xs font-bold text-slate-700">Waiting for mentor to share video lecture &amp; plan&hellip;</p>
+            <p class="text-[11px] text-slate-400 mt-1">Once your mentor attaches a YouTube lecture or notes, it will appear here instantly.</p>
+          </div>
+
+          <!-- Notes / Key Takeaways -->
+          <div id="learner-notes-box" class="hidden rounded-2xl border border-[#B9F044]/30 bg-[#F4FBEA] p-4 text-xs text-slate-700 mb-3">
+            <div class="flex items-center gap-1.5 font-extrabold text-[#2F6F11] mb-1.5">
+              <i data-lucide="file-text" class="h-4 w-4"></i> Study Plan &amp; Key Notes
+            </div>
+            <div id="learner-notes-text" class="whitespace-pre-line text-xs font-medium leading-relaxed text-slate-700"></div>
+          </div>
+
+          <!-- Extra resource link (if any) -->
+          <div id="learner-link-box" class="hidden">
+            <a id="learner-resource-link-btn" href="#" target="_blank"
+              class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">
+              <i data-lucide="external-link" class="h-3.5 w-3.5 text-[#2F6F11]"></i>
+              <span id="learner-resource-link-label">Open Reference Materials / Slides</span>
+            </a>
+          </div>
+
+          <!-- Escrow verification reminder -->
+          <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50/70 p-3 flex items-start gap-2.5">
+            <i data-lucide="shield-alert" class="h-4 w-4 text-amber-700 shrink-0 mt-0.5"></i>
+            <p class="text-[11px] text-amber-800 leading-relaxed">
+              <strong>Escrow Guarantee:</strong> Watch the lecture and collaborate. Once the mentor concludes or sends the verification quiz, confirming satisfaction will release the escrow credits.
+            </p>
+          </div>
+        </div>
+
       </div>
 
       <!-- Step 4: Quiz from mentor -->
@@ -303,60 +461,216 @@
       </div>
 
       <!-- Active session panel for mentor -->
-      <div id="mentor-active-panel" class="hidden mt-6">
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div class="flex items-center gap-3 mb-4">
-            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9F044]/20 text-[#2F6F11]">
-              <i data-lucide="users" class="h-5 w-5"></i>
+      <div id="mentor-active-panel" class="hidden mt-6 space-y-5">
+
+        <!-- 15-Minute Timer & Session Status (Mentor) -->
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div class="flex items-center gap-3">
+              <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#B9F044]/25 text-[#2F6F11] shadow-inner">
+                <i data-lucide="users" class="h-6 w-6"></i>
+              </span>
+              <div>
+                <div class="flex items-center gap-2">
+                  <p class="text-base font-black text-[#0B1F17]">Active 15-Min Mentorship Session</p>
+                  <span class="flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800">
+                    <span class="h-2 w-2 rounded-full bg-emerald-600 animate-pulse"></span> LIVE
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  Learner: <strong id="active-learner-name" class="font-bold text-[#0B1F17]"></strong>
+                  &nbsp;&bull;&nbsp;
+                  Topic: <strong id="mentor-active-topic" class="font-bold text-[#2F6F11]"></strong>
+                </p>
+              </div>
+            </div>
+
+            <!-- Escrow Guarantee Badge -->
+            <div class="rounded-xl border border-emerald-900/15 bg-[#F4FBEA] px-3.5 py-2 text-right">
+              <div class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-[#2F6F11]">
+                <i data-lucide="shield-check" class="h-3 w-3"></i> Escrow Guaranteed
+              </div>
+              <div class="text-xs font-bold text-slate-700">
+                <span id="mentor-active-credits" class="text-sm font-extrabold text-[#0B1F17]">15</span> credits to be earned
+              </div>
+            </div>
+          </div>
+
+          <!-- Digital 15:00 Timer Clock Display (Mentor) -->
+          <div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-[#0B1F17] to-slate-900 p-5 text-white shadow-inner">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-[#B9F044] border border-white/10">
+                  <i data-lucide="hourglass" class="h-6 w-6 animate-pulse"></i>
+                </div>
+                <div>
+                  <div class="text-[11px] uppercase tracking-wider font-extrabold text-[#B9F044]">Sprint Timer</div>
+                  <div id="mentor-timer-digits" class="font-mono text-3xl sm:text-4xl font-black text-white tracking-widest drop-shadow">15:00</div>
+                </div>
+              </div>
+
+              <!-- Mentor Timer Actions -->
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" id="btn-extend-timer" class="rounded-xl border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/20 transition flex items-center gap-1.5">
+                  <i data-lucide="plus" class="h-3.5 w-3.5 text-[#B9F044]"></i> +5 Mins
+                </button>
+                <button type="button" id="btn-conclude-early" class="rounded-xl border border-emerald-500/40 bg-emerald-500/20 px-3 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500/30 transition flex items-center gap-1.5">
+                  <i data-lucide="check" class="h-3.5 w-3.5"></i> Conclude Sprint
+                </button>
+              </div>
+            </div>
+
+            <!-- Timer Progress Bar -->
+            <div class="mt-4">
+              <div class="h-2.5 w-full overflow-hidden rounded-full bg-white/10 p-0.5">
+                <div id="mentor-timer-bar" class="h-full rounded-full bg-gradient-to-r from-[#8FD420] via-[#B9F044] to-emerald-400 transition-all duration-1000" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Collab Room link -->
+          <div class="mt-4 flex flex-col sm:flex-row items-center gap-3">
+            <a id="mentor-open-collab" href="#" target="_blank"
+              class="w-full sm:flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-[#B9F044] bg-[#0B1F17] py-3 text-xs font-black text-[#B9F044] hover:bg-[#14532D] shadow-sm transition active:scale-[0.99]">
+              <i data-lucide="code-2" class="h-4 w-4"></i> Open Live Code &amp; Whiteboard Room &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Mentor Study Plan & YouTube Video Sharing Station -->
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm space-y-4">
+          <div class="flex items-center gap-2.5">
+            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-200">
+              <i data-lucide="youtube" class="h-5 w-5"></i>
             </span>
             <div>
-              <p class="text-sm font-extrabold text-[#0B1F17]">Active Session</p>
-              <p class="text-xs text-slate-500">Learner: <span id="active-learner-name" class="font-bold text-slate-700"></span></p>
+              <h3 class="text-sm font-black text-[#0B1F17]">Share YouTube Lecture &amp; Study Plan</h3>
+              <p class="text-xs text-slate-500">Provide an educational video and key takeaways. Streams live to learner's screen.</p>
             </div>
-            <span class="ml-auto flex items-center gap-1.5 rounded-full bg-[#B9F044]/15 px-3 py-1 text-[11px] font-bold text-[#2F6F11]">
-              <span class="live-dot h-1.5 w-1.5 rounded-full bg-[#2F6F11]"></span> Live
-            </span>
           </div>
 
-          <p class="text-xs text-slate-500 rounded-xl bg-[#F4FBEA] p-3 mb-4">
-            Topic: <strong id="mentor-active-topic" class="text-[#0B1F17]"></strong>
-            &nbsp;&bull;&nbsp;
-            Offered: <strong id="mentor-active-credits" class="text-[#2F6F11]"></strong> credits
-          </p>
-
-          <a id="mentor-open-collab" href="#" target="_blank"
-            class="flex items-center justify-center gap-2 rounded-xl border border-[#B9F044]/40 bg-[#F4FBEA] py-2.5 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044]/20 transition mb-4">
-            <i data-lucide="code-2" class="h-4 w-4"></i> Open Live Collab Room
-          </a>
-
-          <!-- Quiz builder -->
-          <div id="mentor-completion-bar" class="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-[11px] text-amber-800">
-            <div class="flex items-center gap-2 font-extrabold"><i data-lucide="shield-check" class="h-4 w-4"></i> Credits protected in escrow</div>
-            <p class="mt-1">Credits move only after the learner passes and you confirm the session is complete.</p>
-          </div>
-          <div class="border-t border-slate-100 pt-4">
-            <div class="flex items-center gap-2 mb-3">
-              <i data-lucide="file-pen-line" class="h-4 w-4 text-[#2F6F11]"></i>
-              <p class="text-xs font-extrabold text-[#0B1F17]">Build Verification Quiz</p>
+          <!-- Quick presets for quick demo -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold text-slate-500">1-Click YouTube Presets:</span>
+              <span class="text-[10px] text-emerald-700 font-bold">Curated Educational Videos</span>
             </div>
-            <p class="text-[11px] text-slate-500 mb-3">Add up to 3 MCQ questions. The learner must pass, then you confirm completion to release the protected credits.</p>
-            <div id="quiz-builder" class="space-y-4"></div>
-            <button id="add-question-btn" class="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#2F6F11] hover:underline">
-              <i data-lucide="plus-circle" class="h-4 w-4"></i> Add Question
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition"
+                data-url="https://www.youtube.com/watch?v=76n7c_q3vC4" data-title="DSA: Binary Tree Traversals Explained" data-notes="1. Inorder: Left, Root, Right (gives sorted in BST)&#10;2. Preorder: Root, Left, Right (useful for serialization)&#10;3. Postorder: Left, Right, Root (useful for bottom-up computation)">
+                🌳 Binary Trees (15m)
+              </button>
+              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition"
+                data-url="https://www.youtube.com/watch?v=TNhaISOUy6Q" data-title="React State &amp; useState Hook Demystified" data-notes="1. State triggers component re-renders&#10;2. Never mutate state directly; always use setter&#10;3. Batching ensures optimal React performance">
+                ⚛️ React Hooks
+              </button>
+              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition"
+                data-url="https://www.youtube.com/watch?v=M7s_5i_Xy1w" data-title="System Design: Load Balancers &amp; Caching" data-notes="1. DNS Routing vs Reverse Proxy&#10;2. Cache-aside vs Write-through caching&#10;3. Horizontal scaling with stateless servers">
+                🏗️ System Design
+              </button>
+              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition"
+                data-url="https://www.youtube.com/watch?v=7S_tz1z_5bA" data-title="SQL Joins Visualized" data-notes="1. INNER JOIN: Common keys only&#10;2. LEFT JOIN: All left records + matching right&#10;3. INDEX: B-Tree index speeds up lookups from O(N) to O(log N)">
+                🗄️ SQL Joins
+              </button>
+            </div>
+          </div>
+
+          <!-- YouTube URL Input -->
+          <label class="block">
+            <span class="label-text">YouTube Video URL</span>
+            <input id="mentor-youtube-input" type="url" placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..." class="input-field" />
+            <p id="mentor-yt-error" class="hidden mt-1 text-[11px] text-rose-500 font-bold">Please enter a valid YouTube video link.</p>
+          </label>
+
+          <!-- Study notes -->
+          <label class="block">
+            <span class="label-text">Study Plan, Key Notes &amp; Formulas</span>
+            <textarea id="mentor-notes-input" rows="3" placeholder="Key bullet points, formulas, or algorithmic steps you want the learner to remember..." class="input-field resize-none"></textarea>
+          </label>
+
+          <!-- Reference Material Link -->
+          <label class="block">
+            <span class="label-text">Reference Material / Slide Link (optional)</span>
+            <input id="mentor-resource-input" type="url" placeholder="https://docs.google.com/... or Notion/GitHub link" class="input-field" />
+          </label>
+
+          <!-- Publish Button -->
+          <div class="flex items-center gap-3">
+            <button type="button" id="publish-resources-btn" class="flex-1 btn-pill rounded-xl bg-[#0B1F17] py-3 text-xs font-black text-[#B9F044] hover:bg-[#14532D] shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2">
+              <i data-lucide="send" class="h-4 w-4"></i>
+              <span>Publish &amp; Sync Resources to Learner</span>
             </button>
-            <button id="send-quiz-btn" class="btn-pill mt-4 w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">
-              Send Quiz to Learner &rarr;
-            </button>
-            <p id="quiz-sent-msg" class="hidden mt-2 text-center text-xs text-[#2F6F11] font-bold">
-              <i data-lucide="check" class="inline h-3.5 w-3.5"></i> Quiz sent! Waiting for learner&rsquo;s response&hellip;
-            </p>
-            <div id="mentor-completion-actions" class="hidden mt-4 rounded-xl border border-green-200 bg-green-50 p-4">
-              <div class="flex items-center gap-2 text-xs font-extrabold text-green-800"><i data-lucide="badge-check" class="h-4 w-4"></i> Learner passed the verification</div>
-              <p class="mt-1 text-[11px] text-green-700">Confirm the session is complete to release the protected credits.</p>
-              <button id="complete-session-btn" class="mt-3 w-full rounded-xl bg-green-700 py-2.5 text-xs font-extrabold text-white transition hover:bg-green-800">Mark Session Complete &amp; Release Credits</button>
+          </div>
+
+          <!-- Live Preview of Published Video for Mentor -->
+          <div id="mentor-youtube-preview" class="hidden pt-3 border-t border-slate-100">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <p class="text-xs font-bold text-slate-700">Live Synced with Learner:</p>
+            </div>
+            <div class="relative w-full overflow-hidden rounded-2xl bg-black border border-slate-200 shadow-sm" style="padding-top: 56.25%;">
+              <iframe id="mentor-youtube-frame" class="absolute inset-0 h-full w-full"
+                src="" title="Mentor YouTube Preview" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
             </div>
           </div>
         </div>
+
+        <!-- Verification Quiz & Escrow Completion Station -->
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm">
+          <div id="mentor-completion-bar" class="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">
+            <div class="flex items-center gap-2 font-black text-amber-900">
+              <i data-lucide="shield-check" class="h-4 w-4 text-amber-600"></i> Strict Escrow Protection Active
+            </div>
+            <p class="mt-1 text-[11px] text-amber-800 leading-relaxed">
+              Credits remain safely locked in escrow during the 15-minute session. Send the verification quiz or confirm completion to transfer the credits to your balance.
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="file-pen-line" class="h-4 w-4 text-[#2F6F11]"></i>
+              <p class="text-xs font-black text-[#0B1F17]">Build Verification Quiz</p>
+            </div>
+            <button type="button" id="btn-quick-quiz-preset" class="rounded-lg border border-[#B9F044]/50 bg-[#F4FBEA] px-2.5 py-1 text-[11px] font-bold text-[#2F6F11] hover:bg-[#B9F044]/30 transition flex items-center gap-1">
+              <i data-lucide="sparkles" class="h-3 w-3"></i> 1-Click Topic Quiz
+            </button>
+          </div>
+
+          <p class="text-[11px] text-slate-500 mb-3">Add up to 3 quick check questions to ensure the learner understood the session concepts.</p>
+          
+          <div id="quiz-builder" class="space-y-4"></div>
+
+          <button id="add-question-btn" type="button" class="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#2F6F11] hover:underline">
+            <i data-lucide="plus-circle" class="h-4 w-4"></i> Add Another Question
+          </button>
+
+          <button id="send-quiz-btn" type="button" class="btn-pill mt-4 w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-black text-[#B9F044] transition hover:bg-[#14532D] shadow-sm flex items-center justify-center gap-2">
+            <i data-lucide="file-check" class="h-4 w-4"></i>
+            <span>Send Quiz to Learner &rarr;</span>
+          </button>
+
+          <p id="quiz-sent-msg" class="hidden mt-2 text-center text-xs text-[#2F6F11] font-bold">
+            <i data-lucide="check" class="inline h-3.5 w-3.5"></i> Quiz sent! Waiting for learner&rsquo;s response&hellip;
+          </p>
+
+          <!-- Direct / Verified Completion Actions -->
+          <div id="mentor-completion-actions" class="mt-5 rounded-2xl border border-emerald-300 bg-emerald-50/80 p-5">
+            <div class="flex items-center gap-2 text-xs font-black text-emerald-900">
+              <i data-lucide="badge-check" class="h-5 w-5 text-emerald-600"></i>
+              <span>Session Ready for Completion</span>
+            </div>
+            <p class="mt-1 text-[11px] text-emerald-800 leading-relaxed">
+              Confirming completion will transfer the agreed credits directly from learner escrow to your wallet and record the transaction in the ledger.
+            </p>
+            <button id="complete-session-btn" type="button" class="btn-pill mt-3.5 w-full rounded-xl bg-emerald-700 py-3 text-xs font-black text-white transition hover:bg-emerald-800 shadow-md flex items-center justify-center gap-2">
+              <i data-lucide="coins" class="h-4 w-4 text-[#B9F044]"></i>
+              <span>Mark Session Complete &amp; Release Credits</span>
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <!-- Mentor: session complete -->
