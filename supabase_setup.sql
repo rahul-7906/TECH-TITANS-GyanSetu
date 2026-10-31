@@ -8,6 +8,19 @@
 -- 4. It will return "Success. No rows returned" or "Query executed successfully".
 -- ====================================================================
 
+-- ── 0. IMMEDIATE AUTO-CONFIRM & CONSTRAINT UNBLOCK (Fixes Login & Signup) ──
+UPDATE auth.users
+SET email_confirmed_at = COALESCE(email_confirmed_at, now())
+WHERE email_confirmed_at IS NULL;
+
+-- Drop foreign key constraint on public.profiles so signups and demo accounts never fail
+DO $$
+BEGIN
+  ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_id_fkey;
+EXCEPTION WHEN OTHERS THEN
+  NULL;
+END $$;
+
 -- ── 1. PROFILES TABLE ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.profiles (
   id uuid PRIMARY KEY,

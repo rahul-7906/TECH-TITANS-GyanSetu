@@ -14,6 +14,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/gyansetu-auth.js"></script>
   <script src="js/credits-config.js"></script>
   <script src="js/rr-config.js"></script>
   <script src="js/demo-data.js"></script>
@@ -421,10 +422,18 @@
         allPeers = demo?.leaderboard || [];
       } else {
         try {
-          const { data: { session } } = await sb.auth.getSession();
-          if (session?.user) {
-            const { data: prof } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-            currentProfile = prof || { id: session.user.id, full_name: session.user.email.split('@')[0], rr: 1245, xp: 680, credits: 155, streak: 12 };
+          let userObj = null;
+          if (window.GyanSetuAuth) {
+            const authData = await window.GyanSetuAuth.getCurrentUser();
+            if (authData?.user) userObj = authData.user;
+          }
+          if (!userObj) {
+            const { data: { session } } = await sb.auth.getSession();
+            if (session?.user) userObj = session.user;
+          }
+          if (userObj) {
+            const { data: prof } = await sb.from('profiles').select('*').eq('id', userObj.id).maybeSingle();
+            currentProfile = prof || { id: userObj.id, full_name: userObj.email.split('@')[0], rr: 1245, xp: 680, credits: 155, streak: 12 };
           }
           // Fetch real peers from Supabase
           const { data: peers } = await sb.from('profiles').select('*').order('rr', { ascending: false }).limit(50);

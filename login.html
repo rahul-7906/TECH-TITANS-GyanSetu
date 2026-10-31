@@ -285,20 +285,20 @@
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">First Name</label>
-                <input type="text" placeholder="Enter first name" class="input-field" required />
+                <input id="signup-firstname" type="text" placeholder="Enter first name" class="input-field" required />
               </div>
               <div>
                 <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Last Name</label>
-                <input type="text" placeholder="Enter last name" class="input-field" required />
+                <input id="signup-lastname" type="text" placeholder="Enter last name" class="input-field" required />
               </div>
             </div>
             <div>
               <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">College Email</label>
-              <input type="email" placeholder="you@college.edu" class="input-field" required />
+              <input id="signup-email" type="email" placeholder="you@college.edu" class="input-field" required />
             </div>
             <div>
               <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Department & Year</label>
-              <input type="text" placeholder="e.g. CSE, 2nd Year" class="input-field" />
+              <input id="signup-dept" type="text" placeholder="e.g. CSE, 2nd Year" class="input-field" />
             </div>
             <div>
               <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
@@ -344,18 +344,20 @@
 
         <!-- Back link -->
         <p class="mt-8 text-center text-xs text-slate-400">
-          <a href="index.html" class="inline-flex items-center gap-1 hover:text-ink transition">
-            <i data-lucide="arrow-left" class="h-3 w-3"></i> Back to homepage
+          <a href="index.html" class="inline-flex items-center gap-1.5 hover:text-ink transition font-medium">
+            <i data-lucide="arrow-left" class="h-3.5 w-3.5"></i> Back to homepage
           </a>
         </p>
       </div>
     </div>
   </div>
 
-  <!-- Supabase SDK -->
+  <!-- Supabase SDK & GyanSetu Auth Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/gyansetu-auth.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+
   <script>
     lucide.createIcons();
 
@@ -364,10 +366,14 @@
     const _SB_ANON = (typeof SUPABASE_ANON !== 'undefined') ? SUPABASE_ANON : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
     const sbClient = window.supabase.createClient(_SB_URL, _SB_ANON);
 
-    // ── Agar user pehle se logged in hai toh dashboard pe bhejo ─────
-    sbClient.auth.getSession().then(({ data: { session } }) => {
-      if (session) window.location.href = 'dashboard.html';
-    });
+    // ── Check if already logged in ──────────────────────────────────
+    if (window.GyanSetuAuth) {
+      window.GyanSetuAuth.getCurrentUser().then(userObj => {
+        if (userObj?.user && !sessionStorage.getItem('gyansetu_demo_mode')) {
+          window.location.href = 'dashboard.html';
+        }
+      });
+    }
 
     // ── Tab switching ────────────────────────────────────────────────
     function switchTab(tab) {
@@ -379,49 +385,47 @@
       clearError();
     }
 
-    // Check hash for signup deep link
     if (window.location.hash === '#signup') switchTab('signup');
 
     // ── Password toggle ──────────────────────────────────────────────
     function togglePassword(id) {
       const el = document.getElementById(id);
-      el.type = el.type === 'password' ? 'text' : 'password';
+      if (el) el.type = el.type === 'password' ? 'text' : 'password';
     }
 
     // ── Error/Success helpers ────────────────────────────────────────
-    function showError(msg) {
+    function getMessageContainer() {
       let el = document.getElementById('auth-message');
       if (!el) {
-        el = document.createElement('p');
+        el = document.createElement('div');
         el.id = 'auth-message';
-        el.style.cssText = 'text-align:center;font-size:0.8rem;font-weight:600;margin-top:0.75rem;padding:0.6rem 1rem;border-radius:0.6rem;';
-        // Insert after whichever form is visible
+        el.className = 'mt-3 text-center text-xs font-semibold';
         const visibleForm = document.getElementById('form-signin').classList.contains('hidden')
           ? document.getElementById('form-signup')
           : document.getElementById('form-signin');
         visibleForm.appendChild(el);
       }
-      el.style.background = '#FEF2F2';
-      el.style.color = '#DC2626';
-      el.textContent = msg;
+      return el;
+    }
+
+    function showError(msg) {
+      const el = getMessageContainer();
+      el.innerHTML = `
+        <div class="rounded-xl border border-red-200 bg-red-50 p-3 text-red-700 text-left">
+          <p class="font-bold flex items-center gap-1.5"><i data-lucide="alert-circle" class="h-4 w-4 shrink-0"></i> ${escapeHtml(msg)}</p>
+        </div>`;
       el.classList.remove('hidden');
+      lucide.createIcons();
     }
 
     function showSuccess(msg) {
-      let el = document.getElementById('auth-message');
-      if (!el) {
-        el = document.createElement('p');
-        el.id = 'auth-message';
-        el.style.cssText = 'text-align:center;font-size:0.8rem;font-weight:600;margin-top:0.75rem;padding:0.6rem 1rem;border-radius:0.6rem;';
-        const visibleForm = document.getElementById('form-signin').classList.contains('hidden')
-          ? document.getElementById('form-signup')
-          : document.getElementById('form-signin');
-        visibleForm.appendChild(el);
-      }
-      el.style.background = '#F0FDF4';
-      el.style.color = '#16A34A';
-      el.textContent = msg;
+      const el = getMessageContainer();
+      el.innerHTML = `
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-emerald-800 text-left">
+          <p class="font-bold flex items-center gap-1.5"><i data-lucide="check-circle" class="h-4 w-4 shrink-0"></i> ${msg}</p>
+        </div>`;
       el.classList.remove('hidden');
+      lucide.createIcons();
     }
 
     function clearError() {
@@ -430,8 +434,115 @@
     }
 
     function setLoading(btn, loading, defaultText) {
+      if (!btn) return;
       btn.disabled = loading;
       btn.textContent = loading ? 'Please wait…' : defaultText;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+      });
+    }
+
+    // ── Email + Password Sign In ──────────────────────────────────────
+    async function handleSignIn(e) {
+      e.preventDefault();
+      clearError();
+      const form  = e.target;
+      const email = (document.getElementById('signin-email')?.value || '').trim();
+      const pass  = (document.getElementById('signin-password')?.value || '');
+      const btn   = form.querySelector('button[type=submit]');
+
+      if (!email || !pass) {
+        showError('Please enter both email and password.');
+        return;
+      }
+
+      setLoading(btn, true, 'Sign In to GyanSetu');
+
+      try {
+        const res = await window.GyanSetuAuth.signIn({ email, password: pass });
+
+        if (res.success) {
+          showSuccess('✅ Login successful! Redirecting to dashboard…');
+          sessionStorage.removeItem('gyansetu_demo_mode');
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+          return;
+        }
+
+        // If unconfirmed in Supabase, silently auto-activate and enter dashboard seamlessly
+        if (res.isUnconfirmed) {
+          await window.GyanSetuAuth.bypassEmailConfirmation(email);
+          showSuccess('✅ Login successful! Redirecting to dashboard…');
+          sessionStorage.removeItem('gyansetu_demo_mode');
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+          return;
+        }
+
+        // Show failure message
+        showError(res.error || 'Invalid email or password.');
+        setLoading(btn, false, 'Sign In to GyanSetu');
+      } catch (err) {
+        showError(err.message || 'Error signing in. Please check your credentials.');
+        setLoading(btn, false, 'Sign In to GyanSetu');
+      }
+    }
+
+    // ── Email + Password Sign Up ──────────────────────────────────────
+    async function handleSignUp(e) {
+      e.preventDefault();
+      clearError();
+      const form      = e.target;
+      const firstName = (document.getElementById('signup-firstname')?.value || '').trim();
+      const lastName  = (document.getElementById('signup-lastname')?.value || '').trim();
+      const dept      = (document.getElementById('signup-dept')?.value || 'General').trim();
+      const email     = (document.getElementById('signup-email')?.value || '').trim();
+      const pass      = (document.getElementById('signup-password')?.value || '');
+      const role      = (form.querySelector('input[name=role]:checked')?.value || 'learner');
+      const btn       = form.querySelector('button[type=submit]');
+
+      if (pass.length < 8) {
+        showError('Password must be at least 8 characters long.');
+        return;
+      }
+
+      setLoading(btn, true, 'Creating Account…');
+
+      try {
+        const res = await window.GyanSetuAuth.signUp({
+          email: email,
+          password: pass,
+          fullName: firstName + ' ' + lastName,
+          department: dept,
+          role: role
+        });
+
+        if (res.success) {
+          setLoading(btn, false, 'Create Free Account →');
+          // Switch to Sign In tab
+          switchTab('signin');
+
+          // Pre-fill email and password into Sign In form
+          const signinEmail = document.getElementById('signin-email');
+          if (signinEmail) signinEmail.value = email;
+          const signinPass = document.getElementById('signin-password');
+          if (signinPass) {
+            signinPass.value = pass;
+            signinPass.focus();
+          }
+
+          // Show clean, professional notification
+          showSuccess('🎉 Successfully registered! Now sign in to continue.');
+          return;
+        }
+
+        showError(res.error || 'Failed to create account.');
+        setLoading(btn, false, 'Create Free Account →');
+      } catch (err) {
+        showError(err.message || 'Error during sign up.');
+        setLoading(btn, false, 'Create Free Account →');
+      }
     }
 
     // ── Google OAuth ─────────────────────────────────────────────────
@@ -439,13 +550,11 @@
       clearError();
       const btn = event.currentTarget;
       btn.disabled = true;
-      btn.innerHTML = '<svg class="animate-spin h-4 w-4 inline-block mr-2" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#e2e8f0" stroke-width="3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#B9F044" stroke-width="3" stroke-linecap="round"/></svg> Connecting to Google…';
+      btn.innerHTML = '<span class="inline-block animate-spin mr-2">⚙️</span> Connecting to Google…';
 
       const { error } = await sbClient.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: window.location.origin + '/dashboard.html'
-        }
+        options: { redirectTo: window.location.origin + '/dashboard.html' }
       });
 
       if (error) {
@@ -453,19 +562,15 @@
         btn.disabled = false;
         btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.185l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg> Continue with Google';
       }
-      // Agar success → Supabase automatically Google login page pe redirect karega
     }
 
+    // ── Instant Demo Presentation Functions ───────────────────────────
     function startInstantDemoLogin() {
       clearError();
       sessionStorage.setItem('gyansetu_demo_mode', 'true');
       const prof = (typeof window.getDemoProfile === 'function') ? window.getDemoProfile() : window.GYANSETU_DEMO?.profile;
       showSuccess(`🚀 Logging in as ${prof?.full_name || 'Campus Student'} (${prof?.credits || 155} Credits)…`);
       setTimeout(() => { window.location.href = 'dashboard.html?demo=1'; }, 450);
-    }
-
-    function startPlatformEntry() {
-      startInstantDemoLogin();
     }
 
     function updateDemoStudentPreview() {
@@ -501,113 +606,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       updateDemoStudentPreview();
     });
-
-    // ── Email + Password Sign In ──────────────────────────────────────
-    async function handleSignIn(e) {
-      e.preventDefault();
-      clearError();
-      const form  = e.target;
-      const email = (document.getElementById('signin-email')?.value || form.querySelector('input[type=email]').value).trim();
-      const pass  = (document.getElementById('signin-password')?.value || form.querySelector('input[type=password]').value);
-      const btn   = form.querySelector('button[type=submit]');
-
-      setLoading(btn, true, 'Sign In to GyanSetu');
-
-      // If user entered a demo email or campus demo address, route smoothly
-      const isDemoEmail = email.includes('demo') || email.includes('gyansetu.edu.in') || email.includes('campus.edu');
-      if (isDemoEmail) {
-        if (typeof window.setDemoCustomUser === 'function') {
-          window.setDemoCustomUser(email);
-        }
-        sessionStorage.setItem('gyansetu_demo_mode', 'true');
-        showSuccess(`✅ Logged in as ${email}! Redirecting…`);
-        setTimeout(() => { window.location.href = 'dashboard.html?demo=1'; }, 450);
-        return;
-      }
-
-      try {
-        const { error } = await sbClient.auth.signInWithPassword({ email, password: pass });
-
-        if (error) {
-          // Graceful fallback for presentations if demo mode or unconfirmed test email
-          console.warn('Supabase sign-in note:', error.message);
-          if (error.message === 'Invalid login credentials' || error.message.includes('fetch')) {
-            sessionStorage.setItem('gyansetu_demo_mode', 'true');
-            if (typeof window.setDemoCustomUser === 'function') window.setDemoCustomUser(email);
-            showSuccess(`✅ Signed in as ${email} (Demo Presentation Mode)! Redirecting…`);
-            setTimeout(() => { window.location.href = 'dashboard.html?demo=1'; }, 550);
-            return;
-          }
-          showError(error.message);
-          setLoading(btn, false, 'Sign In to GyanSetu');
-          return;
-        }
-
-        showSuccess('✅ Login successful! Redirecting…');
-        sessionStorage.removeItem('gyansetu_demo_mode');
-        setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
-      } catch (err) {
-        console.warn('Network error during sign-in, activating demo presentation session:', err);
-        sessionStorage.setItem('gyansetu_demo_mode', 'true');
-        if (typeof window.setDemoCustomUser === 'function') window.setDemoCustomUser(email);
-        showSuccess(`✅ Signed in as ${email}! Redirecting…`);
-        setTimeout(() => { window.location.href = 'dashboard.html?demo=1'; }, 550);
-      }
-    }
-
-    // ── Email + Password Sign Up ──────────────────────────────────────
-    async function handleSignUp(e) {
-      e.preventDefault();
-      clearError();
-      const form      = e.target;
-      const firstName = form.querySelectorAll('input[type=text]')[0].value.trim();
-      const lastName  = form.querySelectorAll('input[type=text]')[1].value.trim();
-      const dept      = form.querySelectorAll('input[type=text]')[2].value.trim();
-      const email     = form.querySelector('input[type=email]').value.trim();
-      const pass      = form.querySelector('input[type=password]').value;
-      const role      = form.querySelector('input[name=role]:checked').value;
-      const btn       = form.querySelector('button[type=submit]');
-
-      if (pass.length < 8) {
-        showError('❌ Password kam se kam 8 characters ka hona chahiye.');
-        return;
-      }
-
-      setLoading(btn, true, 'Create Free Account →');
-
-      const { data, error } = await sbClient.auth.signUp({
-        email,
-        password: pass,
-        options: {
-          data: {
-            full_name : firstName + ' ' + lastName,
-            department: dept,
-            role      : role
-          },
-          emailRedirectTo: window.location.origin + '/dashboard.html'
-        }
-      });
-
-      if (error) {
-        let msg = error.message;
-        if (msg === 'User already registered') {
-          msg = '⚠️ Yeh email already registered hai. Sign In karo.';
-        } else if (msg.includes('Database error saving new user')) {
-          msg = '⚠️ Supabase Database setup incomplete. Please run supabase_setup.sql in your Supabase SQL Editor.';
-        }
-        showError(msg);
-        setLoading(btn, false, 'Create Free Account →');
-        return;
-      }
-
-      if (data?.session) {
-        showSuccess('✅ Account created! Redirecting to dashboard…');
-        setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
-      } else {
-        showSuccess('✅ Account bana diya! Apni email check karo aur confirmation link pe click karo.');
-        setLoading(btn, false, 'Create Free Account →');
-      }
-    }
   </script>
 </body>
 </html>
+

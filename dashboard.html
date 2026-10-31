@@ -1340,9 +1340,10 @@
     </div>
   </div>
 
-  <!-- Supabase SDK -->
+  <!-- Supabase SDK & GyanSetu Auth Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/gyansetu-auth.js"></script>
   <script src="js/credits-config.js"></script>
   <script src="js/rr-config.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -2117,11 +2118,22 @@
         renderDemoDashboard();
         return;
       }
-      const { data: { session } } = await sbClient.auth.getSession();
-      if (!session) { window.location.href = 'login.html'; return; }
+      let activeUser = null;
+      if (window.GyanSetuAuth) {
+        const authData = await window.GyanSetuAuth.getCurrentUser();
+        if (authData?.user) activeUser = authData.user;
+      }
+      if (!activeUser) {
+        const { data: { session } } = await sbClient.auth.getSession();
+        if (session?.user) activeUser = session.user;
+      }
+      if (!activeUser) {
+        window.location.href = 'login.html';
+        return;
+      }
 
-      const userId = session.user.id;
-      const email  = session.user.email;
+      const userId = activeUser.id;
+      const email  = activeUser.email || 'student@gyansetu.edu';
       currentUserId = userId;
 
       // Fetch profile safely
@@ -2285,8 +2297,12 @@
 
     // ── Logout ────────────────────────────────────────────────────────
     async function logout() {
-      await sbClient.auth.signOut();
-      window.location.href = 'login.html';
+      if (window.GyanSetuAuth) {
+        await window.GyanSetuAuth.logout();
+      } else {
+        await sbClient.auth.signOut();
+        window.location.href = 'login.html';
+      }
     }
 
     /* ── Navigation: sections scroll smoothly; destinations get a soft transition ── */
