@@ -775,15 +775,15 @@ document.addEventListener('DOMContentLoaded', () => {
     container.innerHTML = '';
     questions.forEach((q, i) => {
       const div = document.createElement('div');
-      div.className = 'rounded-2xl border border-slate-200 p-4 bg-slate-50';
+      div.className = 'rounded-2xl border border-slate-200 p-3.5 sm:p-4 bg-slate-50';
       div.innerHTML = `
-        <p class="text-sm font-bold mb-3 text-[#0B1F17]">${i + 1}. ${escHtml(q.question)}</p>
+        <p class="text-xs sm:text-sm font-bold mb-2.5 sm:mb-3 text-[#0B1F17] leading-relaxed">${i + 1}. ${escHtml(q.question)}</p>
         <div class="space-y-2">
           ${q.options.map((opt, j) => `
-            <label class="quiz-option flex items-center gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-white transition border border-transparent">
+            <label class="quiz-option flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl cursor-pointer hover:bg-white transition border border-transparent bg-white/70 shadow-xs">
               <input type="radio" name="q${i}" value="${j}"
-                class="h-4 w-4 accent-[#2F6F11]" />
-              <span class="text-xs text-slate-700 font-medium">${escHtml(opt)}</span>
+                class="h-4 w-4 shrink-0 accent-[#2F6F11]" />
+              <span class="text-xs sm:text-sm text-slate-700 font-medium leading-snug">${escHtml(opt)}</span>
             </label>
           `).join('')}
         </div>`;
@@ -955,20 +955,20 @@ document.addEventListener('DOMContentLoaded', () => {
     questionCount++;
     const idx = questionCount;
     const div = document.createElement('div');
-    div.className = 'quiz-question-block rounded-2xl border border-slate-200 p-4 bg-slate-50 space-y-2.5';
+    div.className = 'quiz-question-block rounded-2xl border border-slate-200 p-3.5 sm:p-4 bg-slate-50 space-y-2.5';
     div.dataset.qidx = idx;
     div.innerHTML = `
       <div class="flex items-center justify-between mb-1">
         <p class="text-xs font-black text-[#0B1F17]">Question ${idx}</p>
-        ${idx > 1 ? `<button type="button" class="remove-q-btn text-[11px] text-red-500 hover:text-red-700 font-bold">Remove</button>` : ''}
+        ${idx > 1 ? `<button type="button" class="remove-q-btn text-[11px] text-red-500 hover:text-red-700 font-bold py-0.5">Remove</button>` : ''}
       </div>
-      <input type="text" class="q-text input-field" placeholder="e.g. What is the time complexity of searching in a balanced BST?" />
+      <input type="text" class="q-text input-field text-xs sm:text-sm" placeholder="e.g. What is the time complexity of searching in a balanced BST?" />
       <div class="space-y-1.5 options-list">
         ${[0,1,2,3].map(j => `
           <div class="flex items-center gap-2">
-            <input type="radio" name="correct-${idx}" value="${j}" class="h-3.5 w-3.5 accent-[#2F6F11]"
+            <input type="radio" name="correct-${idx}" value="${j}" class="h-4 w-4 shrink-0 accent-[#2F6F11]"
               title="Mark as correct answer" ${j === 0 ? 'checked' : ''} />
-            <input type="text" class="opt-text input-field flex-1 text-xs" placeholder="Option ${j+1}" />
+            <input type="text" class="opt-text input-field flex-1 text-xs sm:text-sm" placeholder="Option ${j+1}" />
           </div>`).join('')}
       </div>
       <p class="text-[10px] text-slate-400">🔘 Select the radio button corresponding to the correct answer.</p>`;

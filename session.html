@@ -130,20 +130,20 @@
 
       <!-- Step 1: Book a session -->
       <div id="step-book" class="session-step">
-        <div class="mb-6">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#B9F044]/20 border border-[#B9F044]/40 px-3 py-1 text-xs font-extrabold text-[#2F6F11]">
-              <i data-lucide="timer" class="h-3.5 w-3.5"></i> 15-Min Focused Live Sessions
+        <div class="mb-5 sm:mb-6">
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2">
+            <span class="inline-flex items-center gap-1 rounded-full bg-[#B9F044]/20 border border-[#B9F044]/40 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-extrabold text-[#2F6F11]">
+              <i data-lucide="timer" class="h-3 w-3 sm:h-3.5 sm:w-3.5"></i> 15-Min Focused Live Sessions
             </span>
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-800">
-              <i data-lucide="shield-check" class="h-3.5 w-3.5 text-emerald-600"></i> Protected Escrow
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-bold text-emerald-800">
+              <i data-lucide="shield-check" class="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-600"></i> Protected Escrow
             </span>
           </div>
-          <h1 class="text-2xl font-black text-[#0B1F17]">Book a 1-on-1 Peer Session</h1>
-          <p class="mt-1 text-xs sm:text-sm text-slate-500">Connect with a peer mentor for a 15-minute focused sprint. Credits move <strong class="text-emerald-700 font-extrabold">only after</strong> the session is marked complete.</p>
+          <h1 class="text-xl sm:text-2xl font-black text-[#0B1F17] leading-tight">Book a 1-on-1 Peer Session</h1>
+          <p class="mt-1 text-xs sm:text-sm text-slate-500 leading-relaxed">Connect with a peer mentor for a 15-minute focused sprint. Credits move <strong class="text-emerald-700 font-extrabold">only after</strong> the session is marked complete.</p>
         </div>
 
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-8 shadow-sm space-y-4 sm:space-y-5">
           <label class="block">
             <span class="label-text">Mentor&rsquo;s Name or ID</span>
             <input id="mentor-name-input" type="text" placeholder="e.g. Priya Sharma, Aarav Patel or Room ID" class="input-field" />
@@ -151,31 +151,32 @@
 
           <label class="block">
             <span class="label-text">Topic / Subject</span>
-            <input id="topic-input" type="text" placeholder="e.g. Binary Trees & Recursion in DSA" class="input-field" />
-            <!-- Quick topic chips -->
-            <div class="mt-2 flex flex-wrap gap-1.5">
-              <span class="text-[11px] font-bold text-slate-400 self-center mr-1">Quick Picks:</span>
-              <button type="button" class="quick-topic-chip rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">Binary Trees</button>
-              <button type="button" class="quick-topic-chip rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">React State &amp; Hooks</button>
-              <button type="button" class="quick-topic-chip rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">System Design Basics</button>
-              <button type="button" class="quick-topic-chip rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">SQL Joins &amp; Indexes</button>
+            <input id="topic-input" type="text" placeholder="e.g. Binary Trees &amp; Recursion in DSA" class="input-field" />
+            <!-- Quick topic chips with horizontal scroll on mobile -->
+            <div class="mt-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 -mx-0.5 px-0.5">
+              <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 shrink-0">Quick Picks:</span>
+              <button type="button" class="quick-topic-chip shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">Binary Trees</button>
+              <button type="button" class="quick-topic-chip shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">React Hooks</button>
+              <button type="button" class="quick-topic-chip shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">System Design</button>
+              <button type="button" class="quick-topic-chip shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">SQL Joins</button>
             </div>
           </label>
 
           <label class="block">
             <div class="flex items-center justify-between mb-1">
               <span class="label-text mb-0">Credits to offer (Held in Escrow)</span>
-              <span class="text-[11px] text-emerald-700 font-bold">Safe Escrow Guarantee 🔒</span>
+              <span class="text-[10px] sm:text-[11px] text-emerald-700 font-bold">Safe Escrow Guarantee 🔒</span>
             </div>
-            <div class="flex items-center gap-2">
-              <input id="credits-input" type="number" min="5" max="100" value="15" placeholder="Enter credits" class="input-field flex-1" />
-              <div class="flex gap-1.5 shrink-0">
-                <button type="button" class="credit-preset-btn rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition" data-val="10">10</button>
-                <button type="button" class="credit-preset-btn rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-3 py-2 text-xs font-extrabold text-[#2F6F11] transition" data-val="15">15 (Std)</button>
-                <button type="button" class="credit-preset-btn rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition" data-val="25">25</button>
+            <!-- Segmented on mobile so input doesn't get squeezed -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+              <input id="credits-input" type="number" min="5" max="100" value="15" placeholder="Enter credits" class="input-field w-full sm:flex-1" />
+              <div class="grid grid-cols-3 sm:flex gap-1.5 shrink-0">
+                <button type="button" class="credit-preset-btn text-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition" data-val="10">10</button>
+                <button type="button" class="credit-preset-btn text-center rounded-xl border border-[#B9F044] bg-[#B9F044]/20 px-3 py-2 text-xs font-extrabold text-[#2F6F11] transition" data-val="15">15 (Std)</button>
+                <button type="button" class="credit-preset-btn text-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition" data-val="25">25</button>
               </div>
             </div>
-            <p class="mt-1 text-[11px] text-slate-400">Standard 15-minute live sprint is typically 15 credits.</p>
+            <p class="mt-1 text-[10px] sm:text-[11px] text-slate-400">Standard 15-minute live sprint is typically 15 credits.</p>
           </label>
 
           <label class="block">
@@ -183,14 +184,14 @@
             <textarea id="note-input" rows="2" placeholder="e.g. Need to understand lowest common ancestor problem with visual explanation..." class="input-field resize-none"></textarea>
           </label>
 
-          <div class="rounded-2xl border border-emerald-900/10 bg-[#F4FBEA] p-3.5 flex items-start gap-2.5">
+          <div class="rounded-2xl border border-emerald-900/10 bg-[#F4FBEA] p-3 sm:p-3.5 flex items-start gap-2.5">
             <i data-lucide="shield-check" class="h-4 w-4 text-[#2F6F11] shrink-0 mt-0.5"></i>
-            <p class="text-xs text-slate-600 leading-relaxed">
+            <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
               <strong class="text-[#0B1F17]">Zero-Risk Escrow:</strong> Your credits remain safely locked until the mentor delivers the 15-minute session and you confirm completion.
             </p>
           </div>
 
-          <button id="request-btn" class="btn-pill w-full rounded-2xl bg-[#0B1F17] py-3.5 text-sm font-black text-[#B9F044] shadow-md transition hover:bg-[#14532D] hover:shadow-lg active:scale-[0.99] flex items-center justify-center gap-2">
+          <button id="request-btn" class="btn-pill w-full rounded-2xl bg-[#0B1F17] py-3 sm:py-3.5 text-xs sm:text-sm font-black text-[#B9F044] shadow-md transition hover:bg-[#14532D] hover:shadow-lg active:scale-[0.99] flex items-center justify-center gap-2">
             <span>Request 15-Min Live Session</span>
             <i data-lucide="arrow-right" class="h-4 w-4"></i>
           </button>
@@ -200,35 +201,35 @@
 
       <!-- Step 2: Waiting for mentor to accept -->
       <div id="step-waiting" class="session-step hidden">
-        <div class="rounded-2xl border border-[#B9F044]/40 bg-[#B9F044]/5 p-8 text-center">
-          <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
-            <i data-lucide="clock" class="h-7 w-7 animate-pulse"></i>
+        <div class="rounded-3xl border border-[#B9F044]/40 bg-[#B9F044]/5 p-6 sm:p-8 text-center">
+          <div class="mx-auto mb-3 sm:mb-4 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
+            <i data-lucide="clock" class="h-6 w-6 sm:h-7 sm:w-7 animate-pulse"></i>
           </div>
-          <p class="text-base font-extrabold mb-1 text-[#0B1F17]">Waiting for Mentor&hellip;</p>
-          <p class="text-xs text-slate-500 mb-4">Your request has been sent. The mentor will accept shortly.</p>
-          <p class="text-xs text-slate-400">Session ID: <span id="session-id-display" class="font-mono font-bold text-slate-600"></span></p>
-          <button id="cancel-request-btn" class="mt-4 text-xs text-red-500 underline hover:text-red-700">Cancel Request</button>
+          <p class="text-base sm:text-lg font-black mb-1 text-[#0B1F17]">Waiting for Mentor&hellip;</p>
+          <p class="text-xs text-slate-500 mb-3 sm:mb-4">Your request has been sent. The mentor will accept shortly.</p>
+          <p class="text-[11px] sm:text-xs text-slate-400">Session ID: <span id="session-id-display" class="font-mono font-bold text-slate-600"></span></p>
+          <button id="cancel-request-btn" class="mt-4 text-xs font-bold text-red-500 hover:text-red-700 underline">Cancel Request</button>
         </div>
       </div>
 
       <!-- Step 3: Session active -->
-      <div id="step-active" class="session-step hidden space-y-5">
+      <div id="step-active" class="session-step hidden space-y-4 sm:space-y-5">
 
         <!-- 15-Minute Countdown & Status Header Card -->
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm">
-          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-7 shadow-sm">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div class="flex items-center gap-3">
-              <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#B9F044]/25 text-[#2F6F11] shadow-inner">
-                <i data-lucide="zap" class="h-6 w-6"></i>
+              <span class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B9F044]/25 text-[#2F6F11] shadow-inner">
+                <i data-lucide="zap" class="h-5 w-5 sm:h-6 sm:w-6"></i>
               </span>
-              <div>
-                <div class="flex items-center gap-2">
-                  <p class="text-base font-black text-[#0B1F17]">15-Min Live Session in Progress</p>
-                  <span class="flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800">
-                    <span class="h-2 w-2 rounded-full bg-emerald-600 animate-pulse"></span> LIVE
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <p class="text-sm sm:text-base font-black text-[#0B1F17]">15-Min Live Session</p>
+                  <span class="flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] sm:text-[11px] font-extrabold text-emerald-800 shrink-0">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse"></span> LIVE
                   </span>
                 </div>
-                <p class="text-xs text-slate-500 mt-0.5">
+                <p class="text-xs text-slate-500 mt-0.5 truncate">
                   Mentor: <strong id="active-mentor-name" class="font-bold text-[#0B1F17]"></strong>
                   &nbsp;&bull;&nbsp;
                   Topic: <strong id="active-topic" class="font-bold text-[#2F6F11]"></strong>
@@ -237,73 +238,73 @@
             </div>
 
             <!-- Escrow Badge -->
-            <div class="rounded-xl border border-emerald-900/15 bg-[#F4FBEA] px-3.5 py-2 text-right">
-              <div class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-[#2F6F11]">
+            <div class="rounded-xl border border-emerald-900/15 bg-[#F4FBEA] px-3 py-1.5 sm:px-3.5 sm:py-2 flex items-center justify-between sm:block sm:text-right">
+              <div class="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-[#2F6F11]">
                 <i data-lucide="lock" class="h-3 w-3"></i> Escrow Locked
               </div>
               <div class="text-xs font-bold text-slate-700">
-                <span id="learner-escrow-amount" class="text-sm font-extrabold text-[#0B1F17]">15</span> credits protected
+                <span id="learner-escrow-amount" class="text-xs sm:text-sm font-extrabold text-[#0B1F17]">15</span> credits protected
               </div>
             </div>
           </div>
 
           <!-- Digital 15:00 Timer Clock Display -->
-          <div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-[#0B1F17] to-slate-900 p-5 text-white shadow-inner">
+          <div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-[#0B1F17] to-slate-900 p-4 sm:p-5 text-white shadow-inner">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="flex items-center gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-[#B9F044] border border-white/10">
-                  <i data-lucide="hourglass" class="h-6 w-6 animate-pulse"></i>
+              <div class="flex items-center gap-3 sm:gap-4">
+                <div class="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-[#B9F044] border border-white/10">
+                  <i data-lucide="hourglass" class="h-5 w-5 sm:h-6 sm:w-6 animate-pulse"></i>
                 </div>
                 <div>
-                  <div class="text-[11px] uppercase tracking-wider font-extrabold text-[#B9F044]">Sprint Timer</div>
-                  <div id="learner-timer-digits" class="font-mono text-3xl sm:text-4xl font-black text-white tracking-widest drop-shadow">15:00</div>
+                  <div class="text-[10px] sm:text-[11px] uppercase tracking-wider font-extrabold text-[#B9F044]">Sprint Timer</div>
+                  <div id="learner-timer-digits" class="font-mono text-2xl sm:text-4xl font-black text-white tracking-widest drop-shadow">15:00</div>
                 </div>
               </div>
 
               <div class="text-left sm:text-right">
-                <span id="learner-timer-badge" class="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1 text-xs font-bold text-slate-200">
+                <span id="learner-timer-badge" class="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-bold text-slate-200">
                   <i data-lucide="shield-check" class="h-3.5 w-3.5 text-[#B9F044]"></i> Credits Move Only on Completion
                 </span>
-                <p class="text-[11px] text-slate-400 mt-1">Full 15-minute focused sprint with your peer mentor.</p>
+                <p class="text-[10px] sm:text-[11px] text-slate-400 mt-1">Full 15-minute focused sprint with your peer mentor.</p>
               </div>
             </div>
 
             <!-- Timer Progress Bar -->
-            <div class="mt-4">
-              <div class="h-2.5 w-full overflow-hidden rounded-full bg-white/10 p-0.5">
+            <div class="mt-3 sm:mt-4">
+              <div class="h-2 sm:h-2.5 w-full overflow-hidden rounded-full bg-white/10 p-0.5">
                 <div id="learner-timer-bar" class="h-full rounded-full bg-gradient-to-r from-[#8FD420] via-[#B9F044] to-emerald-400 transition-all duration-1000" style="width: 0%"></div>
               </div>
             </div>
           </div>
 
           <!-- Collab Room CTA -->
-          <div class="mt-4 flex flex-col sm:flex-row items-center gap-3">
+          <div class="mt-3.5 sm:mt-4 flex flex-col sm:flex-row items-center gap-3">
             <a id="open-collab-btn" href="#" target="_blank"
-              class="w-full sm:flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-[#B9F044] bg-[#0B1F17] py-3 text-xs font-black text-[#B9F044] hover:bg-[#14532D] shadow-sm transition active:scale-[0.99]">
+              class="w-full sm:flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-[#B9F044] bg-[#0B1F17] py-2.5 sm:py-3 text-xs sm:text-sm font-black text-[#B9F044] hover:bg-[#14532D] shadow-sm transition active:scale-[0.99]">
               <i data-lucide="code-2" class="h-4 w-4"></i> Open Live Code &amp; Whiteboard Room &rarr;
             </a>
           </div>
         </div>
 
         <!-- Mentor Study Resources & YouTube Video Hub (Learner View) -->
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm">
-          <div class="flex items-center justify-between gap-2 mb-4">
-            <div class="flex items-center gap-2.5">
-              <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-200">
-                <i data-lucide="youtube" class="h-5 w-5"></i>
+        <div class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-7 shadow-sm">
+          <div class="flex items-center justify-between gap-2 mb-3 sm:mb-4">
+            <div class="flex items-center gap-2 sm:gap-2.5">
+              <span class="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-200">
+                <i data-lucide="youtube" class="h-4 w-4 sm:h-5 sm:w-5"></i>
               </span>
               <div>
-                <h3 class="text-sm font-black text-[#0B1F17]">Mentor's Study Plan &amp; Video Lecture</h3>
-                <p class="text-xs text-slate-500">Live lecture video and key takeaway notes curated by your mentor.</p>
+                <h3 class="text-xs sm:text-sm font-black text-[#0B1F17]">Mentor's Study Plan &amp; Video Lecture</h3>
+                <p class="text-[11px] sm:text-xs text-slate-500">Live lecture video and key takeaway notes curated by your mentor.</p>
               </div>
             </div>
-            <span id="learner-resource-status" class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-600">
+            <span id="learner-resource-status" class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-bold text-slate-600 shrink-0">
               <i data-lucide="radio" class="h-3 w-3 text-emerald-600"></i> Live Sync
             </span>
           </div>
 
           <!-- YouTube Embed Container -->
-          <div id="learner-video-box" class="hidden mb-4">
+          <div id="learner-video-box" class="hidden mb-3 sm:mb-4">
             <div class="relative w-full overflow-hidden rounded-2xl bg-black border border-slate-200 shadow-md" style="padding-top: 56.25%;">
               <iframe id="learner-youtube-frame" class="absolute inset-0 h-full w-full"
                 src="" title="Mentor YouTube Lecture" frameborder="0"
@@ -313,35 +314,35 @@
           </div>
 
           <!-- Placeholder when mentor hasn't shared video yet -->
-          <div id="learner-video-placeholder" class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-8 text-center mb-4">
-            <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-slate-400 shadow-xs border border-slate-200">
-              <i data-lucide="video" class="h-6 w-6"></i>
+          <div id="learner-video-placeholder" class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-5 sm:p-8 text-center mb-3 sm:mb-4">
+            <div class="mx-auto mb-2.5 sm:mb-3 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-white text-slate-400 shadow-xs border border-slate-200">
+              <i data-lucide="video" class="h-5 w-5 sm:h-6 sm:w-6"></i>
             </div>
             <p class="text-xs font-bold text-slate-700">Waiting for mentor to share video lecture &amp; plan&hellip;</p>
-            <p class="text-[11px] text-slate-400 mt-1">Once your mentor attaches a YouTube lecture or notes, it will appear here instantly.</p>
+            <p class="text-[10px] sm:text-[11px] text-slate-400 mt-1">Once your mentor attaches a YouTube lecture or notes, it will appear here instantly.</p>
           </div>
 
           <!-- Notes / Key Takeaways -->
-          <div id="learner-notes-box" class="hidden rounded-2xl border border-[#B9F044]/30 bg-[#F4FBEA] p-4 text-xs text-slate-700 mb-3">
-            <div class="flex items-center gap-1.5 font-extrabold text-[#2F6F11] mb-1.5">
+          <div id="learner-notes-box" class="hidden rounded-2xl border border-[#B9F044]/30 bg-[#F4FBEA] p-3.5 sm:p-4 text-xs text-slate-700 mb-3">
+            <div class="flex items-center gap-1.5 font-extrabold text-[#2F6F11] mb-1">
               <i data-lucide="file-text" class="h-4 w-4"></i> Study Plan &amp; Key Notes
             </div>
             <div id="learner-notes-text" class="whitespace-pre-line text-xs font-medium leading-relaxed text-slate-700"></div>
           </div>
 
           <!-- Extra resource link (if any) -->
-          <div id="learner-link-box" class="hidden">
+          <div id="learner-link-box" class="hidden mb-3">
             <a id="learner-resource-link-btn" href="#" target="_blank"
-              class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">
               <i data-lucide="external-link" class="h-3.5 w-3.5 text-[#2F6F11]"></i>
               <span id="learner-resource-link-label">Open Reference Materials / Slides</span>
             </a>
           </div>
 
           <!-- Escrow verification reminder -->
-          <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50/70 p-3 flex items-start gap-2.5">
+          <div class="mt-3 rounded-xl border border-amber-200 bg-amber-50/70 p-2.5 sm:p-3 flex items-start gap-2">
             <i data-lucide="shield-alert" class="h-4 w-4 text-amber-700 shrink-0 mt-0.5"></i>
-            <p class="text-[11px] text-amber-800 leading-relaxed">
+            <p class="text-[10px] sm:text-[11px] text-amber-800 leading-relaxed">
               <strong>Escrow Guarantee:</strong> Watch the lecture and collaborate. Once the mentor concludes or sends the verification quiz, confirming satisfaction will release the escrow credits.
             </p>
           </div>
@@ -351,49 +352,49 @@
 
       <!-- Step 4: Quiz from mentor -->
       <div id="step-quiz" class="session-step hidden">
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm">
           <div class="flex items-center gap-2.5 mb-4">
-            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0B1F17] text-[#B9F044]">
-              <i data-lucide="file-question" class="h-5 w-5"></i>
+            <span class="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-[#0B1F17] text-[#B9F044]">
+              <i data-lucide="file-question" class="h-4 w-4 sm:h-5 sm:w-5"></i>
             </span>
             <div>
               <p class="text-sm font-extrabold text-[#0B1F17]">Mentor sent you a quiz!</p>
               <p class="text-xs text-slate-500">Answer correctly to prove you understood the topic.</p>
             </div>
           </div>
-          <div id="quiz-questions-container" class="space-y-5"></div>
-          <button id="submit-quiz-btn" class="btn-pill mt-6 w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">
+          <div id="quiz-questions-container" class="space-y-4 sm:space-y-5"></div>
+          <button id="submit-quiz-btn" class="btn-pill mt-5 sm:mt-6 w-full rounded-2xl bg-[#0B1F17] py-3 sm:py-3.5 text-xs sm:text-sm font-black text-[#B9F044] transition hover:bg-[#14532D] shadow-md">
             Submit Answers &rarr;
           </button>
-          <p id="quiz-result-msg" class="hidden mt-3 text-center text-sm font-bold rounded-xl py-2"></p>
+          <p id="quiz-result-msg" class="hidden mt-3 text-center text-xs sm:text-sm font-bold rounded-xl py-2 px-3"></p>
         </div>
       </div>
 
       <!-- Step 5: Session complete & Satisfaction Verification -->
       <div id="step-done" class="session-step hidden">
-        <div class="rounded-3xl border border-[#B9F044]/40 bg-gradient-to-br from-[#F4FBEA] to-white p-8 sm:p-10 text-center shadow-sm">
-          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
-            <i data-lucide="check-circle-2" class="h-8 w-8"></i>
+        <div class="rounded-3xl border border-[#B9F044]/40 bg-gradient-to-br from-[#F4FBEA] to-white p-5 sm:p-10 text-center shadow-sm">
+          <div class="mx-auto mb-3 sm:mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
+            <i data-lucide="check-circle-2" class="h-7 w-7 sm:h-8 sm:w-8"></i>
           </div>
-          <p class="text-xl font-extrabold text-[#0B1F17] mb-1">Session Concluded!</p>
-          <p id="done-msg" class="text-xs text-slate-500 mb-4"></p>
+          <p class="text-lg sm:text-xl font-extrabold text-[#0B1F17] mb-1">Session Concluded!</p>
+          <p id="done-msg" class="text-xs text-slate-500 mb-4 leading-relaxed"></p>
 
           <!-- Satisfaction prompt -->
-          <div id="satisfaction-panel" class="mx-auto mb-6 max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-sm text-left">
+          <div id="satisfaction-panel" class="mx-auto mb-5 sm:mb-6 max-w-md rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm text-left">
             <div class="flex items-center gap-2 mb-2">
-              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#B9F044]/20 text-[#2F6F11]">
+              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#B9F044]/20 text-[#2F6F11]">
                 <i data-lucide="help-circle" class="h-4 w-4"></i>
               </span>
-              <p class="text-sm font-extrabold text-[#0B1F17]">Did you understand this session?</p>
+              <p class="text-xs sm:text-sm font-extrabold text-[#0B1F17]">Did you understand this session?</p>
             </div>
-            <p class="text-xs text-slate-500 mb-4">Your feedback ensures quality teaching. Credits are only released to the mentor when you confirm satisfaction.</p>
+            <p class="text-[11px] sm:text-xs text-slate-500 mb-3.5 sm:mb-4 leading-relaxed">Your feedback ensures quality teaching. Credits are only released to the mentor when you confirm satisfaction.</p>
             
-            <div class="grid grid-cols-2 gap-3" id="satisfaction-actions">
-              <button id="btn-satisfaction-yes" class="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-2.5 text-xs font-extrabold text-[#0B1F17] transition hover:brightness-105 shadow-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="satisfaction-actions">
+              <button id="btn-satisfaction-yes" class="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-3 text-xs font-black text-[#0B1F17] transition hover:brightness-105 shadow-sm active:scale-[0.99]">
                 <i data-lucide="thumbs-up" class="h-3.5 w-3.5"></i>
                 YES, Understood!
               </button>
-              <button id="btn-satisfaction-no" class="flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50/50 py-2.5 text-xs font-extrabold text-rose-700 transition hover:bg-rose-100 shadow-sm">
+              <button id="btn-satisfaction-no" class="w-full flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50/70 py-3 text-xs font-black text-rose-700 transition hover:bg-rose-100 shadow-sm active:scale-[0.99]">
                 <i data-lucide="thumbs-down" class="h-3.5 w-3.5"></i>
                 NO, Need Help
               </button>
@@ -409,7 +410,7 @@
 
             <!-- NO dispute options -->
             <div id="satisfaction-no-options" class="hidden mt-4 space-y-2 border-t border-slate-100 pt-3">
-              <div class="flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800 mb-3">
+              <div class="flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 p-3 text-[11px] sm:text-xs text-amber-800 mb-3">
                 <i data-lucide="shield-alert" class="h-4 w-4 shrink-0 text-amber-600"></i>
                 <p><strong>Credits Protected in Escrow.</strong> No credits released to mentor. Choose how you'd like to proceed:</p>
               </div>
@@ -429,9 +430,9 @@
             </div>
           </div>
 
-          <div class="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
-            <a href="session.html" class="rounded-xl bg-[#0B1F17] px-6 py-2.5 text-xs font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Book Another Session</a>
-            <a href="dashboard.html" class="rounded-xl border border-slate-200 px-6 py-2.5 text-xs font-extrabold text-[#0B1F17] transition hover:border-[#B9F044]">Go to Dashboard</a>
+          <div class="flex flex-col sm:flex-row items-center gap-2.5 sm:justify-center w-full">
+            <a href="session.html" class="w-full sm:w-auto rounded-xl bg-[#0B1F17] px-6 py-3 text-xs font-black text-[#B9F044] transition hover:bg-[#064E3B] text-center">Book Another Session</a>
+            <a href="dashboard.html" class="w-full sm:w-auto rounded-xl border border-slate-200 px-6 py-3 text-xs font-black text-[#0B1F17] transition hover:border-[#B9F044] text-center">Go to Dashboard</a>
           </div>
         </div>
       </div>
@@ -445,14 +446,14 @@
 
       <!-- Incoming requests list -->
       <div id="mentor-requests-panel">
-        <div class="mb-6">
-          <h1 class="text-xl font-extrabold text-[#0B1F17]">Incoming Session Requests</h1>
-          <p class="mt-1 text-xs text-slate-500">Accept a request to start a session. You&rsquo;ll send a quiz at the end to verify the learner understood.</p>
+        <div class="mb-5 sm:mb-6">
+          <h1 class="text-xl sm:text-2xl font-black text-[#0B1F17] leading-tight">Incoming Session Requests</h1>
+          <p class="mt-1 text-xs sm:text-sm text-slate-500">Accept a request to start a 15-minute live session. Credits move only when complete.</p>
         </div>
         <div id="requests-list" class="space-y-3">
-          <div class="rounded-2xl border border-dashed border-slate-200 bg-white p-8 text-center" id="no-requests-msg">
-            <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#F4FBEA] text-[#2F6F11]">
-              <i data-lucide="inbox" class="h-5 w-5"></i>
+          <div class="rounded-3xl border border-dashed border-slate-200 bg-white p-6 sm:p-8 text-center" id="no-requests-msg">
+            <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F4FBEA] text-[#2F6F11]">
+              <i data-lucide="inbox" class="h-6 w-6"></i>
             </div>
             <p class="text-sm font-extrabold text-[#0B1F17]">No pending requests yet</p>
             <p class="mt-1 text-xs text-slate-400">Listening for incoming learner requests&hellip;</p>
@@ -461,23 +462,23 @@
       </div>
 
       <!-- Active session panel for mentor -->
-      <div id="mentor-active-panel" class="hidden mt-6 space-y-5">
+      <div id="mentor-active-panel" class="hidden mt-4 sm:mt-6 space-y-4 sm:space-y-5">
 
         <!-- 15-Minute Timer & Session Status (Mentor) -->
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm">
-          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-7 shadow-sm">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div class="flex items-center gap-3">
-              <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#B9F044]/25 text-[#2F6F11] shadow-inner">
-                <i data-lucide="users" class="h-6 w-6"></i>
+              <span class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B9F044]/25 text-[#2F6F11] shadow-inner">
+                <i data-lucide="users" class="h-5 w-5 sm:h-6 sm:w-6"></i>
               </span>
-              <div>
-                <div class="flex items-center gap-2">
-                  <p class="text-base font-black text-[#0B1F17]">Active 15-Min Mentorship Session</p>
-                  <span class="flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800">
-                    <span class="h-2 w-2 rounded-full bg-emerald-600 animate-pulse"></span> LIVE
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <p class="text-sm sm:text-base font-black text-[#0B1F17]">Active 15-Min Session</p>
+                  <span class="flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] sm:text-[11px] font-extrabold text-emerald-800 shrink-0">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse"></span> LIVE
                   </span>
                 </div>
-                <p class="text-xs text-slate-500 mt-0.5">
+                <p class="text-xs text-slate-500 mt-0.5 truncate">
                   Learner: <strong id="active-learner-name" class="font-bold text-[#0B1F17]"></strong>
                   &nbsp;&bull;&nbsp;
                   Topic: <strong id="mentor-active-topic" class="font-bold text-[#2F6F11]"></strong>
@@ -486,89 +487,89 @@
             </div>
 
             <!-- Escrow Guarantee Badge -->
-            <div class="rounded-xl border border-emerald-900/15 bg-[#F4FBEA] px-3.5 py-2 text-right">
-              <div class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-[#2F6F11]">
+            <div class="rounded-xl border border-emerald-900/15 bg-[#F4FBEA] px-3 py-1.5 sm:px-3.5 sm:py-2 flex items-center justify-between sm:block sm:text-right">
+              <div class="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-[#2F6F11]">
                 <i data-lucide="shield-check" class="h-3 w-3"></i> Escrow Guaranteed
               </div>
               <div class="text-xs font-bold text-slate-700">
-                <span id="mentor-active-credits" class="text-sm font-extrabold text-[#0B1F17]">15</span> credits to be earned
+                <span id="mentor-active-credits" class="text-xs sm:text-sm font-extrabold text-[#0B1F17]">15</span> credits to be earned
               </div>
             </div>
           </div>
 
           <!-- Digital 15:00 Timer Clock Display (Mentor) -->
-          <div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-[#0B1F17] to-slate-900 p-5 text-white shadow-inner">
+          <div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-[#0B1F17] to-slate-900 p-4 sm:p-5 text-white shadow-inner">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="flex items-center gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-[#B9F044] border border-white/10">
-                  <i data-lucide="hourglass" class="h-6 w-6 animate-pulse"></i>
+              <div class="flex items-center gap-3 sm:gap-4">
+                <div class="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-[#B9F044] border border-white/10">
+                  <i data-lucide="hourglass" class="h-5 w-5 sm:h-6 sm:w-6 animate-pulse"></i>
                 </div>
                 <div>
-                  <div class="text-[11px] uppercase tracking-wider font-extrabold text-[#B9F044]">Sprint Timer</div>
-                  <div id="mentor-timer-digits" class="font-mono text-3xl sm:text-4xl font-black text-white tracking-widest drop-shadow">15:00</div>
+                  <div class="text-[10px] sm:text-[11px] uppercase tracking-wider font-extrabold text-[#B9F044]">Sprint Timer</div>
+                  <div id="mentor-timer-digits" class="font-mono text-2xl sm:text-4xl font-black text-white tracking-widest drop-shadow">15:00</div>
                 </div>
               </div>
 
               <!-- Mentor Timer Actions -->
-              <div class="flex flex-wrap items-center gap-2">
-                <button type="button" id="btn-extend-timer" class="rounded-xl border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/20 transition flex items-center gap-1.5">
+              <div class="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
+                <button type="button" id="btn-extend-timer" class="rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-xs font-bold text-white hover:bg-white/20 transition flex items-center justify-center gap-1.5">
                   <i data-lucide="plus" class="h-3.5 w-3.5 text-[#B9F044]"></i> +5 Mins
                 </button>
-                <button type="button" id="btn-conclude-early" class="rounded-xl border border-emerald-500/40 bg-emerald-500/20 px-3 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500/30 transition flex items-center gap-1.5">
+                <button type="button" id="btn-conclude-early" class="rounded-xl border border-emerald-500/40 bg-emerald-500/20 px-3 py-2 text-xs font-bold text-emerald-300 hover:bg-emerald-500/30 transition flex items-center justify-center gap-1.5">
                   <i data-lucide="check" class="h-3.5 w-3.5"></i> Conclude Sprint
                 </button>
               </div>
             </div>
 
             <!-- Timer Progress Bar -->
-            <div class="mt-4">
-              <div class="h-2.5 w-full overflow-hidden rounded-full bg-white/10 p-0.5">
+            <div class="mt-3 sm:mt-4">
+              <div class="h-2 sm:h-2.5 w-full overflow-hidden rounded-full bg-white/10 p-0.5">
                 <div id="mentor-timer-bar" class="h-full rounded-full bg-gradient-to-r from-[#8FD420] via-[#B9F044] to-emerald-400 transition-all duration-1000" style="width: 0%"></div>
               </div>
             </div>
           </div>
 
           <!-- Collab Room link -->
-          <div class="mt-4 flex flex-col sm:flex-row items-center gap-3">
+          <div class="mt-3.5 sm:mt-4 flex flex-col sm:flex-row items-center gap-3">
             <a id="mentor-open-collab" href="#" target="_blank"
-              class="w-full sm:flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-[#B9F044] bg-[#0B1F17] py-3 text-xs font-black text-[#B9F044] hover:bg-[#14532D] shadow-sm transition active:scale-[0.99]">
+              class="w-full sm:flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-[#B9F044] bg-[#0B1F17] py-2.5 sm:py-3 text-xs sm:text-sm font-black text-[#B9F044] hover:bg-[#14532D] shadow-sm transition active:scale-[0.99]">
               <i data-lucide="code-2" class="h-4 w-4"></i> Open Live Code &amp; Whiteboard Room &rarr;
             </a>
           </div>
         </div>
 
         <!-- Mentor Study Plan & YouTube Video Sharing Station -->
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm space-y-4">
-          <div class="flex items-center gap-2.5">
-            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-200">
-              <i data-lucide="youtube" class="h-5 w-5"></i>
+        <div class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-7 shadow-sm space-y-4">
+          <div class="flex items-center gap-2 sm:gap-2.5">
+            <span class="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-200">
+              <i data-lucide="youtube" class="h-4 w-4 sm:h-5 sm:w-5"></i>
             </span>
             <div>
-              <h3 class="text-sm font-black text-[#0B1F17]">Share YouTube Lecture &amp; Study Plan</h3>
-              <p class="text-xs text-slate-500">Provide an educational video and key takeaways. Streams live to learner's screen.</p>
+              <h3 class="text-xs sm:text-sm font-black text-[#0B1F17]">Share YouTube Lecture &amp; Study Plan</h3>
+              <p class="text-[11px] sm:text-xs text-slate-500">Provide an educational video and key takeaways. Streams live to learner's screen.</p>
             </div>
           </div>
 
-          <!-- Quick presets for quick demo -->
+          <!-- Quick presets for quick demo: 2x2 grid on mobile -->
           <div>
             <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-bold text-slate-500">1-Click YouTube Presets:</span>
-              <span class="text-[10px] text-emerald-700 font-bold">Curated Educational Videos</span>
+              <span class="text-[10px] sm:text-[11px] font-bold text-slate-500">1-Click YouTube Presets:</span>
+              <span class="text-[10px] text-emerald-700 font-bold hidden xs:inline sm:inline">Curated Educational Videos</span>
             </div>
-            <div class="flex flex-wrap gap-1.5">
-              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition"
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5">
+              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2 sm:px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition truncate text-left"
                 data-url="https://www.youtube.com/watch?v=76n7c_q3vC4" data-title="DSA: Binary Tree Traversals Explained" data-notes="1. Inorder: Left, Root, Right (gives sorted in BST)&#10;2. Preorder: Root, Left, Right (useful for serialization)&#10;3. Postorder: Left, Right, Root (useful for bottom-up computation)">
-                🌳 Binary Trees (15m)
+                🌳 Trees (15m)
               </button>
-              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition"
+              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2 sm:px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition truncate text-left"
                 data-url="https://www.youtube.com/watch?v=TNhaISOUy6Q" data-title="React State &amp; useState Hook Demystified" data-notes="1. State triggers component re-renders&#10;2. Never mutate state directly; always use setter&#10;3. Batching ensures optimal React performance">
                 ⚛️ React Hooks
               </button>
-              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition"
+              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2 sm:px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition truncate text-left"
                 data-url="https://www.youtube.com/watch?v=M7s_5i_Xy1w" data-title="System Design: Load Balancers &amp; Caching" data-notes="1. DNS Routing vs Reverse Proxy&#10;2. Cache-aside vs Write-through caching&#10;3. Horizontal scaling with stateless servers">
-                🏗️ System Design
+                🏗️ Sys Design
               </button>
-              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition"
+              <button type="button" class="yt-preset-btn rounded-lg border border-slate-200 bg-slate-50 px-2 sm:px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition truncate text-left"
                 data-url="https://www.youtube.com/watch?v=7S_tz1z_5bA" data-title="SQL Joins Visualized" data-notes="1. INNER JOIN: Common keys only&#10;2. LEFT JOIN: All left records + matching right&#10;3. INDEX: B-Tree index speeds up lookups from O(N) to O(log N)">
                 🗄️ SQL Joins
               </button>
@@ -595,12 +596,10 @@
           </label>
 
           <!-- Publish Button -->
-          <div class="flex items-center gap-3">
-            <button type="button" id="publish-resources-btn" class="flex-1 btn-pill rounded-xl bg-[#0B1F17] py-3 text-xs font-black text-[#B9F044] hover:bg-[#14532D] shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2">
-              <i data-lucide="send" class="h-4 w-4"></i>
-              <span>Publish &amp; Sync Resources to Learner</span>
-            </button>
-          </div>
+          <button type="button" id="publish-resources-btn" class="w-full btn-pill rounded-xl bg-[#0B1F17] py-3 text-xs sm:text-sm font-black text-[#B9F044] hover:bg-[#14532D] shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2">
+            <i data-lucide="send" class="h-4 w-4"></i>
+            <span>Publish &amp; Sync Resources to Learner</span>
+          </button>
 
           <!-- Live Preview of Published Video for Mentor -->
           <div id="mentor-youtube-preview" class="hidden pt-3 border-t border-slate-100">
@@ -618,35 +617,35 @@
         </div>
 
         <!-- Verification Quiz & Escrow Completion Station -->
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm">
-          <div id="mentor-completion-bar" class="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">
+        <div class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-7 shadow-sm">
+          <div id="mentor-completion-bar" class="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 sm:p-4 text-xs text-amber-900">
             <div class="flex items-center gap-2 font-black text-amber-900">
-              <i data-lucide="shield-check" class="h-4 w-4 text-amber-600"></i> Strict Escrow Protection Active
+              <i data-lucide="shield-check" class="h-4 w-4 text-amber-600 shrink-0"></i> Strict Escrow Protection Active
             </div>
             <p class="mt-1 text-[11px] text-amber-800 leading-relaxed">
               Credits remain safely locked in escrow during the 15-minute session. Send the verification quiz or confirm completion to transfer the credits to your balance.
             </p>
           </div>
 
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-2">
-              <i data-lucide="file-pen-line" class="h-4 w-4 text-[#2F6F11]"></i>
-              <p class="text-xs font-black text-[#0B1F17]">Build Verification Quiz</p>
+          <div class="flex items-center justify-between mb-3 gap-2">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <i data-lucide="file-pen-line" class="h-4 w-4 text-[#2F6F11] shrink-0"></i>
+              <p class="text-xs sm:text-sm font-black text-[#0B1F17]">Build Verification Quiz</p>
             </div>
-            <button type="button" id="btn-quick-quiz-preset" class="rounded-lg border border-[#B9F044]/50 bg-[#F4FBEA] px-2.5 py-1 text-[11px] font-bold text-[#2F6F11] hover:bg-[#B9F044]/30 transition flex items-center gap-1">
+            <button type="button" id="btn-quick-quiz-preset" class="rounded-lg border border-[#B9F044]/50 bg-[#F4FBEA] px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold text-[#2F6F11] hover:bg-[#B9F044]/30 transition flex items-center gap-1 shrink-0">
               <i data-lucide="sparkles" class="h-3 w-3"></i> 1-Click Topic Quiz
             </button>
           </div>
 
-          <p class="text-[11px] text-slate-500 mb-3">Add up to 3 quick check questions to ensure the learner understood the session concepts.</p>
+          <p class="text-[11px] sm:text-xs text-slate-500 mb-3">Add quick check questions to ensure the learner understood the session concepts.</p>
           
-          <div id="quiz-builder" class="space-y-4"></div>
+          <div id="quiz-builder" class="space-y-3 sm:space-y-4"></div>
 
           <button id="add-question-btn" type="button" class="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#2F6F11] hover:underline">
             <i data-lucide="plus-circle" class="h-4 w-4"></i> Add Another Question
           </button>
 
-          <button id="send-quiz-btn" type="button" class="btn-pill mt-4 w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-black text-[#B9F044] transition hover:bg-[#14532D] shadow-sm flex items-center justify-center gap-2">
+          <button id="send-quiz-btn" type="button" class="btn-pill mt-4 w-full rounded-xl bg-[#0B1F17] py-3 text-xs sm:text-sm font-black text-[#B9F044] transition hover:bg-[#14532D] shadow-sm flex items-center justify-center gap-2">
             <i data-lucide="file-check" class="h-4 w-4"></i>
             <span>Send Quiz to Learner &rarr;</span>
           </button>
@@ -656,15 +655,15 @@
           </p>
 
           <!-- Direct / Verified Completion Actions -->
-          <div id="mentor-completion-actions" class="mt-5 rounded-2xl border border-emerald-300 bg-emerald-50/80 p-5">
+          <div id="mentor-completion-actions" class="mt-4 sm:mt-5 rounded-2xl border border-emerald-300 bg-emerald-50/80 p-4 sm:p-5">
             <div class="flex items-center gap-2 text-xs font-black text-emerald-900">
-              <i data-lucide="badge-check" class="h-5 w-5 text-emerald-600"></i>
+              <i data-lucide="badge-check" class="h-5 w-5 text-emerald-600 shrink-0"></i>
               <span>Session Ready for Completion</span>
             </div>
             <p class="mt-1 text-[11px] text-emerald-800 leading-relaxed">
               Confirming completion will transfer the agreed credits directly from learner escrow to your wallet and record the transaction in the ledger.
             </p>
-            <button id="complete-session-btn" type="button" class="btn-pill mt-3.5 w-full rounded-xl bg-emerald-700 py-3 text-xs font-black text-white transition hover:bg-emerald-800 shadow-md flex items-center justify-center gap-2">
+            <button id="complete-session-btn" type="button" class="btn-pill mt-3.5 w-full rounded-xl bg-emerald-700 py-3 text-xs sm:text-sm font-black text-white transition hover:bg-emerald-800 shadow-md flex items-center justify-center gap-2 active:scale-[0.99]">
               <i data-lucide="coins" class="h-4 w-4 text-[#B9F044]"></i>
               <span>Mark Session Complete &amp; Release Credits</span>
             </button>
@@ -674,16 +673,16 @@
       </div>
 
       <!-- Mentor: session complete -->
-      <div id="mentor-done-panel" class="hidden mt-6">
-        <div class="rounded-3xl border border-[#B9F044]/40 bg-gradient-to-br from-[#F4FBEA] to-white p-10 text-center shadow-sm">
-          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
-            <i data-lucide="check-circle-2" class="h-8 w-8"></i>
+      <div id="mentor-done-panel" class="hidden mt-4 sm:mt-6">
+        <div class="rounded-3xl border border-[#B9F044]/40 bg-gradient-to-br from-[#F4FBEA] to-white p-5 sm:p-10 text-center shadow-sm">
+          <div class="mx-auto mb-3 sm:mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
+            <i data-lucide="check-circle-2" class="h-7 w-7 sm:h-8 sm:w-8"></i>
           </div>
-          <p class="text-xl font-extrabold text-[#0B1F17] mb-1">Session Complete!</p>
-          <p id="mentor-done-msg" class="text-xs text-slate-500 mb-6"></p>
-          <div class="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
-            <button onclick="location.reload()" class="rounded-xl bg-[#0B1F17] px-6 py-2.5 text-xs font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Accept Next Session</button>
-            <a href="dashboard.html" class="rounded-xl border border-slate-200 px-6 py-2.5 text-xs font-extrabold text-[#0B1F17] transition hover:border-[#B9F044]">Go to Dashboard</a>
+          <p class="text-lg sm:text-xl font-extrabold text-[#0B1F17] mb-1">Session Complete!</p>
+          <p id="mentor-done-msg" class="text-xs text-slate-500 mb-5 sm:mb-6 leading-relaxed"></p>
+          <div class="flex flex-col sm:flex-row items-center gap-2.5 sm:justify-center w-full">
+            <button onclick="location.reload()" class="w-full sm:w-auto rounded-xl bg-[#0B1F17] px-6 py-3 text-xs font-black text-[#B9F044] transition hover:bg-[#064E3B] text-center">Accept Next Session</button>
+            <a href="dashboard.html" class="w-full sm:w-auto rounded-xl border border-slate-200 px-6 py-3 text-xs font-black text-[#0B1F17] transition hover:border-[#B9F044] text-center">Go to Dashboard</a>
           </div>
         </div>
       </div>
