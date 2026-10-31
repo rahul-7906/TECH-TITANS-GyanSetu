@@ -210,6 +210,22 @@
           <span class="text-[11px] text-slate-400">Questions &amp; challenges update dynamically for this room</span>
         </div>
 
+        <!-- Domain Category Group Filter Tabs -->
+        <div class="flex flex-wrap items-center gap-1.5 mb-2.5">
+          <button type="button" onclick="filterTopicGroup('all')" id="btn-group-all" class="topic-group-btn active rounded-lg bg-[#B9F044] px-2.5 py-1 text-[10px] font-black text-[#0B1F17] transition">
+            All Domains (14)
+          </button>
+          <button type="button" onclick="filterTopicGroup('tech')" id="btn-group-tech" class="topic-group-btn rounded-lg bg-white/10 hover:bg-white/20 px-2.5 py-1 text-[10px] font-bold text-slate-300 transition">
+            💻 Tech &amp; Coding (9)
+          </button>
+          <button type="button" onclick="filterTopicGroup('science')" id="btn-group-science" class="topic-group-btn rounded-lg bg-white/10 hover:bg-white/20 px-2.5 py-1 text-[10px] font-bold text-slate-300 transition">
+            📐 Sciences &amp; Math (3)
+          </button>
+          <button type="button" onclick="filterTopicGroup('aptitude')" id="btn-group-aptitude" class="topic-group-btn rounded-lg bg-white/10 hover:bg-white/20 px-2.5 py-1 text-[10px] font-bold text-slate-300 transition">
+            🧩 Aptitude &amp; Logic (2)
+          </button>
+        </div>
+
         <!-- Topic Pills Container -->
         <div id="topic-pills-container" class="flex flex-wrap gap-2">
           <!-- Dynamically populated pills -->
@@ -471,17 +487,84 @@
             </div>
           </div>
 
-          <!-- ── TAB B: RAPID QUIZ SPRINT ── -->
+          <!-- ── TAB B: RAPID QUIZ SPRINT & STEP-BY-STEP LEARNING ENGINE ── -->
           <div id="battle-tab-quiz" class="hidden">
+            <!-- Question Card -->
             <div class="rounded-2xl border border-white/10 bg-white/5 p-4 mb-4">
-              <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#B9F044] mb-1">Rapid Theory &amp; Architecture Sprint</p>
+              <!-- Header Badges -->
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2 pb-2 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                  <span id="quiz-topic-badge" class="rounded-full bg-[#B9F044]/20 text-[#B9F044] border border-[#B9F044]/30 px-2.5 py-0.5 text-[10px] font-black uppercase flex items-center gap-1">
+                    <span id="quiz-topic-icon">💻</span> <span id="quiz-topic-name">Computer Science (Core)</span>
+                  </span>
+                  <span id="quiz-difficulty-badge" class="rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold">
+                    🟢 Level 1: Core Concept
+                  </span>
+                  <span id="quiz-mode-badge" class="rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 px-2 py-0.5 text-[10px] font-mono">
+                    ✨ Curated
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-mono text-slate-400">
+                    Question <span id="quiz-number-display" class="font-bold text-[#B9F044]">1</span>
+                  </span>
+                  <span id="quiz-subtopic-tag" class="text-[10px] text-slate-400 font-mono hidden sm:inline">
+                    [Data Structures]
+                  </span>
+                </div>
+              </div>
+
+              <!-- Question Title -->
               <h3 id="quiz-question-title" class="text-sm sm:text-base font-bold text-white leading-relaxed">
-                What is the amortized time complexity of inserting into a Dynamic Array (std::vector)?
+                Loading question...
               </h3>
             </div>
 
+            <!-- Quiz Options Container -->
             <div id="quiz-options-container" class="grid gap-2.5 sm:grid-cols-2">
               <!-- Dynamically populated options -->
+            </div>
+
+            <!-- Actions Bar: Step-by-Step Logic, New Dynamic Question, Next -->
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/10">
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="toggleStepByStepLogic()" id="btn-toggle-logic" class="inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white hover:border-[#B9F044]/40 hover:bg-[#B9F044]/10 transition">
+                  <i data-lucide="help-circle" class="h-3.5 w-3.5 text-[#B9F044]"></i>
+                  <span>💡 Step-by-Step Logic / Hint</span>
+                </button>
+                <button type="button" onclick="loadNextProceduralQuestion()" class="inline-flex items-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20 transition" title="Procedurally generate a completely new question with random variables">
+                  <i data-lucide="sparkles" class="h-3.5 w-3.5 text-cyan-300"></i>
+                  <span>⚡ New Dynamic Question</span>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="advanceQuizQuestion()" class="inline-flex items-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 px-3.5 py-1.5 text-xs font-bold text-white transition active:scale-95">
+                  <span>Next Question</span>
+                  <i data-lucide="chevron-right" class="h-3.5 w-3.5 text-[#B9F044]"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Detailed Step-by-Step Logic / Explanation Card (Collapsible) -->
+            <div id="quiz-explanation-card" class="mt-4 hidden rounded-2xl border border-[#B9F044]/30 bg-[#0B2A1E]/80 p-4 text-xs">
+              <div class="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B9F044] text-[#0B1F17] font-black text-xs">💡</span>
+                  <h4 class="font-bold text-white uppercase tracking-wider text-[11px]" id="explanation-concept-title">Step-by-Step Concept &amp; Derivation</h4>
+                </div>
+                <span id="explanation-status-pill" class="rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-mono text-slate-300">Detailed Logic</span>
+              </div>
+
+              <!-- Steps Container -->
+              <div id="explanation-steps-list" class="space-y-1.5 text-slate-300 leading-relaxed font-sans pl-1">
+                <!-- Dynamically populated steps -->
+              </div>
+
+              <!-- Why/Pitfall note -->
+              <div id="explanation-why-box" class="mt-3 rounded-xl bg-white/5 border border-white/10 p-2.5 text-[11px] text-slate-300">
+                <strong class="text-[#B9F044]">Key Takeaway:</strong> <span id="explanation-why-text"></span>
+              </div>
             </div>
           </div>
 
@@ -602,6 +685,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/gyansetu-auth.js"></script>
+  <script src="js/question-engine.js"></script>
   <script src="js/demo-data.js"></script>
   <script src="js/credits-config.js"></script>
   <script src="js/rr-config.js"></script>
@@ -767,157 +851,12 @@
       }
     ];
 
-    // Comprehensive Multi-Subject & Language Quiz Topics
-    const QUIZ_TOPICS = {
-      'cs-general': {
-        name: 'Computer Science (Core)',
-        icon: '💻',
-        badge: 'CS & Systems',
-        desc: 'Operating Systems, Database Architecture, Computer Networks & Algorithms',
-        mode: 'code',
-        questions: [
-          { q: "What is the amortized time complexity of inserting into a Dynamic Array (std::vector)?", opts: ["O(1) amortized", "O(N) always", "O(log N)", "O(N^2)"], ans: 0 },
-          { q: "In WebRTC peer-to-peer data mesh, which protocol provides unreliable, fast UDP datagrams?", opts: ["TCP Socket", "SCTP over DTLS", "HTTP/2 Stream", "WebSocket Frame"], ans: 1 },
-          { q: "Which SQL isolation level prevents phantom reads using range locks or MVCC?", opts: ["Read Uncommitted", "Read Committed", "Repeatable Read", "Serializable"], ans: 3 },
-          { q: "What data structure does Redis utilize for its high-performance sorted sets (ZSET)?", opts: ["Red-Black Tree", "Skip List + Hash Table", "B+ Tree", "Fibonacci Heap"], ans: 1 },
-          { q: "In distributed consensus (Raft/Paxos), what fraction of nodes must agree for a quorum?", opts: ["100% (Unanimous)", "Simple Majority (N/2 + 1)", "One single leader", "Two-thirds (66%)"], ans: 1 },
-          { q: "Which CPU scheduling algorithm gives minimal average waiting time for a set of processes?", opts: ["First Come First Serve", "Round Robin", "Shortest Job First (SJF)", "Priority Scheduling"], ans: 2 }
-        ]
-      },
-      'lang-python': {
-        name: 'Python Language',
-        icon: '🐍',
-        badge: 'Python Programming',
-        desc: 'GIL, Decorators, Generators, Metaclasses & Pythonic idioms',
-        mode: 'code',
-        questions: [
-          { q: "What is the primary function of Python's Global Interpreter Lock (GIL)?", opts: ["Speed up multi-threaded CPU tasks", "Prevent multiple native threads from executing Python bytecodes at once", "Compile Python into C binaries", "Manage garbage collection cycles"], ans: 1 },
-          { q: "In Python, what keyword transforms a standard function into a Generator?", opts: ["return", "async", "yield", "generate"], ans: 2 },
-          { q: "What is the boolean evaluation of `bool([])` and `bool([0])` in Python?", opts: ["True and True", "False and True", "False and False", "True and False"], ans: 1 },
-          { q: "Which built-in Python module is used for object serialization and deserialization?", opts: ["json", "pickle", "marshal", "shelve"], ans: 1 },
-          { q: "What is the average time complexity of searching a key in a Python `dict`?", opts: ["O(log N)", "O(N)", "O(1)", "O(N log N)"], ans: 2 },
-          { q: "What does the `@property` decorator allow a method to do in a Python class?", opts: ["Run asynchronously", "Be accessed like an attribute without calling ()", "Cache the return value permanently", "Make the method private"], ans: 1 }
-        ]
-      },
-      'lang-javascript': {
-        name: 'JavaScript & Web',
-        icon: '🟨',
-        badge: 'JavaScript (ES6+)',
-        desc: 'Event Loop, Closures, Promises, Prototypal Inheritance & Web APIs',
-        mode: 'code',
-        questions: [
-          { q: "In the JavaScript Event Loop, which queue executes before the Macrotask queue (e.g. setTimeout)?", opts: ["Microtask queue (Promise.then)", "Render queue", "I/O polling queue", "Web Worker queue"], ans: 0 },
-          { q: "What will `typeof NaN` evaluate to in standard JavaScript?", opts: ["'undefined'", "'nan'", "'number'", "'object'"], ans: 2 },
-          { q: "What is a Closure in JavaScript?", opts: ["A method to close browser tabs", "A function bundled with references to its surrounding lexical state", "A JSON object without keys", "A private class constructor"], ans: 1 },
-          { q: "Which operator checks both value and type equality without implicit type coercion?", opts: ["==", "!=", "===", "eq"], ans: 2 },
-          { q: "What does `Promise.all()` do if any one of the promises in the array rejects?", opts: ["Ignores the rejected promise", "Waits for all others then returns", "Immediately rejects with that error", "Resolves with null"], ans: 2 },
-          { q: "What does the `'use strict'` directive enforce in JavaScript?", opts: ["Faster CPU execution", "Eliminates silent errors and prevents accidental global variables", "Converts code to TypeScript", "Disables async/await"], ans: 1 }
-        ]
-      },
-      'lang-cpp': {
-        name: 'C / C++ Systems',
-        icon: '⚡',
-        badge: 'C / C++',
-        desc: 'Pointers, RAII, Smart Pointers, STL, Memory Management & OOP',
-        mode: 'code',
-        questions: [
-          { q: "Why should a base class destructor always be declared `virtual` in C++?", opts: ["To speed up execution", "To ensure proper derived class destruction via base pointer", "To allocate on stack memory", "To allow multiple inheritance"], ans: 1 },
-          { q: "Which C++ smart pointer provides exclusive ownership without reference counting overhead?", opts: ["std::shared_ptr", "std::weak_ptr", "std::unique_ptr", "std::auto_ptr"], ans: 2 },
-          { q: "What happens if you dereference a NULL or dangling pointer in C/C++?", opts: ["Compile-time warning", "Undefined Behavior (often Segmentation Fault)", "Returns 0 gracefully", "Throws a NullPointerException"], ans: 1 },
-          { q: "What does RAII (Resource Acquisition Is Initialization) ensure in C++?", opts: ["Variables are always zeroed", "Resources are automatically released in destructors when scope exits", "Templates compile without warnings", "Threads run in parallel"], ans: 1 },
-          { q: "In C++, what is the size of an empty class `class Empty {};`?", opts: ["0 bytes", "1 byte (to ensure distinct memory addresses)", "4 bytes", "8 bytes"], ans: 1 }
-        ]
-      },
-      'lang-java': {
-        name: 'Java Enterprise',
-        icon: '☕',
-        badge: 'Java & JVM',
-        desc: 'JVM Memory, Garbage Collection, Multithreading & OOP Design',
-        mode: 'code',
-        questions: [
-          { q: "Why are String objects immutable in Java?", opts: ["For security, caching in the String Pool, and thread safety", "Because primitive types cannot change", "JVM does not support string mutation", "To save hard drive space"], ans: 0 },
-          { q: "In Java multithreading, what does the `volatile` keyword guarantee?", opts: ["Mutual exclusion like synchronized", "Visibility of changes across threads by reading directly from main memory", "Prevents garbage collection", "Locks the object"], ans: 1 },
-          { q: "Which memory area in JVM stores class metadata, static variables, and bytecode?", opts: ["Java Heap", "Thread Stack", "Metaspace (formerly PermGen)", "Program Counter Register"], ans: 2 },
-          { q: "Can an abstract class in Java have a constructor?", opts: ["No, abstract classes cannot have constructors", "Yes, invoked when a subclass is instantiated via super()", "Only if it is declared private", "Only in Java 17+"], ans: 1 },
-          { q: "What is the difference between `fail-fast` and `fail-safe` iterators in Java?", opts: ["Fail-fast throws ConcurrentModificationException if collection modified", "Fail-safe runs 2x faster", "Fail-fast works only on arrays", "Fail-safe disables synchronization"], ans: 0 }
-        ]
-      },
-      'physics': {
-        name: 'Physics & Mechanics',
-        icon: '⚛️',
-        badge: 'Physics',
-        desc: 'Kinematics, Thermodynamics, Electromagnetism, Quantum & Modern Physics',
-        mode: 'quiz',
-        questions: [
-          { q: "What is the escape velocity from the surface of planet Earth approximately?", opts: ["7.9 km/s", "11.2 km/s", "25.4 km/s", "3.0 x 10^5 km/s"], ans: 1 },
-          { q: "Which law explains why the pressure inside a moving fluid decreases as fluid velocity increases?", opts: ["Pascal's Principle", "Archimedes' Principle", "Bernoulli's Principle", "Hooke's Law"], ans: 2 },
-          { q: "According to Einstein's Photoelectric Effect, what does the kinetic energy of emitted electrons depend on?", opts: ["Intensity of incident light", "Frequency of incident light", "Surface area of the metal", "Duration of illumination"], ans: 1 },
-          { q: "What does Heisenberg's Uncertainty Principle state is impossible to measure simultaneously with arbitrary precision?", opts: ["Mass and acceleration", "Position and momentum of a particle", "Charge and electric field", "Velocity and temperature"], ans: 1 },
-          { q: "In electromagnetic induction, which law gives the direction of the induced electromotive force (EMF)?", opts: ["Faraday's Law", "Lenz's Law", "Ampère's Law", "Gauss's Law"], ans: 1 },
-          { q: "What is the SI unit of magnetic flux?", opts: ["Tesla", "Weber", "Henry", "Gauss"], ans: 1 }
-        ]
-      },
-      'math': {
-        name: 'Mathematics & Calculus',
-        icon: '📐',
-        badge: 'Mathematics',
-        desc: 'Linear Algebra, Probability, Calculus, Combinatorics & Matrices',
-        mode: 'quiz',
-        questions: [
-          { q: "What is the derivative of f(x) = e^(3x) with respect to x?", opts: ["e^(3x)", "3 * e^(3x)", "(1/3) * e^(3x)", "3x * e^(3x-1)"], ans: 1 },
-          { q: "When rolling two standard 6-sided dice, what is the probability that the sum equals 7?", opts: ["1/12", "1/6 (6 out of 36)", "1/7", "5/36"], ans: 1 },
-          { q: "What is the determinant of a 2x2 matrix [[a, b], [c, d]]?", opts: ["ab - cd", "ad - bc", "ac - bd", "ad + bc"], ans: 1 },
-          { q: "What is Euler's Identity linking 5 fundamental mathematical constants?", opts: ["e^(i*pi) + 1 = 0", "pi * r^2 = A", "a^2 + b^2 = c^2", "log(e) = 1"], ans: 0 },
-          { q: "What is the sum of interior angles in any Euclidean planar triangle?", opts: ["90°", "180° (pi radians)", "270°", "360°"], ans: 1 },
-          { q: "How many ways can 5 distinct books be arranged on a bookshelf (5!)?", opts: ["25", "60", "120", "720"], ans: 2 }
-        ]
-      },
-      'science': {
-        name: 'General Science',
-        icon: '🔬',
-        badge: 'General Science',
-        desc: 'Chemistry, Biology, Planetary Astronomy & Environmental Science',
-        mode: 'quiz',
-        questions: [
-          { q: "What is the molecular structure of DNA discovered by Watson and Crick in 1953?", opts: ["Single alpha-helix", "Double helix", "Triple twisted strand", "Planar sheet"], ans: 1 },
-          { q: "What is the pH value of pure distilled water at 25°C?", opts: ["0 (acidic)", "7 (neutral)", "14 (basic)", "5.5 (slightly acidic)"], ans: 1 },
-          { q: "Which gas is the primary byproduct released during oxygenic plant photosynthesis?", opts: ["Carbon dioxide (CO2)", "Nitrogen (N2)", "Oxygen (O2)", "Methane (CH4)"], ans: 2 },
-          { q: "What is the speed of light in a vacuum (c) approximately?", opts: ["3 x 10^8 meters/second", "3 x 10^5 meters/second", "1.5 x 10^8 meters/second", "3 x 10^6 meters/second"], ans: 0 },
-          { q: "Which planet in our solar system has the most prominent and extensive ring system?", opts: ["Jupiter", "Saturn", "Uranus", "Neptune"], ans: 1 },
-          { q: "What organelle is widely referred to as the 'powerhouse of the cell'?", opts: ["Ribosome", "Nucleus", "Mitochondria", "Golgi apparatus"], ans: 2 }
-        ]
-      },
-      'gk': {
-        name: 'General Knowledge & Tech',
-        icon: '🧠',
-        badge: 'General Knowledge',
-        desc: 'World History, Geography, Tech Pioneers & Global Milestones',
-        mode: 'quiz',
-        questions: [
-          { q: "Who created the Linux operating system kernel in 1991?", opts: ["Steve Wozniak", "Linus Torvalds", "Richard Stallman", "Ken Thompson"], ans: 1 },
-          { q: "In which year did Tim Berners-Lee invent the World Wide Web at CERN?", opts: ["1975", "1983", "1989", "1995"], ans: 2 },
-          { q: "Where is the headquarters of the Indian Space Research Organisation (ISRO) located?", opts: ["New Delhi", "Bengaluru", "Hyderabad", "Thiruvananthapuram"], ans: 1 },
-          { q: "Who is known as the father of modern Computer Science and Artificial Intelligence?", opts: ["Charles Babbage", "Alan Turing", "John von Neumann", "Ada Lovelace"], ans: 1 },
-          { q: "What was the name of the world's first electronic general-purpose computer (1945)?", opts: ["UNIVAC I", "ENIAC", "IBM 7090", "Colossus"], ans: 1 },
-          { q: "Which Indian institution was established first in 1951 as the first IIT?", opts: ["IIT Bombay", "IIT Delhi", "IIT Kharagpur", "IIT Kanpur"], ans: 2 }
-        ]
-      },
-      'aptitude': {
-        name: 'Campus Aptitude & Logic',
-        icon: '🧩',
-        badge: 'Aptitude & Logic',
-        desc: 'Speed Math, Logical Reasoning, Time & Work, Sequences & Puzzles',
-        mode: 'quiz',
-        questions: [
-          { q: "If A can complete a work in 10 days and B in 15 days, in how many days can they finish it working together?", opts: ["5 days", "6 days", "8 days", "12.5 days"], ans: 1 },
-          { q: "What is the angle between the hour hand and minute hand of a clock at 3:15?", opts: ["0°", "7.5°", "15°", "22.5°"], ans: 1 },
-          { q: "A train 150m long is running at 54 km/h. How many seconds will it take to pass a telegraph pole?", opts: ["8 seconds", "10 seconds", "12 seconds", "15 seconds"], ans: 1 },
-          { q: "Find the next number in the sequence: 2, 6, 12, 20, 30, ?", opts: ["38", "40", "42 (diffs: +4, +6, +8, +10, +12)", "44"], ans: 2 },
-          { q: "If cost price is ₹200 and selling price is ₹250, what is the profit percentage?", opts: ["20%", "25%", "30%", "50%"], ans: 1 },
-          { q: "Pointing to a photograph, a man said: 'His mother is the only daughter of my mother.' Whose photo is it?", opts: ["His brother", "His son", "His nephew", "His father"], ans: 1 }
-        ]
-      }
-    };
+    // Multi-Subject Domain Topics Engine (14 Fields across Tech, Sciences, Aptitude)
+    const QUIZ_TOPICS = (window.GyanSetuQuestionEngine && window.GyanSetuQuestionEngine.getAllTopics()) 
+      || window.QUIZ_TOPICS_ENGINE 
+      || {
+        'cs-general': { name: 'Computer Science (Core)', icon: '💻', badge: 'CS & Systems', mode: 'quiz', group: 'tech' }
+      };
 
     // Campus Online Peers Directory (for live invite system)
     const CAMPUS_ONLINE_PEERS = [
@@ -997,13 +936,33 @@
     });
 
     // ═══════════════════════════════════════════════════════════════════════
-    // TOPIC / SUBJECT SWITCHING LOGIC
+    // TOPIC / SUBJECT SWITCHING LOGIC WITH DOMAIN GROUP FILTERING
     // ═══════════════════════════════════════════════════════════════════════
+    let currentTopicGroup = 'all';
+
+    function filterTopicGroup(group) {
+      currentTopicGroup = group;
+      document.querySelectorAll('.topic-group-btn').forEach(btn => {
+        if (btn.id === `btn-group-${group}`) {
+          btn.className = 'topic-group-btn active rounded-lg bg-[#B9F044] px-2.5 py-1 text-[10px] font-black text-[#0B1F17] transition';
+        } else {
+          btn.className = 'topic-group-btn rounded-lg bg-white/10 hover:bg-white/20 px-2.5 py-1 text-[10px] font-bold text-slate-300 transition';
+        }
+      });
+      renderTopicPills();
+    }
+
     function renderTopicPills() {
       const container = document.getElementById('topic-pills-container');
       if (!container) return;
 
-      container.innerHTML = Object.keys(QUIZ_TOPICS).map(key => {
+      const keys = Object.keys(QUIZ_TOPICS).filter(key => {
+        if (currentTopicGroup === 'all') return true;
+        const meta = QUIZ_TOPICS[key];
+        return (meta && meta.group === currentTopicGroup);
+      });
+
+      container.innerHTML = keys.map(key => {
         const t = QUIZ_TOPICS[key];
         const isActive = (key === currentTopic);
         const activeClass = isActive
@@ -1307,60 +1266,209 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════
-    // RAPID QUIZ SPRINT ENGINE
+    // RAPID QUIZ SPRINT & STEP-BY-STEP LEARNING ENGINE
     // ═══════════════════════════════════════════════════════════════════════
-    function loadQuizQuestion(idx) {
-      const questions = QUIZ_TOPICS[currentTopic]?.questions || QUIZ_TOPICS['cs-general'].questions;
-      if (idx >= questions.length) idx = 0;
-      currentQuizIdx = idx;
-      const q = questions[idx];
+    let currentQuizQ = null;
+    let quizAutoAdvanceTimeout = null;
 
-      document.getElementById('quiz-question-title').textContent = q.q;
+    function loadQuizQuestion(idx, forceDynamic = false) {
+      clearTimeout(quizAutoAdvanceTimeout);
+      currentQuizIdx = idx;
+
+      // Fetch question via GyanSetuQuestionEngine
+      if (window.GyanSetuQuestionEngine) {
+        currentQuizQ = window.GyanSetuQuestionEngine.getNextQuestion(currentTopic, idx, forceDynamic);
+      } else {
+        currentQuizQ = {
+          q: "What is the amortized time complexity of inserting into a Dynamic Array (std::vector)?",
+          opts: ["O(1) amortized", "O(N) always", "O(log N)", "O(N^2)"],
+          ans: 0,
+          difficulty: 1,
+          subtopic: "Data Structures",
+          explanation: {
+            concept: "Dynamic Array Resizing",
+            steps: ["Capacity doubles geometrically", "Amortized cost is O(1)"],
+            why: "Average work per insertion is constant."
+          }
+        };
+      }
+
+      // 1. Update Topic & Metadata Badges
+      const meta = QUIZ_TOPICS[currentTopic] || { name: 'General', icon: '💻' };
+      const topicIconEl = document.getElementById('quiz-topic-icon');
+      const topicNameEl = document.getElementById('quiz-topic-name');
+      if (topicIconEl) topicIconEl.textContent = currentQuizQ.topicIcon || meta.icon;
+      if (topicNameEl) topicNameEl.textContent = currentQuizQ.topicName || meta.name;
+
+      const numEl = document.getElementById('quiz-number-display');
+      if (numEl) numEl.textContent = (idx + 1);
+
+      const subtopicEl = document.getElementById('quiz-subtopic-tag');
+      if (subtopicEl) {
+        subtopicEl.textContent = currentQuizQ.subtopic ? `[${currentQuizQ.subtopic}]` : '';
+      }
+
+      const diffEl = document.getElementById('quiz-difficulty-badge');
+      if (diffEl) {
+        if (currentQuizQ.difficulty === 1) {
+          diffEl.textContent = '🟢 Level 1: Core Concept';
+          diffEl.className = 'rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold';
+        } else if (currentQuizQ.difficulty === 2) {
+          diffEl.textContent = '🟡 Level 2: Analysis & Tracing';
+          diffEl.className = 'rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold';
+        } else {
+          diffEl.textContent = '🟣 Level 3: Pro Mastery';
+          diffEl.className = 'rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 text-[10px] font-bold';
+        }
+      }
+
+      const modeEl = document.getElementById('quiz-mode-badge');
+      if (modeEl) {
+        if (currentQuizQ.isDynamic) {
+          modeEl.textContent = '⚡ Procedural Dynamic';
+          modeEl.className = 'rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-2 py-0.5 text-[10px] font-mono font-bold animate-pulse';
+        } else {
+          modeEl.textContent = '✨ Curated Master';
+          modeEl.className = 'rounded-full bg-white/10 text-slate-300 border border-white/20 px-2 py-0.5 text-[10px] font-mono';
+        }
+      }
+
+      // 2. Render Question Title
+      document.getElementById('quiz-question-title').innerHTML = currentQuizQ.q;
+
+      // 3. Render Options
       const container = document.getElementById('quiz-options-container');
-      container.innerHTML = q.opts.map((opt, i) => `
-        <button onclick="handleQuizAnswer(${i})" class="rounded-xl border border-white/15 bg-white/5 p-3.5 text-left text-xs font-semibold text-white hover:border-[#B9F044] hover:bg-[#B9F044]/10 transition active:scale-98">
+      container.innerHTML = currentQuizQ.opts.map((opt, i) => `
+        <button id="quiz-opt-btn-${i}" onclick="handleQuizAnswer(${i})" class="quiz-option-btn rounded-xl border border-white/15 bg-white/5 p-3.5 text-left text-xs font-semibold text-white hover:border-[#B9F044] hover:bg-[#B9F044]/10 transition active:scale-98">
           <span class="inline-block w-5 font-mono text-[#B9F044] font-bold">${String.fromCharCode(65 + i)}.</span> ${opt}
         </button>
       `).join('');
+
+      // 4. Reset Explanation Card & Feedback Banner
+      const expCard = document.getElementById('quiz-explanation-card');
+      if (expCard) expCard.classList.add('hidden');
+      const feedback = document.getElementById('action-feedback-banner');
+      if (feedback) feedback.classList.add('hidden');
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     function handleQuizAnswer(selectedIdx) {
-      if (!matchRunning) {
-        alert('Please click "Launch Match 🏁" above to start the race!');
-        return;
-      }
+      if (!currentQuizQ) return;
 
-      const questions = QUIZ_TOPICS[currentTopic]?.questions || QUIZ_TOPICS['cs-general'].questions;
-      const q = questions[currentQuizIdx];
-      const isCorrect = (selectedIdx === q.ans);
+      const isCorrect = (selectedIdx === currentQuizQ.ans);
       const feedback = document.getElementById('action-feedback-banner');
+
+      // Visual state on option buttons
+      document.querySelectorAll('.quiz-option-btn').forEach((btn, idx) => {
+        btn.disabled = true;
+        btn.classList.remove('hover:border-[#B9F044]', 'hover:bg-[#B9F044]/10');
+        if (idx === currentQuizQ.ans) {
+          btn.classList.add('border-emerald-400', 'bg-emerald-500/20', 'text-emerald-200');
+        } else if (idx === selectedIdx && !isCorrect) {
+          btn.classList.add('border-rose-500', 'bg-rose-500/20', 'text-rose-200');
+        } else {
+          btn.classList.add('opacity-40');
+        }
+      });
 
       if (isCorrect) {
         playSound('correct');
-        TEAMS.team1.pts += 10;
-        updateCarPosition('team1', 'boost');
-        feedback.textContent = `⚡ CORRECT! +10 Points Speed Boost for ${TEAMS.team1.name}!`;
+        if (matchRunning) {
+          TEAMS.team1.pts = Math.min(100, TEAMS.team1.pts + 10);
+          updateCarPosition('team1', 'boost');
+          addCombatLog(`⚡ ${TEAMS.team1.name} solved Theory Sprint correctly! (+10 pts)`);
+        }
+        feedback.innerHTML = `✅ <strong>CORRECT!</strong> Great analytical thinking! +10 Points`;
         feedback.className = 'mt-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-3 text-center text-xs font-black text-emerald-300';
-        addCombatLog(`⚡ ${TEAMS.team1.name} answered Theory Sprint correctly! (+10 pts)`);
       } else {
         playSound('error');
-        TEAMS.team1.pts = Math.max(0, TEAMS.team1.pts - 5);
-        updateCarPosition('team1', 'spin');
-        feedback.textContent = `💥 WRONG! -5 Points Penalty. Correct: ${q.opts[q.ans]}`;
+        if (matchRunning) {
+          TEAMS.team1.pts = Math.max(0, TEAMS.team1.pts - 5);
+          updateCarPosition('team1', 'spin');
+          addCombatLog(`⚠️ ${TEAMS.team1.name} missed theory question! (-5 pts)`);
+        }
+        feedback.innerHTML = `💥 <strong>INCORRECT.</strong> Correct answer: <strong>${currentQuizQ.opts[currentQuizQ.ans]}</strong>`;
         feedback.className = 'mt-4 rounded-xl bg-rose-500/20 border border-rose-500/40 p-3 text-center text-xs font-black text-rose-300';
-        addCombatLog(`⚠️ ${TEAMS.team1.name} missed theory question! (-5 pts)`);
       }
       feedback.classList.remove('hidden');
 
-      channel?.send({
-        type: 'broadcast',
-        event: 'team-point-update',
-        payload: { team: 'team1', pts: TEAMS.team1.pts, delta: isCorrect ? 10 : -5, reason: 'Quiz Answer' }
-      });
+      // Automatically show the Step-by-Step Logic explanation card so the student learns immediately!
+      renderExplanationCard(isCorrect);
 
-      setTimeout(() => {
-        if (matchRunning) loadQuizQuestion(currentQuizIdx + 1);
-      }, 1800);
+      if (matchRunning && channel) {
+        channel.send({
+          type: 'broadcast',
+          event: 'team-point-update',
+          payload: { team: 'team1', pts: TEAMS.team1.pts, delta: isCorrect ? 10 : -5, reason: 'Quiz Answer' }
+        });
+
+        // In a race, auto-advance after 3.2 seconds
+        quizAutoAdvanceTimeout = setTimeout(() => {
+          if (matchRunning) advanceQuizQuestion();
+        }, 3200);
+      }
+    }
+
+    function renderExplanationCard(isCorrect) {
+      const expCard = document.getElementById('quiz-explanation-card');
+      if (!expCard || !currentQuizQ || !currentQuizQ.explanation) return;
+
+      const exp = currentQuizQ.explanation;
+      const conceptTitle = document.getElementById('explanation-concept-title');
+      if (conceptTitle) conceptTitle.textContent = exp.concept || 'Step-by-Step Logic';
+      
+      const statusPill = document.getElementById('explanation-status-pill');
+      if (statusPill) {
+        if (isCorrect === true) {
+          statusPill.textContent = '✅ Verified Solution';
+          statusPill.className = 'rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 text-[9px] font-mono font-bold';
+        } else if (isCorrect === false) {
+          statusPill.textContent = '💡 Step-by-Step Solution';
+          statusPill.className = 'rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 text-[9px] font-mono font-bold';
+        } else {
+          statusPill.textContent = '💡 Conceptual Hint';
+          statusPill.className = 'rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 text-[9px] font-mono font-bold';
+        }
+      }
+
+      const stepsContainer = document.getElementById('explanation-steps-list');
+      if (stepsContainer && Array.isArray(exp.steps)) {
+        stepsContainer.innerHTML = exp.steps.map(step => `
+          <div class="flex items-start gap-2 py-1">
+            <span class="text-[#B9F044] font-bold">&bull;</span>
+            <span class="text-slate-200 text-xs">${step}</span>
+          </div>
+        `).join('');
+      }
+
+      const whyText = document.getElementById('explanation-why-text');
+      if (whyText) {
+        whyText.textContent = exp.why || 'Review the conceptual principles above.';
+      }
+
+      expCard.classList.remove('hidden');
+    }
+
+    function toggleStepByStepLogic() {
+      const expCard = document.getElementById('quiz-explanation-card');
+      if (!expCard) return;
+      if (expCard.classList.contains('hidden')) {
+        renderExplanationCard(null);
+        expCard.classList.remove('hidden');
+      } else {
+        expCard.classList.add('hidden');
+      }
+    }
+
+    function advanceQuizQuestion() {
+      loadQuizQuestion(currentQuizIdx + 1);
+    }
+
+    function loadNextProceduralQuestion() {
+      loadQuizQuestion(currentQuizIdx + 1, true);
+      addCombatLog(`⚡ Procedural Engine synthesized a dynamic mathematical/algorithmic problem!`);
+      playSound('boost');
     }
 
     function switchBattleTab(tab) {
@@ -1539,16 +1647,20 @@
         // Record arena activity for dynamic Subject Mastery Tracking
         if (window.GyanSetuAuth?.recordUserActivity) {
           const subjectMap = {
-            'cs-general': 'DSA',
+            'cs-general': 'Operating Systems',
+            'dsa': 'DSA',
             'lang-python': 'Python',
             'lang-javascript': 'Web Dev',
-            'lang-cpp': 'Computer Networks',
+            'lang-cpp': 'DSA',
             'lang-java': 'DSA',
-            'math': 'Machine Learning',
-            'physics': 'Machine Learning',
-            'science': 'Machine Learning',
-            'gk': 'Operating Systems',
-            'aptitude': 'DSA'
+            'aiml': 'Machine Learning',
+            'web-backend': 'Web Dev',
+            'cybersecurity': 'Computer Networks',
+            'math': 'Engineering Math',
+            'physics': 'Physics',
+            'science': 'Natural Sciences',
+            'gk': 'Tech & Systems',
+            'aptitude': 'Aptitude & Logic'
           };
           const mappedSubject = subjectMap[currentTopic] || 'General';
           window.GyanSetuAuth.recordUserActivity(myUser.id, {
@@ -1596,6 +1708,7 @@
       TEAMS.team2.pts = 0;
       updateCarPosition('team1');
       updateCarPosition('team2');
+      if (window.GyanSetuQuestionEngine) window.GyanSetuQuestionEngine.resetSession();
       loadProblem(0);
       loadQuizQuestion(0);
     }

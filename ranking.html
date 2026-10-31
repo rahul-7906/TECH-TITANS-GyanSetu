@@ -617,26 +617,33 @@
         return;
       }
 
-      // Reorder for Olympic Podium style: [Rank 2 (Silver), Rank 1 (Gold), Rank 3 (Bronze)]
-      const first = top3[0];
-      const second = top3[1] || null;
-      const third = top3[2] || null;
-
-      const podiumOrder = [
-        { peer: second, rank: 2, label: '2nd Place', border: 'border-slate-300', bg: 'bg-gradient-to-b from-slate-50 to-white', badge: 'Silver' },
-        { peer: first,  rank: 1, label: '1st Place &bull; Champion', border: 'border-amber-400', bg: 'bg-gradient-to-b from-amber-50/70 via-white to-white shadow-md', badge: 'Gold Champion', glow: true },
-        { peer: third,  rank: 3, label: '3rd Place', border: 'border-amber-700/40', bg: 'bg-gradient-to-b from-amber-900/5 to-white', badge: 'Bronze' }
-      ];
+      let podiumOrder = [];
+      if (top3.length === 1) {
+        podiumOrder = [
+          { peer: top3[0], rank: 1, label: '1st Place &bull; Champion', border: 'border-amber-400', bg: 'bg-gradient-to-b from-amber-50/70 via-white to-white shadow-md', badge: 'Gold Champion', glow: true, colClass: 'sm:col-start-2' }
+        ];
+      } else if (top3.length === 2) {
+        podiumOrder = [
+          { peer: top3[0], rank: 1, label: '1st Place &bull; Champion', border: 'border-amber-400', bg: 'bg-gradient-to-b from-amber-50/70 via-white to-white shadow-md', badge: 'Gold Champion', glow: true },
+          { peer: top3[1], rank: 2, label: '2nd Place', border: 'border-slate-300', bg: 'bg-gradient-to-b from-slate-50 to-white', badge: 'Silver' }
+        ];
+      } else {
+        podiumOrder = [
+          { peer: top3[1], rank: 2, label: '2nd Place', border: 'border-slate-300', bg: 'bg-gradient-to-b from-slate-50 to-white', badge: 'Silver' },
+          { peer: top3[0], rank: 1, label: '1st Place &bull; Champion', border: 'border-amber-400', bg: 'bg-gradient-to-b from-amber-50/70 via-white to-white shadow-md', badge: 'Gold Champion', glow: true },
+          { peer: top3[2], rank: 3, label: '3rd Place', border: 'border-amber-700/40', bg: 'bg-gradient-to-b from-amber-900/5 to-white', badge: 'Bronze' }
+        ];
+      }
 
       container.innerHTML = podiumOrder.map(item => {
         if (!item.peer) return '';
         const rankInfo = calculateRank(item.peer.rr || 1000);
-        const score = (activeTimeFilter === 'weekly') ? (item.peer.weekly_rr || 95) : 
-                      (activeTimeFilter === 'monthly') ? (item.peer.monthly_rr || 280) : (item.peer.rr || 1000);
+        const score = (activeTimeFilter === 'weekly') ? (item.peer.weekly_rr || Math.max(10, Math.round((item.peer.rr || 1000) * 0.05))) : 
+                      (activeTimeFilter === 'monthly') ? (item.peer.monthly_rr || Math.max(25, Math.round((item.peer.rr || 1000) * 0.15))) : (item.peer.rr || 1000);
         const isMe = currentProfile && (item.peer.id === currentProfile.id || item.peer.full_name === currentProfile.full_name);
 
         return `
-          <div class="podium-card relative rounded-2xl border ${item.border} ${item.bg} p-4 text-center flex flex-col items-center justify-between ${item.glow ? 'ring-2 ring-amber-400/40' : ''}">
+          <div class="podium-card relative rounded-2xl border ${item.border} ${item.bg} p-4 text-center flex flex-col items-center justify-between ${item.glow ? 'ring-2 ring-amber-400/40' : ''} ${item.colClass || ''}">
             <span class="absolute top-2.5 right-3 text-xs font-black font-mono text-slate-400">#${item.rank}</span>
 
             <div class="mt-1 flex flex-col items-center">
@@ -663,7 +670,7 @@
       if (!peers || peers.length === 0) {
         container.innerHTML = `
           <div class="p-8 text-center text-xs font-semibold text-slate-400">
-            No learners found for this scope & filter. Try another territory or search term.
+            No registered campus learners found for this scope & filter.
           </div>`;
         return;
       }
@@ -671,8 +678,8 @@
       container.innerHTML = peers.map((peer, idx) => {
         const rank = idx + 1;
         const rankInfo = calculateRank(peer.rr || 1000);
-        const score = (activeTimeFilter === 'weekly') ? (peer.weekly_rr || 95) : 
-                      (activeTimeFilter === 'monthly') ? (peer.monthly_rr || 280) : (peer.rr || 1000);
+        const score = (activeTimeFilter === 'weekly') ? (peer.weekly_rr || Math.max(10, Math.round((peer.rr || 1000) * 0.05))) : 
+                      (activeTimeFilter === 'monthly') ? (peer.monthly_rr || Math.max(25, Math.round((peer.rr || 1000) * 0.15))) : (peer.rr || 1000);
         const isMe = currentProfile && (peer.id === currentProfile.id || peer.full_name === currentProfile.full_name);
 
         let rankBadgeClass = 'text-slate-500 font-mono font-bold';
@@ -714,8 +721,8 @@
 
             <!-- Activity Stats -->
             <div class="hidden sm:block sm:col-span-2 text-right text-xs">
-              <p class="text-[11px] font-bold text-slate-600">🏆 ${peer.challenge_wins || 12} Wins</p>
-              <p class="text-[10px] text-slate-400">🔥 ${peer.streak || 5}d Streak</p>
+              <p class="text-[11px] font-bold text-slate-600">🏆 ${peer.challenge_wins || 0} Wins</p>
+              <p class="text-[10px] text-slate-400">🔥 ${peer.streak || 1}d Streak</p>
             </div>
 
           </div>`;

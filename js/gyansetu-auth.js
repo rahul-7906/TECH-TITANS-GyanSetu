@@ -161,7 +161,7 @@
     },
 
     /**
-     * Save or upsert profile into Supabase
+     * Save or upsert profile into Supabase (Adaptive to table columns)
      */
     async saveProfileToSupabase(profile) {
       var sb = getSupabaseClient();
@@ -170,6 +170,30 @@
         var { error } = await sb.from('profiles').upsert(profile, { onConflict: 'id' });
         if (!error) return true;
         console.warn('[GyanSetuAuth] Profile upsert warning:', error.message);
+
+        // If error is due to missing columns in Postgres schema:
+        // Gracefully retry with standard core columns
+        if (error.message && (error.message.includes('column') || error.message.includes('schema cache'))) {
+          var trimmed = {
+            id: profile.id,
+            full_name: profile.full_name || 'Campus Student',
+            department: profile.department || 'General'
+          };
+          if (profile.email) trimmed.email = profile.email;
+          if (profile.role) trimmed.role = profile.role;
+          if (profile.credits != null) trimmed.credits = profile.credits;
+
+          var res2 = await sb.from('profiles').upsert(trimmed, { onConflict: 'id' });
+          if (!res2.error) return true;
+
+          // Minimal fallback: id, full_name, department
+          var res3 = await sb.from('profiles').upsert({
+            id: profile.id,
+            full_name: profile.full_name || 'Campus Student',
+            department: profile.department || 'General'
+          }, { onConflict: 'id' });
+          if (!res3.error) return true;
+        }
       } catch (e) {
         console.warn('[GyanSetuAuth] Profile save error:', e);
       }
