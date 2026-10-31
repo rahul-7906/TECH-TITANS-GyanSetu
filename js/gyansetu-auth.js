@@ -742,6 +742,43 @@
     },
 
     /**
+     * Synchronously check if a user is logged in
+     */
+    isLoggedIn() {
+      try {
+        if (localStorage.getItem(STORAGE_KEYS.ACTIVE_PROFILE) || 
+            localStorage.getItem(STORAGE_KEYS.ACTIVE_USER) || 
+            sessionStorage.getItem(STORAGE_KEYS.DEMO_MODE)) {
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    },
+
+    /**
+     * Require authentication on protected pages.
+     * Redirects to login.html with return redirect parameter if not authenticated.
+     */
+    async requireAuth(options = {}) {
+      if (this.isLoggedIn()) return true;
+
+      var sb = getSupabaseClient();
+      if (sb && sb.auth) {
+        try {
+          var { data: { session } } = await sb.auth.getSession();
+          if (session && session.user) return true;
+        } catch (e) {}
+      }
+
+      var currentPath = window.location.pathname.split('/').pop() || 'dashboard.html';
+      var query = window.location.search || '';
+      var redirectTarget = encodeURIComponent(currentPath + query);
+      var loginUrl = (options.loginUrl || 'login.html') + '?redirect=' + redirectTarget;
+      window.location.replace(loginUrl);
+      return false;
+    },
+
+    /**
      * Sign out user completely
      */
     async logout() {

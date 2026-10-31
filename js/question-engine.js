@@ -1821,7 +1821,8 @@
         questionNumber: questionIndex + 1,
         topicKey: topicKey,
         topicName: meta.name,
-        topicIcon: meta.icon
+        topicIcon: meta.icon,
+        isDynamic: true
       };
     },
 

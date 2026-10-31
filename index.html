@@ -92,22 +92,16 @@
       </a>
 
       <ul class="hidden items-center gap-7 text-[13px] font-semibold text-slate-600 lg:flex">
+        <li><a href="#about" class="nav-link transition hover:text-[#0B1F17]">About</a></li>
         <li><a href="#features" class="nav-link transition hover:text-[#0B1F17]">Features</a></li>
         <li><a href="#how-it-works" class="nav-link transition hover:text-[#0B1F17]">How It Works</a></li>
-        <li><a href="ranking.html" class="nav-link transition hover:text-[#0B1F17]">Leaderboard 🏆</a></li>
-        <li><a href="peers.html" class="nav-link transition hover:text-[#0B1F17]">Smart Match</a></li>
         <li><a href="#testimonials" class="nav-link transition hover:text-[#0B1F17]">Reviews</a></li>
-        <li><a href="#impact" class="nav-link transition hover:text-[#0B1F17]">Impact</a></li>
-        <li>
-          <a href="room.html" class="inline-flex items-center gap-1.5 rounded-full bg-[#B9F044]/20 px-3.5 py-1.5 text-xs font-extrabold text-[#2F6F11] transition hover:bg-[#B9F044] hover:text-[#0B1F17]">
-            <span class="h-1.5 w-1.5 rounded-full bg-[#2F6F11] animate-pulse"></span>Live Room
-          </a>
-        </li>
+        <li><a href="#faq" class="nav-link transition hover:text-[#0B1F17]">FAQ</a></li>
       </ul>
 
-      <div class="hidden items-center gap-2.5 lg:flex">
-        <a href="login.html" class="rounded-full border border-slate-200 px-4 py-2 text-[13px] font-semibold text-slate-600 transition hover:border-[#2F6F11] hover:text-[#2F6F11]">Sign In</a>
-        <a href="login.html#signup" class="btn-pill inline-flex items-center gap-2 rounded-full bg-[#0B1F17] py-2 pl-5 pr-1.5 text-[13px] font-bold text-white transition hover:bg-[#064E3B]">
+      <div id="nav-auth-container" class="hidden items-center gap-2.5 lg:flex">
+        <a id="nav-signin-btn" href="login.html" class="rounded-full border border-slate-200 px-4 py-2 text-[13px] font-semibold text-slate-600 transition hover:border-[#2F6F11] hover:text-[#2F6F11]">Sign In</a>
+        <a id="nav-signup-btn" href="login.html#signup" class="btn-pill inline-flex items-center gap-2 rounded-full bg-[#0B1F17] py-2 pl-5 pr-1.5 text-[13px] font-bold text-white transition hover:bg-[#064E3B]">
           Get Started Free
           <span class="arrow-circle flex h-6 w-6 items-center justify-center rounded-full bg-[#B9F044] text-[#0B1F17]">
             <i data-lucide="arrow-right" class="h-3 w-3"></i>
@@ -123,17 +117,15 @@
     <div id="mobile-menu" class="hidden border-t border-slate-100/80 bg-white/95 backdrop-blur-xl">
       <div class="mx-auto max-w-7xl px-5 pb-5 pt-3">
         <ul class="flex flex-col gap-0.5 text-sm font-semibold text-slate-600">
-          <li><a href="#features" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Features</a></li>
+          <li><a href="#about" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">About GyanSetu</a></li>
+          <li><a href="#features" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Platform Features</a></li>
           <li><a href="#how-it-works" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">How It Works</a></li>
-          <li><a href="#testimonials" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Reviews</a></li>
-          <li><a href="#impact" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Impact</a></li>
-          <li><a href="peers.html" class="block rounded-xl px-3 py-2.5 font-extrabold text-[#2F6F11] hover:bg-[#F4FBEA]">&#128269; Smart Match</a></li>
-          <li><a href="ranking.html" class="block rounded-xl px-3 py-2.5 font-extrabold text-[#2F6F11] hover:bg-[#F4FBEA]">🏆 Ranking &amp; Leaderboard</a></li>
-          <li><a href="room.html" class="block rounded-xl px-3 py-2.5 font-extrabold text-[#2F6F11] hover:bg-[#F4FBEA]">&#9889; Live Collab Room</a></li>
+          <li><a href="#testimonials" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Student Reviews</a></li>
+          <li><a href="#faq" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">FAQ</a></li>
         </ul>
-        <div class="mt-3 flex gap-2.5">
+        <div id="mobile-auth-container" class="mt-3 flex gap-2.5">
           <a href="login.html" class="flex-1 rounded-xl border border-slate-200 py-2.5 text-center text-sm font-bold text-[#0B1F17]">Sign In</a>
-          <a href="login.html#signup" class="flex-1 rounded-xl bg-[#0B1F17] py-2.5 text-center text-sm font-bold text-[#B9F044]">Get Started</a>
+          <a href="login.html#signup" class="flex-1 rounded-xl bg-[#0B1F17] py-2.5 text-center text-sm font-bold text-[#B9F044]">Get Started Free</a>
         </div>
       </div>
     </div>
@@ -151,7 +143,7 @@
     <div class="relative mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
 
       <!-- Left: copy -->
-      <div>
+      <div id="about">
         <div class="inline-flex items-center gap-2 rounded-full border border-[#B9F044]/50 bg-[#B9F044]/10 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">
           <span class="h-1.5 w-1.5 rounded-full bg-[#2F6F11] animate-pulse"></span>
           Campus Learning &mdash; Reimagined
@@ -170,109 +162,124 @@
         </h1>
 
         <p class="mt-7 max-w-xl text-[16px] leading-[1.75] text-slate-600">
-          GyanSetu connects you with verified campus peers for instant 15-minute micro-sessions. No waiting for office hours. Just book, connect, and clear your doubt now.
+          GyanSetu connects you with verified campus peers for focused 15-minute micro-sessions. Sign in to find peer mentors, practice in the coding arena, earn platform credits, and clear your doubts without delay.
         </p>
 
         <div class="mt-9 flex flex-wrap items-center gap-3">
           <a href="login.html#signup" class="btn-pill inline-flex items-center gap-3 rounded-2xl bg-[#0B1F17] py-3.5 pl-7 pr-2.5 text-[14px] font-bold text-white shadow-[0_8px_32px_-8px_rgba(11,31,23,0.4)] transition hover:bg-[#064E3B]">
-            Start Learning &mdash; It&rsquo;s Free
+            Start Learning &mdash; Free 100 Credits
             <span class="arrow-circle flex h-9 w-9 items-center justify-center rounded-xl bg-[#B9F044] text-[#0B1F17]">
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </span>
           </a>
-          <a href="room.html" class="inline-flex items-center gap-2.5 rounded-2xl border-2 border-[#0B1F17]/15 bg-white/70 px-6 py-3.5 text-[14px] font-bold text-[#0B1F17] backdrop-blur-sm transition hover:border-[#B9F044] hover:bg-white">
-            <span class="h-2 w-2 rounded-full bg-[#2F6F11] animate-pulse"></span>
-            Try Live Room
+          <a href="login.html" class="inline-flex items-center gap-2 rounded-2xl border-2 border-[#0B1F17]/15 bg-white/80 px-6 py-3.5 text-[14px] font-bold text-[#0B1F17] backdrop-blur-sm transition hover:border-[#B9F044] hover:bg-white">
+            <i data-lucide="log-in" class="h-4 w-4 text-[#2F6F11]"></i>
+            Sign In to Platform
           </a>
         </div>
 
         <div class="mt-10 flex flex-wrap items-center gap-6 sm:gap-8">
           <div class="flex items-center gap-3">
-            <div class="avatar-stack flex">
-              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#064E3B] to-[#2F6F11] text-xs font-extrabold text-white">A</div>
-              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#7C3AED] to-[#4F46E5] text-xs font-extrabold text-white">P</div>
-              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#0891B2] to-[#0E7490] text-xs font-extrabold text-white">R</div>
-              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#D97706] to-[#B45309] text-xs font-extrabold text-white">S</div>
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#B9F044]/30 text-[#0B1F17] font-black">
+              🪙
             </div>
             <div>
-              <p class="text-[13px] font-extrabold text-[#0B1F17]">500+ Peers Active</p>
-              <p class="text-[11px] text-slate-500">Across your campus</p>
+              <p class="text-[13px] font-extrabold text-[#0B1F17]">100 Bonus Credits</p>
+              <p class="text-[11px] text-slate-500">Free upon account signup</p>
             </div>
           </div>
           <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
-          <div class="flex items-center gap-2.5">
-            <div class="flex gap-0.5 text-amber-400">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <p class="text-[13px] font-bold text-[#0B1F17]">4.9 <span class="text-slate-500 font-normal">avg rating</span></p>
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#0B1F17] text-[#B9F044] font-black">
+              ⚡
+            </div>
+            <div>
+              <p class="text-[13px] font-extrabold text-[#0B1F17]">15-Min Focused Slots</p>
+              <p class="text-[11px] text-slate-500">Quick doubt resolution</p>
+            </div>
+          </div>
+          <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 font-black">
+              🛡️
+            </div>
+            <div>
+              <p class="text-[13px] font-extrabold text-[#0B1F17]">Escrow Protected</p>
+              <p class="text-[11px] text-slate-500">Credits move on approval</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Right: preview card -->
+      <!-- Right: Clean Minimalist Value Proposition Showcase -->
       <div class="relative lg:pl-4">
-        <div class="relative rounded-3xl border border-slate-200/80 bg-white/90 p-5 shadow-[0_24px_64px_-16px_rgba(11,31,23,0.18)] backdrop-blur-sm">
+        <div class="relative rounded-3xl border border-slate-200/90 bg-white/95 p-6 sm:p-8 shadow-[0_24px_64px_-16px_rgba(11,31,23,0.12)] backdrop-blur-md">
 
-          <div class="mb-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <div class="h-2.5 w-2.5 rounded-full bg-[#B9F044]"></div>
-              <span class="text-[13px] font-extrabold text-[#0B1F17]">Live Session in Progress</span>
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0B1F17] text-[#B9F044]">
+                <i data-lucide="lock" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <p class="text-sm font-extrabold text-[#0B1F17]">Campus Verified Access</p>
+                <p class="text-[11px] text-slate-500">Sign in to unlock interactive workspace features</p>
+              </div>
             </div>
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#0B1F17] px-3 py-1 text-[10px] font-extrabold tracking-wide text-[#B9F044]">
-              <span class="live-dot h-1.5 w-1.5 rounded-full bg-[#B9F044]"></span> LIVE
+            <span class="inline-flex items-center gap-1 rounded-full bg-[#B9F044]/20 border border-[#B9F044]/40 px-3 py-1 text-[11px] font-extrabold text-[#2F6F11]">
+              Login Required
             </span>
           </div>
 
-          <div class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-[#F4FBEA] p-3">
-            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#064E3B] to-[#2F6F11] text-sm font-extrabold text-white">AS</div>
-            <div class="min-w-0">
-              <p class="flex items-center gap-1 text-[13px] font-extrabold text-[#0B1F17]">
-                Peer Mentor <i data-lucide="badge-check" class="h-4 w-4 text-[#2F6F11]"></i>
-              </p>
-              <p class="truncate text-[11px] text-slate-500">DSA &amp; Algorithms &nbsp;&bull;&nbsp; 4.9 &#9733; &nbsp;&bull;&nbsp; 120 sessions</p>
+          <div class="mt-6 space-y-4">
+            <!-- Pillar 1 -->
+            <div class="flex items-start gap-3.5 rounded-2xl border border-slate-100 bg-[#FAFDF6] p-4 transition hover:border-[#B9F044]/60">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0B1F17] text-[#B9F044]">
+                <i data-lucide="users" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-extrabold text-[#0B1F17]">Smart Peer Matching</h3>
+                <p class="mt-1 text-xs text-slate-500 leading-relaxed">Search peers by course topic, coding language, and live availability. No waiting days for emails.</p>
+              </div>
             </div>
-            <span class="ml-auto shrink-0 rounded-full bg-[#B9F044] px-3 py-1 text-[11px] font-extrabold text-[#0B1F17]">Mentor</span>
+
+            <!-- Pillar 2 -->
+            <div class="flex items-start gap-3.5 rounded-2xl border border-slate-100 bg-[#FAFDF6] p-4 transition hover:border-[#B9F044]/60">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#B9F044] text-[#0B1F17]">
+                <i data-lucide="code-2" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-extrabold text-[#0B1F17]">Live Rooms &amp; Study Arena</h3>
+                <p class="mt-1 text-xs text-slate-500 leading-relaxed">Shared code editor, whiteboard, voice calls, and coding race tracks across 14 academic domains.</p>
+              </div>
+            </div>
+
+            <!-- Pillar 3 -->
+            <div class="flex items-start gap-3.5 rounded-2xl border border-slate-100 bg-[#FAFDF6] p-4 transition hover:border-[#B9F044]/60">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0B1F17] text-[#B9F044]">
+                <i data-lucide="award" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-extrabold text-[#0B1F17]">Leaderboard &amp; Peer Recognition</h3>
+                <p class="mt-1 text-xs text-slate-500 leading-relaxed">Earn verified XP, climb campus department rank tiers, and build authentic mentorship credentials.</p>
+              </div>
+            </div>
           </div>
 
-          <div class="mt-3 overflow-hidden rounded-2xl bg-[#0B1F17] p-4">
-            <div class="mb-2 flex items-center gap-1.5">
-              <div class="h-2.5 w-2.5 rounded-full bg-[#B9F044]/50"></div>
-              <div class="h-2.5 w-2.5 rounded-full bg-white/20"></div>
-              <div class="h-2.5 w-2.5 rounded-full bg-white/20"></div>
-              <span class="ml-2 text-[10px] font-bold text-[#B9F044]/70">shared-editor.py</span>
+          <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
+            <div class="text-xs text-slate-500">
+              New to GyanSetu?
             </div>
-            <div class="font-mono text-[12px] leading-6">
-              <p><span class="text-[#B9F044]">def</span> <span class="text-white">bfs</span><span class="text-slate-400">(graph, start):</span></p>
-              <p class="pl-4"><span class="text-slate-400">visited</span> <span class="text-[#B9F044]">=</span> <span class="text-white">set</span><span class="text-slate-400">()</span></p>
-              <p class="pl-4"><span class="text-slate-400">queue</span> <span class="text-[#B9F044]">=</span> <span class="text-white">deque</span><span class="text-slate-400">([start])</span></p>
-              <p class="pl-4"><span class="text-[#B9F044]">while</span> <span class="text-slate-400">queue:</span></p>
-              <p class="pl-8 text-slate-500"># traverse level by level&hellip;</p>
-            </div>
+            <a href="login.html#signup" class="inline-flex items-center gap-1.5 rounded-xl bg-[#0B1F17] px-4 py-2 text-xs font-extrabold text-[#B9F044] hover:bg-[#064E3B] transition">
+              Create Account &rarr;
+            </a>
           </div>
 
-          <div class="mt-3 grid grid-cols-2 gap-2">
-            <div class="rounded-xl border border-slate-100 bg-white p-2.5 text-center">
-              <p class="text-[10px] font-semibold text-slate-500">Session time</p>
-              <p class="text-[14px] font-extrabold text-[#0B1F17]">12:34 <span class="text-[#2F6F11]">min</span></p>
-            </div>
-            <div class="rounded-xl border border-slate-100 bg-white p-2.5 text-center">
-              <p class="text-[10px] font-semibold text-slate-500">Credits earned</p>
-              <p class="text-[14px] font-extrabold text-[#2F6F11]">+3 <span class="text-slate-400 font-normal text-[11px]">coins</span></p>
-            </div>
-          </div>
-        </div>
-
-        <div class="absolute -top-5 left-6 rounded-2xl border border-[#B9F044]/40 bg-white px-4 py-2.5 shadow-[0_8px_24px_-8px_rgba(11,31,23,0.14)]">
-          <p class="flex items-center gap-2 text-[12px] font-extrabold text-[#0B1F17]">
-            <span class="live-dot h-2 w-2 rounded-full bg-[#2F6F11]"></span>24 mentors online now
-          </p>
-        </div>
-        <div class="absolute -bottom-5 right-6 rounded-2xl border border-slate-100 bg-white px-4 py-2.5 shadow-[0_8px_24px_-8px_rgba(11,31,23,0.14)]">
-          <p class="text-[12px] font-extrabold text-[#2F6F11]">&#10003; Doubt cleared in 12 min</p>
         </div>
       </div>
     </div>
 
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 opacity-40">
-      <span class="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Scroll</span>
+      <span class="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Explore</span>
       <div class="h-7 w-4 rounded-full border-2 border-slate-400 flex justify-center pt-1">
         <div class="h-2 w-1 rounded-full bg-slate-400 animate-bounce"></div>
       </div>
@@ -308,57 +315,61 @@
         <p class="mx-auto mt-4 max-w-md text-[15px] leading-7 text-slate-500">Five powerful tools, one seamless campus platform. Ask, match, earn, collab, compete.</p>
       </div>
 
-      <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Feature 1 -->
         <div class="feat-card group flex flex-col">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B1F17] text-[#B9F044]">
             <i data-lucide="zap" class="h-7 w-7"></i>
           </div>
           <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">15-Min Rapid Sessions</h3>
-          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Book an instant 1-on-1 session with a peer who already solved your exact problem.</p>
+          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Book instant 1-on-1 micro-sessions with campus peers who already mastered your subject.</p>
           <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-            <a href="dashboard.html" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Find mentors &rarr;</a>
+            <a href="login.html#signup" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Sign up to book &rarr;</a>
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </div>
           </div>
         </div>
 
+        <!-- Feature 2 -->
         <div class="feat-card group flex flex-col">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044] text-[#0B1F17]">
             <i data-lucide="monitor" class="h-7 w-7"></i>
           </div>
           <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Live Collab Room</h3>
-          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Real-time shared code editor, interactive whiteboard, and peer chat &mdash; all in one room.</p>
+          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Real-time shared code editor, interactive whiteboard, and low-latency audio &mdash; built into every session.</p>
           <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-            <a href="room.html" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Open room &rarr;</a>
+            <a href="login.html#signup" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Unlock live room &rarr;</a>
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </div>
           </div>
         </div>
 
+        <!-- Feature 3 -->
         <div class="feat-card group flex flex-col">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B1F17] text-[#B9F044]">
             <i data-lucide="search-check" class="h-7 w-7"></i>
           </div>
-          <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Smart Matching</h3>
-          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Find the right peer instantly by searching and filtering by topic, language, and live availability.</p>
+          <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Smart Peer Matching</h3>
+          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Find the right mentor instantly by searching course subjects, programming languages, and live campus availability.</p>
           <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-            <a href="peers.html" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Find your match &rarr;</a>
+            <a href="login.html#signup" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Find matches &rarr;</a>
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </div>
           </div>
         </div>
 
+        <!-- Feature 4 -->
         <div class="feat-card group flex flex-col">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044] text-[#0B1F17]">
             <i data-lucide="trophy" class="h-7 w-7"></i>
           </div>
-          <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Skill Duels</h3>
-          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Weekly peer battles, streak badges, and a campus leaderboard. Knowledge becomes competition.</p>
+          <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Arena Races &amp; Rankings</h3>
+          <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Race your peers in coding battles, solve 14-domain procedural quizzes, and earn your place on the campus leaderboard.</p>
           <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-            <a href="dashboard.html#duels" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Join duels &rarr;</a>
+            <a href="login.html#signup" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Join the arena &rarr;</a>
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </div>
@@ -516,27 +527,80 @@
 
 
   <!-- ============================================================
+       FAQ SECTION
+       ============================================================ -->
+  <section id="faq" class="section-alt px-5 py-20 sm:px-8">
+    <div class="mx-auto max-w-4xl">
+      <div class="mb-12 text-center">
+        <span class="inline-block rounded-full bg-[#B9F044]/20 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#2F6F11]">Frequently Asked Questions</span>
+        <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl">Everything You Need to Know</h2>
+        <p class="mt-2 text-sm text-slate-500">Clear, transparent answers about accounts, credits, and live sessions.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+          <h3 class="text-base font-extrabold text-[#0B1F17] flex items-center gap-2">
+            <span class="text-[#2F6F11]">Q:</span> Why do I need to sign in to access features?
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            GyanSetu is an authentic campus learning community. Logging in ensures verified peer profiles, protects your credit ledger balance, saves your learning progress, and prevents spam.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+          <h3 class="text-base font-extrabold text-[#0B1F17] flex items-center gap-2">
+            <span class="text-[#2F6F11]">Q:</span> Do I have to pay real money?
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            No real money is required! GyanSetu operates on a campus peer credit economy. Every registered student receives <strong>100 bonus credits</strong> on signup. You earn additional credits by teaching peers, solving arena challenges, or sharing verified study materials.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+          <h3 class="text-base font-extrabold text-[#0B1F17] flex items-center gap-2">
+            <span class="text-[#2F6F11]">Q:</span> What happens to my credits during a 1-on-1 session?
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Credits stay safe in <strong>Escrow Protection</strong>. They are only released to your peer mentor when you confirm that your doubt was clearly and satisfactorily resolved.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+          <h3 class="text-base font-extrabold text-[#0B1F17] flex items-center gap-2">
+            <span class="text-[#2F6F11]">Q:</span> What features unlock after signing in?
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Once signed in, your personal Dashboard gives you full access to <strong>Smart Match</strong> (find and book mentors), <strong>Live Collab Rooms</strong> (shared code editor, whiteboard, voice call), <strong>Campus Arena</strong> (coding races and 14-domain procedural quizzes), and the <strong>Campus Leaderboard</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
        FINAL CTA
        ============================================================ -->
   <section class="bg-white px-5 py-20 sm:px-8">
     <div class="mx-auto max-w-3xl text-center">
       <h2 class="text-3xl font-extrabold tracking-tight text-[#0B1F17] sm:text-4xl lg:text-5xl">
         Stuck on a problem?<br/>
-        <span class="text-[#2F6F11]">A peer who solved it is online.</span>
+        <span class="text-[#2F6F11]">A peer who solved it is ready.</span>
       </h2>
-      <p class="mx-auto mt-6 max-w-lg text-[15px] leading-7 text-slate-500">Don&rsquo;t wait for office hours. Book a 15-minute peer session right now and clear your doubt before it blocks your progress.</p>
+      <p class="mx-auto mt-6 max-w-lg text-[15px] leading-7 text-slate-500">Don&rsquo;t wait for office hours. Create your free account in 30 seconds and get 100 starter credits instantly.</p>
       <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
         <a href="login.html#signup" class="btn-pill inline-flex items-center gap-3 rounded-2xl bg-[#0B1F17] py-4 pl-8 pr-3 text-[15px] font-bold text-white shadow-[0_12px_36px_-10px_rgba(11,31,23,0.45)] transition hover:bg-[#064E3B]">
-          Start for Free Today
+          Start for Free (100 Bonus)
           <span class="arrow-circle flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9F044] text-[#0B1F17]">
             <i data-lucide="arrow-right" class="h-5 w-5"></i>
           </span>
         </a>
-        <a href="dashboard.html" class="inline-flex items-center gap-2.5 rounded-2xl border-2 border-slate-200 px-7 py-4 text-[15px] font-bold text-[#0B1F17] transition hover:border-[#B9F044]">
-          Explore Platform
+        <a href="login.html" class="inline-flex items-center gap-2 rounded-2xl border-2 border-slate-200 px-7 py-4 text-[15px] font-bold text-[#0B1F17] transition hover:border-[#B9F044]">
+          <i data-lucide="log-in" class="h-4 w-4 text-[#2F6F11]"></i>
+          Sign In to Platform
         </a>
       </div>
-      <p class="mt-5 text-[12px] text-slate-400">No credit card needed &nbsp;&bull;&nbsp; Free 20 credits on signup &nbsp;&bull;&nbsp; Cancel anytime</p>
+      <p class="mt-5 text-[12px] text-slate-400">Zero subscription fees &nbsp;&bull;&nbsp; 100 free credits on signup &nbsp;&bull;&nbsp; Escrow protected</p>
     </div>
   </section>
 
@@ -551,53 +615,96 @@
           <a href="index.html" class="flex items-center gap-2.5">
             <img src="images/gyansetu-logo.jpg" alt="GyanSetu" class="h-9 w-auto rounded-xl object-contain shadow-sm border border-emerald-900/30" />
           </a>
-          <p class="mt-3 text-[13px] leading-6 text-slate-500">Peer-to-peer campus mentorship platform. Learn faster, earn while teaching.</p>
+          <p class="mt-3 text-[13px] leading-6 text-slate-500">Peer-to-peer campus mentorship platform. Learn faster, earn credits while teaching.</p>
           <div class="mt-4 flex gap-2">
-            <a href="#" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-[#0B1F17] hover:text-[#B9F044]"><i data-lucide="mail" class="h-3.5 w-3.5"></i></a>
-            <a href="#" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-[#0B1F17] hover:text-[#B9F044]"><i data-lucide="message-circle" class="h-3.5 w-3.5"></i></a>
-            <a href="#" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-[#0B1F17] hover:text-[#B9F044]"><i data-lucide="share-2" class="h-3.5 w-3.5"></i></a>
+            <a href="login.html" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-[#0B1F17] hover:text-[#B9F044]"><i data-lucide="mail" class="h-3.5 w-3.5"></i></a>
+            <a href="login.html" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-[#0B1F17] hover:text-[#B9F044]"><i data-lucide="message-circle" class="h-3.5 w-3.5"></i></a>
+            <a href="login.html" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-[#0B1F17] hover:text-[#B9F044]"><i data-lucide="share-2" class="h-3.5 w-3.5"></i></a>
           </div>
         </div>
         <div>
-          <p class="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Platform</p>
+          <p class="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Navigation</p>
           <ul class="space-y-2 text-[13px] font-semibold text-slate-600">
-            <li><a href="#features" class="hover:text-[#2F6F11]">Features</a></li>
+            <li><a href="#about" class="hover:text-[#2F6F11]">About GyanSetu</a></li>
+            <li><a href="#features" class="hover:text-[#2F6F11]">Core Features</a></li>
             <li><a href="#how-it-works" class="hover:text-[#2F6F11]">How It Works</a></li>
-            <li><a href="dashboard.html" class="hover:text-[#2F6F11]">Dashboard</a></li>
-            <li><a href="room.html" class="hover:text-[#2F6F11]">Live Collab Room</a></li>
+            <li><a href="#faq" class="hover:text-[#2F6F11]">FAQ &amp; Credits</a></li>
           </ul>
         </div>
         <div>
-          <p class="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Community</p>
+          <p class="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Features</p>
           <ul class="space-y-2 text-[13px] font-semibold text-slate-600">
-            <li><a href="dashboard.html#mentors" class="hover:text-[#2F6F11]">Find Mentors</a></li>
-            <li><a href="dashboard.html#duels" class="hover:text-[#2F6F11]">Skill Duels</a></li>
-            <li><a href="dashboard.html#ledger" class="hover:text-[#2F6F11]">Credit Ledger</a></li>
-            <li><a href="#impact" class="hover:text-[#2F6F11]">Impact Stats</a></li>
+            <li><a href="login.html#signup" class="hover:text-[#2F6F11]">Peer Micro-Sessions</a></li>
+            <li><a href="login.html#signup" class="hover:text-[#2F6F11]">Live Collab Room</a></li>
+            <li><a href="login.html#signup" class="hover:text-[#2F6F11]">Coding Arena Races</a></li>
+            <li><a href="login.html#signup" class="hover:text-[#2F6F11]">Campus Leaderboard</a></li>
           </ul>
         </div>
         <div>
           <p class="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Get Started</p>
           <ul class="space-y-2 text-[13px] font-semibold text-slate-600">
             <li><a href="login.html" class="hover:text-[#2F6F11]">Sign In</a></li>
-            <li><a href="login.html#signup" class="hover:text-[#2F6F11]">Create Account</a></li>
+            <li><a href="login.html#signup" class="hover:text-[#2F6F11]">Create Account (Free 100 Credits)</a></li>
           </ul>
           <a href="login.html#signup" class="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#0B1F17] px-5 py-2.5 text-[13px] font-bold text-[#B9F044] transition hover:bg-[#064E3B]">
-            Join Free <i data-lucide="arrow-right" class="h-4 w-4"></i>
+            Join Campus Network <i data-lucide="arrow-right" class="h-4 w-4"></i>
           </a>
         </div>
       </div>
 
       <div class="mt-8 border-t border-slate-200/60 pt-6 flex flex-col items-center justify-between gap-3 sm:flex-row text-[11px] text-slate-400">
         <p>&copy; 2026 GyanSetu &nbsp;&bull;&nbsp; Built for INNOVISTA by Team Tech Titans</p>
-        <p class="italic">A deployable peer-learning platform powered by live community data</p>
+        <p class="italic">Verified peer-learning platform powered by live campus data</p>
       </div>
     </div>
   </footer>
 
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/gyansetu-auth.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     lucide.createIcons();
+
+    // Check if user is already logged in -> enhance UI for returning students
+    if (window.GyanSetuAuth?.isLoggedIn && window.GyanSetuAuth.isLoggedIn()) {
+      try {
+        const rawProf = localStorage.getItem('gyansetu_active_profile');
+        const prof = rawProf ? JSON.parse(rawProf) : null;
+        const firstName = prof?.full_name ? prof.full_name.split(' ')[0] : 'Student';
+
+        // Update nav buttons to point to Dashboard
+        const navAuth = document.getElementById('nav-auth-container');
+        if (navAuth) {
+          navAuth.innerHTML = `
+            <a href="dashboard.html" class="inline-flex items-center gap-2 rounded-full bg-[#0B1F17] px-5 py-2 text-[13px] font-bold text-[#B9F044] hover:bg-[#064E3B] transition shadow-xs">
+              <span class="h-2 w-2 rounded-full bg-[#B9F044] animate-pulse"></span>
+              <span>Dashboard (${firstName})</span>
+              <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>
+            </a>
+          `;
+        }
+
+        // Update mobile menu button
+        const mobileAuth = document.getElementById('mobile-auth-container');
+        if (mobileAuth) {
+          mobileAuth.innerHTML = `
+            <a href="dashboard.html" class="flex-1 rounded-xl bg-[#0B1F17] py-2.5 text-center text-sm font-bold text-[#B9F044]">
+              Go to Dashboard (${firstName}) &rarr;
+            </a>
+          `;
+        }
+
+        // Add a clean top banner
+        const banner = document.createElement('div');
+        banner.className = 'bg-[#0B1F17] text-white text-xs font-semibold py-2 px-4 text-center border-b border-[#B9F044]/30 relative z-50';
+        banner.innerHTML = `👋 Welcome back, <strong>${prof?.full_name || 'Student'}</strong>! You are signed in. <a href="dashboard.html" class="text-[#B9F044] underline ml-2 font-bold hover:text-white">Open My Dashboard &rarr;</a>`;
+        document.body.prepend(banner);
+
+        lucide.createIcons();
+      } catch (e) {}
+    }
 
     // Navbar scroll effect
     const navbar = document.getElementById('navbar');

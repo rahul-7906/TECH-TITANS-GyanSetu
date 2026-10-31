@@ -81,17 +81,40 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Credit account bootstrap ───────────────────────────────────────────────
   async function ensureCreditAccount() {
     // Upsert: if user doesn't exist, give them 50 starter credits
-    const { error } = await sb.from('credits').upsert(
-      { username: myName, balance: 50 },
-      { onConflict: 'username', ignoreDuplicates: true }
-    );
-    if (error) console.warn('ensureCreditAccount:', error.message);
+    try {
+      const { error } = await sb.from('credits').upsert(
+        { username: myName, balance: 100 },
+        { onConflict: 'username', ignoreDuplicates: true }
+      );
+      if (error) console.warn('ensureCreditAccount:', error.message);
+    } catch (e) {}
   }
 
   async function refreshCreditDisplay() {
-    const { data } = await sb.from('credits').select('balance').eq('username', myName).maybeSingle();
-    creditDisplay.textContent = data ? data.balance : '?';
+    try {
+      const raw = localStorage.getItem('gyansetu_active_profile');
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (p && p.credits !== undefined) {
+          creditDisplay.textContent = p.credits;
+          return;
+        }
+      }
+    } catch (e) {}
+
+    try {
+      const { data } = await sb.from('credits').select('balance').eq('username', myName).maybeSingle();
+      creditDisplay.textContent = data ? data.balance : '100';
+    } catch (e) {
+      creditDisplay.textContent = '100';
+    }
   }
+
+  window.addEventListener('gyansetu:credits-updated', (e) => {
+    if (creditDisplay && e.detail?.newBalance !== undefined) {
+      creditDisplay.textContent = e.detail.newBalance;
+    }
+  });
 
   // ── Enter app ──────────────────────────────────────────────────────────────
   function enterApp() {

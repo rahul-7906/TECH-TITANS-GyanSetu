@@ -458,19 +458,30 @@
       try {
         const res = await window.GyanSetuAuth.signIn({ email, password: pass });
 
+        function getDestinationUrl(defaultUrl = 'dashboard.html') {
+          try {
+            const params = new URLSearchParams(window.location.search);
+            const target = params.get('redirect');
+            if (target && !target.startsWith('http') && !target.startsWith('//')) {
+              return decodeURIComponent(target);
+            }
+          } catch (e) {}
+          return defaultUrl;
+        }
+
         if (res.success) {
-          showSuccess('✅ Login successful! Redirecting to dashboard…');
+          showSuccess('✅ Login successful! Redirecting…');
           sessionStorage.removeItem('gyansetu_demo_mode');
-          setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+          setTimeout(() => { window.location.href = getDestinationUrl(); }, 500);
           return;
         }
 
         // If unconfirmed in Supabase, silently auto-activate and enter dashboard seamlessly
         if (res.isUnconfirmed) {
           await window.GyanSetuAuth.bypassEmailConfirmation(email);
-          showSuccess('✅ Login successful! Redirecting to dashboard…');
+          showSuccess('✅ Login successful! Redirecting…');
           sessionStorage.removeItem('gyansetu_demo_mode');
-          setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+          setTimeout(() => { window.location.href = getDestinationUrl(); }, 500);
           return;
         }
 
@@ -563,8 +574,9 @@
       clearError();
       sessionStorage.setItem('gyansetu_demo_mode', 'true');
       const prof = (typeof window.getDemoProfile === 'function') ? window.getDemoProfile() : window.GYANSETU_DEMO?.profile;
-      showSuccess(`🚀 Logging in as ${prof?.full_name || 'Campus Student'} (${prof?.credits || 155} Credits)…`);
-      setTimeout(() => { window.location.href = 'dashboard.html?demo=1'; }, 450);
+      const dest = new URLSearchParams(window.location.search).get('redirect');
+      const targetUrl = dest && !dest.startsWith('http') && !dest.startsWith('//') ? decodeURIComponent(dest) : 'dashboard.html?demo=1';
+      setTimeout(() => { window.location.href = targetUrl; }, 450);
     }
 
     function updateDemoStudentPreview() {

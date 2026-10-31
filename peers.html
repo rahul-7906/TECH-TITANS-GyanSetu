@@ -223,6 +223,9 @@
   <script src="js/supabase-config.js"></script>
   <script src="js/gyansetu-auth.js"></script>
   <script>
+    if (window.GyanSetuAuth?.requireAuth) {
+      window.GyanSetuAuth.requireAuth();
+    }
     window.SUPABASE_URL = typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL : '';
     window.SUPABASE_ANON = typeof SUPABASE_ANON !== 'undefined' ? SUPABASE_ANON : '';
   </script>
