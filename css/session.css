@@ -1,0 +1,76 @@
+/* css/session.css — GyanSetu Session Booking styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+
+/* ── Shared input style ────────────────────────────────────────────────────── */
+.input-field {
+  display: block;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input-field:focus {
+  border-color: #B9F044;
+  box-shadow: 0 0 0 2px rgba(185, 240, 68, 0.25);
+}
+
+/* ── Label text ─────────────────────────────────────────────────────────────── */
+.label-text {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+/* ── Role buttons ────────────────────────────────────────────────────────────── */
+.role-btn {
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+}
+.role-btn.selected {
+  border-color: #B9F044;
+  background-color: rgba(185, 240, 68, 0.1);
+  color: #2F6F11;
+}
+
+/* ── Step cards ──────────────────────────────────────────────────────────────── */
+.session-step {
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Request cards ───────────────────────────────────────────────────────────── */
+.request-card {
+  transition: box-shadow 0.15s;
+}
+.request-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* ── Quiz option hover ────────────────────────────────────────────────────────── */
+.quiz-question-block label:has(input[type=radio]:checked) {
+  background: rgba(185, 240, 68, 0.12);
+  border-radius: 0.5rem;
+  padding: 0.125rem 0.375rem;
+}
+
+/* ── Pulse dot ────────────────────────────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.animate-pulse { animation: pulse 1.5s ease-in-out infinite; }

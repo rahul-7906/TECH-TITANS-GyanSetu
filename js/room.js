@@ -43,12 +43,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // ═══════════════════════════════════════════════════════════════════════════
   let myName    = '';
   let myRoom    = '';
-  let myId      = crypto.randomUUID();   // unique ID for this browser tab
+  let myId      = crypto.randomUUID();
   let myColor   = randomColor();
-  let channel   = null;   // the Supabase Realtime channel
+  let channel   = null;
   let cmEditor  = null;
   let suppressCodeSync = false;
   let onlineCount = 1;
+
+  // ── Role / Permission state ──────────────────────────────────────────────
+  // isHost  : true if this tab created the room (first joiner)
+  // canEdit : true if this tab is allowed to type/draw
+  // pendingPermRequest: { id, name } of guest currently requesting permission
+  let isHost    = false;
+  let canEdit   = false;
+  let pendingPermRequest = null;
 
   // Debounce timers for saving state to the DB
   let saveCodeTimer   = null;
@@ -159,11 +167,40 @@ document.addEventListener('DOMContentLoaded', () => {
       appendChatBubble(payload.name, payload.text, payload.color, false);
     });
 
+    // ── Permission system events ─────────────────────────────────────────────
+    // Guest → Host: "I want to edit"
+    channel.on('broadcast', { event: 'perm-request' }, ({ payload }) => {
+      if (!isHost) return;   // only host handles this
+      pendingPermRequest = { id: payload.id, name: payload.name };
+      document.getElementById('perm-toast-msg').textContent = `${payload.name} wants permission to edit`;
+      document.getElementById('perm-toast').classList.remove('hidden');
+    });
+
+    // Host → specific guest: decision
+    channel.on('broadcast', { event: 'perm-decision' }, ({ payload }) => {
+      if (payload.targetId !== myId) return;  // not for me
+      if (payload.allowed) {
+        canEdit = true;
+        setEditPermission(true);
+        showToast('✅ Host allowed you to edit!');
+      } else {
+        showToast('❌ Host denied your request.');
+        setGuestBannerDenied();
+      }
+    });
+
     // ── Presence: track who is online ───────────────────────────────────────
     channel.on('presence', { event: 'sync' }, () => {
       const state = channel.presenceState();
       onlineCount = Object.keys(state).length;
       updatePeerCount(onlineCount);
+      // First joiner = host (only one person in room)
+      if (onlineCount === 1 && !isHost) {
+        isHost = true;
+        canEdit = true;
+        setEditPermission(true);
+        showHostBadge();
+      }
     });
 
     channel.on('presence', { event: 'join' }, ({ newPresences }) => {
@@ -206,9 +243,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (error) { console.warn('Could not load room state:', error.message); return; }
       if (!data) return;   // room is brand new, nothing to load
       if (data.code && cmEditor) {
-        suppressCodeSync = true;
-        cmEditor.setValue(data.code);
-        suppressCodeSync = false;
+        // Strip old Unicode-ellipsis placeholders saved before the fix
+        const cleaned = data.code.replace(/…/g, '...');
+        // Don't restore if it's just a placeholder comment with no real code
+        const isOnlyPlaceholder = /^(\/\/|#)\s*Start coding here/.test(cleaned.trim()) &&
+                                   cleaned.trim().split('\n').length <= 1;
+        if (!isOnlyPlaceholder) {
+          suppressCodeSync = true;
+          cmEditor.setValue(cleaned);
+          suppressCodeSync = false;
+        }
       }
       if (data.lang) setEditorLang(data.lang);
       if (data.canvas) restoreCanvasFromDataURL(data.canvas);
@@ -269,16 +313,25 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePeerCount(onlineCount);
     initEditor();
     initWhiteboard();
-    // Load saved state AFTER editor + canvas are ready
+    initPermissionUI();
+    initRunCode();
     loadRoomState();
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 4. CODE EDITOR  (CodeMirror)
   // ═══════════════════════════════════════════════════════════════════════════
+  // Default starter comment per language
+  const PLACEHOLDERS = {
+    javascript: '// Start coding here\n',
+    python:     '# Start coding here\n',
+    clike:      '// Start coding here\n',
+    java:       '// Start coding here\n',
+  };
+
   function initEditor() {
     cmEditor = CodeMirror(document.getElementById('editor-wrap'), {
-      value: '// Start coding here…\n',
+      value: '// Start coding here\n',
       mode: 'javascript',
       theme: 'dracula',
       lineNumbers: true,
@@ -303,8 +356,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('lang-select').addEventListener('change', e => {
-      setEditorLang(e.target.value);
-      broadcast('code-change', { code: cmEditor.getValue(), lang: e.target.value });
+      const newLang = e.target.value;
+      // If editor still has the old placeholder, swap it for the new language's placeholder
+      const currentVal = cmEditor.getValue();
+      const oldPlaceholder = PLACEHOLDERS[getCurrentLang()] || '';
+      if (currentVal === oldPlaceholder || currentVal.trim() === '') {
+        suppressCodeSync = true;
+        cmEditor.setValue(PLACEHOLDERS[newLang] || '');
+        suppressCodeSync = false;
+      }
+      setEditorLang(newLang);
+      broadcast('code-change', { code: cmEditor.getValue(), lang: newLang });
     });
 
     document.getElementById('copy-code-btn').addEventListener('click', () => {
@@ -333,6 +395,170 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('typing-indicator').textContent = msg;
     clearTimeout(typingMsgTimer);
     if (msg) typingMsgTimer = setTimeout(() => showTypingIndicator(''), 3000);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 3b. PERMISSION UI
+  // ═══════════════════════════════════════════════════════════════════════════
+  function initPermissionUI() {
+    // Host: allow / deny buttons on the permission toast
+    document.getElementById('perm-allow').addEventListener('click', () => {
+      if (!pendingPermRequest) return;
+      broadcast('perm-decision', { targetId: pendingPermRequest.id, allowed: true });
+      document.getElementById('perm-toast').classList.add('hidden');
+      pendingPermRequest = null;
+    });
+
+    document.getElementById('perm-deny').addEventListener('click', () => {
+      if (!pendingPermRequest) return;
+      broadcast('perm-decision', { targetId: pendingPermRequest.id, allowed: false });
+      document.getElementById('perm-toast').classList.add('hidden');
+      pendingPermRequest = null;
+    });
+
+    // Guest: request permission button
+    document.getElementById('request-perm-btn').addEventListener('click', () => {
+      broadcast('perm-request', { id: myId, name: myName });
+      document.getElementById('guest-banner-title').textContent = 'Request Sent';
+      document.getElementById('guest-banner-msg').textContent = 'Waiting for the host to allow you…';
+      document.getElementById('request-perm-btn').disabled = true;
+    });
+
+    // Guest: dismiss banner and stay as viewer
+    document.getElementById('guest-dismiss-btn').addEventListener('click', () => {
+      document.getElementById('guest-banner').classList.add('hidden');
+    });
+  }
+
+  function setEditPermission(allowed) {
+    canEdit = allowed;
+    if (allowed) {
+      // Hide guest banner, show permitted badge
+      document.getElementById('guest-banner').classList.add('hidden');
+      document.getElementById('guest-badge').classList.add('hidden');
+      document.getElementById('permitted-badge').classList.remove('hidden');
+      document.getElementById('permitted-badge').classList.add('flex');
+      if (cmEditor) cmEditor.setOption('readOnly', false);
+    } else {
+      // Show guest banner
+      document.getElementById('guest-banner').classList.remove('hidden');
+      document.getElementById('guest-badge').classList.remove('hidden');
+      document.getElementById('guest-badge').classList.add('flex');
+      if (cmEditor) cmEditor.setOption('readOnly', true);
+    }
+  }
+
+  function showHostBadge() {
+    document.getElementById('host-badge').classList.remove('hidden');
+    document.getElementById('host-badge').classList.add('flex');
+    document.getElementById('guest-badge').classList.add('hidden');
+    document.getElementById('guest-banner').classList.add('hidden');
+  }
+
+  function setGuestBannerDenied() {
+    document.getElementById('guest-banner-icon').innerHTML = '<i data-lucide="x-circle" class="h-7 w-7"></i>';
+    document.getElementById('guest-banner-title').textContent = 'Request Denied';
+    document.getElementById('guest-banner-msg').textContent = 'The host did not allow editing. You can still view.';
+    document.getElementById('request-perm-btn').textContent = 'Request Again';
+    document.getElementById('request-perm-btn').disabled = false;
+    document.getElementById('guest-banner').classList.remove('hidden');
+    lucide.createIcons();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 4b. RUN CODE
+  // JS  → runs locally via new Function(), console.log captured
+  // Python → runs in-browser via Pyodide (WebAssembly, no external API)
+  // C / Java → not supported in-browser; friendly message shown
+  // ═══════════════════════════════════════════════════════════════════════════
+  let pyodideReady = null;   // promise, resolved once Pyodide is loaded
+
+  function initRunCode() {
+    const btn      = document.getElementById('run-code-btn');
+    const panel    = document.getElementById('output-panel');
+    const content  = document.getElementById('output-content');
+    const closeBtn = document.getElementById('output-close');
+
+    closeBtn.addEventListener('click', () => {
+      panel.classList.add('hidden');
+      panel.classList.remove('flex');
+    });
+
+    btn.addEventListener('click', async () => {
+      const code = cmEditor.getValue();
+      const lang = getCurrentLang();
+
+      // Show panel
+      content.innerHTML = '<span class="text-slate-500 italic">Running…</span>';
+      panel.classList.remove('hidden');
+      panel.classList.add('flex');
+
+      if (lang === 'javascript') {
+        // ── JavaScript: run locally, capture console.log ──────────────────
+        const logs = [];
+        const _log = console.log;
+        const _err = console.error;
+        console.log   = (...a) => { logs.push(a.map(String).join(' ')); _log(...a); };
+        console.error = (...a) => { logs.push('ERROR: ' + a.map(String).join(' ')); _err(...a); };
+        try {
+          // eslint-disable-next-line no-new-func
+          new Function(code)();
+          content.innerHTML = logs.length
+            ? logs.map(l => `<div>${escHtml(l)}</div>`).join('')
+            : '<span class="text-slate-500 italic">No output.</span>';
+        } catch (err) {
+          content.innerHTML = `<span class="text-red-400">${escHtml(String(err))}</span>`;
+        } finally {
+          console.log   = _log;
+          console.error = _err;
+        }
+
+      } else if (lang === 'python') {
+        // ── Python: run via Pyodide (WASM in-browser) ─────────────────────
+        try {
+          if (!pyodideReady) {
+            content.innerHTML = '<span class="text-slate-500 italic">Loading Python runtime… (first run only, ~10s)</span>';
+            pyodideReady = loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/' });
+          }
+          const pyodide = await pyodideReady;
+
+          // Sanitize: replace Unicode ellipsis (old placeholder artifact) and
+          // convert JS-style // comment lines to Python # comments
+          const pyCode = code
+            .replace(/…/g, '...')
+            .split('\n')
+            .map(line => line.match(/^\s*\/\//) ? '# ' + line.replace(/^\s*\/\/\s*/, '') : line)
+            .join('\n');
+
+          // Redirect Python stdout/stderr
+          const outLines = [];
+          pyodide.setStdout({ batched: s => outLines.push(escHtml(s)) });
+          pyodide.setStderr({ batched: s => outLines.push(`<span class="text-red-400">${escHtml(s)}</span>`) });
+
+          await pyodide.runPythonAsync(pyCode);
+
+          content.innerHTML = outLines.length
+            ? outLines.map(l => `<div>${l}</div>`).join('')
+            : '<span class="text-slate-500 italic">No output.</span>';
+        } catch (err) {
+          // Pyodide throws Python tracebacks as JS errors
+          content.innerHTML = `<span class="text-red-400">${escHtml(String(err))}</span>`;
+        }
+
+      } else {
+        // ── C / Java: cannot run in-browser ───────────────────────────────
+        const name = lang === 'clike' ? 'C / C++' : 'Java';
+        content.innerHTML = `<span class="text-yellow-400">⚠ ${escHtml(name)} cannot run directly in the browser.</span>
+          <div class="mt-1 text-slate-400">Copy your code and paste it into
+            <a href="https://onecompiler.com/" target="_blank" class="text-[#B9F044] underline">OneCompiler</a>
+            or <a href="https://godbolt.org/" target="_blank" class="text-[#B9F044] underline">Godbolt</a> to execute it.
+          </div>`;
+      }
+    });
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

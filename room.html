@@ -91,6 +91,31 @@
     </div>
   </div>
 
+  <!-- ── PERMISSION REQUEST TOAST (shown to host when a guest requests access) ── -->
+  <div id="perm-toast" class="hidden fixed bottom-6 right-6 z-50 w-72 rounded-2xl border border-[#B9F044]/40 bg-[#0B2A1E] p-4 shadow-2xl">
+    <p class="text-xs font-bold text-[#B9F044] mb-1">✋ Permission Request</p>
+    <p id="perm-toast-msg" class="text-sm font-semibold text-white mb-3"></p>
+    <div class="flex gap-2">
+      <button id="perm-allow" class="flex-1 rounded-xl bg-[#B9F044] py-2 text-xs font-extrabold text-[#0B1F17] hover:brightness-110 transition">Allow ✓</button>
+      <button id="perm-deny"  class="flex-1 rounded-xl bg-red-900/60 py-2 text-xs font-extrabold text-red-300 hover:bg-red-800 transition">Deny ✗</button>
+    </div>
+  </div>
+
+  <!-- ── GUEST PERMISSION BANNER (shown to guest while waiting / denied) ── -->
+  <div id="guest-banner" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="w-80 rounded-3xl border border-white/10 bg-[#0B2A1E] p-8 text-center shadow-2xl">
+      <div id="guest-banner-icon" class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044]/10 text-[#B9F044]">
+        <i data-lucide="lock" class="h-7 w-7"></i>
+      </div>
+      <p id="guest-banner-title" class="text-base font-extrabold text-white mb-2">Read-Only Mode</p>
+      <p id="guest-banner-msg" class="text-xs leading-5 text-slate-400 mb-5">The host controls who can edit. Request permission to draw and type.</p>
+      <button id="request-perm-btn" class="w-full rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-3 text-sm font-extrabold text-[#0B1F17] hover:brightness-110 transition">
+        Request Permission
+      </button>
+      <button id="guest-dismiss-btn" class="mt-2 w-full rounded-xl py-2 text-xs text-slate-500 hover:text-white transition">Continue as viewer →</button>
+    </div>
+  </div>
+
   <!-- ── MAIN WORKSPACE ── -->
   <div class="flex flex-1 overflow-hidden" id="workspace" style="display:none!important">
 
@@ -102,6 +127,18 @@
         <div class="flex items-center gap-2">
           <i data-lucide="code-2" class="h-4 w-4 text-[#B9F044]"></i>
           <span class="text-xs font-bold">Shared Code Editor</span>
+          <!-- Host crown badge -->
+          <span id="host-badge" class="hidden items-center gap-1 rounded-full bg-yellow-500/20 px-2 py-0.5 text-[10px] font-bold text-yellow-400">
+            👑 Host
+          </span>
+          <!-- Guest lock badge -->
+          <span id="guest-badge" class="hidden items-center gap-1 rounded-full bg-slate-500/20 px-2 py-0.5 text-[10px] font-bold text-slate-400">
+            🔒 Viewer
+          </span>
+          <!-- Guest permitted badge -->
+          <span id="permitted-badge" class="hidden items-center gap-1 rounded-full bg-[#B9F044]/20 px-2 py-0.5 text-[10px] font-bold text-[#B9F044]">
+            ✅ Permitted
+          </span>
         </div>
         <div class="flex items-center gap-2">
           <select id="lang-select"
@@ -111,6 +148,11 @@
             <option value="clike">C / C++</option>
             <option value="java">Java</option>
           </select>
+          <!-- RUN button -->
+          <button id="run-code-btn" title="Run code"
+            class="flex items-center gap-1.5 rounded-lg bg-[#B9F044] px-3 py-1 text-[11px] font-extrabold text-[#0B1F17] hover:brightness-110 transition">
+            <i data-lucide="play" class="h-3.5 w-3.5"></i> Run
+          </button>
           <button id="copy-code-btn" title="Copy code"
             class="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-slate-300 hover:text-white transition">
             <i data-lucide="copy" class="h-3.5 w-3.5"></i>
@@ -127,6 +169,15 @@
 
       <!-- Typing indicator -->
       <div id="typing-indicator" class="h-6 px-4 text-[11px] text-slate-500 italic"></div>
+
+      <!-- OUTPUT PANEL (hidden until Run is clicked) -->
+      <div id="output-panel" class="hidden flex-col border-t border-white/10" style="height:180px">
+        <div class="flex items-center justify-between bg-[#06130E] px-4 py-1.5">
+          <span class="text-[11px] font-bold text-slate-400">Output</span>
+          <button id="output-close" class="text-[11px] text-slate-500 hover:text-white transition">✕ Close</button>
+        </div>
+        <div id="output-content" class="flex-1 overflow-y-auto px-4 py-2 font-mono text-[12px] leading-5 text-slate-300 bg-[#050E09]"></div>
+      </div>
     </div>
 
     <!-- RIGHT: Whiteboard + Chat -->
@@ -193,6 +244,9 @@
   </div>
 
   <!-- ── SCRIPTS ── -->
+  <!-- Pyodide: Python runtime via WebAssembly (used by Run button for Python) -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+
   <!-- CodeMirror core + modes -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>

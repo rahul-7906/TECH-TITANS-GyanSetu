@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GyanSetu | Session Booking</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.config.js"></script>
+  <link rel="stylesheet" href="css/session.css" />
+</head>
+
+<body class="font-sans antialiased bg-[#F7F8FA] text-[#1f2328] min-h-screen">
+
+  <!-- ── TOP NAV ── -->
+  <header class="sticky top-0 z-30 flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-white shadow-sm">
+    <a href="index.html" class="flex items-center gap-2 text-sm font-bold text-[#2F6F11] hover:opacity-80 transition">
+      <i data-lucide="arrow-left" class="h-4 w-4"></i> GyanSetu
+    </a>
+    <span class="text-xs font-bold text-slate-500">Session Booking</span>
+    <!-- Credit balance chip -->
+    <div id="credit-chip" class="flex items-center gap-1.5 rounded-full bg-[#B9F044]/20 border border-[#B9F044]/40 px-3 py-1 text-xs font-extrabold text-[#2F6F11]">
+      <i data-lucide="coins" class="h-3.5 w-3.5"></i>
+      <span id="credit-display">—</span> credits
+    </div>
+  </header>
+
+  <!-- ── IDENTITY OVERLAY (shown until user sets name + role) ── -->
+  <div id="identity-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-8 shadow-2xl">
+      <div class="mb-5 flex items-center gap-2.5">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#B9F044] to-[#2F6F11] text-white">
+          <i data-lucide="graduation-cap" class="h-5 w-5"></i>
+        </span>
+        <span class="text-lg font-extrabold">GyanSetu</span>
+      </div>
+      <p class="mb-5 text-xs leading-5 text-slate-500">Enter your name and choose your role to continue.</p>
+
+      <label class="block mb-3">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Your Name</span>
+        <input id="input-name" type="text" placeholder="e.g. Aarav" maxlength="20"
+          class="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-[#B9F044] focus:ring-1 focus:ring-[#B9F044]" />
+      </label>
+
+      <label class="block mb-5">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">I am a…</span>
+        <div class="mt-1.5 grid grid-cols-2 gap-2">
+          <button data-role="learner" class="role-btn selected rounded-xl border-2 border-[#B9F044] bg-[#B9F044]/10 py-2.5 text-sm font-extrabold text-[#2F6F11]">
+            🎓 Learner
+          </button>
+          <button data-role="mentor" class="role-btn rounded-xl border-2 border-slate-200 bg-white py-2.5 text-sm font-extrabold text-slate-600">
+            👑 Mentor
+          </button>
+        </div>
+      </label>
+
+      <button id="identity-btn"
+        class="w-full rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-3 text-sm font-extrabold text-[#0B1F17] transition hover:brightness-110 active:scale-95">
+        Continue →
+      </button>
+      <p id="identity-error" class="mt-2 hidden text-center text-xs text-red-500">Please enter your name.</p>
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <main class="mx-auto max-w-2xl px-4 py-8" id="main-content" style="display:none">
+
+    <!-- ═══════════════════════════ LEARNER VIEW ═══════════════════════════ -->
+    <div id="learner-view">
+
+      <!-- Step 1: Book a session -->
+      <div id="step-book" class="session-step">
+        <h1 class="text-xl font-extrabold mb-1">Book a Session</h1>
+        <p class="text-xs text-slate-500 mb-6">Tell your mentor what you need help with. Credits are deducted only after the session is marked complete.</p>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+          <label class="block">
+            <span class="label-text">Mentor's Name / ID</span>
+            <input id="mentor-name-input" type="text" placeholder="e.g. Priya or room ID"
+              class="input-field" />
+          </label>
+          <label class="block">
+            <span class="label-text">Topic / Subject</span>
+            <input id="topic-input" type="text" placeholder="e.g. Binary Trees in DSA"
+              class="input-field" />
+          </label>
+          <label class="block">
+            <span class="label-text">Credits to offer</span>
+            <input id="credits-input" type="number" min="1" max="50" value="10"
+              class="input-field" />
+          </label>
+          <label class="block">
+            <span class="label-text">Note (optional)</span>
+            <textarea id="note-input" rows="2" placeholder="Anything specific you want covered…"
+              class="input-field resize-none"></textarea>
+          </label>
+          <button id="request-btn"
+            class="w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] hover:bg-[#14532D] transition">
+            Request Session →
+          </button>
+          <p id="request-error" class="hidden text-center text-xs text-red-500"></p>
+        </div>
+      </div>
+
+      <!-- Step 2: Waiting for mentor to accept -->
+      <div id="step-waiting" class="session-step hidden">
+        <div class="rounded-2xl border border-[#B9F044]/40 bg-[#B9F044]/5 p-8 text-center">
+          <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
+            <i data-lucide="clock" class="h-7 w-7 animate-pulse"></i>
+          </div>
+          <p class="text-base font-extrabold mb-1">Waiting for Mentor…</p>
+          <p class="text-xs text-slate-500 mb-4">Your request has been sent. The mentor will accept shortly.</p>
+          <p class="text-xs text-slate-400">Session ID: <span id="session-id-display" class="font-mono font-bold text-slate-600"></span></p>
+          <button id="cancel-request-btn" class="mt-4 text-xs text-red-500 underline hover:text-red-700">Cancel Request</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Session active — waiting for quiz -->
+      <div id="step-active" class="session-step hidden">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9F044]/20 text-[#2F6F11]">
+              <i data-lucide="zap" class="h-5 w-5"></i>
+            </span>
+            <div>
+              <p class="text-sm font-extrabold">Session in Progress</p>
+              <p class="text-xs text-slate-500">Mentor: <span id="active-mentor-name" class="font-bold text-slate-700"></span></p>
+            </div>
+            <span class="ml-auto flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold text-green-700">
+              <span class="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span> Live
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 bg-slate-50 rounded-xl p-3">
+            Topic: <strong id="active-topic" class="text-slate-700"></strong>
+          </p>
+          <div class="mt-4 rounded-xl bg-[#B9F044]/10 border border-[#B9F044]/30 p-4">
+            <p class="text-xs font-bold text-[#2F6F11]">⏳ Waiting for mentor to send you a verification quiz…</p>
+            <p class="text-[11px] text-slate-500 mt-1">Once you complete the quiz, the mentor marks the session done and credits are transferred.</p>
+          </div>
+          <a id="open-collab-btn" href="#" target="_blank"
+            class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/5 py-2.5 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044]/20 transition">
+            <i data-lucide="code-2" class="h-4 w-4"></i> Open Live Collab Room
+          </a>
+        </div>
+      </div>
+
+      <!-- Step 4: Quiz sent by mentor -->
+      <div id="step-quiz" class="session-step hidden">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p class="text-sm font-extrabold mb-1">📝 Mentor sent you a quiz!</p>
+          <p class="text-xs text-slate-500 mb-5">Answer correctly to prove you understood the topic. Credits transfer only on passing.</p>
+          <div id="quiz-questions-container" class="space-y-5"></div>
+          <button id="submit-quiz-btn"
+            class="mt-6 w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] hover:bg-[#14532D] transition">
+            Submit Answers
+          </button>
+          <p id="quiz-result-msg" class="hidden mt-3 text-center text-sm font-bold rounded-xl py-2"></p>
+        </div>
+      </div>
+
+      <!-- Step 5: Session complete -->
+      <div id="step-done" class="session-step hidden">
+        <div class="rounded-2xl border border-green-200 bg-green-50 p-8 text-center">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 text-green-600">
+            <i data-lucide="check-circle-2" class="h-8 w-8"></i>
+          </div>
+          <p class="text-lg font-extrabold text-green-800 mb-1">Session Complete!</p>
+          <p id="done-msg" class="text-xs text-green-700 mb-5"></p>
+          <button onclick="location.href='session.html'" class="rounded-xl bg-[#0B1F17] px-6 py-2.5 text-xs font-extrabold text-[#B9F044] hover:bg-[#14532D] transition">
+            Book Another Session
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /learner-view -->
+
+    <!-- ═══════════════════════════ MENTOR VIEW ═══════════════════════════ -->
+    <div id="mentor-view" class="hidden">
+
+      <!-- Incoming requests list -->
+      <div id="mentor-requests-panel">
+        <h1 class="text-xl font-extrabold mb-1">Incoming Session Requests</h1>
+        <p class="text-xs text-slate-500 mb-6">Accept a request to start a session. You'll send a quiz at the end to verify the learner understood.</p>
+        <div id="requests-list" class="space-y-3">
+          <p class="text-xs text-slate-400 text-center py-8" id="no-requests-msg">No pending requests yet. Waiting…</p>
+        </div>
+      </div>
+
+      <!-- Active session panel for mentor -->
+      <div id="mentor-active-panel" class="hidden mt-6">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9F044]/20 text-[#2F6F11]">
+              <i data-lucide="users" class="h-5 w-5"></i>
+            </span>
+            <div>
+              <p class="text-sm font-extrabold">Active Session</p>
+              <p class="text-xs text-slate-500">Learner: <span id="active-learner-name" class="font-bold text-slate-700"></span></p>
+            </div>
+            <span class="ml-auto flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold text-green-700">
+              <span class="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span> Live
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 bg-slate-50 rounded-xl p-3 mb-4">
+            Topic: <strong id="mentor-active-topic" class="text-slate-700"></strong> &nbsp;·&nbsp;
+            Offered: <strong id="mentor-active-credits" class="text-[#2F6F11]"></strong> credits
+          </p>
+          <a id="mentor-open-collab" href="#" target="_blank"
+            class="flex items-center justify-center gap-2 rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/5 py-2.5 text-xs font-bold text-[#2F6F11] hover:bg-[#B9F044]/20 transition mb-4">
+            <i data-lucide="code-2" class="h-4 w-4"></i> Open Live Collab Room
+          </a>
+
+          <!-- Quiz builder -->
+          <div class="border-t border-slate-100 pt-4">
+            <p class="text-xs font-extrabold mb-3">📝 Build Verification Quiz</p>
+            <p class="text-[11px] text-slate-500 mb-3">Add up to 3 MCQ questions. Learner must pass to get credits deducted.</p>
+            <div id="quiz-builder" class="space-y-4"></div>
+            <button id="add-question-btn"
+              class="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#2F6F11] hover:underline">
+              <i data-lucide="plus-circle" class="h-4 w-4"></i> Add Question
+            </button>
+            <button id="send-quiz-btn"
+              class="mt-4 w-full rounded-xl bg-[#0B1F17] py-3 text-sm font-extrabold text-[#B9F044] hover:bg-[#14532D] transition">
+              Send Quiz to Learner →
+            </button>
+            <p id="quiz-sent-msg" class="hidden mt-2 text-center text-xs text-green-600 font-bold">✅ Quiz sent! Waiting for learner's response…</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mentor: session complete -->
+      <div id="mentor-done-panel" class="hidden mt-6">
+        <div class="rounded-2xl border border-green-200 bg-green-50 p-8 text-center">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 text-green-600">
+            <i data-lucide="check-circle-2" class="h-8 w-8"></i>
+          </div>
+          <p class="text-lg font-extrabold text-green-800 mb-1">Session Complete!</p>
+          <p id="mentor-done-msg" class="text-xs text-green-700 mb-5"></p>
+          <button onclick="location.reload()" class="rounded-xl bg-[#0B1F17] px-6 py-2.5 text-xs font-extrabold text-[#B9F044] hover:bg-[#14532D] transition">
+            Accept Next Session
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /mentor-view -->
+
+  </main>
+
+  <!-- ── SCRIPTS ── -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    var SUPABASE_URL  = 'https://bpfjlpjwspzlcsowespc.supabase.co';
+    var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/session.js"></script>
+</body>
+</html>
