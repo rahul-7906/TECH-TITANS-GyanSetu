@@ -40,6 +40,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const mainContent     = document.getElementById('main-content');
   const creditDisplay   = document.getElementById('credit-display');
 
+  // Auto-detect logged-in user from Supabase auth session
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session?.user) {
+      const name = session.user.user_metadata?.full_name || session.user.email?.split('@')[0];
+      const inputName = document.getElementById('input-name');
+      if (inputName && name) inputName.value = name;
+      if (session.user.user_metadata?.role === 'mentor') {
+        const mentorBtn = document.querySelector('.role-btn[data-role="mentor"]');
+        mentorBtn?.click();
+      }
+    }
+  }).catch(() => {});
+
   // ── Identity overlay ───────────────────────────────────────────────────────
   document.querySelectorAll('.role-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -512,20 +525,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // CREDIT TRANSFER  (client-side with optimistic DB writes)
+  // CREDIT TRANSFER  (records in credits, credit_log, profiles, & credit_ledger)
   // ═══════════════════════════════════════════════════════════════════════════
   async function transferCredits(from, to, amount, sid) {
-    // Guard against duplicate release and surface every database failure.
+    // Guard against duplicate release
     const { data: existingLog, error: logCheckError } = await sb.from('credit_log')
       .select('id').eq('session_id', sid).eq('reason', 'session_complete').maybeSingle();
     if (logCheckError) return { error: logCheckError };
     if (existingLog) return { error: new Error('Credits already released for this session.') };
 
+    // Fetch learner credits
     const { data: fromRow, error: fromError } = await sb.from('credits').select('balance').eq('username', from).single();
     if (fromError || !fromRow || fromRow.balance < amount) return { error: fromError || new Error('Insufficient learner credits.') };
+    
+    // Deduct learner from credits table
     const { error: debitError } = await sb.from('credits').update({ balance: fromRow.balance - amount }).eq('username', from).gte('balance', amount);
     if (debitError) return { error: debitError };
 
+    // Credit mentor in credits table
     const { data: toRow, error: mentorReadError } = await sb.from('credits').select('balance').eq('username', to).maybeSingle();
     if (mentorReadError) return { error: mentorReadError };
     const mentorWrite = toRow
@@ -534,11 +551,134 @@ document.addEventListener('DOMContentLoaded', () => {
     const { error: mentorError } = await mentorWrite;
     if (mentorError) return { error: mentorError };
 
+    // Log in credit_log
     const { error: transferLogError } = await sb.from('credit_log').insert({
       session_id: sid, from_user: from, to_user: to, amount, reason: 'session_complete'
     });
+
+    // Sync to profiles & credit_ledger for the unified dashboard ledger
+    try {
+      // Find learner profile
+      const { data: learnerProf } = await sb.from('profiles')
+        .select('id, credits, total_spent')
+        .or(`full_name.eq.${from},email.ilike.${from}%`)
+        .maybeSingle();
+
+      if (learnerProf) {
+        const learnerNewBal = Math.max(0, (learnerProf.credits || 0) - amount);
+        await sb.from('credit_ledger').insert({
+          user_id: learnerProf.id,
+          amount: -amount,
+          balance_after: learnerNewBal,
+          type: 'SPEND',
+          reason: `Live Learning Session: ${sessionData?.topic || '1-on-1'} with ${to}`,
+          reference_type: 'SESSION',
+          reference_id: sid,
+          idempotency_key: `SESSION:SPEND:${sid}:${learnerProf.id}`,
+          status: 'COMPLETED'
+        });
+        await sb.from('profiles').update({
+          credits: learnerNewBal,
+          total_spent: (learnerProf.total_spent || 0) + amount,
+          updated_at: new Date().toISOString()
+        }).eq('id', learnerProf.id);
+      }
+
+      // Find mentor profile
+      const { data: mentorProf } = await sb.from('profiles')
+        .select('id, credits, total_earned, xp')
+        .or(`full_name.eq.${to},email.ilike.${to}%`)
+        .maybeSingle();
+
+      if (mentorProf) {
+        const mentorNewBal = (mentorProf.credits || 0) + amount;
+        await sb.from('credit_ledger').insert({
+          user_id: mentorProf.id,
+          amount: amount,
+          balance_after: mentorNewBal,
+          type: 'EARN',
+          reason: `Live Session Teaching Reward: ${sessionData?.topic || '1-on-1'} (${from})`,
+          reference_type: 'SESSION',
+          reference_id: sid,
+          idempotency_key: `SESSION:EARN:${sid}:${mentorProf.id}`,
+          status: 'COMPLETED'
+        });
+        await sb.from('profiles').update({
+          credits: mentorNewBal,
+          total_earned: (mentorProf.total_earned || 0) + amount,
+          xp: (mentorProf.xp || 0) + Math.round(amount * 1.5),
+          updated_at: new Date().toISOString()
+        }).eq('id', mentorProf.id);
+      }
+    } catch (e) {
+      console.warn('Syncing credit_ledger from session.js:', e);
+    }
+
     return { error: transferLogError || null };
   }
+
+  // ── Student satisfaction verification ─────────────────────────────────────
+  const btnSatYes = document.getElementById('btn-satisfaction-yes');
+  const btnSatNo  = document.getElementById('btn-satisfaction-no');
+
+  if (btnSatYes) {
+    btnSatYes.addEventListener('click', async () => {
+      btnSatYes.disabled = true;
+      btnSatNo.disabled = true;
+      document.getElementById('satisfaction-actions')?.classList.add('hidden');
+      document.getElementById('satisfaction-yes-msg')?.classList.remove('hidden');
+
+      if (sessionId) {
+        await sb.from('sessions').update({
+          satisfaction: 'yes',
+          updated_at: new Date().toISOString()
+        }).eq('id', sessionId);
+
+        channel?.send({ type: 'broadcast', event: 'student-satisfaction', payload: { satisfaction: 'yes' } });
+      }
+      showToast('Thank you! Your confirmation and credit transfer are finalized.');
+    });
+  }
+
+  if (btnSatNo) {
+    btnSatNo.addEventListener('click', async () => {
+      btnSatYes.disabled = true;
+      btnSatNo.disabled = true;
+      document.getElementById('satisfaction-actions')?.classList.add('hidden');
+      document.getElementById('satisfaction-no-options')?.classList.remove('hidden');
+
+      if (sessionId) {
+        await sb.from('sessions').update({
+          satisfaction: 'no',
+          dispute_status: 'pending_review',
+          updated_at: new Date().toISOString()
+        }).eq('id', sessionId);
+
+        channel?.send({ type: 'broadcast', event: 'student-satisfaction', payload: { satisfaction: 'no', status: 'pending_review' } });
+      }
+      showToast('Credits remain protected in escrow. Please choose a resolution option below.');
+    });
+  }
+
+  // Dispute choice handlers
+  ['opt-continue-same', 'opt-request-another', 'opt-switch-mentor', 'opt-request-review'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('click', async () => {
+        const statusEl = document.getElementById('dispute-status-text');
+        if (statusEl) {
+          statusEl.textContent = 'Choice recorded. GyanSetu escrow has protected your credits.';
+          statusEl.classList.remove('hidden');
+        }
+        showToast('Preference recorded. Escrow credits will not be transferred.');
+        if (id === 'opt-request-another') {
+          setTimeout(() => { location.reload(); }, 1200);
+        } else if (id === 'opt-switch-mentor') {
+          setTimeout(() => { location.href = 'dashboard.html#mentors'; }, 1200);
+        }
+      });
+    }
+  });
 
   // ═══════════════════════════════════════════════════════════════════════════
   // HELPERS

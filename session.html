@@ -217,18 +217,66 @@
         </div>
       </div>
 
-      <!-- Step 5: Session complete -->
+      <!-- Step 5: Session complete & Satisfaction Verification -->
       <div id="step-done" class="session-step hidden">
-        <div class="rounded-3xl border border-[#B9F044]/40 bg-gradient-to-br from-[#F4FBEA] to-white p-10 text-center shadow-sm">
+        <div class="rounded-3xl border border-[#B9F044]/40 bg-gradient-to-br from-[#F4FBEA] to-white p-8 sm:p-10 text-center shadow-sm">
           <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#B9F044]/20 text-[#2F6F11]">
             <i data-lucide="check-circle-2" class="h-8 w-8"></i>
           </div>
-          <p class="text-xl font-extrabold text-[#0B1F17] mb-1">Session Complete!</p>
-          <p id="done-msg" class="text-xs text-slate-500 mb-3"></p>
-          <div class="mx-auto mb-6 max-w-sm rounded-xl border border-amber-200 bg-amber-50 p-3 text-left text-[11px] text-amber-800">
-            <div class="flex items-center gap-2 font-extrabold"><i data-lucide="lock-keyhole" class="h-4 w-4"></i> Credits remain protected</div>
-            <p class="mt-1">Your mentor must confirm completion before the transfer is released.</p>
+          <p class="text-xl font-extrabold text-[#0B1F17] mb-1">Session Concluded!</p>
+          <p id="done-msg" class="text-xs text-slate-500 mb-4"></p>
+
+          <!-- Satisfaction prompt -->
+          <div id="satisfaction-panel" class="mx-auto mb-6 max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-sm text-left">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#B9F044]/20 text-[#2F6F11]">
+                <i data-lucide="help-circle" class="h-4 w-4"></i>
+              </span>
+              <p class="text-sm font-extrabold text-[#0B1F17]">Did you understand this session?</p>
+            </div>
+            <p class="text-xs text-slate-500 mb-4">Your feedback ensures quality teaching. Credits are only released to the mentor when you confirm satisfaction.</p>
+            
+            <div class="grid grid-cols-2 gap-3" id="satisfaction-actions">
+              <button id="btn-satisfaction-yes" class="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] py-2.5 text-xs font-extrabold text-[#0B1F17] transition hover:brightness-105 shadow-sm">
+                <i data-lucide="thumbs-up" class="h-3.5 w-3.5"></i>
+                YES, Understood!
+              </button>
+              <button id="btn-satisfaction-no" class="flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50/50 py-2.5 text-xs font-extrabold text-rose-700 transition hover:bg-rose-100 shadow-sm">
+                <i data-lucide="thumbs-down" class="h-3.5 w-3.5"></i>
+                NO, Need Help
+              </button>
+            </div>
+
+            <!-- YES confirmation message -->
+            <div id="satisfaction-yes-msg" class="hidden mt-3 rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-800">
+              <div class="flex items-center gap-1.5 font-bold mb-1 text-emerald-900">
+                <i data-lucide="check-circle" class="h-4 w-4 text-emerald-600"></i> Great job!
+              </div>
+              <p>Session confirmed. Credits have been finalized and released to your mentor.</p>
+            </div>
+
+            <!-- NO dispute options -->
+            <div id="satisfaction-no-options" class="hidden mt-4 space-y-2 border-t border-slate-100 pt-3">
+              <div class="flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800 mb-3">
+                <i data-lucide="shield-alert" class="h-4 w-4 shrink-0 text-amber-600"></i>
+                <p><strong>Credits Protected in Escrow.</strong> No credits released to mentor. Choose how you'd like to proceed:</p>
+              </div>
+              <button id="opt-continue-same" class="w-full text-left rounded-xl border border-slate-200 p-2.5 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">
+                1. Continue with the same mentor for a follow-up
+              </button>
+              <button id="opt-request-another" class="w-full text-left rounded-xl border border-slate-200 p-2.5 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">
+                2. Request another session for this topic
+              </button>
+              <button id="opt-switch-mentor" class="w-full text-left rounded-xl border border-slate-200 p-2.5 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">
+                3. Switch to a different mentor
+              </button>
+              <button id="opt-request-review" class="w-full text-left rounded-xl border border-slate-200 p-2.5 text-xs font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">
+                4. Request platform review &amp; refund
+              </button>
+              <p id="dispute-status-text" class="hidden text-center text-xs font-bold text-[#2F6F11] mt-2"></p>
+            </div>
           </div>
+
           <div class="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
             <a href="session.html" class="rounded-xl bg-[#0B1F17] px-6 py-2.5 text-xs font-extrabold text-[#B9F044] transition hover:bg-[#064E3B]">Book Another Session</a>
             <a href="dashboard.html" class="rounded-xl border border-slate-200 px-6 py-2.5 text-xs font-extrabold text-[#0B1F17] transition hover:border-[#B9F044]">Go to Dashboard</a>
@@ -341,6 +389,7 @@
        ============================================================ -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/credits-config.js"></script>
   <script>
     if (typeof SUPABASE_URL === 'undefined') {
       var SUPABASE_URL  = 'https://bpfjlpjwspzlcsowespc.supabase.co';

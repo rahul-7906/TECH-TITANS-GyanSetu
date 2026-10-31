@@ -128,10 +128,23 @@ DO $$
 BEGIN
   ALTER TABLE public.credit_ledger ADD COLUMN IF NOT EXISTS user_id uuid;
   ALTER TABLE public.credit_ledger ADD COLUMN IF NOT EXISTS amount integer;
+  ALTER TABLE public.credit_ledger ADD COLUMN IF NOT EXISTS balance_after integer DEFAULT 0;
+  ALTER TABLE public.credit_ledger ALTER COLUMN balance_after DROP NOT NULL;
   ALTER TABLE public.credit_ledger ADD COLUMN IF NOT EXISTS type text;
   ALTER TABLE public.credit_ledger ADD COLUMN IF NOT EXISTS reason text;
   ALTER TABLE public.credit_ledger ADD COLUMN IF NOT EXISTS reference_type text;
+  ALTER TABLE public.credit_ledger ADD COLUMN IF NOT EXISTS reference_id text;
+  ALTER TABLE public.credit_ledger ADD COLUMN IF NOT EXISTS idempotency_key text;
   ALTER TABLE public.credit_ledger ADD COLUMN IF NOT EXISTS status text DEFAULT 'COMPLETED';
+EXCEPTION WHEN OTHERS THEN
+  NULL;
+END $$;
+
+DO $$
+BEGIN
+  ALTER TABLE public.sessions ADD COLUMN IF NOT EXISTS satisfaction text;
+  ALTER TABLE public.sessions ADD COLUMN IF NOT EXISTS dispute_status text;
+  ALTER TABLE public.sessions ADD COLUMN IF NOT EXISTS credits_released boolean DEFAULT false;
 EXCEPTION WHEN OTHERS THEN
   NULL;
 END $$;

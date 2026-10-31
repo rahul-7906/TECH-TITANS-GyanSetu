@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GyanSetu | Campus Team Race Arena</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.config.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .racing-track {
+      background: linear-gradient(180deg, #091a13 0%, #06130e 100%);
+      border: 1px solid rgba(185, 240, 68, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .track-grid {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+    .lane-divider {
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.15) 0, rgba(255,255,255,0.15) 15px, transparent 15px, transparent 30px);
+    }
+    .car-sprite {
+      transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s ease;
+    }
+    .car-speed-boost {
+      animation: nitroGlow 0.8s ease;
+    }
+    .car-spinout {
+      animation: spinout 0.7s ease;
+    }
+    @keyframes nitroGlow {
+      0% { filter: drop-shadow(0 0 0px #B9F044); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 16px #B9F044); transform: scale(1.15) translateY(-2px); }
+      100% { filter: drop-shadow(0 0 2px #B9F044); transform: scale(1); }
+    }
+    @keyframes spinout {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg) scale(0.9); }
+      100% { transform: rotate(360deg); }
+    }
+    .finish-banner {
+      background: repeating-linear-gradient(45deg, #000, #000 8px, #fff 8px, #fff 16px);
+    }
+    .pulse-live {
+      box-shadow: 0 0 0 0 rgba(185, 240, 68, 0.7);
+      animation: livePulse 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes livePulse {
+      to { box-shadow: 0 0 0 12px rgba(185, 240, 68, 0); }
+    }
+  </style>
+</head>
+
+<body class="bg-[#0B1F17] text-white min-h-screen flex flex-col antialiased">
+
+  <!-- ── TOP BAR ── -->
+  <header class="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-[#06130E]/95 px-5 py-3 backdrop-blur-md sm:px-8">
+    <div class="flex items-center gap-3">
+      <a href="dashboard.html" class="flex items-center gap-2 text-xs font-bold text-[#B9F044] hover:opacity-80 transition">
+        <i data-lucide="arrow-left" class="h-4 w-4"></i>
+        <span>Dashboard</span>
+      </a>
+      <span class="text-white/20">|</span>
+      <div class="flex items-center gap-2">
+        <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#B9F044] to-[#2F6F11] text-[#0B1F17]">
+          🏎️
+        </span>
+        <h1 class="text-sm font-extrabold tracking-tight text-white hidden sm:block">Campus Race Arena</h1>
+      </div>
+    </div>
+
+    <!-- Live Status & Ticker -->
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-1.5 rounded-full border border-[#B9F044]/30 bg-[#B9F044]/10 px-3 py-1 text-xs font-extrabold text-[#B9F044]">
+        <span class="h-2 w-2 rounded-full bg-[#B9F044] pulse-live"></span>
+        <span id="arena-status-pill">Lobby Ready</span>
+      </span>
+      <div class="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-bold text-white">
+        <i data-lucide="coins" class="h-3.5 w-3.5 text-amber-400"></i>
+        <span id="user-balance-display">100</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── MAIN CONTENT AREA ── -->
+  <main class="flex-1 mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 flex flex-col gap-6">
+
+    <!-- ===== 1. TEAM LOBBY (Pre-Match Selection) ===== -->
+    <section id="arena-lobby" class="rounded-3xl border border-white/10 bg-[#06130E] p-6 sm:p-8 shadow-2xl">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <span class="inline-block rounded-full bg-[#B9F044]/15 px-3 py-0.5 text-[11px] font-extrabold text-[#B9F044] uppercase tracking-wider mb-2">Team Battle Mode</span>
+          <h2 class="text-2xl font-extrabold text-white">Choose Your Racing Team</h2>
+          <p class="text-xs text-slate-400 mt-1">Pick a team squad. Rapid quiz answers boost your car towards the finish line. Winning team claims +20 Credits each!</p>
+        </div>
+        <button id="btn-start-race" onclick="startRaceMatch()" class="btn-pill inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-6 py-3 text-sm font-extrabold text-[#0B1F17] transition hover:brightness-110 shadow-glow active:scale-95">
+          <span>Launch Team Race 🏁</span>
+        </button>
+      </div>
+
+      <!-- Team Selection Cards -->
+      <div class="grid gap-4 sm:grid-cols-3">
+        <!-- Team 1 -->
+        <div id="team-card-byteforce" onclick="selectTeam('byteforce')" class="cursor-pointer rounded-2xl border-2 border-[#B9F044] bg-[#B9F044]/10 p-5 transition hover:scale-[1.02]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-3xl">🏎️</span>
+            <span class="rounded-full bg-[#B9F044] px-2.5 py-0.5 text-[10px] font-extrabold text-[#0B1F17]" id="badge-byteforce">SELECTED</span>
+          </div>
+          <h3 class="text-base font-extrabold text-white">Team ByteForce</h3>
+          <p class="text-xs text-slate-300 mt-1">Specialty: Algorithm Sprints &amp; Dynamic Programming</p>
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+            <span>Members: <strong class="text-white">You, Rohan, Aisha</strong></span>
+            <span class="text-[#B9F044] font-bold">Fast Nitro</span>
+          </div>
+        </div>
+
+        <!-- Team 2 -->
+        <div id="team-card-cyberknights" onclick="selectTeam('cyberknights')" class="cursor-pointer rounded-2xl border-2 border-white/10 bg-white/5 p-5 transition hover:border-cyan-400 hover:scale-[1.02]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-3xl">🚀</span>
+            <span class="hidden rounded-full bg-cyan-400 px-2.5 py-0.5 text-[10px] font-extrabold text-[#0B1F17]" id="badge-cyberknights">SELECTED</span>
+          </div>
+          <h3 class="text-base font-extrabold text-white">Team CyberKnights</h3>
+          <p class="text-xs text-slate-300 mt-1">Specialty: System Architecture, WebRTC &amp; Security</p>
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+            <span>Members: <strong class="text-white">Vikram, Priya, Dev</strong></span>
+            <span class="text-cyan-400 font-bold">High Defense</span>
+          </div>
+        </div>
+
+        <!-- Team 3 -->
+        <div id="team-card-algobots" onclick="selectTeam('algobots')" class="cursor-pointer rounded-2xl border-2 border-white/10 bg-white/5 p-5 transition hover:border-orange-400 hover:scale-[1.02]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-3xl">⚡</span>
+            <span class="hidden rounded-full bg-orange-400 px-2.5 py-0.5 text-[10px] font-extrabold text-[#0B1F17]" id="badge-algobots">SELECTED</span>
+          </div>
+          <h3 class="text-base font-extrabold text-white">Team Algobots</h3>
+          <p class="text-xs text-slate-300 mt-1">Specialty: Database Engineering &amp; High Concurrency</p>
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+            <span>Members: <strong class="text-white">Arjun, Sneha, Kabir</strong></span>
+            <span class="text-orange-400 font-bold">Overclock</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 2. LIVE RACING TRACK BOARD ===== -->
+    <section class="racing-track track-grid rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col gap-5">
+      <div class="flex items-center justify-between text-xs font-bold text-slate-400 border-b border-white/10 pb-3">
+        <span class="flex items-center gap-1.5"><i data-lucide="flag" class="h-3.5 w-3.5 text-[#B9F044]"></i> RACE TRACK &bull; FIRST TO 100 PTS WINS</span>
+        <div class="flex gap-6 sm:gap-12 pr-10 text-[10px] uppercase font-mono tracking-wider">
+          <span>Start (0)</span>
+          <span class="hidden sm:inline">Check 1 (30)</span>
+          <span>Check 2 (60)</span>
+          <span class="text-[#B9F044]">Finish (100)</span>
+        </div>
+      </div>
+
+      <!-- Lanes -->
+      <div class="space-y-4">
+        <!-- Lane 1: ByteForce -->
+        <div class="relative flex items-center h-14 rounded-2xl bg-white/5 border border-[#B9F044]/30 px-3">
+          <div class="w-32 sm:w-40 shrink-0 flex items-center gap-2 z-10">
+            <span class="text-lg">🏎️</span>
+            <div>
+              <p class="text-xs font-extrabold text-white truncate">ByteForce</p>
+              <p class="text-[10px] text-[#B9F044] font-bold"><span id="pts-byteforce">0</span> pts</p>
+            </div>
+          </div>
+          <div class="relative flex-1 h-full flex items-center">
+            <!-- Progress Line -->
+            <div class="absolute left-0 right-0 h-1 lane-divider"></div>
+            <!-- Car Icon -->
+            <div id="car-byteforce" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5">
+              <span class="text-2xl filter drop-shadow">🏎️</span>
+              <span class="text-[9px] font-black bg-[#B9F044] text-[#0B1F17] px-1.5 py-0.5 rounded-full font-mono">LANE 1</span>
+            </div>
+          </div>
+          <!-- Finish line flag -->
+          <div class="finish-banner w-3 h-full rounded-r-xl shrink-0 opacity-80"></div>
+        </div>
+
+        <!-- Lane 2: CyberKnights -->
+        <div class="relative flex items-center h-14 rounded-2xl bg-white/5 border border-cyan-400/30 px-3">
+          <div class="w-32 sm:w-40 shrink-0 flex items-center gap-2 z-10">
+            <span class="text-lg">🚀</span>
+            <div>
+              <p class="text-xs font-extrabold text-white truncate">CyberKnights</p>
+              <p class="text-[10px] text-cyan-400 font-bold"><span id="pts-cyberknights">0</span> pts</p>
+            </div>
+          </div>
+          <div class="relative flex-1 h-full flex items-center">
+            <div class="absolute left-0 right-0 h-1 lane-divider"></div>
+            <div id="car-cyberknights" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5">
+              <span class="text-2xl filter drop-shadow">🚀</span>
+              <span class="text-[9px] font-black bg-cyan-400 text-[#0B1F17] px-1.5 py-0.5 rounded-full font-mono">LANE 2</span>
+            </div>
+          </div>
+          <div class="finish-banner w-3 h-full rounded-r-xl shrink-0 opacity-80"></div>
+        </div>
+
+        <!-- Lane 3: Algobots -->
+        <div class="relative flex items-center h-14 rounded-2xl bg-white/5 border border-orange-400/30 px-3">
+          <div class="w-32 sm:w-40 shrink-0 flex items-center gap-2 z-10">
+            <span class="text-lg">⚡</span>
+            <div>
+              <p class="text-xs font-extrabold text-white truncate">Algobots</p>
+              <p class="text-[10px] text-orange-400 font-bold"><span id="pts-algobots">0</span> pts</p>
+            </div>
+          </div>
+          <div class="relative flex-1 h-full flex items-center">
+            <div class="absolute left-0 right-0 h-1 lane-divider"></div>
+            <div id="car-algobots" class="car-sprite absolute left-0 flex items-center gap-1 transform -translate-y-0.5">
+              <span class="text-2xl filter drop-shadow">⚡</span>
+              <span class="text-[9px] font-black bg-orange-400 text-[#0B1F17] px-1.5 py-0.5 rounded-full font-mono">LANE 3</span>
+            </div>
+          </div>
+          <div class="finish-banner w-3 h-full rounded-r-xl shrink-0 opacity-80"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 3. LIVE BATTLE ARENA & TICKER ===== -->
+    <div class="grid gap-6 lg:grid-cols-3">
+
+      <!-- Quiz / Battle Question Station (2 Cols) -->
+      <div class="lg:col-span-2 rounded-3xl border border-white/10 bg-[#06130E] p-6 shadow-2xl flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#B9F044]/20 text-[#B9F044]">
+                <i data-lucide="zap" class="h-4 w-4"></i>
+              </span>
+              <div>
+                <p class="text-xs font-extrabold text-white">Live Battle Sprint</p>
+                <p class="text-[10px] text-slate-400">Round <span id="current-round-text">1</span> of 5 &bull; +10 Speed Boost, -5 Penalty</p>
+              </div>
+            </div>
+            <!-- Timer countdown -->
+            <div class="flex items-center gap-1.5 rounded-xl bg-white/10 px-3 py-1 text-xs font-mono font-black text-[#B9F044]">
+              <i data-lucide="timer" class="h-3.5 w-3.5"></i>
+              <span id="quiz-timer">15s</span>
+            </div>
+          </div>
+
+          <!-- Question Box -->
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-5 mb-4">
+            <p id="battle-question" class="text-sm sm:text-base font-bold text-white leading-relaxed">
+              Click "Launch Team Race 🏁" above to start the live campus battle!
+            </p>
+          </div>
+
+          <!-- 4 Options Grid -->
+          <div id="battle-options" class="grid gap-2.5 sm:grid-cols-2">
+            <!-- Injected dynamically -->
+            <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option A</button>
+            <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option B</button>
+            <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option C</button>
+            <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option D</button>
+          </div>
+        </div>
+
+        <!-- Result / Feedback Banner -->
+        <div id="battle-feedback" class="mt-4 hidden rounded-xl p-3 text-center text-xs font-extrabold"></div>
+      </div>
+
+      <!-- Live Action Combat Ticker & Commentary (1 Col) -->
+      <div class="rounded-3xl border border-white/10 bg-[#06130E] p-6 shadow-2xl flex flex-col">
+        <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+          <p class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <i data-lucide="activity" class="h-3.5 w-3.5 text-[#B9F044]"></i> Live Combat Feed
+          </p>
+          <span class="text-[10px] text-[#B9F044] font-mono">REALTIME</span>
+        </div>
+
+        <div id="combat-feed" class="flex-1 space-y-2 overflow-y-auto max-h-64 text-xs font-medium text-slate-300 pr-1">
+          <div class="rounded-xl bg-white/5 p-2.5 border border-white/5 flex items-start gap-2">
+            <span class="text-base">🏁</span>
+            <div>
+              <p class="text-white font-bold">Lobby ready</p>
+              <p class="text-[10px] text-slate-400">Teams assembled on the starting grid.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== 4. VICTORY PODIUM MODAL ===== -->
+    <div id="podium-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md px-4">
+      <div class="w-full max-w-md rounded-3xl border border-[#B9F044]/40 bg-gradient-to-b from-[#0B2A1E] to-[#06130E] p-8 text-center shadow-2xl">
+        <div class="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-3xl bg-[#B9F044]/20 text-4xl shadow-glow">
+          🏆
+        </div>
+        <span class="inline-block rounded-full bg-[#B9F044] text-[#0B1F17] px-3 py-0.5 text-xs font-black uppercase tracking-wider mb-2">Race Finished</span>
+        <h3 id="winner-title" class="text-2xl font-black text-white">Team ByteForce Wins!</h3>
+        <p id="winner-desc" class="text-xs text-slate-300 mt-2 mb-6">Incredible teamwork on the rapid algorithmic sprint!</p>
+
+        <!-- Credit Award Card -->
+        <div id="credit-award-box" class="mx-auto mb-6 rounded-2xl border border-[#B9F044]/30 bg-[#B9F044]/10 p-4 text-center">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-[#B9F044]">Team Victory Reward</p>
+          <p class="text-2xl font-black text-white mt-1"><span id="reward-credits-amount">+20</span> Credits</p>
+          <p class="text-[10px] text-emerald-200/70 mt-1">Recorded in your official Credit Ledger</p>
+        </div>
+
+        <div class="flex gap-3 justify-center">
+          <button onclick="resetMatch()" class="rounded-xl bg-[#0B1F17] border border-[#B9F044] px-5 py-2.5 text-xs font-extrabold text-[#B9F044] hover:bg-[#0B1F17]/80 transition">
+            Rematch 🔄
+          </button>
+          <a href="dashboard.html" class="rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-6 py-2.5 text-xs font-extrabold text-[#0B1F17] hover:brightness-105 transition shadow-sm">
+            Go to Dashboard &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── SCRIPTS ── -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/demo-data.js"></script>
+  <script src="js/credits-config.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons();</script>
+
+  <script>
+    // ── Supabase Client ───────────────────────────────────────────────
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // ── Arena State ───────────────────────────────────────────────────
+    let myUser = null;
+    let myTeam = 'byteforce';
+    let matchRunning = false;
+    let currentRound = 0;
+    let timerInterval = null;
+    let timerSeconds = 15;
+    let channel = null;
+
+    const TEAMS = {
+      byteforce:    { name: 'Team ByteForce',    emoji: '🏎️', pts: 0, color: '#B9F044' },
+      cyberknights: { name: 'Team CyberKnights', emoji: '🚀', pts: 0, color: '#22d3ee' },
+      algobots:     { name: 'Team Algobots',     emoji: '⚡', pts: 0, color: '#fb923c' }
+    };
+
+    const QUESTIONS = [
+      {
+        q: "What is the amortized time complexity of inserting into a Dynamic Array (std::vector)?",
+        opts: ["O(1) amortized", "O(N) always", "O(log N)", "O(N^2)"],
+        ans: 0,
+        exp: "Doubling capacity on resize gives O(1) amortized insertion cost."
+      },
+      {
+        q: "In WebRTC peer-to-peer data mesh, which protocol provides unreliable, fast UDP datagrams?",
+        opts: ["TCP Socket", "SCTP over DTLS", "HTTP/2 Stream", "WebSocket Frame"],
+        ans: 1,
+        exp: "WebRTC RTCDataChannel runs SCTP encapsulated in DTLS for secure P2P transport."
+      },
+      {
+        q: "Which SQL constraint prevents concurrent race condition double-spending in a ledger?",
+        opts: ["CHECK (amount > 0)", "UNIQUE(idempotency_key)", "FOREIGN KEY(user_id)", "DEFAULT now()"],
+        ans: 1,
+        exp: "A UNIQUE idempotency key guarantees atomic single-execution."
+      },
+      {
+        q: "What data structure does Redis utilize for its high-performance sorted sets (ZSET)?",
+        opts: ["Red-Black Tree", "Skip List + Hash Table", "B+ Tree", "Fibonacci Heap"],
+        ans: 1,
+        exp: "Redis ZSETs are implemented using a Skip List combined with a Hash Table."
+      },
+      {
+        q: "In distributed system consensus (Raft/Paxos), what fraction of nodes must agree for a quorum?",
+        opts: ["100% (Unanimous)", "Simple Majority (N/2 + 1)", "One single leader", "Two-thirds (66%)"],
+        ans: 1,
+        exp: "A quorum requires a strict majority (N/2 + 1) to prevent split-brain states."
+      }
+    ];
+
+    // ── Init Session & Realtime ───────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session?.user) {
+          myUser = session.user;
+          const { data: prof } = await sb.from('profiles').select('credits').eq('id', myUser.id).maybeSingle();
+          if (prof) document.getElementById('user-balance-display').textContent = prof.credits || 0;
+        } else if (typeof window.GYANSETU_DEMO !== 'undefined') {
+          myUser = { id: window.GYANSETU_DEMO.profile.id, email: window.GYANSETU_DEMO.profile.email };
+          document.getElementById('user-balance-display').textContent = window.GYANSETU_DEMO.profile.credits || 155;
+        }
+      } catch (e) {
+        if (typeof window.GYANSETU_DEMO !== 'undefined') {
+          myUser = { id: window.GYANSETU_DEMO.profile.id, email: window.GYANSETU_DEMO.profile.email };
+          document.getElementById('user-balance-display').textContent = window.GYANSETU_DEMO.profile.credits || 155;
+        }
+      }
+
+      // Connect to Realtime broadcast channel for multi-peer arena
+      channel = sb.channel('arena-global-match', { config: { broadcast: { self: false } } });
+      channel.on('broadcast', { event: 'team-point-update' }, ({ payload }) => {
+        handleRemoteTeamUpdate(payload);
+      });
+      channel.subscribe();
+    });
+
+    // ── Team Selection ────────────────────────────────────────────────
+    function selectTeam(teamKey) {
+      if (matchRunning) return;
+      myTeam = teamKey;
+      ['byteforce', 'cyberknights', 'algobots'].forEach(k => {
+        const card = document.getElementById(`team-card-${k}`);
+        const badge = document.getElementById(`badge-${k}`);
+        if (k === teamKey) {
+          card.classList.replace('border-white/10', 'border-[#B9F044]');
+          card.classList.replace('bg-white/5', 'bg-[#B9F044]/10');
+          badge.classList.remove('hidden');
+        } else {
+          card.classList.replace('border-[#B9F044]', 'border-white/10');
+          card.classList.replace('bg-[#B9F044]/10', 'bg-white/5');
+          badge.classList.add('hidden');
+        }
+      });
+      addCombatLog(`🏎️ You joined ${TEAMS[teamKey].name}!`);
+    }
+
+    // ── Launch Match ──────────────────────────────────────────────────
+    function startRaceMatch() {
+      if (matchRunning) return;
+      matchRunning = true;
+      document.getElementById('arena-status-pill').textContent = 'Match Live 🟢';
+      document.getElementById('arena-status-pill').classList.replace('text-[#B9F044]', 'text-emerald-400');
+      document.getElementById('btn-start-race').disabled = true;
+      document.getElementById('btn-start-race').classList.add('opacity-50', 'cursor-not-allowed');
+
+      // Reset team scores
+      Object.keys(TEAMS).forEach(k => {
+        TEAMS[k].pts = 0;
+        updateCarPosition(k);
+      });
+
+      addCombatLog('🏁 Green flag waved! The Campus Team Race is officially underway!');
+      currentRound = 0;
+      loadNextQuestion();
+
+      // Start simulated rival squad activity (competing live)
+      startRivalSquadEngine();
+    }
+
+    function loadNextQuestion() {
+      if (currentRound >= QUESTIONS.length) {
+        finishMatch();
+        return;
+      }
+
+      const qObj = QUESTIONS[currentRound];
+      document.getElementById('current-round-text').textContent = (currentRound + 1);
+      document.getElementById('battle-question').textContent = qObj.q;
+
+      const optsContainer = document.getElementById('battle-options');
+      optsContainer.innerHTML = qObj.opts.map((opt, i) => `
+        <button onclick="handleUserAnswer(${i})" class="btn-option rounded-xl border border-white/15 bg-white/5 p-3.5 text-left text-xs font-semibold text-white hover:border-[#B9F044] hover:bg-[#B9F044]/10 transition active:scale-98">
+          <span class="inline-block w-5 font-mono text-[#B9F044] font-bold">${String.fromCharCode(65 + i)}.</span> ${opt}
+        </button>
+      `).join('');
+
+      document.getElementById('battle-feedback').classList.add('hidden');
+
+      // Reset Timer
+      clearInterval(timerInterval);
+      timerSeconds = 15;
+      document.getElementById('quiz-timer').textContent = `${timerSeconds}s`;
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        document.getElementById('quiz-timer').textContent = `${timerSeconds}s`;
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          handleTimeout();
+        }
+      }, 1000);
+    }
+
+    // ── Answer Handler ────────────────────────────────────────────────
+    function handleUserAnswer(selectedIdx) {
+      clearInterval(timerInterval);
+      const qObj = QUESTIONS[currentRound];
+      const isCorrect = (selectedIdx === qObj.ans);
+      const feedback = document.getElementById('battle-feedback');
+
+      // Disable buttons
+      document.querySelectorAll('.btn-option').forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        TEAMS[myTeam].pts += 10;
+        updateCarPosition(myTeam, 'boost');
+        feedback.textContent = `⚡ CORRECT! +10 Points Speed Boost for ${TEAMS[myTeam].name}!`;
+        feedback.className = 'mt-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-3 text-center text-xs font-black text-emerald-300';
+        addCombatLog(`🚀 ${TEAMS[myTeam].name} answered Round ${currentRound + 1} correctly! (+10 pts)`);
+      } else {
+        TEAMS[myTeam].pts = Math.max(0, TEAMS[myTeam].pts - 5);
+        updateCarPosition(myTeam, 'spin');
+        feedback.textContent = `💥 WRONG! -5 Points Penalty. Correct: ${qObj.opts[qObj.ans]}`;
+        feedback.className = 'mt-4 rounded-xl bg-rose-500/20 border border-rose-500/40 p-3 text-center text-xs font-black text-rose-300';
+        addCombatLog(`⚠️ ${TEAMS[myTeam].name} made an error on Round ${currentRound + 1}! (-5 pts)`);
+      }
+      feedback.classList.remove('hidden');
+
+      // Broadcast point update
+      channel?.send({
+        type: 'broadcast',
+        event: 'team-point-update',
+        payload: { team: myTeam, pts: TEAMS[myTeam].pts, delta: isCorrect ? 10 : -5 }
+      });
+
+      // Next round after brief delay
+      currentRound++;
+      setTimeout(() => {
+        if (matchRunning) loadNextQuestion();
+      }, 2000);
+    }
+
+    function handleTimeout() {
+      TEAMS[myTeam].pts = Math.max(0, TEAMS[myTeam].pts - 5);
+      updateCarPosition(myTeam, 'spin');
+      const feedback = document.getElementById('battle-feedback');
+      feedback.textContent = `⏱️ TIME OUT! -5 Points. Speed lost!`;
+      feedback.className = 'mt-4 rounded-xl bg-amber-500/20 border border-amber-500/40 p-3 text-center text-xs font-black text-amber-300';
+      feedback.classList.remove('hidden');
+      addCombatLog(`⏱️ ${TEAMS[myTeam].name} timed out on Round ${currentRound + 1}! (-5 pts)`);
+
+      currentRound++;
+      setTimeout(() => {
+        if (matchRunning) loadNextQuestion();
+      }, 1800);
+    }
+
+    // ── Update Car Animations & Progress ──────────────────────────────
+    function updateCarPosition(teamKey, effect = '') {
+      const pts = Math.min(TEAMS[teamKey].pts, 100);
+      document.getElementById(`pts-${teamKey}`).textContent = pts;
+
+      const carEl = document.getElementById(`car-${teamKey}`);
+      // Distance calculation: 0 to 86% of track width
+      const pct = Math.min(pts, 100) * 0.86;
+      carEl.style.left = `${pct}%`;
+
+      if (effect === 'boost') {
+        carEl.classList.add('car-speed-boost');
+        setTimeout(() => carEl.classList.remove('car-speed-boost'), 800);
+      } else if (effect === 'spin') {
+        carEl.classList.add('car-spinout');
+        setTimeout(() => carEl.classList.remove('car-spinout'), 800);
+      }
+
+      // Check win condition
+      if (pts >= 100) {
+        finishMatch(teamKey);
+      }
+    }
+
+    // ── Simulated Rival Activity ──────────────────────────────────────
+    let rivalInterval = null;
+    function startRivalSquadEngine() {
+      clearInterval(rivalInterval);
+      const otherTeams = Object.keys(TEAMS).filter(k => k !== myTeam);
+
+      rivalInterval = setInterval(() => {
+        if (!matchRunning) { clearInterval(rivalInterval); return; }
+        const randomTeam = otherTeams[Math.floor(Math.random() * otherTeams.length)];
+        const isBoost = Math.random() > 0.35; // 65% chance of correct answer by rival squad
+        
+        if (isBoost) {
+          TEAMS[randomTeam].pts += 10;
+          updateCarPosition(randomTeam, 'boost');
+          addCombatLog(`⚡ ${TEAMS[randomTeam].name} solved a challenge step! (+10 pts)`);
+        } else {
+          TEAMS[randomTeam].pts = Math.max(0, TEAMS[randomTeam].pts - 5);
+          updateCarPosition(randomTeam, 'spin');
+          addCombatLog(`💥 ${TEAMS[randomTeam].name} encountered a merge conflict! (-5 pts)`);
+        }
+      }, 3200);
+    }
+
+    function handleRemoteTeamUpdate(payload) {
+      if (!payload?.team || payload.team === myTeam) return;
+      TEAMS[payload.team].pts = payload.pts;
+      updateCarPosition(payload.team, payload.delta > 0 ? 'boost' : 'spin');
+      addCombatLog(`🌐 Peer update: ${TEAMS[payload.team].name} ${payload.delta > 0 ? '+10' : '-5'} pts!`);
+    }
+
+    // ── Combat Log Helper ─────────────────────────────────────────────
+    function addCombatLog(msg) {
+      const feed = document.getElementById('combat-feed');
+      const time = new Date().toLocaleTimeString([], { minute: '2-digit', second: '2-digit' });
+      const item = document.createElement('div');
+      item.className = 'rounded-xl bg-white/5 p-2 border border-white/5 flex items-start gap-2 animate-fadeIn';
+      item.innerHTML = `<span class="text-slate-400 text-[10px] font-mono mt-0.5">${time}</span> <span class="text-white text-xs leading-tight">${msg}</span>`;
+      feed.insertBefore(item, feed.firstChild);
+      if (feed.children.length > 20) feed.lastChild.remove();
+    }
+
+    // ── Finish Match & Award Credits ──────────────────────────────────
+    async function finishMatch(explicitWinner = '') {
+      matchRunning = false;
+      clearInterval(timerInterval);
+      clearInterval(rivalInterval);
+      document.getElementById('arena-status-pill').textContent = 'Match Finished 🏁';
+
+      // Determine Winner
+      let winnerKey = explicitWinner;
+      if (!winnerKey) {
+        winnerKey = Object.keys(TEAMS).reduce((a, b) => TEAMS[a].pts > TEAMS[b].pts ? a : b);
+      }
+
+      const isMyTeamWinner = (winnerKey === myTeam);
+      const winner = TEAMS[winnerKey];
+
+      document.getElementById('winner-title').textContent = `${winner.name} Wins!`;
+      document.getElementById('winner-desc').textContent = isMyTeamWinner
+        ? 'Outstanding victory! Your team crossed the finish line first.'
+        : `${winner.name} finished first with ${winner.pts} points. Great effort!`;
+
+      // Confetti celebration
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+      }
+
+      // If user's team won, award real platform credits!
+      const awardBox = document.getElementById('credit-award-box');
+      if (isMyTeamWinner && myUser) {
+        awardBox.classList.remove('hidden');
+        document.getElementById('reward-credits-amount').textContent = `+${CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE}`;
+
+        // Call centralized transaction engine
+        const res = await window.recordCreditTransaction(sb, {
+          userId: myUser.id,
+          amount: CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE,
+          type: 'EARN',
+          reason: `Team Race Victory: ${winner.name}`,
+          referenceType: 'TEAM_CHALLENGE',
+          referenceId: `race_${Date.now()}`
+        });
+
+        if (res.success) {
+          document.getElementById('user-balance-display').textContent = res.newBalance;
+          addCombatLog(`🎉 +${CREDIT_CONFIG.REWARDS.WIN_TEAM_CHALLENGE} Platform Credits deposited into your ledger!`);
+        }
+      } else {
+        if (!isMyTeamWinner) {
+          awardBox.classList.add('hidden');
+        }
+      }
+
+      document.getElementById('podium-modal').classList.replace('hidden', 'flex');
+      lucide.createIcons();
+    }
+
+    function resetMatch() {
+      document.getElementById('podium-modal').classList.replace('flex', 'hidden');
+      document.getElementById('btn-start-race').disabled = false;
+      document.getElementById('btn-start-race').classList.remove('opacity-50', 'cursor-not-allowed');
+      document.getElementById('arena-status-pill').textContent = 'Lobby Ready';
+      document.getElementById('battle-feedback').classList.add('hidden');
+      document.getElementById('battle-question').textContent = 'Click "Launch Team Race 🏁" above to start the live campus battle!';
+      document.getElementById('battle-options').innerHTML = `
+        <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option A</button>
+        <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option B</button>
+        <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option C</button>
+        <button disabled class="rounded-xl border border-white/10 bg-white/5 p-3.5 text-left text-xs font-semibold text-slate-400 cursor-not-allowed">Option D</button>
+      `;
+      Object.keys(TEAMS).forEach(k => {
+        TEAMS[k].pts = 0;
+        updateCarPosition(k);
+      });
+    }
+  </script>
+</body>
+</html>
