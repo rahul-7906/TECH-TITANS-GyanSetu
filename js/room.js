@@ -189,6 +189,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // ── Voice Call signaling events ──────────────────────────────────────────
+    channel.on('broadcast', { event: 'voice-signal' }, ({ payload }) => {
+      handleVoiceSignal(payload);
+    });
+
     // ── Presence: track who is online ───────────────────────────────────────
     channel.on('presence', { event: 'sync' }, () => {
       const state = channel.presenceState();
@@ -211,6 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
       leftPresences.forEach(p => {
         appendSystemMsg(`${p.name || 'Someone'} left the room`);
         removePeerCursor(p.id || '');
+        if (p.id) closePeerVoice(p.id);
       });
     });
 
@@ -873,13 +879,395 @@ document.addEventListener('DOMContentLoaded', () => {
   // 8. LEAVE
   // ═══════════════════════════════════════════════════════════════════════════
   document.getElementById('leave-btn').addEventListener('click', async () => {
+    leaveVoiceCall();
     if (channel) await channel.unsubscribe();
     window.location.href = 'index.html';
   });
 
   window.addEventListener('beforeunload', () => {
+    leaveVoiceCall();
     if (channel) channel.unsubscribe();
   });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 8b. WEBRTC VOICE CALL ENGINE (P2P Audio via Supabase Signaling)
+  // ═══════════════════════════════════════════════════════════════════════════
+  let localVoiceStream = null;
+  let inVoiceCall = false;
+  let isMicMuted = false;
+  const peerConnections = new Map();     // peerId -> RTCPeerConnection
+  const voiceMembers = new Set();        // peerId set of current voice participants
+  const iceCandidateQueues = new Map();  // peerId -> Array of candidate objects
+  let audioContext = null;
+  let micAnalyser = null;
+  let micSourceNode = null;
+  let speakingPollTimer = null;
+
+  const rtcConfig = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' }
+    ]
+  };
+
+  async function joinVoiceCall() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert('Your browser does not support microphone access.');
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        },
+        video: false
+      });
+
+      localVoiceStream = stream;
+      inVoiceCall = true;
+      isMicMuted = false;
+
+      // Update UI
+      document.getElementById('voice-connect-btn')?.classList.add('hidden');
+      document.getElementById('voice-active-group')?.classList.remove('hidden');
+      updateMicButtonUI();
+      updateVoiceStatusText();
+      lucide.createIcons();
+
+      // Start volume meter for speaking pulse
+      startSpeakingDetector();
+
+      // Broadcast to room that we joined voice
+      if (channel) {
+        channel.send({
+          type: 'broadcast',
+          event: 'voice-signal',
+          payload: { action: 'voice-join', from: myId, name: myName }
+        });
+      }
+
+      showToast('🎙️ Voice connected! Speak now.');
+      appendSystemMsg('You joined the voice call 🎙️');
+    } catch (err) {
+      console.error('Microphone access error:', err);
+      alert('Could not access microphone: ' + (err.message || err.name));
+    }
+  }
+
+  function startSpeakingDetector() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx || !localVoiceStream) return;
+      audioContext = new AudioCtx();
+      micSourceNode = audioContext.createMediaStreamSource(localVoiceStream);
+      micAnalyser = audioContext.createAnalyser();
+      micAnalyser.fftSize = 256;
+      micSourceNode.connect(micAnalyser);
+
+      const dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
+      const pill = document.getElementById('voice-status-pill');
+
+      speakingPollTimer = setInterval(() => {
+        if (!inVoiceCall || isMicMuted || !micAnalyser) {
+          if (pill) pill.classList.remove('voice-speaking');
+          return;
+        }
+        micAnalyser.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          sum += dataArray[i];
+        }
+        const avg = sum / dataArray.length;
+        if (avg > 14) {
+          if (pill) pill.classList.add('voice-speaking');
+        } else {
+          if (pill) pill.classList.remove('voice-speaking');
+        }
+      }, 120);
+    } catch (e) {
+      console.warn('Speaking detector init failed:', e);
+    }
+  }
+
+  function toggleVoiceMute() {
+    if (!inVoiceCall || !localVoiceStream) return;
+    isMicMuted = !isMicMuted;
+    localVoiceStream.getAudioTracks().forEach(track => {
+      track.enabled = !isMicMuted;
+    });
+    updateMicButtonUI();
+    showToast(isMicMuted ? '🔇 Microphone muted' : '🎙️ Microphone active');
+    if (channel) {
+      channel.send({
+        type: 'broadcast',
+        event: 'voice-signal',
+        payload: { action: 'voice-mute-change', from: myId, muted: isMicMuted }
+      });
+    }
+  }
+
+  function updateMicButtonUI() {
+    const micIcon = document.getElementById('voice-mic-icon');
+    const micLabel = document.getElementById('voice-mic-label');
+    if (isMicMuted) {
+      if (micIcon) {
+        micIcon.setAttribute('data-lucide', 'mic-off');
+        micIcon.classList.remove('text-[#B9F044]');
+        micIcon.classList.add('text-red-400');
+      }
+      if (micLabel) micLabel.textContent = 'Unmute';
+    } else {
+      if (micIcon) {
+        micIcon.setAttribute('data-lucide', 'mic');
+        micIcon.classList.remove('text-red-400');
+        micIcon.classList.add('text-[#B9F044]');
+      }
+      if (micLabel) micLabel.textContent = 'Mute';
+    }
+    lucide.createIcons();
+  }
+
+  function updateVoiceStatusText() {
+    const el = document.getElementById('voice-status-text');
+    if (!el) return;
+    const total = voiceMembers.size + 1; // peers + me
+    el.textContent = total > 1 ? `Voice (${total})` : 'Voice Connected';
+  }
+
+  function createPeerConnection(peerId, peerName) {
+    const pc = new RTCPeerConnection(rtcConfig);
+
+    // Add local tracks if available
+    if (localVoiceStream) {
+      localVoiceStream.getAudioTracks().forEach(track => {
+        pc.addTrack(track, localVoiceStream);
+      });
+    }
+
+    pc.onicecandidate = (event) => {
+      if (event.candidate && channel) {
+        channel.send({
+          type: 'broadcast',
+          event: 'voice-signal',
+          payload: {
+            action: 'ice-candidate',
+            candidate: event.candidate,
+            from: myId,
+            to: peerId
+          }
+        });
+      }
+    };
+
+    pc.ontrack = (event) => {
+      let audioEl = document.getElementById(`audio-peer-${peerId}`);
+      if (!audioEl) {
+        audioEl = document.createElement('audio');
+        audioEl.id = `audio-peer-${peerId}`;
+        audioEl.autoplay = true;
+        audioEl.playsInline = true;
+        const container = document.getElementById('remote-audio-container');
+        if (container) container.appendChild(audioEl);
+      }
+      audioEl.srcObject = event.streams[0];
+      audioEl.play().catch(e => console.warn('Autoplay error:', e));
+    };
+
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed' || pc.connectionState === 'closed') {
+        closePeerVoice(peerId);
+      }
+    };
+
+    return pc;
+  }
+
+  async function initiateVoiceConnection(peerId, peerName) {
+    try {
+      const pc = createPeerConnection(peerId, peerName);
+      peerConnections.set(peerId, pc);
+      voiceMembers.add(peerId);
+      updateVoiceStatusText();
+
+      const offer = await pc.createOffer({ offerToReceiveAudio: true });
+      await pc.setLocalDescription(offer);
+
+      if (channel) {
+        channel.send({
+          type: 'broadcast',
+          event: 'voice-signal',
+          payload: {
+            action: 'offer',
+            sdp: pc.localDescription,
+            from: myId,
+            name: myName,
+            to: peerId
+          }
+        });
+      }
+    } catch (e) {
+      console.error('Error initiating voice connection with', peerId, e);
+    }
+  }
+
+  async function handleVoiceOffer(peerId, peerName, sdp) {
+    try {
+      const pc = createPeerConnection(peerId, peerName);
+      peerConnections.set(peerId, pc);
+      voiceMembers.add(peerId);
+      updateVoiceStatusText();
+
+      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+
+      // Flush any queued candidates
+      if (iceCandidateQueues.has(peerId)) {
+        const queue = iceCandidateQueues.get(peerId);
+        for (const c of queue) {
+          await pc.addIceCandidate(new RTCIceCandidate(c));
+        }
+        iceCandidateQueues.delete(peerId);
+      }
+
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      if (channel) {
+        channel.send({
+          type: 'broadcast',
+          event: 'voice-signal',
+          payload: {
+            action: 'answer',
+            sdp: pc.localDescription,
+            from: myId,
+            name: myName,
+            to: peerId
+          }
+        });
+      }
+    } catch (e) {
+      console.error('Error handling voice offer from', peerId, e);
+    }
+  }
+
+  async function handleVoiceSignal(payload) {
+    if (!payload || payload.from === myId) return;
+
+    if (payload.action === 'voice-join') {
+      if (inVoiceCall) {
+        initiateVoiceConnection(payload.from, payload.name);
+        appendSystemMsg(`${payload.name || 'Someone'} joined voice 🎙️`);
+      }
+      return;
+    }
+
+    if (payload.action === 'voice-leave') {
+      closePeerVoice(payload.from);
+      appendSystemMsg('A peer left voice');
+      return;
+    }
+
+    // Direct peer-to-peer messages require to === myId
+    if (payload.to !== myId) return;
+
+    if (payload.action === 'offer') {
+      if (inVoiceCall) {
+        handleVoiceOffer(payload.from, payload.name, payload.sdp);
+      }
+      return;
+    }
+
+    if (payload.action === 'answer') {
+      const pc = peerConnections.get(payload.from);
+      if (pc) {
+        await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+        if (iceCandidateQueues.has(payload.from)) {
+          const queue = iceCandidateQueues.get(payload.from);
+          for (const c of queue) {
+            await pc.addIceCandidate(new RTCIceCandidate(c));
+          }
+          iceCandidateQueues.delete(payload.from);
+        }
+      }
+      return;
+    }
+
+    if (payload.action === 'ice-candidate') {
+      const pc = peerConnections.get(payload.from);
+      if (pc && pc.remoteDescription && pc.remoteDescription.type) {
+        await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
+      } else {
+        if (!iceCandidateQueues.has(payload.from)) {
+          iceCandidateQueues.set(payload.from, []);
+        }
+        iceCandidateQueues.get(payload.from).push(payload.candidate);
+      }
+      return;
+    }
+  }
+
+  function closePeerVoice(peerId) {
+    const pc = peerConnections.get(peerId);
+    if (pc) {
+      pc.close();
+      peerConnections.delete(peerId);
+    }
+    const audioEl = document.getElementById(`audio-peer-${peerId}`);
+    if (audioEl) audioEl.remove();
+    voiceMembers.delete(peerId);
+    updateVoiceStatusText();
+  }
+
+  function leaveVoiceCall() {
+    if (!inVoiceCall) return;
+    inVoiceCall = false;
+
+    if (localVoiceStream) {
+      localVoiceStream.getTracks().forEach(track => track.stop());
+      localVoiceStream = null;
+    }
+    if (speakingPollTimer) {
+      clearInterval(speakingPollTimer);
+      speakingPollTimer = null;
+    }
+    if (audioContext) {
+      audioContext.close().catch(() => {});
+      audioContext = null;
+    }
+
+    for (const [peerId, pc] of peerConnections.entries()) {
+      pc.close();
+      const audioEl = document.getElementById(`audio-peer-${peerId}`);
+      if (audioEl) audioEl.remove();
+    }
+    peerConnections.clear();
+    voiceMembers.clear();
+    iceCandidateQueues.clear();
+
+    // Reset UI
+    document.getElementById('voice-active-group')?.classList.add('hidden');
+    document.getElementById('voice-connect-btn')?.classList.remove('hidden');
+    const pill = document.getElementById('voice-status-pill');
+    if (pill) pill.classList.remove('voice-speaking');
+
+    if (channel) {
+      channel.send({
+        type: 'broadcast',
+        event: 'voice-signal',
+        payload: { action: 'voice-leave', from: myId }
+      });
+    }
+
+    showToast('Voice call disconnected');
+    appendSystemMsg('You left the voice call');
+  }
+
+  // Voice button listeners
+  document.getElementById('voice-connect-btn')?.addEventListener('click', joinVoiceCall);
+  document.getElementById('voice-mic-btn')?.addEventListener('click', toggleVoiceMute);
+  document.getElementById('voice-disconnect-btn')?.addEventListener('click', leaveVoiceCall);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 9. HELPERS

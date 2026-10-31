@@ -36,6 +36,38 @@
     </div>
 
     <div class="flex items-center gap-2">
+      <!-- Voice Call Controls -->
+      <div id="voice-controls" class="flex items-center gap-1.5">
+        <!-- Connect / Join Voice Button -->
+        <button id="voice-connect-btn" title="Start or Join Voice Call"
+          class="flex items-center gap-1.5 rounded-full bg-[#B9F044] px-3 py-1 text-xs font-extrabold text-[#0B1F17] hover:brightness-110 active:scale-95 transition shadow-sm">
+          <i data-lucide="phone-call" class="h-3.5 w-3.5"></i>
+          <span id="voice-btn-text">Join Voice</span>
+        </button>
+
+        <!-- In-Call Active Controls (hidden until joined) -->
+        <div id="voice-active-group" class="hidden flex items-center gap-1.5">
+          <!-- Mic Mute / Unmute Button -->
+          <button id="voice-mic-btn" title="Mute/Unmute Mic"
+            class="flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-2.5 py-1 text-xs font-bold text-white hover:bg-white/20 transition">
+            <i data-lucide="mic" id="voice-mic-icon" class="h-3.5 w-3.5 text-[#B9F044]"></i>
+            <span id="voice-mic-label">Mute</span>
+          </button>
+
+          <!-- Voice Status Pill -->
+          <div id="voice-status-pill" class="flex items-center gap-1.5 rounded-full bg-[#0D3826] border border-[#B9F044]/30 px-2.5 py-1 text-[11px] font-bold text-[#B9F044] transition-all">
+            <span class="voice-pulse-dot"></span>
+            <span id="voice-status-text">Voice Connected</span>
+          </div>
+
+          <!-- Leave Voice Button -->
+          <button id="voice-disconnect-btn" title="Disconnect audio"
+            class="flex items-center justify-center rounded-full bg-red-900/40 border border-red-500/30 w-7 h-7 text-red-300 hover:bg-red-800/80 transition">
+            <i data-lucide="phone-off" class="h-3.5 w-3.5"></i>
+          </button>
+        </div>
+      </div>
+
       <!-- Peer count badge -->
       <span id="peer-badge" class="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-bold">
         <i data-lucide="users" class="h-3.5 w-3.5 text-lime-brand"></i>
@@ -242,6 +274,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Audio container for WebRTC remote streams -->
+  <div id="remote-audio-container" class="hidden"></div>
 
   <!-- ── SCRIPTS ── -->
   <!-- Pyodide: Python runtime via WebAssembly (used by Run button for Python) -->
