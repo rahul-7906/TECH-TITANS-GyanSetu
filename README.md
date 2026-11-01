@@ -2,10 +2,11 @@
 ### *Decentralized Campus Peer-to-Peer Learning & Skill Escrow Platform*
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel_Deployment-0B1F17?style=for-the-badge&logo=vercel&logoColor=B9F044)](http://gyan-setu-six.vercel.app/)
-[![Supabase](https://img.shields.io/badge/Backend-Supabase_Realtime-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](./LICENSE)
+[![Open Source](https://img.shields.io/badge/Open_Source-Contributions_Welcome-B9F044?style=for-the-badge&logo=github&logoColor=0B1F17)](./CONTRIBUTING.md)
+[![Backend](https://img.shields.io/badge/Backend-Supabase_PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/UI-Tailwind_CSS_3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Platform](https://img.shields.io/badge/Platform-Web_&_Mobile_Responsive-2F6F11?style=for-the-badge&logo=pwa&logoColor=white)](http://gyan-setu-six.vercel.app/)
-[![Hackathon Ready](https://img.shields.io/badge/Status-Production_Ready-B9F044?style=for-the-badge&logo=checkmarx&logoColor=0B1F17)](http://gyan-setu-six.vercel.app/)
 
 ---
 
@@ -167,7 +168,13 @@ Simply open the production deployment in your browser:
    cd Gyan-Setu
    ```
 
-2. **Serve with any static file server:**
+2. **Configure Environment Variables:**
+   ```bash
+   cp .env.example .env
+   # Add your SUPABASE_URL and SUPABASE_ANON in .env
+   ```
+
+3. **Serve with any static file server:**
    - Using Node.js:
      ```bash
      npx serve .
@@ -178,8 +185,38 @@ Simply open the production deployment in your browser:
      ```
    - Using VS Code: Right-click `index.html` and click **"Open with Live Server"**.
 
-3. **Open in browser:**
+4. **Open in browser:**
    Navigate to `http://localhost:8080` (or `http://localhost:3000`).
+
+---
+
+## ☁️ Deploying to Vercel (Production)
+
+GyanSetu is configured for 1-click deployment on the **Vercel Edge Network**:
+
+1. **Push your code to GitHub:**
+   ```bash
+   git add .
+   git commit -m "feat: open-source release with environment variables"
+   git push origin main
+   ```
+2. **Import into Vercel:**
+   - Go to [vercel.com/new](https://vercel.com/new) and select your `Gyan-Setu` repository.
+   - Framework Preset: **Other** (Root directory: `./`).
+3. **Set Environment Variables in Vercel:**
+   - Under **Settings &rarr; Environment Variables**, add:
+     - `SUPABASE_URL` = `https://your-project.supabase.co`
+     - `SUPABASE_ANON` = `your-supabase-anon-key`
+4. **Deploy:** Click **Deploy**. Vercel will build and serve your app globally with edge routing (`vercel.json`) and secure serverless config resolution (`api/config.js`).
+
+---
+
+## 🤝 Open Source & Contributing
+
+We love contributions! GyanSetu is completely open-source under the **MIT License**.
+
+- 📖 **Contribution Guidelines:** See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to get started, open issues, and submit pull requests.
+- 📄 **License:** See [LICENSE](./LICENSE) for full license details.
 
 ---
 

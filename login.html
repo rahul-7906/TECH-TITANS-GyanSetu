@@ -273,9 +273,7 @@
     lucide.createIcons();
 
     // ── Supabase client ──────────────────────────────────────────────
-    const _SB_URL  = (typeof SUPABASE_URL !== 'undefined') ? SUPABASE_URL : 'https://bpfjlpjwspzlcsowespc.supabase.co';
-    const _SB_ANON = (typeof SUPABASE_ANON !== 'undefined') ? SUPABASE_ANON : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZmpscGp3c3B6bGNzb3dlc3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODQzNjEsImV4cCI6MjEwODk2MDM2MX0.FYzEOt01N9fDnitcok_gGVAI6twKGsxbv139itDf5Ms';
-    const sbClient = window.supabase.createClient(_SB_URL, _SB_ANON);
+    const sbClient = window.sbClient || window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON);
 
     // ── Check if already logged in ──────────────────────────────────
     if (window.GyanSetuAuth) {
