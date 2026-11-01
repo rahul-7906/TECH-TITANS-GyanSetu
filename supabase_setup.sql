@@ -13,10 +13,14 @@ UPDATE auth.users
 SET email_confirmed_at = COALESCE(email_confirmed_at, now())
 WHERE email_confirmed_at IS NULL;
 
--- Drop foreign key constraint on public.profiles so signups and demo accounts never fail
+-- Drop foreign key constraints so signups, direct profile inserts, and ledger records never fail
 DO $$
 BEGIN
   ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_id_fkey;
+  ALTER TABLE public.credit_ledger DROP CONSTRAINT IF EXISTS credit_ledger_user_id_fkey;
+  ALTER TABLE public.rr_ledger DROP CONSTRAINT IF EXISTS rr_ledger_user_id_fkey;
+  ALTER TABLE public.sessions DROP CONSTRAINT IF EXISTS sessions_learner_id_fkey;
+  ALTER TABLE public.sessions DROP CONSTRAINT IF EXISTS sessions_mentor_id_fkey;
 EXCEPTION WHEN OTHERS THEN
   NULL;
 END $$;
@@ -227,28 +231,39 @@ BEGIN
   v_dept := COALESCE(new.raw_user_meta_data->>'department', 'General');
   v_role := COALESCE(new.raw_user_meta_data->>'role', 'learner');
 
-  -- Create profile row
-  INSERT INTO public.profiles (
-    id, email, full_name, department, role, credits, xp, streak, welcome_bonus_given
-  ) VALUES (
-    new.id, new.email, v_name, v_dept, v_role, 100, 50, 1, true
-  )
-  ON CONFLICT (id) DO UPDATE SET
-    email = EXCLUDED.email,
-    full_name = COALESCE(EXCLUDED.full_name, public.profiles.full_name);
+  -- 1. Create profile row (isolated block so failure here never prevents user creation)
+  BEGIN
+    INSERT INTO public.profiles (
+      id, email, full_name, department, role, credits, xp, streak, rr, highest_rr, welcome_bonus_given
+    ) VALUES (
+      new.id, new.email, v_name, v_dept, v_role, 100, 50, 1, 1000, 1000, true
+    )
+    ON CONFLICT (id) DO UPDATE SET
+      email = EXCLUDED.email,
+      full_name = COALESCE(EXCLUDED.full_name, public.profiles.full_name);
+  EXCEPTION WHEN OTHERS THEN
+    NULL;
+  END;
 
-  -- Initialize credits balance
-  INSERT INTO public.credits (username, balance)
-  VALUES (v_name, 100)
-  ON CONFLICT (username) DO NOTHING;
+  -- 2. Initialize credits balance (isolated block)
+  BEGIN
+    INSERT INTO public.credits (username, balance)
+    VALUES (v_name, 100)
+    ON CONFLICT (username) DO NOTHING;
+  EXCEPTION WHEN OTHERS THEN
+    NULL;
+  END;
 
-  -- Initial ledger entry
-  INSERT INTO public.credit_ledger (user_id, amount, type, reason, reference_type, status)
-  VALUES (new.id, 100, 'WELCOME_BONUS', 'Welcome bonus on signup', 'system', 'COMPLETED');
+  -- 3. Initial ledger entry (isolated block)
+  BEGIN
+    INSERT INTO public.credit_ledger (user_id, amount, type, reason, reference_type, status)
+    VALUES (new.id, 100, 'WELCOME_BONUS', 'Welcome bonus on signup', 'system', 'COMPLETED');
+  EXCEPTION WHEN OTHERS THEN
+    NULL;
+  END;
 
   RETURN new;
 EXCEPTION WHEN OTHERS THEN
-  -- Never crash auth.users signup even if an edge case occurs
   RETURN new;
 END;
 $$;

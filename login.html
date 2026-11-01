@@ -28,15 +28,6 @@
       color:#1f2328; cursor:pointer; transition:border-color .2s, box-shadow .2s;
     }
     .social-btn:hover { border-color:#B9F044; box-shadow:0 4px 16px -4px rgba(185,240,68,0.3); }
-    .demo-btn { border: 1.5px solid rgba(185,240,68,.8); background: linear-gradient(135deg, #f4fbea, #ffffff); color: #0B1F17; transition: transform .2s, box-shadow .2s, border-color .2s; }
-    .demo-btn:hover { transform: translateY(-2px); border-color: #2F6F11; box-shadow: 0 10px 24px -10px rgba(47,111,17,.35); }
-
-    @media (max-width: 640px) {
-      .demo-btn { padding: .6rem .875rem; font-size: .8125rem; }
-    }
-    @media (min-width: 641px) {
-      .demo-btn { padding: .7rem 1rem; font-size: .875rem; }
-    }
   </style>
   <style>
     #page-transition { opacity: 0; transition: opacity .28s ease; pointer-events: none; background: rgba(247, 250, 243, .94); backdrop-filter: blur(8px); }
@@ -194,38 +185,6 @@
               Sign In to GyanSetu
             </button>
           </form>
-
-          <div class="my-5 flex items-center gap-3">
-            <div class="flex-1 h-px bg-slate-200"></div>
-            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">or instant demo mode</span>
-            <div class="flex-1 h-px bg-slate-200"></div>
-          </div>
-
-          <!-- DEMO LOGIN SUITE -->
-          <div class="space-y-2.5">
-            <button type="button" class="demo-btn w-full rounded-xl px-4 py-3 text-sm font-extrabold" onclick="startInstantDemoLogin()">
-              <span class="flex items-center justify-center gap-2 text-ink">
-                <i data-lucide="sparkles" class="h-4 w-4 text-[#2F6F11]"></i> 1-Click Instant Demo Login 🚀
-              </span>
-              <span class="mt-0.5 block text-[11px] font-medium text-slate-500">Instant access to Credit Ledger, Race Arena & Notes</span>
-            </button>
-
-            <!-- Sample Student Switcher for Presentations -->
-            <div class="rounded-xl border border-slate-200 bg-slate-50/90 p-2.5 flex items-center justify-between text-xs">
-              <div class="min-w-0 pr-2">
-                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Selected Demo Identity</p>
-                <p id="demo-student-preview" class="font-bold text-ink truncate text-xs">Aditya Verma (CSE · 155 Cr)</p>
-              </div>
-              <div class="flex items-center gap-1.5 shrink-0">
-                <button type="button" onclick="cycleDemoStudent()" title="Switch random campus identity" class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:border-[#B9F044] hover:bg-[#F4FBEA] transition">
-                  🎲 Random
-                </button>
-                <button type="button" onclick="autoFillCurrentDemo()" title="Fill email & password inputs" class="rounded-lg bg-[#0B1F17] px-2.5 py-1 text-[11px] font-bold text-[#B9F044] hover:bg-forest transition">
-                  ⚡ Auto-fill
-                </button>
-              </div>
-            </div>
-          </div>
 
           <p class="mt-5 text-center text-xs text-slate-500">
             Don't have an account? <button onclick="switchTab('signup')" class="font-bold text-leaf hover:underline">Create one free →</button>
@@ -507,50 +466,6 @@
         setLoading(btn, false, 'Create Free Account →');
       }
     }
-
-    // ── Instant Demo Presentation Functions ───────────────────────────
-    function startInstantDemoLogin() {
-      clearError();
-      sessionStorage.setItem('gyansetu_demo_mode', 'true');
-      const prof = (typeof window.getDemoProfile === 'function') ? window.getDemoProfile() : window.GYANSETU_DEMO?.profile;
-      const dest = new URLSearchParams(window.location.search).get('redirect');
-      const targetUrl = dest && !dest.startsWith('http') && !dest.startsWith('//') ? decodeURIComponent(dest) : 'dashboard.html?demo=1';
-      setTimeout(() => { window.location.href = targetUrl; }, 450);
-    }
-
-    function updateDemoStudentPreview() {
-      const preview = document.getElementById('demo-student-preview');
-      if (!preview) return;
-      const prof = (typeof window.getDemoProfile === 'function') ? window.getDemoProfile() : window.GYANSETU_DEMO?.profile;
-      if (prof) {
-        const shortDept = (prof.department || 'CSE').split('&')[0].trim();
-        preview.textContent = `${prof.full_name} (${shortDept} · ${prof.credits} Cr)`;
-      }
-    }
-
-    function cycleDemoStudent() {
-      clearError();
-      const nextProfile = (typeof window.generateRandomCampusIdentity === 'function')
-        ? window.generateRandomCampusIdentity()
-        : window.switchRandomDemoProfile();
-      updateDemoStudentPreview();
-      autoFillCurrentDemo();
-      showSuccess(`🎲 Switched to demo persona: ${nextProfile.full_name}`);
-    }
-
-    function autoFillCurrentDemo() {
-      clearError();
-      const prof = (typeof window.getDemoProfile === 'function') ? window.getDemoProfile() : window.GYANSETU_DEMO?.profile;
-      if (!prof) return;
-      const emailInput = document.getElementById('signin-email');
-      const passInput = document.getElementById('signin-password');
-      if (emailInput) emailInput.value = prof.email || 'aditya.verma@gyansetu.edu.in';
-      if (passInput) passInput.value = 'DemoPass@123';
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      updateDemoStudentPreview();
-    });
   </script>
 </body>
 </html>

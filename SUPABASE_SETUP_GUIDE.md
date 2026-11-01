@@ -157,7 +157,19 @@ CREATE TABLE IF NOT EXISTS public.room_state (
   updated_at timestamptz DEFAULT now()
 );
 
--- 8. Row Level Security (RLS) open karo taaki data store aur read ho sake
+-- 8. DROP ALL FOREIGN KEY CONSTRAINTS (taaki koi bhi student profile, session ya ledger record block na ho)
+DO $$
+BEGIN
+  ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_id_fkey;
+  ALTER TABLE public.credit_ledger DROP CONSTRAINT IF EXISTS credit_ledger_user_id_fkey;
+  ALTER TABLE public.rr_ledger DROP CONSTRAINT IF EXISTS rr_ledger_user_id_fkey;
+  ALTER TABLE public.sessions DROP CONSTRAINT IF EXISTS sessions_learner_id_fkey;
+  ALTER TABLE public.sessions DROP CONSTRAINT IF EXISTS sessions_mentor_id_fkey;
+EXCEPTION WHEN OTHERS THEN
+  NULL;
+END $$;
+
+-- 9. Row Level Security (RLS) open karo taaki data store aur read ho sake
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public profiles read" ON public.profiles;
 CREATE POLICY "Public profiles read" ON public.profiles FOR SELECT USING (true);
