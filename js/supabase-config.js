@@ -34,7 +34,8 @@
   initClient();
 
   // Asynchronously refresh credentials from Vercel /api/config if deployed
-  if (typeof fetch !== 'undefined') {
+  var isWebOrigin = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+  if (typeof fetch !== 'undefined' && isWebOrigin) {
     fetch('/api/config')
       .then(function (res) { return res.ok ? res.json() : null; })
       .then(function (cfg) {
