@@ -11,8 +11,69 @@
 
   var STORAGE_KEYS = {
     CONNECTIONS: 'gyansetu_peer_connections',
-    NOTIFICATIONS: 'gyansetu_campus_notifications'
+    NOTIFICATIONS: 'gyansetu_campus_notifications',
+    ACTIVITY: 'gyansetu_peer_activity'
   };
+
+  function getCurrentProfile() {
+    try {
+      return JSON.parse(localStorage.getItem('gyansetu_active_profile') || 'null');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function notificationKey(userId) {
+    return userId ? STORAGE_KEYS.NOTIFICATIONS + '_' + userId : STORAGE_KEYS.NOTIFICATIONS;
+  }
+
+  function connectionsKey(userId) {
+    return userId ? STORAGE_KEYS.CONNECTIONS + '_' + userId : STORAGE_KEYS.CONNECTIONS;
+  }
+
+  function getSupabaseClient() {
+    if (!window.supabase || typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON === 'undefined') return null;
+    if (!SUPABASE_URL || !SUPABASE_ANON || SUPABASE_ANON.includes('*')) return null;
+    try { return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON); } catch (e) { return null; }
+  }
+
+  function saveRemoteNotification(recipientId, senderId, notif) {
+    var sb = getSupabaseClient();
+    if (!sb || !recipientId) return;
+    sb.from('peer_notifications').insert({
+      recipient_id: recipientId,
+      sender_id: senderId || '',
+      type: notif.type || 'network',
+      icon: notif.icon || '🔔',
+      title: notif.title || 'GyanSetu update',
+      description: notif.desc || '',
+      action_label: notif.actionLabel || '',
+      action_url: notif.actionUrl || '',
+      secondary_action_label: notif.secondaryActionLabel || '',
+      secondary_action_url: notif.secondaryActionUrl || '',
+      is_read: false
+    }).then(function (result) {
+      if (result.error) console.warn('[GyanSetuNetwork] Remote notification sync warning:', result.error.message);
+    }).catch(function (error) {
+      console.warn('[GyanSetuNetwork] Remote notification sync warning:', error);
+    });
+  }
+
+  function saveRemoteConnection(userId, peerId, peerName, status, requestedBy) {
+    var sb = getSupabaseClient();
+    if (!sb || !userId || !peerId) return;
+    sb.from('peer_connections').upsert({
+      user_id: userId,
+      peer_id: peerId,
+      peer_name: peerName || '',
+      status: status || 'pending',
+      requested_by: requestedBy || ''
+    }, { onConflict: 'user_id,peer_id' }).then(function (result) {
+      if (result.error) console.warn('[GyanSetuNetwork] Remote connection sync warning:', result.error.message);
+    }).catch(function (error) {
+      console.warn('[GyanSetuNetwork] Remote connection sync warning:', error);
+    });
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 1. PEER CONNECTIONS & EXTENSIONS SYSTEM (GyanSetuNetwork)
@@ -23,7 +84,9 @@
      */
     getConnections: function () {
       try {
-        var raw = localStorage.getItem(STORAGE_KEYS.CONNECTIONS);
+        var profile = getCurrentProfile();
+        var key = connectionsKey(profile?.id);
+        var raw = localStorage.getItem(key) || (profile?.id ? localStorage.getItem(STORAGE_KEYS.CONNECTIONS) : null);
         if (raw) {
           var parsed = JSON.parse(raw);
           var clean = (parsed || []).filter(function (c) {
@@ -37,7 +100,8 @@
 
     saveConnections: function (list) {
       try {
-        localStorage.setItem(STORAGE_KEYS.CONNECTIONS, JSON.stringify(list || []));
+        var profile = getCurrentProfile();
+        localStorage.setItem(connectionsKey(profile?.id), JSON.stringify(list || []));
         window.dispatchEvent(new CustomEvent('gyansetu:connections-updated', { detail: { connections: list } }));
       } catch (e) {}
     },
@@ -47,9 +111,19 @@
       var clean = String(peerIdOrName).toLowerCase().trim();
       var conns = this.getConnections();
       return conns.some(function (c) {
+        if (c.status && c.status !== 'accepted') return false;
         return (c.id && c.id.toLowerCase() === clean) ||
                (c.name && c.name.toLowerCase() === clean);
       });
+    },
+
+    getConnectionStatus: function (peerIdOrName) {
+      var clean = String(peerIdOrName || '').toLowerCase().trim();
+      var item = this.getConnections().find(function (c) {
+        return (c.id && c.id.toLowerCase() === clean) ||
+          (c.name && c.name.toLowerCase() === clean);
+      });
+      return item?.status || 'none';
     },
 
     /**
@@ -66,12 +140,15 @@
 
       var isNowConnected = false;
       if (idx >= 0) {
-        // Disconnect
+        if (conns[idx].status === 'pending') {
+          this.showToast('Request already sent to ' + peerName + '.');
+          return { connected: false, pending: true, peer: peer };
+        }
         conns.splice(idx, 1);
         isNowConnected = false;
         this.showToast('Removed ' + peerName + ' from your network.');
       } else {
-        // Connect
+        var current = getCurrentProfile();
         var newConn = {
           id: peerId,
           name: peerName,
@@ -80,27 +157,157 @@
           avatar: peer.avatar || (peerName.charCodeAt(0) % 2 === 0 ? '👨‍💻' : '👩‍💻'),
           rr: peer.rr || 1000,
           tier: peer.tier || 'Silver',
-          status: peer.status || 'online',
+          status: 'pending',
+          requestedBy: current?.id || '',
           activity: peer.activity || 'Ready for peer study',
           connectedAt: new Date().toISOString()
         };
         conns.unshift(newConn);
-        isNowConnected = true;
-        this.showToast('🤝 Connected with ' + peerName + '! You can now directly invite them.');
-
-        // Dispatch alert to Notification Center
-        GyanSetuNotifications.addNotification({
-          type: 'network',
-          icon: '🤝',
-          title: 'New Connection Established',
-          desc: 'You and ' + peerName + ' (' + newConn.dept + ') are now connected. Team up in Arena or Collab Room!',
-          actionLabel: 'Invite to Arena 🏎️',
-          actionUrl: 'arena.html?peer=' + encodeURIComponent(peerName)
-        });
+        this.showToast('🤝 Connection request sent to ' + peerName + '.');
+        if (current?.id) {
+          saveRemoteConnection(current.id, peerId, peerName, 'pending', current.id);
+        }
+        this.notifyPeer(peer, peerName);
       }
 
       this.saveConnections(conns);
       return { connected: isNowConnected, peer: peer };
+    },
+
+    notifyPeer: function (peer, peerName) {
+      try {
+        var current = getCurrentProfile();
+        var users = JSON.parse(localStorage.getItem('gyansetu_local_accounts') || '{}');
+        var target = null;
+        Object.keys(users).some(function (email) {
+          var profile = users[email]?.profile;
+          if (profile && (profile.id === peer.id || profile.full_name === peerName || profile.email === peer.email)) {
+            target = profile;
+            return true;
+          }
+          return false;
+        });
+        if (target && target.id !== current?.id) {
+          var key = notificationKey(target.id);
+          var existing = JSON.parse(localStorage.getItem(key) || '[]');
+          existing.unshift({
+            id: 'notif_connection_' + Date.now(),
+            type: 'network',
+            icon: '🤝',
+            title: 'New Connection Request',
+            desc: `${current?.full_name || 'A campus peer'} wants to connect with you.`,
+            actionLabel: 'Accept',
+            actionUrl: 'javascript:window.GyanSetuNetwork.acceptConnection(' + JSON.stringify(current?.id || '') + ',' + JSON.stringify(peer.id || '') + ')',
+            secondaryActionLabel: 'Decline',
+            secondaryActionUrl: 'javascript:window.GyanSetuNetwork.rejectConnection(' + JSON.stringify(current?.id || '') + ')',
+            time: 'Just now',
+            unread: true
+          });
+          localStorage.setItem(key, JSON.stringify(existing.slice(0, 30)));
+        }
+        saveRemoteNotification(target?.id || peer.id, current?.id, {
+          type: 'network',
+          icon: '🤝',
+          title: 'New Connection Request',
+          desc: `${current?.full_name || 'A campus peer'} wants to connect with you.`,
+          actionLabel: 'Accept',
+          actionUrl: 'javascript:window.GyanSetuNetwork.acceptConnection(' + JSON.stringify(current?.id || '') + ',' + JSON.stringify(peer.id || '') + ')',
+          secondaryActionLabel: 'Decline',
+          secondaryActionUrl: 'javascript:window.GyanSetuNetwork.rejectConnection(' + JSON.stringify(current?.id || '') + ')'
+        });
+        saveRemoteConnection(target?.id || peer.id, current?.id, current?.full_name || 'Campus peer', 'pending', current?.id);
+      } catch (e) {
+        console.warn('[GyanSetuNetwork] Could not notify connected peer:', e);
+      }
+    },
+
+    acceptConnection: function (requesterId, peerId) {
+      var profile = getCurrentProfile();
+      if (!profile?.id || !requesterId) return;
+      var conns = this.getConnections();
+      var existing = conns.find(function (c) { return c.id === requesterId; });
+      if (!existing) {
+        existing = { id: requesterId, name: 'Campus peer', status: 'accepted', connectedAt: new Date().toISOString() };
+        conns.unshift(existing);
+      } else {
+        existing.status = 'accepted';
+      }
+      this.saveConnections(conns);
+      saveRemoteConnection(profile.id, requesterId, existing.name, 'accepted', requesterId);
+      if (peerId) saveRemoteConnection(requesterId, profile.id, profile.full_name || 'Campus peer', 'accepted', requesterId);
+      saveRemoteNotification(requesterId, profile.id, {
+        type: 'network',
+        icon: '🤝',
+        title: 'Connection Request Accepted',
+        desc: `${profile.full_name || 'A campus peer'} accepted your connection request.`,
+        actionLabel: 'Open Peer Network',
+        actionUrl: 'peers.html'
+      });
+      this.showToast('🤝 Connection accepted.');
+      GyanSetuNotifications.addNotification({
+        type: 'network',
+        icon: '🤝',
+        title: 'Connection Accepted',
+        desc: 'You can now invite this peer to Arena or a Collab Room.',
+        actionLabel: 'Open Peer Network',
+        actionUrl: 'peers.html'
+      });
+    },
+
+    rejectConnection: function (requesterId) {
+      var profile = getCurrentProfile();
+      if (!profile?.id || !requesterId) return;
+      var conns = this.getConnections().filter(function (c) { return c.id !== requesterId; });
+      this.saveConnections(conns);
+      var sb = getSupabaseClient();
+      if (sb) sb.from('peer_connections').delete().match({ user_id: profile.id, peer_id: requesterId }).then(function () {});
+      this.showToast('Connection request declined.');
+    },
+
+    announceActivity: function (activity) {
+      var profile = getCurrentProfile();
+      if (!profile?.id) return;
+      try {
+        var throttleKey = 'gyansetu_last_presence_' + profile.id;
+        var lastPresence = Number(localStorage.getItem(throttleKey) || 0);
+        if (Date.now() - lastPresence < 10 * 60 * 1000) return;
+        localStorage.setItem(throttleKey, String(Date.now()));
+        var connections = this.getConnections();
+        var event = {
+          userId: profile.id,
+          name: profile.full_name || 'A campus peer',
+          type: activity?.type || 'active',
+          title: activity?.title || 'is active on GyanSetu',
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(STORAGE_KEYS.ACTIVITY, JSON.stringify(event));
+        connections.forEach(function (connection) {
+          var key = notificationKey(connection.id);
+          var existing = JSON.parse(localStorage.getItem(key) || '[]');
+          existing.unshift({
+            id: 'notif_activity_' + profile.id + '_' + Date.now(),
+            type: 'network',
+            icon: '🟢',
+            title: `${event.name} is active`,
+            desc: `${event.name} ${event.title}.`,
+            actionLabel: 'Open Peer Network',
+            actionUrl: 'peers.html',
+            time: 'Just now',
+            unread: true
+          });
+          localStorage.setItem(key, JSON.stringify(existing.slice(0, 30)));
+          saveRemoteNotification(connection.id, profile.id, {
+            type: 'network',
+            icon: '🟢',
+            title: `${event.name} is active`,
+            desc: `${event.name} ${event.title}.`,
+            actionLabel: 'Open Peer Network',
+            actionUrl: 'peers.html'
+          });
+        });
+      } catch (e) {
+        console.warn('[GyanSetuNetwork] Could not announce activity:', e);
+      }
     },
 
     /**
@@ -175,7 +382,9 @@
   var GyanSetuNotifications = {
     getNotifications: function () {
       try {
-        var raw = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
+        var profile = getCurrentProfile();
+        var key = notificationKey(profile?.id);
+        var raw = localStorage.getItem(key);
         if (raw) {
           var parsed = JSON.parse(raw);
           // Strictly purge any dummy or mock alerts
@@ -190,7 +399,7 @@
                    n.id !== 'notif_1' && n.id !== 'notif_2' && n.id !== 'notif_3' && n.id !== 'notif_4';
           });
           if (clean.length !== parsed.length) {
-            localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(clean));
+            localStorage.setItem(key, JSON.stringify(clean));
           }
           return clean;
         }
@@ -216,7 +425,8 @@
 
     saveNotifications: function (list) {
       try {
-        localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(list || []));
+        var profile = getCurrentProfile();
+        localStorage.setItem(notificationKey(profile?.id), JSON.stringify(list || []));
         this.updateBadge();
       } catch (e) {}
     },
@@ -258,6 +468,75 @@
       this.renderDropdown();
     },
 
+    syncRemoteNotifications: async function () {
+      var profile = getCurrentProfile();
+      var sb = getSupabaseClient();
+      if (!profile?.id || !sb) return;
+      try {
+        var result = await sb.from('peer_notifications')
+          .select('id, type, icon, title, description, action_label, action_url, secondary_action_label, secondary_action_url, is_read, created_at')
+          .eq('recipient_id', profile.id)
+          .order('created_at', { ascending: false })
+          .limit(30);
+        if (result.error || !Array.isArray(result.data)) return;
+        var remote = result.data.map(function (item) {
+          return {
+            id: 'remote_' + item.id,
+            type: item.type,
+            icon: item.icon,
+            title: item.title,
+            desc: item.description,
+            actionLabel: item.action_label,
+            actionUrl: item.action_url,
+            secondaryActionLabel: item.secondary_action_label,
+            secondaryActionUrl: item.secondary_action_url,
+            time: 'Recent',
+            unread: !item.is_read
+          };
+        });
+        var local = this.getNotifications().filter(function (item) {
+          return !String(item.id || '').startsWith('remote_');
+        });
+        this.saveNotifications(remote.concat(local).slice(0, 30));
+        this.renderDropdown();
+      } catch (e) {
+        console.warn('[GyanSetuNetwork] Could not sync remote notifications:', e);
+      }
+    },
+
+    syncRemoteConnections: async function () {
+      var profile = getCurrentProfile();
+      var sb = getSupabaseClient();
+      if (!profile?.id || !sb) return;
+      try {
+        var result = await sb.from('peer_connections')
+          .select('peer_id, peer_name, status, requested_by, created_at')
+          .eq('user_id', profile.id)
+          .order('created_at', { ascending: false });
+        if (result.error || !Array.isArray(result.data)) return;
+        var current = this.getConnections();
+        result.data.forEach(function (item) {
+          var existing = current.find(function (connection) { return connection.id === item.peer_id; });
+          if (existing) {
+            existing.status = item.status || existing.status || 'accepted';
+            existing.requestedBy = item.requested_by || existing.requestedBy || '';
+            if (item.peer_name) existing.name = item.peer_name;
+          } else {
+            current.push({
+              id: item.peer_id,
+              name: item.peer_name || 'Campus peer',
+              status: item.status || 'accepted',
+              requestedBy: item.requested_by || '',
+              connectedAt: item.created_at || new Date().toISOString()
+            });
+          }
+        });
+        this.saveConnections(current);
+      } catch (e) {
+        console.warn('[GyanSetuNetwork] Could not sync remote connections:', e);
+      }
+    },
+
     renderDropdown: function (containerId) {
       var container = document.getElementById(containerId || 'notifications-list-container');
       if (!container) return;
@@ -283,6 +562,9 @@
           } else {
             actionHtml = '<a href="' + n.actionUrl + '" class="mt-2 inline-flex items-center gap-1 rounded-lg bg-[#0B1F17] px-2.5 py-1 text-[10px] font-extrabold text-[#B9F044] hover:bg-[#064E3B] transition">' + n.actionLabel + '</a>';
           }
+        }
+        if (n.secondaryActionLabel && n.secondaryActionUrl) {
+          actionHtml += '<button onclick="' + n.secondaryActionUrl.replace('javascript:', '') + '" class="mt-2 ml-1 inline-flex items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-[10px] font-extrabold text-slate-600 hover:bg-slate-50 transition">' + n.secondaryActionLabel + '</button>';
         }
 
         return '<div class="p-3 border-b border-slate-100 flex items-start gap-3 transition hover:bg-slate-50 ' + bgClass + '">' +
@@ -510,5 +792,11 @@
   window.GyanSetuNetwork = GyanSetuNetwork;
   window.GyanSetuNotifications = GyanSetuNotifications;
   window.GyanSetuSearch = GyanSetuSearch;
+
+  setTimeout(function () {
+    GyanSetuNetwork.announceActivity({ type: 'presence', title: 'is currently using GyanSetu' });
+    GyanSetuNetwork.syncRemoteConnections();
+    GyanSetuNotifications.syncRemoteNotifications();
+  }, 1200);
 
 })(window);

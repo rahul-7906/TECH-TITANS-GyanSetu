@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GyanSetu | Bug Hunt Arena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/gyansetu-auth.js"></script>
+  <script src="js/rr-config.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #06130E; color: #E8F4E4; }
+    .code-editor { font-family: 'JetBrains Mono', monospace; tab-size: 2; }
+    .glass { background: rgba(11,42,30,.78); border: 1px solid rgba(185,240,68,.18); }
+    .grid-bg { background-image: linear-gradient(rgba(185,240,68,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(185,240,68,.045) 1px, transparent 1px); background-size: 32px 32px; }
+    .status-live { box-shadow: 0 0 0 5px rgba(185,240,68,.12); }
+  </style>
+</head>
+<body class="grid-bg min-h-screen">
+  <header class="sticky top-0 z-30 border-b border-white/10 bg-[#06130E]/95 px-4 py-3 backdrop-blur-md sm:px-8">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <img src="images/gyansetu-logo.jpg" alt="GyanSetu" class="h-8 rounded-lg border border-[#B9F044]/30" />
+        <span class="hidden text-sm font-extrabold sm:inline">Bug Hunt Arena</span>
+      </a>
+      <div class="flex items-center gap-2 text-[11px] font-bold">
+        <span id="room-label" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 font-mono text-[#B9F044]">Room: —</span>
+        <a href="arena.html" class="rounded-xl bg-white/10 px-3 py-2 text-white hover:bg-white/15">Race Arena</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 py-8 sm:px-8">
+    <section class="mb-6 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+      <div>
+        <span class="inline-flex items-center gap-2 rounded-full bg-[#B9F044]/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#B9F044]"><span class="status-live h-2 w-2 rounded-full bg-[#B9F044]"></span> Multiplayer code sprint</span>
+        <h1 class="mt-3 text-3xl font-black tracking-tight sm:text-5xl">Fix it. Submit it. <span class="text-[#B9F044]">Win correctly.</span></h1>
+        <p class="mt-3 max-w-2xl text-sm leading-6 text-emerald-100/70">Everyone gets the same broken program. The first solution submitted and validated as correct wins the room.</p>
+      </div>
+      <div class="glass rounded-2xl p-4 text-xs text-emerald-100/75">
+        <p class="font-black text-white">How to play</p>
+        <ol class="mt-2 list-decimal space-y-1 pl-4 text-[11px]">
+          <li>Create a room or enter a friend’s room code.</li>
+          <li>Choose a language before creating the room.</li>
+          <li>Read the bug report, fix the code, and run the checks.</li>
+          <li>Submit a solution—the room host validates it, and the first correct submission wins.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="grid gap-5 lg:grid-cols-[1fr_290px]">
+      <div class="space-y-5">
+        <div class="glass rounded-3xl p-4 sm:p-6">
+          <div class="flex flex-col justify-between gap-3 border-b border-white/10 pb-4 sm:flex-row sm:items-center">
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-[#B9F044]">Challenge</p>
+              <h2 id="challenge-title" class="mt-1 text-xl font-black text-white">Waiting for a room</h2>
+              <p id="challenge-description" class="mt-1 text-xs text-emerald-100/60">Create a room or join a friend to begin.</p>
+            </div>
+            <span id="difficulty" class="rounded-full bg-amber-400/15 px-3 py-1 text-[10px] font-black text-amber-200">—</span>
+          </div>
+          <div class="mt-4 grid gap-4 md:grid-cols-2">
+            <div>
+              <div class="mb-2 flex items-center justify-between text-[10px] font-bold text-emerald-100/60"><span>Broken code</span><span id="language-label">JavaScript</span></div>
+              <pre id="broken-code" class="code-editor min-h-64 overflow-auto rounded-2xl border border-white/10 bg-[#020907] p-4 text-xs leading-6 text-emerald-100/80">Create or join a room.</pre>
+            </div>
+            <div>
+              <div class="mb-2 flex items-center justify-between text-[10px] font-bold text-emerald-100/60"><span>Your fix</span><button id="reset-code" class="text-[#B9F044] hover:underline">Reset</button></div>
+              <textarea id="solution-code" class="code-editor min-h-64 w-full resize-y rounded-2xl border border-[#B9F044]/25 bg-[#020907] p-4 text-xs leading-6 text-[#B9F044] outline-none focus:border-[#B9F044]" spellcheck="false" disabled></textarea>
+            </div>
+          </div>
+          <div class="mt-4 flex flex-wrap items-center gap-2">
+            <button id="run-tests" class="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black text-white hover:bg-white/15" disabled>▶ Run tests</button>
+            <button id="submit-solution" class="rounded-xl bg-gradient-to-r from-[#B9F044] to-[#8FD420] px-5 py-2.5 text-xs font-black text-[#06130E] shadow-lg disabled:cursor-not-allowed disabled:opacity-40" disabled>Submit solution</button>
+            <span id="test-result" class="text-xs font-bold text-emerald-200/70">Tests have not run.</span>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-[11px] text-emerald-100/70">
+          <strong class="text-white">Challenge source:</strong> Original GyanSetu Bug Bank — hand-authored JavaScript, Python, C++, and Java snippets designed for this game. Future packs can be added from reviewed open-source repositories with attribution and license checks.
+        </div>
+      </div>
+
+      <aside class="space-y-5">
+        <div class="glass rounded-3xl p-5">
+          <h3 class="text-sm font-black text-white">Enter a room</h3>
+          <label class="mt-3 block text-[10px] font-black uppercase tracking-widest text-emerald-200/60" for="language-select">Challenge language</label>
+          <select id="language-select" class="mt-1 w-full rounded-xl border border-white/10 bg-[#020907] px-3 py-2.5 text-xs font-bold text-white outline-none focus:border-[#B9F044]">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+          </select>
+          <input id="room-code" maxlength="24" placeholder="e.g. js-fix-42" class="mt-3 w-full rounded-xl border border-white/10 bg-[#020907] px-3 py-2.5 font-mono text-xs text-white outline-none focus:border-[#B9F044]" />
+          <div class="mt-2 grid grid-cols-2 gap-2">
+            <button id="create-room" class="rounded-xl bg-[#B9F044] px-3 py-2.5 text-xs font-black text-[#06130E]">Create room</button>
+            <button id="join-room" class="rounded-xl bg-white/10 px-3 py-2.5 text-xs font-black text-white hover:bg-white/15">Join room</button>
+          </div>
+          <p id="connection-status" class="mt-3 text-[10px] text-emerald-200/60">Not connected.</p>
+        </div>
+        <div class="glass rounded-3xl p-5">
+          <div class="flex items-center justify-between"><h3 class="text-sm font-black text-white">Hunters</h3><span id="player-count" class="text-[10px] font-bold text-[#B9F044]">0 online</span></div>
+          <div id="players" class="mt-3 space-y-2"><p class="text-xs text-emerald-100/50">No room joined.</p></div>
+        </div>
+        <div id="winner-banner" class="hidden rounded-3xl border border-[#B9F044]/50 bg-[#B9F044]/10 p-5 text-center">
+          <div class="text-3xl">🏆</div><p id="winner-text" class="mt-2 text-sm font-black text-[#B9F044]"></p><button id="new-round" class="mt-3 rounded-xl bg-[#B9F044] px-4 py-2 text-xs font-black text-[#06130E]">New round</button>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const CHALLENGES = [
+      { id: 'js-array-total', language: 'javascript', title: 'The Vanishing Total', difficulty: 'Warm-up', description: 'Return the sum of all numbers. The reducer forgets to return its accumulator.', broken: `function total(numbers) {\n  return numbers.reduce((sum, value) => {\n    sum + value;\n  }, 0);\n}`, starter: `function total(numbers) {\n  return numbers.reduce((sum, value) => {\n    return sum + value;\n  }, 0);\n}\n\nsolution = total;`, tests: `solution([1, 2, 3]) === 6 && solution([-2, 5]) === 3` },
+      { id: 'js-first-duplicate', language: 'javascript', title: 'The Duplicate Detector', difficulty: 'Intermediate', description: 'Return the first duplicated value, or null. The loop checks the wrong collection.', broken: `function firstDuplicate(values) {\n  const seen = new Set();\n  for (const value of values) {\n    if (values.has(value)) return value;\n    seen.add(value);\n  }\n  return null;\n}`, starter: `function firstDuplicate(values) {\n  const seen = new Set();\n  for (const value of values) {\n    if (seen.has(value)) return value;\n    seen.add(value);\n  }\n  return null;\n}\n\nsolution = firstDuplicate;`, tests: `solution([4, 2, 7, 2, 9]) === 2 && solution([1, 3]) === null` },
+      { id: 'py-list-total', language: 'python', title: 'The Missing Return', difficulty: 'Warm-up', description: 'Return the sum of a list. The function calculates the value but forgets to return it.', broken: `def total(numbers):\n    result = sum(numbers)\n    print(result)`, starter: `def total(numbers):\n    result = sum(numbers)\n    return result`, required: ['return result', 'def total'] },
+      { id: 'cpp-vector-max', language: 'cpp', title: 'The Empty Maximum', difficulty: 'Intermediate', description: 'Return the largest value. The loop starts from the wrong index.', broken: `int maxValue(const vector<int>& values) {\n    int best = values[0];\n    for (size_t i = 0; i <= values.size(); i++) {\n        best = max(best, values[i]);\n    }\n    return best;\n}`, starter: `int maxValue(const vector<int>& values) {\n    int best = values[0];\n    for (size_t i = 1; i < values.size(); i++) {\n        best = max(best, values[i]);\n    }\n    return best;\n}`, required: ['i = 1', 'i < values.size()'] },
+      { id: 'java-null-safe', language: 'java', title: 'The Null Greeting', difficulty: 'Intermediate', description: 'Return a friendly greeting. Avoid calling methods on a possibly null name.', broken: `String greet(String name) {\n    return "Hello, " + name.trim() + "!";\n}`, starter: `String greet(String name) {\n    String safeName = name == null ? "friend" : name.trim();\n    return "Hello, " + safeName + "!";\n}`, required: ['name == null', 'safeName'] }
+    ];
+
+    const params = new URLSearchParams(location.search);
+    const supabaseClient = window.supabase && typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL && typeof SUPABASE_ANON !== 'undefined'
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+    let channel = null, roomCode = '', isHost = false, currentChallenge = null, winner = null;
+    let profile = { id: 'guest-' + Math.random().toString(36).slice(2, 8), full_name: 'Guest Hunter' };
+    const $ = id => document.getElementById(id);
+
+    async function resolveProfile() {
+      try {
+        const active = JSON.parse(localStorage.getItem('gyansetu_active_profile') || 'null');
+        if (active) profile = { id: active.id || profile.id, full_name: active.full_name || profile.full_name };
+      } catch (e) {}
+    }
+    function setStatus(text) { $('connection-status').textContent = text; }
+    function publish(event, payload) { if (channel) channel.send({ type: 'broadcast', event, payload }); }
+    function renderChallenge(challenge) {
+      currentChallenge = challenge; winner = null;
+      $('challenge-title').textContent = challenge.title; $('challenge-description').textContent = challenge.description;
+      $('difficulty').textContent = challenge.difficulty; $('language-label').textContent = challenge.language === 'cpp' ? 'C++' : challenge.language[0].toUpperCase() + challenge.language.slice(1); $('broken-code').textContent = challenge.broken;
+      $('language-select').value = challenge.language; $('language-select').disabled = true;
+      $('solution-code').value = challenge.starter; $('solution-code').disabled = false;
+      $('run-tests').disabled = false; $('submit-solution').disabled = false; $('test-result').textContent = 'Tests have not run.';
+      $('winner-banner').classList.add('hidden');
+    }
+    function renderPlayers(state) {
+      const list = Object.values(state || {});
+      $('player-count').textContent = list.length + ' online';
+      $('players').innerHTML = list.length ? list.map(p => `<div class="flex items-center justify-between rounded-xl bg-white/5 px-3 py-2 text-xs"><span class="font-bold text-white">${escapeHtml(p.name)}</span><span class="text-[10px] text-emerald-200/60">${p.id === profile.id ? 'You' : 'Ready'}</span></div>`).join('') : '<p class="text-xs text-emerald-100/50">No room joined.</p>';
+    }
+    function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[c])); }
+    function showWinner(data) { winner = data; $('winner-text').textContent = data.id === profile.id ? 'You submitted the first correct fix! +25 RR' : data.name + ' submitted the first correct fix!'; $('winner-banner').classList.remove('hidden'); $('solution-code').disabled = true; $('submit-solution').disabled = true; }
+    function validateSolution(challenge, code) {
+      if (!challenge) return false;
+      if (challenge.language !== 'javascript') {
+        return challenge.required.every(fragment => code.includes(fragment)) && !code.includes('i <= values.size()');
+      }
+      try {
+        const fn = new Function(code + `\nreturn (${challenge.tests});`);
+        return Boolean(fn());
+      } catch (error) {
+        return false;
+      }
+    }
+    function runTests() {
+      if (!currentChallenge) return false;
+      if (currentChallenge.language !== 'javascript') {
+        const code = $('solution-code').value;
+        const passed = validateSolution(currentChallenge, code);
+        $('test-result').textContent = passed ? '✅ Static checks passed.' : '❌ The fix is incomplete.';
+        $('test-result').className = 'text-xs font-bold ' + (passed ? 'text-[#B9F044]' : 'text-rose-300');
+        return passed;
+      }
+      try {
+        const passed = validateSolution(currentChallenge, $('solution-code').value);
+        $('test-result').textContent = passed ? '✅ All tests passed.' : '❌ Tests failed. Keep debugging.';
+        $('test-result').className = 'text-xs font-bold ' + (passed ? 'text-[#B9F044]' : 'text-rose-300');
+        return passed;
+      } catch (error) { $('test-result').textContent = '❌ ' + error.message; $('test-result').className = 'text-xs font-bold text-rose-300'; return false; }
+    }
+    async function awardWinner() {
+      if (!supabaseClient || !window.recordRRTransaction || profile.id.startsWith('guest-')) return;
+      await window.recordRRTransaction(supabaseClient, { userId: profile.id, amount: 25, reason: 'Bug Hunt Arena victory', referenceType: 'BUG_HUNT', referenceId: roomCode + ':' + currentChallenge.id, idempotencyKey: 'BUG_HUNT:' + roomCode + ':' + profile.id });
+    }
+    function awardWinnerFor(userId) {
+      if (userId === profile.id) awardWinner();
+    }
+    async function connect(code, host) {
+      roomCode = code.toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 24); isHost = host; history.replaceState(null, '', 'bug-hunt.html?room=' + encodeURIComponent(roomCode));
+      $('room-label').textContent = 'Room: ' + roomCode; setStatus('Connecting…');
+      if (!supabaseClient) { setStatus('Local preview mode. Add Supabase to enable multiplayer.'); renderChallenge(CHALLENGES[0]); return; }
+      channel = supabaseClient.channel('bug-hunt:' + roomCode, { config: { presence: { key: profile.id } } });
+      channel.on('broadcast', { event: 'bug-hunt-state' }, ({ payload }) => { if (payload.challenge) renderChallenge(payload.challenge); if (payload.winner) { showWinner(payload.winner); awardWinnerFor(payload.winner.id); } });
+      channel.on('broadcast', { event: 'bug-hunt-request-state' }, () => { if (isHost) publish('bug-hunt-state', { challenge: currentChallenge, winner }); });
+      channel.on('broadcast', { event: 'bug-hunt-submission' }, ({ payload }) => {
+        if (!isHost || winner || payload?.challengeId !== currentChallenge?.id) return;
+        if (validateSolution(currentChallenge, payload.code)) {
+          const data = { id: payload.id, name: payload.name };
+          showWinner(data);
+          publish('bug-hunt-winner', data);
+          awardWinnerFor(data.id);
+        }
+      });
+      channel.on('broadcast', { event: 'bug-hunt-winner' }, ({ payload }) => { showWinner(payload); awardWinnerFor(payload.id); });
+      channel.on('presence', { event: 'sync' }, () => renderPlayers(channel.presenceState()[profile.id] ? Object.fromEntries(Object.values(channel.presenceState()).flat().map(p => [p.id, p])) : {}));
+      await channel.subscribe(async status => {
+        if (status !== 'SUBSCRIBED') return setStatus('Could not connect to room.');
+        setStatus('Connected. Share the room code with your peers.');
+        await channel.track({ id: profile.id, name: profile.full_name });
+        if (isHost) { const language = $('language-select').value; const options = CHALLENGES.filter(item => item.language === language); renderChallenge(options[Math.floor(Math.random() * options.length)]); publish('bug-hunt-state', { challenge: currentChallenge }); }
+        else publish('bug-hunt-request-state', {});
+      });
+    }
+    $('create-room').onclick = () => connect(($('room-code').value || 'bug-' + Math.random().toString(36).slice(2, 8)), true);
+    $('join-room').onclick = () => $('room-code').value.trim() && connect($('room-code').value.trim(), false);
+    $('run-tests').onclick = runTests;
+    $('reset-code').onclick = () => currentChallenge && ($('solution-code').value = currentChallenge.starter);
+    $('submit-solution').onclick = () => {
+      if (winner || !currentChallenge || !runTests()) return;
+      const submission = { id: profile.id, name: profile.full_name, code: $('solution-code').value, challengeId: currentChallenge.id };
+      if (isHost) {
+        const data = { id: submission.id, name: submission.name };
+        showWinner(data);
+        publish('bug-hunt-winner', data);
+        awardWinnerFor(data.id);
+      } else {
+        $('submit-solution').disabled = true;
+        setStatus('Correct solution submitted. Waiting for room confirmation…');
+        publish('bug-hunt-submission', submission);
+      }
+    };
+    $('new-round').onclick = () => { if (!isHost) return setStatus('Only the room creator can start a new round.'); const options = CHALLENGES.filter(item => item.language === currentChallenge.language); renderChallenge(options[Math.floor(Math.random() * options.length)]); publish('bug-hunt-state', { challenge: currentChallenge }); };
+    resolveProfile().then(() => params.get('room') && connect(params.get('room'), false));
+  </script>
+</body>
+</html>

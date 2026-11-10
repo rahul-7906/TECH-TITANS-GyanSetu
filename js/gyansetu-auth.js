@@ -148,6 +148,54 @@
     },
 
     /**
+     * Update profile details used by matching, peer discovery, and leaderboard scopes.
+     */
+    async updateProfile(userId, updates) {
+      if (!userId || !updates || typeof updates !== 'object') {
+        return { success: false, error: 'Invalid profile update.' };
+      }
+
+      var allowed = ['full_name', 'department', 'year', 'country', 'state', 'city', 'college', 'skills', 'bio', 'availability'];
+      var clean = {};
+      allowed.forEach(function (key) {
+        if (updates[key] != null) clean[key] = String(updates[key]).trim();
+      });
+      if (!clean.full_name) return { success: false, error: 'Full name is required.' };
+
+      clean.updated_at = new Date().toISOString();
+      var remoteError = null;
+      var sb = getSupabaseClient();
+      if (sb) {
+        try {
+          var result = await sb.from('profiles').update(clean).eq('id', userId);
+          remoteError = result.error || null;
+        } catch (e) {
+          remoteError = e;
+        }
+      }
+
+      try {
+        var active = JSON.parse(localStorage.getItem(STORAGE_KEYS.ACTIVE_PROFILE) || 'null');
+        if (active && active.id === userId) {
+          Object.assign(active, clean);
+          localStorage.setItem(STORAGE_KEYS.ACTIVE_PROFILE, JSON.stringify(active));
+        }
+
+        var accounts = JSON.parse(localStorage.getItem(STORAGE_KEYS.REGISTERED_ACCOUNTS) || '{}');
+        Object.keys(accounts).forEach(function (email) {
+          if (accounts[email]?.profile?.id === userId) Object.assign(accounts[email].profile, clean);
+        });
+        localStorage.setItem(STORAGE_KEYS.REGISTERED_ACCOUNTS, JSON.stringify(accounts));
+      } catch (e) {
+        return { success: false, error: 'Could not save local profile details.' };
+      }
+
+      if (remoteError) console.warn('[GyanSetuAuth] Profile update sync warning:', remoteError);
+      window.dispatchEvent(new CustomEvent('gyansetu:profile-updated', { detail: { userId, updates: clean } }));
+      return { success: true, profile: clean, remoteSynced: !remoteError };
+    },
+
+    /**
      * Fetch profile row from Supabase
      */
     async fetchProfile(userId) {
@@ -528,8 +576,9 @@
             role: p.role || 'learner',
             credits: Number(p.credits) || 100,
             xp: Number(p.xp) || 50,
-            rr: Number(p.rr) || (1000 + (Number(p.xp) || 50) * 2),
+            rr: p.rr != null && Number.isFinite(Number(p.rr)) ? Number(p.rr) : 1000,
             streak: Number(p.streak) || 1,
+            activity_count: Number(p.activity_count) || 0,
             college: p.college || p.department || 'Graphic Era Hill University',
             city: p.city || 'Haldwani',
             state: p.state || 'Uttarakhand',
@@ -537,9 +586,9 @@
             challenge_wins: Number(p.challenge_wins) || 0
           });
         } else {
-          existing.credits = Math.max(Number(existing.credits) || 0, Number(p.credits) || 0);
-          existing.xp = Math.max(Number(existing.xp) || 0, Number(p.xp) || 0);
-          existing.rr = Math.max(Number(existing.rr) || 1000, Number(p.rr) || (1000 + existing.xp * 2));
+          if (p.credits != null) existing.credits = Number(p.credits) || 0;
+          if (p.xp != null) existing.xp = Number(p.xp) || 0;
+          if (p.rr != null && Number.isFinite(Number(p.rr))) existing.rr = Number(p.rr);
           if (p.full_name && (!existing.full_name || existing.full_name === 'Campus Student' || existing.full_name.includes('@'))) {
             existing.full_name = p.full_name;
           }
@@ -549,6 +598,9 @@
           if (p.role) existing.role = p.role;
           if (p.college) existing.college = p.college;
           if (p.city) existing.city = p.city;
+          if (p.streak != null) existing.streak = Number(p.streak) || 1;
+          if (p.challenge_wins != null) existing.challenge_wins = Number(p.challenge_wins) || 0;
+          if (p.activity_count != null) existing.activity_count = Number(p.activity_count) || 0;
         }
       }
 
@@ -627,6 +679,16 @@
       try {
         var key = 'gyansetu_activities_' + userId;
         var activities = JSON.parse(localStorage.getItem(key) || '[]');
+        var today = new Date().toISOString().slice(0, 10);
+        var lastActivityDate = localStorage.getItem('gyansetu_last_activity_' + userId);
+        var previousDay = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+        var profile = JSON.parse(localStorage.getItem(STORAGE_KEYS.ACTIVE_PROFILE) || 'null');
+        var isActiveProfile = profile && profile.id === userId;
+        var nextStreak = Number(profile?.streak) || 1;
+        if (lastActivityDate !== today) {
+          nextStreak = lastActivityDate === previousDay ? nextStreak + 1 : 1;
+          localStorage.setItem('gyansetu_last_activity_' + userId, today);
+        }
         var item = {
           id: generateUUID(),
           userId: userId,
@@ -640,6 +702,22 @@
         };
         activities.unshift(item);
         localStorage.setItem(key, JSON.stringify(activities.slice(0, 100)));
+        if (isActiveProfile) {
+          profile.activity_count = (Number(profile.activity_count) || 0) + 1;
+          profile.streak = nextStreak;
+          profile.last_activity_at = new Date().toISOString();
+          localStorage.setItem(STORAGE_KEYS.ACTIVE_PROFILE, JSON.stringify(profile));
+        }
+        var accounts = JSON.parse(localStorage.getItem(STORAGE_KEYS.REGISTERED_ACCOUNTS) || '{}');
+        Object.keys(accounts).forEach(function (email) {
+          var accountProfile = accounts[email]?.profile;
+          if (accountProfile && accountProfile.id === userId) {
+            accountProfile.activity_count = (Number(accountProfile.activity_count) || 0) + 1;
+            accountProfile.streak = nextStreak;
+            accountProfile.last_activity_at = new Date().toISOString();
+          }
+        });
+        localStorage.setItem(STORAGE_KEYS.REGISTERED_ACCOUNTS, JSON.stringify(accounts));
         window.dispatchEvent(new CustomEvent('gyansetu:activity', { detail: item }));
         return item;
       } catch (e) {

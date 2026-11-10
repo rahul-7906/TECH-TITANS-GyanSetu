@@ -95,6 +95,16 @@ const RR_CONFIG = {
   ]
 };
 
+function calculateLeaderboardScore(profile) {
+  const rr = Math.max(0, Number(profile?.rr) || 0);
+  const wins = Math.max(0, Number(profile?.challenge_wins) || 0);
+  const activity = Math.max(0, Number(profile?.activity_count) || 0);
+  const xp = Math.max(0, Number(profile?.xp) || 0);
+  const credits = Math.max(0, Number(profile?.credits) || 0);
+
+  return Math.round(rr + (wins * 25) + (activity * 5) + (xp / 10) + (credits / 10));
+}
+
 /**
  * Calculates rank tier, division, next rank, and progress percentage.
  * Divisions within a 500 RR tier:
@@ -383,9 +393,9 @@ async function recordRRTransaction(sb, params) {
   const effectiveKey = idempotencyKey || (referenceId ? `${referenceType}:${referenceId}:${userId}` : '');
 
   // ── 1. Resolve Current User Profile & RR (Local-First + Supabase) ────
-  let currentRR = 1245;
-  let protectionCount = 1;
-  let highestRR = 1245;
+  let currentRR = 1000;
+  let protectionCount = 0;
+  let highestRR = 1000;
   let challengeWins = 0;
   let profileSource = null;
 
@@ -773,6 +783,7 @@ function showRankDemotionToast(newRank, newRR) {
 // Export for browser & node test
 if (typeof window !== 'undefined') {
   window.RR_CONFIG = RR_CONFIG;
+  window.calculateLeaderboardScore = calculateLeaderboardScore;
   window.calculateRank = calculateRank;
   window.renderRankEmblem = renderRankEmblem;
   window.recordRRTransaction = recordRRTransaction;

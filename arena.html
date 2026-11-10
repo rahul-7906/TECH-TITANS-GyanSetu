@@ -248,7 +248,7 @@
     <!-- Active Room Badge & Controls -->
     <div class="flex items-center gap-2 sm:gap-3">
       <!-- Voice Toggle -->
-      <button id="btn-voice-toggle" onclick="toggleVoice()" class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300 hover:border-[#B9F044] hover:text-[#B9F044] transition">
+      <button id="btn-voice-toggle" onclick="toggleVoice()" class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300 hover:border-[#B9F044] hover:text-[#B9F044] transition">
         <i data-lucide="mic" id="voice-icon" class="h-3.5 w-3.5 text-slate-400"></i>
         <span id="voice-label">Squad Voice</span>
       </button>
@@ -872,6 +872,7 @@
     </div>
 
   </main>
+  <div id="arena-remote-audio" class="hidden" aria-hidden="true"></div>
 
   <!-- ── 7. SCRIPTS ── -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1298,7 +1299,7 @@
         const credits = prof?.credits ?? 100;
         const rr = (myUser?.id && typeof localStorage !== 'undefined' && localStorage.getItem('gyansetu_user_rr_' + myUser.id) != null)
           ? Number(localStorage.getItem('gyansetu_user_rr_' + myUser.id))
-          : (prof?.rr ?? 1245);
+          : (prof?.rr ?? 1000);
         const fullName = prof?.full_name || (myUser?.email ? myUser.email.split('@')[0] : 'Campus Student');
 
         if (myUser) {
@@ -2694,6 +2695,7 @@
     function changeRoom() {
       const val = document.getElementById('input-room-code').value.trim();
       if (!val) return;
+      if (arenaVoiceActive) stopArenaVoice();
       currentRoom = val;
       document.getElementById('header-room-id').textContent = currentRoom;
       document.getElementById('combat-room-tag').textContent = currentRoom;
@@ -2823,6 +2825,10 @@
       });
 
       // 2. Broadcast Listeners (Points, Squad changes, Match events)
+      channel.on('broadcast', { event: 'voice-signal' }, ({ payload }) => {
+        handleArenaVoiceSignal(payload);
+      });
+
       channel.on('broadcast', { event: 'team-point-update' }, ({ payload }) => {
         if (!payload?.team) return;
         TEAMS[payload.team].pts = payload.pts;
@@ -2917,6 +2923,9 @@
             rr: myUser?.profile?.rr || 1000,
             joinedAt: Date.now()
           });
+          if (arenaVoiceActive) {
+            sendArenaVoiceSignal({ action: 'voice-join', from: arenaVoiceId(), name: myUser?.fullName || 'Arena peer' });
+          }
           addCombatLog(`🟢 Connected to Arena Room: <strong>${currentRoom}</strong>!`);
         }
       });
@@ -2939,19 +2948,170 @@
       input.value = '';
     }
 
-    function toggleVoice() {
-      const label = document.getElementById('voice-label');
-      const icon = document.getElementById('voice-icon');
-      if (label.textContent === 'Squad Voice') {
-        label.textContent = 'Voice Connected 🟢';
-        icon.classList.replace('text-slate-400', 'text-[#B9F044]');
-        addCombatLog(`🎙️ Connected to Squad Voice Mesh (WebRTC Audio). Teammates can hear you!`);
-      } else {
-        label.textContent = 'Squad Voice';
-        icon.classList.replace('text-[#B9F044]', 'text-slate-400');
-        addCombatLog(`🔇 Disconnected from Squad Voice Mesh.`);
+    let arenaVoiceStream = null;
+    let arenaVoiceActive = false;
+    let arenaVoiceMuted = false;
+    const arenaVoicePeers = new Map();
+    const arenaVoiceCandidates = new Map();
+    const arenaRtcConfig = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    };
+
+    function arenaVoiceId() {
+      return myUser?.id || `anon_${Date.now()}`;
+    }
+
+    function sendArenaVoiceSignal(payload) {
+      channel?.send({ type: 'broadcast', event: 'voice-signal', payload });
+    }
+
+    function createArenaVoicePeer(peerId, peerName) {
+      const pc = new RTCPeerConnection(arenaRtcConfig);
+      arenaVoicePeers.set(peerId, pc);
+      arenaVoiceStream?.getAudioTracks().forEach(track => pc.addTrack(track, arenaVoiceStream));
+      pc.onicecandidate = event => {
+        if (event.candidate) {
+          sendArenaVoiceSignal({ action: 'ice-candidate', from: arenaVoiceId(), to: peerId, candidate: event.candidate });
+        }
+      };
+      pc.ontrack = event => {
+        let audio = document.getElementById(`arena-audio-${peerId}`);
+        if (!audio) {
+          audio = document.createElement('audio');
+          audio.id = `arena-audio-${peerId}`;
+          audio.autoplay = true;
+          audio.playsInline = true;
+          document.getElementById('arena-remote-audio')?.appendChild(audio);
+        }
+        audio.srcObject = event.streams[0];
+        audio.play().catch(() => addCombatLog('🔊 Click Squad Voice again if browser audio is blocked.'));
+      };
+      pc.onconnectionstatechange = () => {
+        if (['failed', 'disconnected', 'closed'].includes(pc.connectionState)) {
+          closeArenaVoicePeer(peerId);
+        }
+      };
+      return pc;
+    }
+
+    async function connectArenaVoicePeer(peerId, peerName) {
+      if (!arenaVoiceActive || arenaVoicePeers.has(peerId)) return;
+      try {
+        const pc = createArenaVoicePeer(peerId, peerName);
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        sendArenaVoiceSignal({ action: 'offer', from: arenaVoiceId(), to: peerId, name: myUser?.fullName || 'Arena peer', sdp: pc.localDescription });
+      } catch (error) {
+        console.warn('[ArenaVoice] Could not create offer:', error);
       }
     }
+
+    async function handleArenaVoiceOffer(payload) {
+      if (!arenaVoiceActive) return;
+      try {
+        const pc = arenaVoicePeers.get(payload.from) || createArenaVoicePeer(payload.from, payload.name);
+        await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+        const queued = arenaVoiceCandidates.get(payload.from) || [];
+        for (const candidate of queued) await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        arenaVoiceCandidates.delete(payload.from);
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        sendArenaVoiceSignal({ action: 'answer', from: arenaVoiceId(), to: payload.from, sdp: pc.localDescription });
+      } catch (error) {
+        console.warn('[ArenaVoice] Could not handle offer:', error);
+      }
+    }
+
+    async function handleArenaVoiceSignal(payload) {
+      if (!payload || payload.from === arenaVoiceId() || (payload.to && payload.to !== arenaVoiceId())) return;
+      if (payload.action === 'voice-join') {
+        if (arenaVoiceActive) await connectArenaVoicePeer(payload.from, payload.name);
+        return;
+      }
+      if (payload.action === 'voice-leave') {
+        closeArenaVoicePeer(payload.from);
+        return;
+      }
+      if (payload.action === 'offer') {
+        await handleArenaVoiceOffer(payload);
+        return;
+      }
+      if (payload.action === 'answer') {
+        const pc = arenaVoicePeers.get(payload.from);
+        if (pc) await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+        return;
+      }
+      if (payload.action === 'ice-candidate') {
+        const pc = arenaVoicePeers.get(payload.from);
+        if (pc?.remoteDescription) {
+          await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
+        } else {
+          const queue = arenaVoiceCandidates.get(payload.from) || [];
+          queue.push(payload.candidate);
+          arenaVoiceCandidates.set(payload.from, queue);
+        }
+      }
+    }
+
+    function closeArenaVoicePeer(peerId) {
+      arenaVoicePeers.get(peerId)?.close();
+      arenaVoicePeers.delete(peerId);
+      arenaVoiceCandidates.delete(peerId);
+      document.getElementById(`arena-audio-${peerId}`)?.remove();
+    }
+
+    function stopArenaVoice() {
+      if (!arenaVoiceActive) return;
+      sendArenaVoiceSignal({ action: 'voice-leave', from: arenaVoiceId() });
+      arenaVoiceStream?.getTracks().forEach(track => track.stop());
+      arenaVoiceStream = null;
+      Array.from(arenaVoicePeers.keys()).forEach(closeArenaVoicePeer);
+      arenaVoiceActive = false;
+      arenaVoiceMuted = false;
+      const label = document.getElementById('voice-label');
+      const icon = document.getElementById('voice-icon');
+      if (label) label.textContent = 'Squad Voice';
+      if (icon) {
+        icon.setAttribute('data-lucide', 'mic');
+        icon.classList.replace('text-[#B9F044]', 'text-slate-400');
+        lucide.createIcons();
+      }
+    }
+
+    async function toggleVoice() {
+      const label = document.getElementById('voice-label');
+      const icon = document.getElementById('voice-icon');
+      if (!arenaVoiceActive) {
+        if (!navigator.mediaDevices?.getUserMedia) {
+          addCombatLog('⚠️ Microphone access is not supported in this browser.');
+          return;
+        }
+        try {
+          arenaVoiceStream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+            video: false
+          });
+          arenaVoiceActive = true;
+          arenaVoiceMuted = false;
+          label.textContent = 'Voice Connected 🟢';
+          icon.setAttribute('data-lucide', 'mic');
+          icon.classList.replace('text-slate-400', 'text-[#B9F044]');
+          lucide.createIcons();
+          sendArenaVoiceSignal({ action: 'voice-join', from: arenaVoiceId(), name: myUser?.fullName || 'Arena peer' });
+          addCombatLog(`🎙️ Squad voice connected. Your teammates can hear you.`);
+        } catch (error) {
+          addCombatLog(`⚠️ Microphone permission was not granted: ${error.message || error.name}.`);
+        }
+      } else {
+        stopArenaVoice();
+        addCombatLog(`🔇 Squad voice disconnected.`);
+      }
+    }
+
+    window.addEventListener('pagehide', stopArenaVoice);
 
     function addCombatLog(msg) {
       const feed = document.getElementById('combat-feed');

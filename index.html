@@ -189,6 +189,7 @@
             <span>Live Demo</span>
           </a>
         </li>
+        <li><a href="bug-hunt.html" class="nav-link transition hover:text-[#0B1F17]">Bug Hunt</a></li>
         <li><a href="#calculator" class="nav-link transition hover:text-[#0B1F17]">Value Calculator</a></li>
         <li><a href="#how-it-works" class="nav-link transition hover:text-[#0B1F17]">How It Works</a></li>
         <li><a href="#faq" class="nav-link transition hover:text-[#0B1F17]">FAQ</a></li>
@@ -215,6 +216,7 @@
           <li><a href="#about" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">About GyanSetu</a></li>
           <li><a href="#features" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Platform Features</a></li>
           <li><a href="#demo" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11] font-bold text-[#2F6F11]">Interactive Live Demo ⚡</a></li>
+          <li><a href="bug-hunt.html" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Bug Hunt Arena 🐞</a></li>
           <li><a href="#calculator" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">Growth Calculator 🪙</a></li>
           <li><a href="#how-it-works" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">How It Works</a></li>
           <li><a href="#faq" class="block rounded-xl px-3 py-2.5 hover:bg-[#F4FBEA] hover:text-[#2F6F11]">FAQ</a></li>
@@ -438,7 +440,7 @@
         <p class="mx-auto mt-4 max-w-md text-[15px] leading-7 text-slate-500">Four integrated tools, one seamless campus platform. Ask, match, earn, collab, compete.</p>
       </div>
 
-      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
         <!-- Feature 1 -->
         <div class="feat-card group flex flex-col reveal-on-scroll delay-100">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B1F17] text-[#B9F044]">
@@ -488,6 +490,21 @@
         <div class="feat-card group flex flex-col reveal-on-scroll delay-400">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B9F044] text-[#0B1F17]">
             <i data-lucide="trophy" class="h-7 w-7"></i>
+          </div>
+
+          <!-- Feature 5 -->
+          <div class="feat-card group flex flex-col reveal-on-scroll delay-400">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B1F17] text-[#B9F044]">
+              <i data-lucide="bug" class="h-7 w-7"></i>
+            </div>
+            <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Bug Hunt Arena</h3>
+            <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Join a room, receive the same broken code, and race your peers to submit the first fix that passes validation.</p>
+            <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+              <a href="bug-hunt.html" class="text-[12px] font-bold text-[#2F6F11] hover:underline">Hunt bugs &rarr;</a>
+              <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#B9F044]/20 text-[#2F6F11] group-hover:bg-[#B9F044] group-hover:text-[#0B1F17] transition">
+                <i data-lucide="arrow-right" class="h-4 w-4"></i>
+              </div>
+            </div>
           </div>
           <h3 class="mt-5 text-[17px] font-extrabold text-[#0B1F17]">Arena Races &amp; Rankings</h3>
           <p class="mt-2 flex-1 text-[13px] leading-6 text-slate-500">Race your peers in coding battles, solve 14-domain procedural quizzes, and earn your place on the campus leaderboard.</p>
@@ -1005,7 +1022,7 @@
                 <div id="calc-xp-out" class="mt-1 font-mono text-3xl font-black text-emerald-300">
                   +2,440 ⚡
                 </div>
-                <p class="text-[10px] text-slate-400 mt-1">Leaderboard points</p>
+                <p class="text-[10px] text-slate-400 mt-1">Lifetime learning progress</p>
               </div>
             </div>
 
@@ -1019,7 +1036,7 @@
                 <div id="calc-tier-progress" class="h-full bg-gradient-to-r from-emerald-400 to-[#B9F044] rounded-full transition-all duration-500" style="width: 72%;"></div>
               </div>
               <p id="calc-tier-desc" class="text-[11px] text-slate-300 mt-2">
-                Top 8% on campus leaderboard. Unlocks Verified Peer badge &amp; unlimited matchmaking.
+                Estimated progress tier based on learning activity. Actual leaderboard order uses RR first, then verified wins, activity, XP, and credits.
               </p>
             </div>
           </div>
@@ -1720,19 +1737,19 @@
       if (monthlyXP < 800) {
         if (tierBadge) tierBadge.textContent = '🥉 Bronze Peer Scout';
         if (tierProgress) tierProgress.style.width = '35%';
-        if (tierDesc) tierDesc.textContent = 'Top 45% campus rank. Earn credits to unlock faster matching.';
+        if (tierDesc) tierDesc.textContent = 'Estimated learning tier. Actual leaderboard order uses RR first, then verified wins, activity, XP, and credits.';
       } else if (monthlyXP < 2000) {
         if (tierBadge) tierBadge.textContent = '🥈 Silver Campus Mentor';
         if (tierProgress) tierProgress.style.width = '60%';
-        if (tierDesc) tierDesc.textContent = 'Top 20% campus rank. Unlocks mentor profile badges & arena priority.';
+        if (tierDesc) tierDesc.textContent = 'Estimated learning tier. Actual leaderboard order uses RR first, then verified wins, activity, XP, and credits.';
       } else if (monthlyXP < 4500) {
         if (tierBadge) tierBadge.textContent = '🥇 Gold Academic Pioneer';
         if (tierProgress) tierProgress.style.width = '85%';
-        if (tierDesc) tierDesc.textContent = 'Top 8% on campus leaderboard. Unlocks Verified Peer badge & unlimited matchmaking.';
+        if (tierDesc) tierDesc.textContent = 'Estimated learning tier. Actual leaderboard order uses RR first, then verified wins, activity, XP, and credits.';
       } else {
         if (tierBadge) tierBadge.textContent = '💎 Diamond Campus Legend';
         if (tierProgress) tierProgress.style.width = '100%';
-        if (tierDesc) tierDesc.textContent = 'Top 1% elite peer mentor. Featured on campus leaderboard homepage.';
+        if (tierDesc) tierDesc.textContent = 'Estimated learning tier. Actual leaderboard order uses RR first, then verified wins, activity, XP, and credits.';
       }
     };
     updateCalculator();

@@ -8,6 +8,7 @@ body {
     radial-gradient(900px 500px at -10% 10%, rgba(185,240,68,0.18), transparent 60%),
     radial-gradient(800px 500px at 110% 40%, rgba(185,240,68,0.12), transparent 60%),
     #EEF6E4;
+  text-rendering: optimizeLegibility;
 }
 
 /* =============================================
@@ -100,4 +101,14 @@ input:focus-visible {
   .live-dot,
   .animate-fade-in { animation: none; }
   html { scroll-behavior: auto; }
+}
+
+/* Keep translucent surfaces responsive on lower-powered devices. */
+@media (max-width: 900px) {
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-xl {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
 }

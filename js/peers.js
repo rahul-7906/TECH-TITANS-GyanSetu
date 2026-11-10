@@ -402,7 +402,8 @@
 
     peers.forEach((peer, i) => {
       const isCurrentlyPaired = activePair && activePair.peerId === peer.id;
-      const isConnected = window.GyanSetuNetwork?.isConnected(peer.id || peer.name);
+      const connectionStatus = window.GyanSetuNetwork?.getConnectionStatus(peer.id || peer.name) || 'none';
+      const isConnected = connectionStatus === 'accepted';
 
       const card = document.createElement('div');
       card.className = `peer-card peer-card-enter shadow-card ${isCurrentlyPaired ? 'ring-2 ring-[#B9F044] bg-emerald-50/20' : ''}`;
@@ -423,6 +424,7 @@
               ${isCurrentlyPaired ? '<span class="rounded bg-[#B9F044] text-[#0B1F17] px-1.5 py-0.2 text-[8px] font-black uppercase">PAIRED</span>' : ''}
             </div>
             <p class="text-[11px] text-slate-500">${peer.department} &bull; ${peer.year}</p>
+            <p class="text-[10px] text-slate-400 truncate">${peer.college || 'Campus member'} &bull; ${peer.city || 'Location not set'}</p>
           </div>
           <span class="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold
             ${peer.availability === 'online' ? 'bg-green-50 text-green-700' : peer.availability === 'busy' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-500'}">
@@ -451,6 +453,10 @@
             <!-- 1-Click Pair Button -->
             <button onclick="window.pairDirectlyWithPeer('${peer.id}')" class="inline-flex items-center gap-1 rounded-lg ${isCurrentlyPaired ? 'bg-[#B9F044] text-[#0B1F17] font-black' : 'bg-[#0B1F17] text-[#B9F044] font-bold hover:bg-[#064E3B]'} px-2.5 py-1.5 text-[11px] transition">
               <span>${isCurrentlyPaired ? '✓ Paired' : '🤝 Pair'}</span>
+            </button>
+
+            <button onclick="window.GyanSetuNetwork?.toggleConnect({id:'${peer.id}',name:'${peer.name}',email:'${peer.email || ''}',department:'${peer.department}',college:'${peer.college || ''}',city:'${peer.city || ''}',state:'${peer.state || ''}',avatar:'${peer.avatar || ''}'})" class="inline-flex items-center gap-1 rounded-lg border border-emerald-300 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100 transition">
+              <span>${isConnected ? '✓ Connected' : connectionStatus === 'pending' ? '⌛ Request Sent' : '＋ Connect'}</span>
             </button>
 
             <!-- Race in Speed Arena -->
@@ -706,9 +712,12 @@
           avatar: initials || '👤',
           department: p.department || 'Computer Science',
           year: p.year || '3rd Year',
+          college: p.college || 'Graphic Era Hill University',
+          state: p.state || 'Uttarakhand',
+          city: p.city || 'Haldwani',
           rating: Number(p.rating) || 4.8,
           sessions: Number(p.sessions_count || p.sessions) || 12,
-          topics: Array.isArray(p.topics) && p.topics.length > 0 ? p.topics : ['Data Structures & Algorithms', 'Python & AI Engineering'],
+          topics: Array.isArray(p.topics) && p.topics.length > 0 ? p.topics : (p.skills ? String(p.skills).split(',').map(s => s.trim()).filter(Boolean) : ['Data Structures & Algorithms', 'Python & AI Engineering']),
           languages: Array.isArray(p.languages) && p.languages.length > 0 ? p.languages : ['English', 'Hindi'],
           availability: p.availability || (idx % 3 === 0 ? 'busy' : 'online'),
           bio: p.bio || `Active GyanSetu learner & peer partner at ${p.college || 'Graphic Era'}.`

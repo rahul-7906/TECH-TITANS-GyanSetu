@@ -323,8 +323,8 @@
     .sidebar-link.nav-transitioning { opacity: .65; pointer-events: none; }
     #page-transition {
       position: fixed; inset: 0; z-index: 200; pointer-events: none;
-      background: rgba(247, 250, 243, .94); backdrop-filter: blur(8px);
-      opacity: 0; transition: opacity .28s ease;
+      background: rgba(247, 250, 243, .72);
+      opacity: 0; transition: opacity .16s ease;
     }
     #page-transition.is-visible { opacity: 1; }
     .nav-section-label {
@@ -408,6 +408,7 @@
           <a href="session.html" class="sidebar-link page-link"><i data-lucide="calendar-plus" class="lucide"></i> Book Session <span class="ml-auto text-[9px] text-slate-400">OPEN</span></a>
           <a href="room.html" class="sidebar-link page-link"><i data-lucide="monitor" class="lucide"></i> Live Room <span class="ml-auto text-[9px] text-slate-400">OPEN</span></a>
           <a href="arena.html" class="sidebar-link page-link"><i data-lucide="swords" class="lucide text-[#B9F044]"></i> Race Arena <span class="ml-auto rounded-full bg-[#B9F044]/20 px-1.5 py-0.2 text-[8px] font-black text-[#2F6F11]">NEW 🏎️</span></a>
+          <a href="bug-hunt.html" class="sidebar-link page-link"><i data-lucide="bug" class="lucide text-[#B9F044]"></i> Bug Hunt Arena <span class="ml-auto rounded-full bg-[#B9F044]/20 px-1.5 py-0.2 text-[8px] font-black text-[#2F6F11]">NEW 🐞</span></a>
         </div>
         <div class="mt-3 border-t border-slate-100 pt-3">
           <button type="button" class="sidebar-link w-full text-left" onclick="showToast('Settings are coming soon.', 'info')"><i data-lucide="settings" class="lucide"></i> Settings</button>
@@ -526,15 +527,46 @@
                 <a href="#ledger" onclick="closeProfileDropdown()" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-[#F4FBEA] hover:text-[#2F6F11] transition">
                   <i data-lucide="coins" class="h-3.5 w-3.5"></i> Credit Ledger
                 </a>
+                <button onclick="openProfileEditor()" class="flex w-full items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-[#2F6F11] hover:bg-[#F4FBEA] transition">
+                  <i data-lucide="user-round-pen" class="h-3.5 w-3.5"></i> Complete Profile
+                </button>
                 <div class="my-1 border-t border-slate-100"></div>
                 <button onclick="logout()" class="flex w-full items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-red-500 hover:bg-red-50 transition">
                   <i data-lucide="log-out" class="h-3.5 w-3.5"></i> Logout
                 </button>
               </div>
+
             </div>
           </div>
         </div>
       </header>
+
+      <div id="profile-editor-modal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-[#06130E]/70 px-4 backdrop-blur-sm">
+        <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl sm:p-7">
+          <div class="mb-5 flex items-start justify-between gap-4">
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-[#2F6F11]">Campus identity</p>
+              <h2 class="mt-1 text-xl font-black text-[#0B1F17]">Complete your profile</h2>
+              <p class="mt-1 text-xs text-slate-500">These details improve Smart Match, peer discovery, and college/state leaderboard filters.</p>
+            </div>
+            <button type="button" onclick="closeProfileEditor()" class="rounded-full bg-slate-100 p-2 text-slate-500 hover:bg-slate-200"><i data-lucide="x" class="h-4 w-4"></i></button>
+          </div>
+          <form id="profile-editor-form" class="grid gap-4 sm:grid-cols-2">
+            <label class="text-xs font-bold text-slate-600">Full name<input id="profile-full-name" required maxlength="80" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
+            <label class="text-xs font-bold text-slate-600">Department / course<input id="profile-department" maxlength="80" placeholder="Computer Science & Engineering" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
+            <label class="text-xs font-bold text-slate-600">Year of study<select id="profile-year" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]"><option value="">Select year</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>Postgraduate</option><option>Alumni</option></select></label>
+            <label class="text-xs font-bold text-slate-600">College / university<input id="profile-college" maxlength="120" placeholder="Your college or university" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
+            <label class="text-xs font-bold text-slate-600">Country<input id="profile-country" maxlength="60" placeholder="India" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
+            <label class="text-xs font-bold text-slate-600">State<input id="profile-state" maxlength="60" placeholder="Uttarakhand" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
+            <label class="text-xs font-bold text-slate-600">City<input id="profile-city" maxlength="60" placeholder="Haldwani" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
+            <label class="text-xs font-bold text-slate-600">Availability<select id="profile-availability" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]"><option value="flexible">Flexible</option><option value="weekday-mornings">Weekday mornings</option><option value="weekday-evenings">Weekday evenings</option><option value="weekends">Weekends</option></select></label>
+            <label class="text-xs font-bold text-slate-600 sm:col-span-2">Skills and topics<input id="profile-skills" maxlength="240" placeholder="DSA, React, Python, DBMS (comma-separated)" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
+            <label class="text-xs font-bold text-slate-600 sm:col-span-2">Short bio<textarea id="profile-bio" maxlength="400" rows="3" placeholder="What can you teach or what do you want to learn?" class="mt-1.5 w-full resize-none rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]"></textarea></label>
+            <p id="profile-editor-feedback" class="hidden text-xs font-bold sm:col-span-2"></p>
+            <div class="flex justify-end gap-2 sm:col-span-2"><button type="button" onclick="closeProfileEditor()" class="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cancel</button><button id="profile-save-btn" type="submit" class="rounded-xl bg-[#0B1F17] px-5 py-2.5 text-xs font-black text-[#B9F044] hover:bg-[#14532D]">Save Profile</button></div>
+          </form>
+        </div>
+      </div>
 
       <!-- PAGE CONTENT -->
       <main class="px-5 py-7 sm:px-7">
@@ -1523,7 +1555,7 @@
             <span class="text-xs font-bold text-slate-600">${Number(mentor.credits) || 100} Credits &bull; ${Number(mentor.xp) || 50} XP</span>
             <div class="flex items-center gap-1.5">
               <button type="button" onclick="toggleMentorConnection('${escapeHtml(mentor.id || '')}', '${escapeHtml(name)}')" class="${window.GyanSetuNetwork?.isConnected(mentor.id || name) ? 'rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800 px-2.5 py-1.5 text-xs font-extrabold hover:bg-emerald-200 transition' : 'rounded-xl bg-[#0B1F17] text-[#B9F044] px-2.5 py-1.5 text-xs font-extrabold hover:bg-[#064E3B] transition shadow-sm'}">
-                ${window.GyanSetuNetwork?.isConnected(mentor.id || name) ? '✓ Connected' : '🤝 Connect'}
+                ${window.GyanSetuNetwork?.isConnected(mentor.id || name) ? '✓ Connected' : window.GyanSetuNetwork?.getConnectionStatus(mentor.id || name) === 'pending' ? '⌛ Request Sent' : '🤝 Connect'}
               </button>
               <button type="button" onclick="window.GyanSetuNetwork?.inviteToArena('${escapeHtml(name)}')" class="rounded-xl border border-[#B9F044]/40 bg-[#B9F044]/15 px-2.5 py-1.5 text-xs font-extrabold text-[#2F6F11] hover:bg-[#B9F044] hover:text-[#0B1F17] transition" title="1-Click Invite to Speed Arena">
                 🏎️ Race
@@ -1604,11 +1636,12 @@
         }
       }
 
-      // Sort by XP descending, then Credits descending
+      // Keep the dashboard leaderboard aligned with ranking.html.
       displayList.sort((a, b) => {
-        const xpDiff = (Number(b.xp) || 0) - (Number(a.xp) || 0);
-        if (xpDiff !== 0) return xpDiff;
-        return (Number(b.credits) || 0) - (Number(a.credits) || 0);
+        const scoreA = window.calculateLeaderboardScore ? window.calculateLeaderboardScore(a) : (Number(a.rr) || 1000);
+        const scoreB = window.calculateLeaderboardScore ? window.calculateLeaderboardScore(b) : (Number(b.rr) || 1000);
+        if (scoreB !== scoreA) return scoreB - scoreA;
+        return String(a.id || a.full_name).localeCompare(String(b.id || b.full_name));
       });
 
       if (displayList.length === 0) {
@@ -1630,6 +1663,7 @@
         );
         const rankMedal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : `${index + 1}`));
         const initials = (row.full_name || 'U').split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase() || 'U';
+        const rr = Number(row.rr) || 1000;
         const credits = Number(row.credits) || 0;
         const xp = Number(row.xp) || 0;
 
@@ -1647,11 +1681,11 @@
               <p class="truncate text-[10px] text-slate-400">${escapeHtml(row.department || 'CSE')}${row.role === 'mentor' ? ' · Mentor' : ''}</p>
             </div>
             <div class="text-right flex items-center gap-1.5">
-              <span class="inline-flex items-center gap-0.5 rounded-full bg-amber-50 border border-amber-200/70 px-2 py-0.5 text-[10px] font-black text-amber-700">
-                🪙 ${credits}
-              </span>
               <span class="inline-flex items-center rounded-full bg-[#F4FBEA] border border-[#B9F044]/40 px-2 py-0.5 text-[10px] font-black text-[#2F6F11]">
-                ⚡ ${xp} XP
+                🏆 ${rr} RR
+              </span>
+              <span class="hidden sm:inline-flex items-center gap-0.5 rounded-full bg-amber-50 border border-amber-200/70 px-2 py-0.5 text-[10px] font-black text-amber-700">
+                🪙 ${credits} · ⚡ ${xp}
               </span>
             </div>
           </div>
@@ -2462,6 +2496,16 @@
         });
       }
 
+      if (window.GyanSetuAuth?.recordUserActivity) {
+        window.GyanSetuAuth.recordUserActivity(currentUserId, {
+          type: 'NOTE_CONTRIBUTION',
+          subject: subject,
+          title: title,
+          xp: 25,
+          credits: 10
+        });
+      }
+
       renderNotesGrid();
 
       if (res.success && currentProfile) {
@@ -2612,6 +2656,76 @@
       await loadDashboard();
     }
 
+    function openProfileEditor() {
+      closeProfileDropdown();
+      const profile = currentProfile || {};
+      const fields = {
+        'profile-full-name': profile.full_name || '',
+        'profile-department': profile.department || '',
+        'profile-year': profile.year || '',
+        'profile-college': profile.college || '',
+        'profile-country': profile.country || 'India',
+        'profile-state': profile.state || '',
+        'profile-city': profile.city || '',
+        'profile-availability': profile.availability || 'flexible',
+        'profile-skills': profile.skills || '',
+        'profile-bio': profile.bio || ''
+      };
+      Object.keys(fields).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = fields[id];
+      });
+      document.getElementById('profile-editor-feedback')?.classList.add('hidden');
+      document.getElementById('profile-editor-modal')?.classList.replace('hidden', 'flex');
+      lucide.createIcons();
+    }
+
+    function closeProfileEditor() {
+      document.getElementById('profile-editor-modal')?.classList.replace('flex', 'hidden');
+    }
+
+    document.getElementById('profile-editor-form')?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!currentUserId || !window.GyanSetuAuth?.updateProfile) {
+        showToast('Please sign in before editing your profile.', 'error');
+        return;
+      }
+
+      const get = id => document.getElementById(id)?.value.trim() || '';
+      const updates = {
+        full_name: get('profile-full-name'),
+        department: get('profile-department'),
+        year: get('profile-year'),
+        college: get('profile-college'),
+        country: get('profile-country'),
+        state: get('profile-state'),
+        city: get('profile-city'),
+        availability: get('profile-availability'),
+        skills: get('profile-skills'),
+        bio: get('profile-bio')
+      };
+      const feedback = document.getElementById('profile-editor-feedback');
+      const button = document.getElementById('profile-save-btn');
+      button.disabled = true;
+      button.textContent = 'Saving...';
+      const result = await window.GyanSetuAuth.updateProfile(currentUserId, updates);
+      if (!result.success) {
+        feedback.textContent = result.error || 'Could not save your profile.';
+        feedback.className = 'text-xs font-bold text-red-600 sm:col-span-2';
+        button.disabled = false;
+        button.textContent = 'Save Profile';
+        return;
+      }
+
+      currentProfile = { ...(currentProfile || {}), ...updates };
+      renderUser(currentProfile, currentProfile.email);
+      closeProfileEditor();
+      showToast('Profile updated. Smart Match and leaderboard filters are now personalized.');
+      await loadDashboard();
+      button.disabled = false;
+      button.textContent = 'Save Profile';
+    });
+
     async function loadDashboard() {
       if (new URLSearchParams(window.location.search).get('demo') === '1' || sessionStorage.getItem('gyansetu_demo_mode') === 'true') {
         renderDemoDashboard();
@@ -2735,11 +2849,12 @@
           }
         }
 
-        // Sort by XP descending, then Credits descending
+        // Match the full ranking page's combined leaderboard score.
         leaderboard = allStudents.sort((a, b) => {
-          const xpDiff = (Number(b.xp) || 0) - (Number(a.xp) || 0);
-          if (xpDiff !== 0) return xpDiff;
-          return (Number(b.credits) || 0) - (Number(a.credits) || 0);
+          const scoreA = window.calculateLeaderboardScore ? window.calculateLeaderboardScore(a) : (Number(a.rr) || 1000);
+          const scoreB = window.calculateLeaderboardScore ? window.calculateLeaderboardScore(b) : (Number(b.rr) || 1000);
+          if (scoreB !== scoreA) return scoreB - scoreA;
+          return String(a.id || a.full_name).localeCompare(String(b.id || b.full_name));
         }).slice(0, 10);
 
         renderLeaderboard(leaderboard);
@@ -2873,7 +2988,13 @@
         event.preventDefault();
         this.classList.add('nav-transitioning');
         pageTransition.classList.add('is-visible');
-        window.setTimeout(() => { window.location.href = this.href; }, 280);
+        window.setTimeout(() => { window.location.href = this.href; }, 100);
+      });
+    });
+    window.addEventListener('pageshow', () => {
+      pageTransition?.classList.remove('is-visible');
+      document.querySelectorAll('.sidebar-link.nav-transitioning').forEach(link => {
+        link.classList.remove('nav-transitioning');
       });
     });
 

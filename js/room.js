@@ -209,7 +209,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     channel.on('presence', { event: 'join' }, ({ newPresences }) => {
-      newPresences.forEach(p => appendSystemMsg(`${p.name || 'Someone'} joined the room`));
+      newPresences.forEach(p => {
+        appendSystemMsg(`${p.name || 'Someone'} joined the room`);
+        // Tell a participant who joined the room later that this client is
+        // already in voice, so they can establish the WebRTC connection.
+        if (inVoiceCall && p.id) {
+          broadcast('voice-signal', {
+            action: 'voice-join',
+            from: myId,
+            name: myName,
+            to: p.id
+          });
+        }
+      });
     });
 
     channel.on('presence', { event: 'leave' }, ({ leftPresences }) => {
@@ -994,10 +1006,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function toggleVoiceMute() {
     if (!inVoiceCall || !localVoiceStream) return;
+    const audioTracks = localVoiceStream.getAudioTracks();
+    if (!audioTracks.length) {
+      showToast('⚠️ No microphone track is available');
+      return;
+    }
+
     isMicMuted = !isMicMuted;
-    localVoiceStream.getAudioTracks().forEach(track => {
-      track.enabled = !isMicMuted;
-    });
+    audioTracks.forEach(track => { track.enabled = !isMicMuted; });
     updateMicButtonUI();
     showToast(isMicMuted ? '🔇 Microphone muted' : '🎙️ Microphone active');
     if (channel) {
@@ -1154,6 +1170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function handleVoiceSignal(payload) {
     if (!payload || payload.from === myId) return;
+    if (payload.to && payload.to !== myId) return;
 
     if (payload.action === 'voice-join') {
       if (inVoiceCall) {
@@ -1168,9 +1185,6 @@ document.addEventListener('DOMContentLoaded', () => {
       appendSystemMsg('A peer left voice');
       return;
     }
-
-    // Direct peer-to-peer messages require to === myId
-    if (payload.to !== myId) return;
 
     if (payload.action === 'offer') {
       if (inVoiceCall) {
