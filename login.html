@@ -11,6 +11,7 @@
   <script src="js/tailwind.config.js"></script>
   <link rel="stylesheet" href="css/style.css" />
   <script src="js/demo-data.js"></script>
+  <script src="js/curriculum-catalog.js"></script>
   <style>
     .tab-active { background:#0B1F17; color:#B9F044; }
     .tab-inactive { background:transparent; color:#64748B; }
@@ -212,8 +213,15 @@
               <input id="signup-email" type="email" placeholder="you@college.edu" class="input-field" required />
             </div>
             <div>
-              <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Department & Year</label>
-              <input id="signup-dept" type="text" placeholder="e.g. CSE, 2nd Year" class="input-field" />
+              <label for="signup-track" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Department / course</label>
+              <select id="signup-track" class="input-field" required>
+                <option value="btech-cse">💻 B.Tech CSE</option>
+                <option value="bjmc">🎙️ BJMC / Mass Communication</option>
+                <option value="management">📊 Management / BBA / MBA</option>
+                <option value="jee">🎯 JEE Preparation</option>
+                <option value="gate">🏛️ GATE Preparation</option>
+              </select>
+              <p class="mt-1 text-[10px] text-slate-400">This controls your subjects, study notes, challenges, and Arena topics.</p>
             </div>
             <div>
               <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
@@ -416,7 +424,8 @@
       const form      = e.target;
       const firstName = (document.getElementById('signup-firstname')?.value || '').trim();
       const lastName  = (document.getElementById('signup-lastname')?.value || '').trim();
-      const dept      = (document.getElementById('signup-dept')?.value || 'General').trim();
+      const studyTrack = document.getElementById('signup-track')?.value || 'btech-cse';
+      const dept      = window.GyanSetuCurriculum?.getTrack(studyTrack)?.name || 'B.Tech CSE';
       const email     = (document.getElementById('signup-email')?.value || '').trim();
       const pass      = (document.getElementById('signup-password')?.value || '');
       const role      = (form.querySelector('input[name=role]:checked')?.value || 'learner');
@@ -435,7 +444,8 @@
           password: pass,
           fullName: firstName + ' ' + lastName,
           department: dept,
-          role: role
+          role: role,
+          studyTrack: studyTrack
         });
 
         if (res.success) {
@@ -467,4 +477,3 @@
   </script>
 </body>
 </html>
-

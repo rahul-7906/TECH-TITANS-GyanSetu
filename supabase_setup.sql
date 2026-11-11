@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   department text DEFAULT 'General',
   year text DEFAULT '3rd Year',
   role text DEFAULT 'learner',
+  study_track text DEFAULT 'btech-cse',
   credits integer DEFAULT 100,
   xp integer DEFAULT 50,
   streak integer DEFAULT 1,
@@ -58,6 +59,7 @@ BEGIN
   ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS department text DEFAULT 'General';
   ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS year text DEFAULT '3rd Year';
   ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role text DEFAULT 'learner';
+  ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS study_track text DEFAULT 'btech-cse';
   ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS credits integer DEFAULT 100;
   ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS xp integer DEFAULT 50;
   ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS streak integer DEFAULT 1;
@@ -274,9 +276,9 @@ BEGIN
   -- 1. Create profile row (isolated block so failure here never prevents user creation)
   BEGIN
     INSERT INTO public.profiles (
-      id, email, full_name, department, role, credits, xp, streak, rr, highest_rr, welcome_bonus_given
+      id, email, full_name, department, role, study_track, credits, xp, streak, rr, highest_rr, welcome_bonus_given
     ) VALUES (
-      new.id, new.email, v_name, v_dept, v_role, 100, 50, 1, 1000, 1000, true
+      new.id, new.email, v_name, v_dept, v_role, COALESCE(new.raw_user_meta_data->>'study_track', 'btech-cse'), 100, 50, 1, 1000, 1000, true
     )
     ON CONFLICT (id) DO UPDATE SET
       email = EXCLUDED.email,
@@ -389,6 +391,41 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_rr_ledger_idempotency
 CREATE INDEX IF NOT EXISTS idx_profiles_rr_desc ON public.profiles(rr DESC);
 CREATE INDEX IF NOT EXISTS idx_profiles_location ON public.profiles(country, state, city, college);
 CREATE INDEX IF NOT EXISTS idx_rr_ledger_user ON public.rr_ledger(user_id, created_at DESC);
+
+-- ── 13. CONTENT HUB ────────────────────────────────────────────────
+-- Stores metadata and links to approved educational sources. GyanSetu does
+-- not copy third-party course files or bypass provider licensing.
+CREATE TABLE IF NOT EXISTS public.content_resources (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  description text DEFAULT '',
+  source_url text NOT NULL,
+  normalized_url text NOT NULL UNIQUE,
+  provider text NOT NULL,
+  track text NOT NULL DEFAULT 'btech-cse',
+  subject text NOT NULL DEFAULT 'General',
+  topic text DEFAULT '',
+  content_type text NOT NULL DEFAULT 'article',
+  thumbnail_url text DEFAULT '',
+  license text DEFAULT '',
+  external_id text DEFAULT '',
+  content_hash text DEFAULT '',
+  status text NOT NULL DEFAULT 'pending',
+  published_at timestamptz,
+  imported_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.content_resources ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Published resources are public" ON public.content_resources;
+CREATE POLICY "Published resources are public"
+  ON public.content_resources FOR SELECT
+  USING (status = 'published');
+
+CREATE INDEX IF NOT EXISTS idx_content_resources_track
+  ON public.content_resources(track, subject, status);
+CREATE INDEX IF NOT EXISTS idx_content_resources_provider
+  ON public.content_resources(provider, status);
 
 -- Enable RLS & policies for rr_ledger
 ALTER TABLE public.rr_ledger ENABLE ROW LEVEL SECURITY;

@@ -128,6 +128,128 @@
       badge: 'Tech Pioneers & GK',
       desc: 'Computing Pioneers, Tech Milestones, ISRO Space Missions & Inventions',
       mode: 'quiz'
+    },
+
+    // ── Career tracks ──
+    'communication-theory': {
+      group: 'bjmc',
+      name: 'Communication Theory',
+      icon: '🎙️',
+      badge: 'BJMC',
+      desc: 'Communication models, media effects, culture and society',
+      mode: 'quiz'
+    },
+    'journalism': {
+      group: 'bjmc',
+      name: 'Journalism & Reporting',
+      icon: '📰',
+      badge: 'BJMC',
+      desc: 'News values, reporting, interviewing and media ethics',
+      mode: 'quiz'
+    },
+    'writing-editing': {
+      group: 'bjmc',
+      name: 'Writing & Editing',
+      icon: '✍️',
+      badge: 'BJMC',
+      desc: 'Copy editing, headlines, scripts and storytelling',
+      mode: 'quiz'
+    },
+    'digital-media': {
+      group: 'bjmc',
+      name: 'Digital & Social Media',
+      icon: '📱',
+      badge: 'BJMC',
+      desc: 'Content strategy, platforms, analytics and SEO',
+      mode: 'quiz'
+    },
+    'advertising-pr': {
+      group: 'bjmc',
+      name: 'Advertising & Public Relations',
+      icon: '📣',
+      badge: 'BJMC',
+      desc: 'Campaigns, branding, public relations and persuasion',
+      mode: 'quiz'
+    },
+    'media-law': {
+      group: 'bjmc',
+      name: 'Media Law & Ethics',
+      icon: '⚖️',
+      badge: 'BJMC',
+      desc: 'Press law, copyright, privacy and professional ethics',
+      mode: 'quiz'
+    },
+    'media-production': {
+      group: 'bjmc',
+      name: 'Film, TV & Production',
+      icon: '🎬',
+      badge: 'BJMC',
+      desc: 'Production planning, visual language and broadcast',
+      mode: 'quiz'
+    },
+    'management': {
+      group: 'management',
+      name: 'Principles of Management',
+      icon: '📊',
+      badge: 'Management',
+      desc: 'Planning, organizing, leadership and control',
+      mode: 'quiz'
+    },
+    'marketing': {
+      group: 'management',
+      name: 'Marketing',
+      icon: '📈',
+      badge: 'Management',
+      desc: 'Consumer behavior, branding, research and digital marketing',
+      mode: 'quiz'
+    },
+    'finance': {
+      group: 'management',
+      name: 'Finance & Accounting',
+      icon: '💰',
+      badge: 'Management',
+      desc: 'Statements, ratios, budgeting and corporate finance',
+      mode: 'quiz'
+    },
+    'economics': {
+      group: 'management',
+      name: 'Business Economics',
+      icon: '📉',
+      badge: 'Management',
+      desc: 'Demand, markets, pricing and macroeconomic basics',
+      mode: 'quiz'
+    },
+    'human-resources': {
+      group: 'management',
+      name: 'Human Resources',
+      icon: '🤝',
+      badge: 'Management',
+      desc: 'Recruitment, performance, compensation and culture',
+      mode: 'quiz'
+    },
+    'operations': {
+      group: 'management',
+      name: 'Operations & Supply Chain',
+      icon: '🚚',
+      badge: 'Management',
+      desc: 'Process design, quality, inventory and logistics',
+      mode: 'quiz'
+    },
+    'business-analytics': {
+      group: 'management',
+      name: 'Business Analytics',
+      icon: '📊',
+      badge: 'Management',
+      desc: 'Excel, statistics, dashboards and decisions',
+      mode: 'quiz'
+    },
+    'entrepreneurship': {
+      group: 'management',
+      name: 'Entrepreneurship',
+      icon: '🚀',
+      badge: 'Management',
+      desc: 'Validation, business models, funding and pitching',
+      mode: 'quiz'
     }
   };
 

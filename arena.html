@@ -877,6 +877,7 @@
   <!-- ── 7. SCRIPTS ── -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/curriculum-catalog.js"></script>
   <script src="js/gyansetu-auth.js"></script>
   <script src="js/question-engine.js"></script>
   <script src="js/demo-data.js"></script>
@@ -1195,6 +1196,23 @@
         alert('Match is currently in progress! Change the topic after this race concludes.');
         return;
       }
+
+      function renderTrackTopics(studyTrack) {
+        const catalog = window.GyanSetuCurriculum;
+        const select = document.getElementById('arena-topic-select');
+        if (!catalog || !select) return;
+        const track = catalog.getTrack(studyTrack);
+        const group = document.createElement('optgroup');
+        group.label = `${track.icon} ${track.name} Path`;
+        catalog.getSubjects(studyTrack).forEach(function (subject) {
+          if (!QUIZ_TOPICS[subject.arenaTopic]) return;
+          const option = document.createElement('option');
+          option.value = subject.arenaTopic;
+          option.textContent = `${track.icon} ${subject.name}`;
+          group.appendChild(option);
+        });
+        if (group.children.length) select.insertBefore(group, select.firstChild);
+      }
       if (!QUIZ_TOPICS[topicKey]) return;
 
       currentTopic = topicKey;
@@ -1282,6 +1300,8 @@
             if (raw) prof = JSON.parse(raw);
           } catch (e) {}
         }
+
+        renderTrackTopics(prof?.study_track);
 
         if (authUser) {
           myUser = authUser;

@@ -104,6 +104,9 @@
       // 2. If Supabase user exists, fetch or construct their profile
       if (sbUser) {
         var profile = await this.fetchProfile(sbUser.id);
+        if (profile && window.GyanSetuCurriculum) {
+          profile.study_track = window.GyanSetuCurriculum.inferTrack(profile.study_track || profile.department);
+        }
         if (!profile) {
           profile = {
             id: sbUser.id,
@@ -111,6 +114,7 @@
             full_name: sbUser.user_metadata?.full_name || sbUser.email.split('@')[0],
             department: sbUser.user_metadata?.department || 'General',
             role: sbUser.user_metadata?.role || 'learner',
+            study_track: sbUser.user_metadata?.study_track || 'btech-cse',
             credits: 100,
             xp: 50,
             rr: 1000,
@@ -155,7 +159,7 @@
         return { success: false, error: 'Invalid profile update.' };
       }
 
-      var allowed = ['full_name', 'department', 'year', 'country', 'state', 'city', 'college', 'skills', 'bio', 'availability'];
+      var allowed = ['full_name', 'department', 'year', 'country', 'state', 'city', 'college', 'skills', 'bio', 'availability', 'study_track'];
       var clean = {};
       allowed.forEach(function (key) {
         if (updates[key] != null) clean[key] = String(updates[key]).trim();
@@ -229,6 +233,7 @@
           };
           if (profile.email) trimmed.email = profile.email;
           if (profile.role) trimmed.role = profile.role;
+          if (profile.study_track) trimmed.study_track = profile.study_track;
           if (profile.credits != null) trimmed.credits = profile.credits;
 
           var res2 = await sb.from('profiles').upsert(trimmed, { onConflict: 'id' });
@@ -302,6 +307,9 @@
       var fullName = (params.fullName || email.split('@')[0]).trim();
       var department = (params.department || 'General').trim();
       var role = params.role || 'learner';
+      var studyTrack = window.GyanSetuCurriculum
+        ? window.GyanSetuCurriculum.normalizeTrack(params.studyTrack)
+        : (params.studyTrack || 'btech-cse');
 
       if (!email || !password) {
         return { success: false, error: 'Email and password are required.' };
@@ -318,6 +326,7 @@
         full_name: fullName,
         department: department,
         role: role,
+        study_track: studyTrack,
         credits: 100,
         xp: 50,
         rr: 1000,
@@ -340,7 +349,8 @@
               data: {
                 full_name: fullName,
                 department: department,
-                role: role
+                role: role,
+                study_track: studyTrack
               },
               emailRedirectTo: window.location.origin + '/dashboard.html'
             }
@@ -454,6 +464,7 @@
                 full_name: data.user.user_metadata?.full_name || email.split('@')[0],
                 department: data.user.user_metadata?.department || 'General',
                 role: data.user.user_metadata?.role || 'learner',
+                study_track: data.user.user_metadata?.study_track || 'btech-cse',
                 credits: 100,
                 xp: 50,
                 rr: 1000,
@@ -574,6 +585,7 @@
             full_name: p.full_name || (p.email ? p.email.split('@')[0] : 'Campus Student'),
             department: p.department || 'Computer Science',
             role: p.role || 'learner',
+            study_track: window.GyanSetuCurriculum ? window.GyanSetuCurriculum.normalizeTrack(p.study_track) : (p.study_track || 'btech-cse'),
             credits: Number(p.credits) || 100,
             xp: Number(p.xp) || 50,
             rr: p.rr != null && Number.isFinite(Number(p.rr)) ? Number(p.rr) : 1000,
@@ -746,15 +758,27 @@
       ledger = ledger || [];
       var activities = this.getUserActivities(userId);
 
-      var subjects = [
-        { key: 'DSA', name: 'DSA', icon: '🧩', target: 2, actionText: 'Solve Problem', actionUrl: '#card-chal-dsa' },
-        { key: 'Python', name: 'Python', icon: '🐍', target: 2, actionText: 'Race Arena', actionUrl: 'arena.html?topic=lang-python' },
-        { key: 'Web Dev', name: 'Web Dev', icon: '🎨', target: 2, actionText: 'System Design', actionUrl: '#card-chal-sys' },
-        { key: 'DBMS', name: 'DBMS', icon: '🗃️', target: 2, actionText: 'Unlock Cheatsheet', actionUrl: '#section-notes' },
-        { key: 'Operating Systems', name: 'Operating Systems', icon: '💻', target: 2, actionText: 'Kernel Notes', actionUrl: '#section-notes' },
-        { key: 'Machine Learning', name: 'Machine Learning', icon: '🤖', target: 2, actionText: 'Arena Sprint', actionUrl: 'arena.html?topic=math' },
-        { key: 'Computer Networks', name: 'Computer Networks', icon: '🌐', target: 2, actionText: 'Arena Race', actionUrl: 'arena.html?topic=cs-general' }
-      ];
+      var track = window.GyanSetuCurriculum
+        ? window.GyanSetuCurriculum.getTrack(
+          JSON.parse(localStorage.getItem(STORAGE_KEYS.ACTIVE_PROFILE) || '{}').study_track
+        )
+        : null;
+      var iconMap = { 'Physics': '⚛️', 'Chemistry': '🧪', 'Mathematics': '📐', 'Marketing': '📈', 'Finance & Accounting': '💰', 'Journalism & Reporting': '📰', 'Digital & Social Media': '📱' };
+      var subjects = track
+        ? track.subjects.map(function (item) {
+          return {
+            key: item[0],
+            name: item[0],
+            icon: iconMap[item[0]] || track.icon,
+            target: 2,
+            actionText: 'Practice in Arena',
+            actionUrl: 'arena.html?topic=' + encodeURIComponent(item[2])
+          };
+        })
+        : [
+          { key: 'DSA', name: 'DSA', icon: '🧩', target: 2, actionText: 'Solve Problem', actionUrl: '#card-chal-dsa' },
+          { key: 'Python', name: 'Python', icon: '🐍', target: 2, actionText: 'Race Arena', actionUrl: 'arena.html?topic=lang-python' }
+        ];
 
       return subjects.map(function (sub) {
         var completedCount = 0;
@@ -789,7 +813,7 @@
 
         // Check recorded activity log
         activities.forEach(function (act) {
-          if (act.subject === sub.key || act.subject === sub.name) {
+          if (act.subject === sub.key || act.subject === sub.name || String(act.subject || '').toLowerCase().includes(String(sub.name).toLowerCase())) {
             completedCount++;
             if (act.title) details.push(act.title);
           }

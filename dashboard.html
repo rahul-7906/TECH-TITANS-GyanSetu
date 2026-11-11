@@ -553,7 +553,7 @@
           </div>
           <form id="profile-editor-form" class="grid gap-4 sm:grid-cols-2">
             <label class="text-xs font-bold text-slate-600">Full name<input id="profile-full-name" required maxlength="80" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
-            <label class="text-xs font-bold text-slate-600">Department / course<input id="profile-department" maxlength="80" placeholder="Computer Science & Engineering" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
+            <label class="text-xs font-bold text-slate-600">Department / course<select id="profile-track" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]"><option value="btech-cse">💻 B.Tech CSE</option><option value="bjmc">🎙️ BJMC / Mass Communication</option><option value="management">📊 Management / BBA / MBA</option><option value="jee">🎯 JEE Preparation</option><option value="gate">🏛️ GATE Preparation</option></select></label>
             <label class="text-xs font-bold text-slate-600">Year of study<select id="profile-year" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]"><option value="">Select year</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>Postgraduate</option><option>Alumni</option></select></label>
             <label class="text-xs font-bold text-slate-600">College / university<input id="profile-college" maxlength="120" placeholder="Your college or university" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
             <label class="text-xs font-bold text-slate-600">Country<input id="profile-country" maxlength="60" placeholder="India" class="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#2F6F11]" /></label>
@@ -641,6 +641,18 @@
               </a>
             </div>
           </div>
+        </section>
+
+        <!-- ===== TRACK CURRICULUM ===== -->
+        <section id="curriculum-section" class="mb-8">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p class="section-title mb-0">Your Track Curriculum</p>
+              <p class="text-xs text-slate-500">A subject-wise path with one clear home for each topic.</p>
+            </div>
+            <span id="curriculum-track-badge" class="inline-flex items-center gap-1.5 rounded-full bg-[#0B1F17] px-3 py-1 text-[11px] font-extrabold text-[#B9F044]"></span>
+          </div>
+          <div id="curriculum-subject-grid" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"></div>
         </section>
 
         <!-- Quick action bar -->
@@ -946,13 +958,7 @@
           </div>
 
           <!-- Challenge Category Filter Chips -->
-          <div class="flex flex-wrap items-center gap-1.5 mb-4" id="challenge-filters">
-            <button class="tab-btn active text-xs py-1.5 px-3" onclick="filterChallenges('all', this)">All Challenges</button>
-            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterChallenges('dsa', this)">DSA &amp; Algos</button>
-            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterChallenges('sys', this)">Core Systems &amp; OS</button>
-            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterChallenges('db', this)">DBMS &amp; Networks</button>
-            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterChallenges('ai', this)">AI, ML &amp; Python</button>
-          </div>
+          <div class="flex flex-wrap items-center gap-1.5 mb-4" id="challenge-filters"></div>
 
           <div class="grid gap-5 lg:grid-cols-3">
             <!-- Dynamic Challenges Grid (2 Columns) -->
@@ -1009,17 +1015,26 @@
           </div>
 
           <!-- Notes Filter Chips -->
-          <div class="flex flex-wrap items-center gap-1.5 mb-4" id="note-filters">
-            <button class="tab-btn active text-xs py-1.5 px-3" onclick="filterNotes('all', this)">All Notes</button>
-            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterNotes('Computer Science', this)">Computer Science</button>
-            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterNotes('Core Systems', this)">Core Systems</button>
-            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterNotes('Databases', this)">Databases</button>
-            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterNotes('Networks', this)">Networks</button>
-            <button class="tab-btn text-xs py-1.5 px-3" onclick="filterNotes('AI & ML', this)">AI &amp; ML</button>
-          </div>
+          <div class="flex flex-wrap items-center gap-1.5 mb-4" id="note-filters"></div>
 
           <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" id="notes-grid">
             <!-- Rendered dynamically by renderNotesGrid() -->
+          </div>
+        </section>
+
+        <!-- ===== AUTOMATIC CONTENT HUB ===== -->
+        <section id="content-hub" class="mb-8">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="section-title mb-0">Learning Resource Hub</p>
+              <p class="text-xs text-slate-500">Fresh resources from approved educational sources, organized for your track.</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F4FBEA] border border-[#B9F044]/40 px-3 py-1 text-[11px] font-extrabold text-[#2F6F11]">
+              <span class="h-2 w-2 rounded-full bg-[#2F6F11] animate-pulse"></span> Curated &amp; duplicate-safe
+            </span>
+          </div>
+          <div id="content-resource-grid" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <p class="text-xs text-slate-400">Loading approved resources…</p>
           </div>
         </section>
 
@@ -1187,6 +1202,7 @@
   <!-- Supabase SDK & GyanSetu Auth Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/curriculum-catalog.js"></script>
   <script src="js/gyansetu-auth.js"></script>
   <script src="js/credits-config.js"></script>
   <script src="js/rr-config.js"></script>
@@ -1513,6 +1529,69 @@
           </div>
         `;
       }).join('');
+    }
+
+    function renderCurriculum(profile) {
+      const catalog = window.GyanSetuCurriculum;
+      const grid = document.getElementById('curriculum-subject-grid');
+      const badge = document.getElementById('curriculum-track-badge');
+      if (!catalog || !grid) return;
+
+      const track = catalog.getTrack(profile?.study_track);
+      if (badge) badge.textContent = `${track.icon} ${track.name}`;
+      grid.innerHTML = catalog.getSubjects(profile?.study_track).map((subject, index) => `
+        <article class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm transition hover:border-[#B9F044] hover:shadow-md">
+          <div class="flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4FBEA] text-sm font-black text-[#2F6F11]">${index + 1}</span>
+            <div class="min-w-0">
+              <h3 class="text-sm font-extrabold text-[#0B1F17]">${escapeHtml(subject.name)}</h3>
+              <p class="mt-1 text-[11px] leading-5 text-slate-500">${escapeHtml(subject.topics)}</p>
+            </div>
+          </div>
+          <a href="arena.html?topic=${encodeURIComponent(subject.arenaTopic)}" class="mt-3 inline-flex items-center gap-1 text-[11px] font-extrabold text-[#2F6F11] hover:underline">
+            Practice in Arena &rarr;
+          </a>
+        </article>
+      `).join('');
+    }
+
+    async function renderContentHub(profile) {
+      const container = document.getElementById('content-resource-grid');
+      if (!container || !sbClient) return;
+      const track = window.GyanSetuCurriculum
+        ? window.GyanSetuCurriculum.normalizeTrack(profile?.study_track)
+        : (profile?.study_track || 'btech-cse');
+      try {
+        const { data, error } = await sbClient
+          .from('content_resources')
+          .select('id,title,description,source_url,provider,subject,content_type,thumbnail_url')
+          .eq('track', track)
+          .eq('status', 'published')
+          .order('published_at', { ascending: false })
+          .limit(12);
+        if (error) throw error;
+        if (!data || data.length === 0) {
+          container.innerHTML = '<p class="text-xs text-slate-400">New resources are being curated for this track.</p>';
+          return;
+        }
+        container.innerHTML = data.map(resource => `
+          <article class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm transition hover:border-[#B9F044] hover:shadow-md">
+            ${resource.thumbnail_url ? `<img src="${escapeHtml(resource.thumbnail_url)}" alt="" class="h-28 w-full object-cover" loading="lazy">` : ''}
+            <div class="p-4">
+              <div class="flex items-center justify-between gap-2">
+                <span class="rounded-full bg-[#F4FBEA] px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#2F6F11]">${escapeHtml(resource.content_type || 'resource')}</span>
+                <span class="text-[10px] font-bold text-slate-400">${escapeHtml(resource.provider || 'Verified source')}</span>
+              </div>
+              <h3 class="mt-2 text-sm font-extrabold text-[#0B1F17] line-clamp-2">${escapeHtml(resource.title)}</h3>
+              <p class="mt-1 text-[11px] leading-5 text-slate-500 line-clamp-3">${escapeHtml(resource.description || resource.subject || '')}</p>
+              <a href="${escapeHtml(resource.source_url)}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex text-[11px] font-extrabold text-[#2F6F11] hover:underline">Open original resource &rarr;</a>
+            </div>
+          </article>
+        `).join('');
+      } catch (error) {
+        console.warn('Content hub could not load resources:', error);
+        container.innerHTML = '<p class="text-xs text-slate-400">The resource hub is temporarily unavailable.</p>';
+      }
     }
 
     function handleSubjectAction(subjectKey, actionUrl) {
@@ -1881,6 +1960,7 @@
     let activeChallengeType = null;
     let currentChallengeFilter = 'all';
     let currentNoteFilter = 'all';
+    let currentNoteTrack = null;
 
     const CHALLENGES = {
       dsa: {
@@ -2029,6 +2109,25 @@
       }
     };
 
+    const TRACK_CHALLENGES = {
+      bjmc: [
+        { id: 'bjmc-news-values', category: 'bjmc', domainBadge: 'BJMC • Journalism', domainColor: 'bg-rose-50 text-rose-700 border-rose-200', title: 'News Value Check', points: 10, rr: 20, summary: 'Identify the strongest news value in a campus story.', question: 'A sudden campus policy affecting every student primarily demonstrates which news value?', options: [{ text: 'Impact', correct: true }, { text: 'Proximity only', correct: false }, { text: 'Rhyme', correct: false }, { text: 'Typography', correct: false }], explanation: 'Impact measures how significantly an event affects people.' },
+        { id: 'bjmc-pr-crisis', category: 'bjmc', domainBadge: 'BJMC • PR', domainColor: 'bg-pink-50 text-pink-700 border-pink-200', title: 'Crisis Communication', points: 10, rr: 20, summary: 'Choose the most responsible first response during a public crisis.', question: 'What should an organization do first after confirming a serious public incident?', options: [{ text: 'Acknowledge verified facts and designate a spokesperson', correct: true }, { text: 'Delete all comments', correct: false }, { text: 'Speculate publicly', correct: false }, { text: 'Blame a junior employee', correct: false }], explanation: 'Fast, factual, accountable communication protects trust.' }
+      ],
+      management: [
+        { id: 'mgmt-market-segmentation', category: 'management', domainBadge: 'Management • Marketing', domainColor: 'bg-orange-50 text-orange-700 border-orange-200', title: 'Market Segmentation', points: 10, rr: 20, summary: 'Select a useful basis for dividing a broad market.', question: 'Which is a valid market segmentation basis?', options: [{ text: 'Demographic, geographic, psychographic or behavioral traits', correct: true }, { text: 'Random guesses only', correct: false }, { text: 'Employee passwords', correct: false }, { text: 'Server uptime', correct: false }], explanation: 'Segmentation groups customers with shared needs or characteristics.' },
+        { id: 'mgmt-break-even', category: 'management', domainBadge: 'Management • Finance', domainColor: 'bg-amber-50 text-amber-700 border-amber-200', title: 'Break-even Analysis', points: 10, rr: 20, summary: 'Understand the point where total revenue equals total cost.', question: 'At the break-even point, a business has:', options: [{ text: 'Zero profit and zero loss', correct: true }, { text: 'Maximum profit', correct: false }, { text: 'No fixed costs', correct: false }, { text: 'No sales', correct: false }], explanation: 'Break-even occurs when contribution exactly covers fixed costs.' }
+      ],
+      jee: [
+        { id: 'jee-physics-energy', category: 'jee', domainBadge: 'JEE • Physics', domainColor: 'bg-sky-50 text-sky-700 border-sky-200', title: 'Work-Energy Principle', points: 10, rr: 20, summary: 'Apply the work-energy theorem to a moving particle.', question: 'The net work done on a particle equals its change in:', options: [{ text: 'Kinetic energy', correct: true }, { text: 'Potential only', correct: false }, { text: 'Mass', correct: false }, { text: 'Charge', correct: false }], explanation: 'The work-energy theorem states W_net = ΔK.' },
+        { id: 'jee-chemistry-mole', category: 'jee', domainBadge: 'JEE • Chemistry', domainColor: 'bg-lime-50 text-lime-700 border-lime-200', title: 'Mole Concept', points: 10, rr: 20, summary: 'Use Avogadro’s number to connect particles and amount of substance.', question: 'One mole of any substance contains approximately:', options: [{ text: '6.022 × 10²³ entities', correct: true }, { text: '9.8 entities', correct: false }, { text: '3.14 entities', correct: false }, { text: '100 entities', correct: false }], explanation: 'Avogadro’s constant defines the number of entities in one mole.' }
+      ],
+      gate: [
+        { id: 'gate-os-deadlock', category: 'gate', domainBadge: 'GATE • Operating Systems', domainColor: 'bg-violet-50 text-violet-700 border-violet-200', title: 'Deadlock Safety', points: 10, rr: 20, summary: 'Recognize the condition that makes a system vulnerable to deadlock.', question: 'Which is not one of the four Coffman conditions?', options: [{ text: 'Preemptive scheduling is mandatory', correct: true }, { text: 'Mutual exclusion', correct: false }, { text: 'Hold and wait', correct: false }, { text: 'Circular wait', correct: false }], explanation: 'The four conditions are mutual exclusion, hold and wait, no preemption, and circular wait.' },
+        { id: 'gate-db-normalization', category: 'gate', domainBadge: 'GATE • DBMS', domainColor: 'bg-yellow-50 text-yellow-700 border-yellow-200', title: 'Functional Dependencies', points: 10, rr: 20, summary: 'Test the core idea behind relational normalization.', question: 'A relation is in 3NF when every non-trivial dependency has a superkey determinant or a prime attribute on the right side.', options: [{ text: 'True', correct: true }, { text: 'False', correct: false }, { text: 'Only for NoSQL', correct: false }, { text: 'Only for graphs', correct: false }], explanation: 'That is the standard 3NF condition.' }
+      ]
+    };
+
     function filterChallenges(cat, btn) {
       currentChallengeFilter = cat;
       document.querySelectorAll('#challenge-filters .tab-btn').forEach(b => b.classList.remove('active'));
@@ -2059,7 +2158,14 @@
         Object.assign(CHALLENGES, stored);
       } catch (e) {}
 
-      const chalList = Object.values(CHALLENGES);
+      const activeTrack = window.GyanSetuCurriculum?.normalizeTrack(currentProfile?.study_track) || 'btech-cse';
+      const trackChallenges = TRACK_CHALLENGES[activeTrack] || [];
+      const baseChallenges = activeTrack === 'btech-cse'
+        ? Object.values(CHALLENGES)
+        : trackChallenges;
+      trackChallenges.forEach(challenge => { CHALLENGES[challenge.id] = challenge; });
+      renderChallengeFilters(baseChallenges);
+      const chalList = baseChallenges;
       const filtered = (currentChallengeFilter === 'all')
         ? chalList
         : chalList.filter(c => c.category === currentChallengeFilter);
@@ -2099,6 +2205,28 @@
           </div>
         `;
       }).join('');
+    }
+
+    function renderChallengeFilters(challenges) {
+      const container = document.getElementById('challenge-filters');
+      if (!container) return;
+      const categories = [...new Set(challenges.map(challenge => challenge.category))];
+      const labels = {
+        dsa: 'DSA & Algorithms',
+        sys: 'Systems & OS',
+        db: 'DBMS & Networks',
+        ai: 'AI, ML & Python',
+        bjmc: 'BJMC Practice',
+        management: 'Management Practice',
+        jee: 'JEE Practice',
+        gate: 'GATE Practice'
+      };
+      if (!categories.includes(currentChallengeFilter)) currentChallengeFilter = 'all';
+      container.innerHTML = ['all', ...categories].map((category, index) => `
+        <button class="tab-btn ${index === 0 || category === currentChallengeFilter ? 'active' : ''} text-xs py-1.5 px-3" onclick="filterChallenges('${category}', this)">
+          ${category === 'all' ? 'All Challenges' : labels[category] || category}
+        </button>
+      `).join('');
     }
 
     function generateFreshChallenge() {
@@ -2274,6 +2402,72 @@
       }
     };
 
+    const TRACK_NOTE_LIBRARY = {
+      bjmc: [
+        ['bjmc-communication', 'Communication Models & Media Effects', 'Communication Theory', 'Lasswell, Shannon-Weaver, gatekeeping, agenda setting and audience effects.', '🎙️'],
+        ['bjmc-reporting', 'Reporting, Sources & News Values', 'Journalism & Reporting', '5W1H, verification, attribution, inverted pyramid and responsible reporting.', '📰'],
+        ['bjmc-writing', 'Headline, Copy Editing & Script Basics', 'Writing & Editing', 'Clarity, active voice, headline writing, scripts and editorial checklists.', '✍️'],
+        ['bjmc-digital', 'Digital Content Strategy', 'Digital & Social Media', 'Audience persona, content pillars, accessibility, analytics and SEO fundamentals.', '📱'],
+        ['bjmc-pr', 'Advertising, Branding & Public Relations', 'Advertising & PR', 'Campaign objectives, message framing, brand identity and PR response planning.', '📣'],
+        ['bjmc-law', 'Media Law, Copyright & Ethics', 'Media Law & Ethics', 'Defamation, privacy, fair use, consent, attribution and verification duties.', '⚖️'],
+        ['bjmc-production', 'Film and Broadcast Production Workflow', 'Film, TV & Production', 'Pre-production, shot planning, continuity, production roles and post-production.', '🎬']
+      ],
+      management: [
+        ['management-principles', 'Management Functions Quick Guide', 'Principles of Management', 'Planning, organizing, staffing, directing and controlling with practical examples.', '📊'],
+        ['management-marketing', 'Marketing Mix & Consumer Journey', 'Marketing', '4Ps/7Ps, segmentation, positioning, funnels and customer discovery.', '📈'],
+        ['management-finance', 'Financial Statements & Ratio Analysis', 'Finance & Accounting', 'Income statement, balance sheet, cash flow and liquidity/profitability ratios.', '💰'],
+        ['management-economics', 'Demand, Supply & Market Structures', 'Business Economics', 'Elasticity, equilibrium, costs, competition and pricing decisions.', '📉'],
+        ['management-hr', 'Recruitment, Performance & Culture', 'Human Resources', 'Job analysis, selection, onboarding, appraisal and psychological safety.', '🤝'],
+        ['management-operations', 'Operations, Quality & Supply Chain', 'Operations & Supply Chain', 'Process mapping, inventory, bottlenecks, quality and logistics.', '🚚'],
+        ['management-analytics', 'Business Analytics Decision Sheet', 'Business Analytics', 'Descriptive statistics, KPIs, dashboards, correlation and decision framing.', '📊'],
+        ['management-startup', 'Startup Validation & Business Models', 'Entrepreneurship', 'Problem interviews, value propositions, unit economics and MVP experiments.', '🚀']
+      ],
+      jee: [
+        ['jee-physics', 'JEE Physics Formula and Error Log', 'Physics', 'Units, vectors, mechanics, electricity, optics and a method for reviewing mistakes.', '⚛️'],
+        ['jee-chemistry', 'JEE Chemistry Reaction and Concept Map', 'Chemistry', 'Mole concept, periodic trends, bonding, organic mechanisms and equilibrium.', '🧪'],
+        ['jee-math', 'JEE Mathematics High-Yield Toolkit', 'Mathematics', 'Algebra, calculus, coordinate geometry, vectors and timed problem selection.', '📐'],
+        ['jee-strategy', 'JEE Mock-Test Strategy', 'JEE Problem Solving', 'Three-pass solving, time allocation, accuracy tracking and spaced revision.', '🎯']
+      ],
+      gate: [
+        ['gate-math', 'GATE Engineering Mathematics Revision', 'GATE Engineering Mathematics', 'Linear algebra, calculus, probability, discrete mathematics and common traps.', '📐'],
+        ['gate-aptitude', 'GATE General Aptitude Workbook', 'GATE Aptitude', 'Verbal logic, quantitative aptitude, data interpretation and time strategy.', '🧩'],
+        ['gate-core', 'GATE CSE Core One-Page Revision', 'GATE CSE Core', 'DSA, OS, DBMS, networks, COA and operating formulas in one map.', '🏛️'],
+        ['gate-toc', 'Automata, Grammars & Computability', 'Theory of Computation', 'DFA/NFA, regular expressions, CFGs, PDA, Turing machines and reductions.', '🔁'],
+        ['gate-compiler', 'Compiler Design Pipeline', 'Compiler Design', 'Lexing, parsing, semantic analysis, intermediate code and optimization.', '⚙️'],
+        ['gate-mock', 'GATE Mock Analysis and Error Log', 'GATE Mock Practice', 'Classify mistakes, revise weak concepts and build a repeat-safe revision cycle.', '📝']
+      ]
+    };
+
+    function getTrackNotes() {
+      const track = window.GyanSetuCurriculum?.normalizeTrack(currentProfile?.study_track) || 'btech-cse';
+      const generated = (TRACK_NOTE_LIBRARY[track] || []).reduce((notes, item) => {
+        notes[item[0]] = {
+          id: item[0],
+          title: item[1],
+          subject: item[2],
+          subjectBadge: 'bg-emerald-100 text-emerald-800',
+          summary: item[3],
+          author: 'GyanSetu Academic Starter Library',
+          cost: 5,
+          body: `<div class="space-y-3"><h4 class="font-extrabold text-[#0B1F17] text-sm">${item[4]} ${item[1]}</h4><p>${item[3]}</p><p><strong>Study method:</strong> Read the concept, solve one related Arena challenge, explain it to a peer, and record one mistake or insight in your revision log.</p><p><strong>Source discipline:</strong> Use official textbooks, university notes, and linked open resources. Add attribution when contributing expanded notes.</p></div>`
+        };
+        return notes;
+      }, {});
+      return track === 'btech-cse' ? { ...NOTES_CONTENT, ...generated } : generated;
+    }
+
+    function renderNoteFilters(notes) {
+      const container = document.getElementById('note-filters');
+      if (!container) return;
+      const subjects = [...new Set(Object.values(notes).map(note => note.subject))];
+      container.innerHTML = ['all', ...subjects].map((subject, index) => `
+        <button class="tab-btn ${index === 0 ? 'active' : ''} text-xs py-1.5 px-3" onclick="filterNotes('${escapeHtml(subject)}', this)">
+          ${index === 0 ? 'All Subjects' : escapeHtml(subject)}
+        </button>
+      `).join('');
+      currentNoteFilter = 'all';
+    }
+
     function filterNotes(cat, btn) {
       currentNoteFilter = cat;
       document.querySelectorAll('#note-filters .tab-btn').forEach(b => b.classList.remove('active'));
@@ -2292,7 +2486,12 @@
       if (!grid) return;
 
       // Merge community submitted notes from localStorage
-      let allNotes = { ...NOTES_CONTENT };
+      let allNotes = getTrackNotes();
+      const activeTrack = window.GyanSetuCurriculum?.normalizeTrack(currentProfile?.study_track) || 'btech-cse';
+      if (currentNoteTrack !== activeTrack) {
+        currentNoteTrack = activeTrack;
+        renderNoteFilters(allNotes);
+      }
       try {
         const communityNotes = JSON.parse(localStorage.getItem('gyansetu_campus_notes') || '{}');
         Object.assign(allNotes, communityNotes);
@@ -2552,7 +2751,7 @@
     }
 
     function openNoteViewModal(noteId, title) {
-      let allNotes = { ...NOTES_CONTENT };
+      let allNotes = getTrackNotes();
       try {
         const communityNotes = JSON.parse(localStorage.getItem('gyansetu_campus_notes') || '{}');
         Object.assign(allNotes, communityNotes);
@@ -2693,7 +2892,7 @@
       const profile = currentProfile || {};
       const fields = {
         'profile-full-name': profile.full_name || '',
-        'profile-department': profile.department || '',
+        'profile-track': window.GyanSetuCurriculum?.inferTrack(profile.study_track || profile.department) || 'btech-cse',
         'profile-year': profile.year || '',
         'profile-college': profile.college || '',
         'profile-country': profile.country || 'India',
@@ -2726,7 +2925,8 @@
       const get = id => document.getElementById(id)?.value.trim() || '';
       const updates = {
         full_name: get('profile-full-name'),
-        department: get('profile-department'),
+        study_track: get('profile-track'),
+        department: window.GyanSetuCurriculum?.getTrack(get('profile-track'))?.name || 'B.Tech CSE',
         year: get('profile-year'),
         college: get('profile-college'),
         country: get('profile-country'),
@@ -2750,6 +2950,7 @@
       }
 
       currentProfile = { ...(currentProfile || {}), ...updates };
+      currentProfile.study_track = updates.study_track;
       renderUser(currentProfile, currentProfile.email);
       closeProfileEditor();
       showToast('Profile updated. Smart Match and leaderboard filters are now personalized.');
@@ -2822,6 +3023,8 @@
       }
       currentProfile = profile;
       renderUser(profile, email);
+      renderCurriculum(profile);
+      await renderContentHub(profile);
 
       // Fetch live registered peers safely (NO mock mentors)
       let peers = [];
