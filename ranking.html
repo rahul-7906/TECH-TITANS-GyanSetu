@@ -19,7 +19,14 @@
   <script src="js/rr-config.js"></script>
 
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAF6; color: #0B1F17; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background:
+        radial-gradient(circle at 12% 4%, rgba(185,240,68,.22), transparent 28%),
+        radial-gradient(circle at 92% 38%, rgba(37,211,102,.12), transparent 32%),
+        linear-gradient(135deg, #F7FBF2 0%, #EAF8EE 55%, #F4FBEA 100%);
+      color: #0B1F17;
+    }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
     .shadow-glow { box-shadow: 0 0 25px rgba(185, 240, 68, 0.25); }
     .podium-card { transition: transform .25s ease, box-shadow .25s ease; }
@@ -53,12 +60,32 @@
       box-shadow: 0 -8px 30px rgba(11, 31, 23, 0.12);
       backdrop-filter: blur(12px);
     }
+    .ranking-header {
+      border-color: rgba(215,235,221,.95) !important;
+      box-shadow: 0 8px 24px -20px rgba(11,31,23,.35);
+    }
+    .leaderboard-shell > .grid > section > div:not(.score-panel),
+    #panel-rules > div {
+      border-color: rgba(215,235,221,.95) !important;
+      box-shadow: 0 16px 34px -26px rgba(11,31,23,.32) !important;
+    }
+    #panel-leaderboard > div:not(.score-panel),
+    #panel-rules > div {
+      background: rgba(255,255,255,.9);
+    }
+    #podium-section > div {
+      border-color: rgba(215,235,221,.95) !important;
+      box-shadow: 0 12px 28px -22px rgba(11,31,23,.28);
+    }
+    .leaderboard-row:hover {
+      background: #F3FBF5 !important;
+    }
   </style>
 </head>
 <body class="min-h-screen pb-28">
 
   <!-- TOP NAV BAR -->
-  <header class="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 py-3.5 backdrop-blur-md sm:px-8">
+  <header class="ranking-header sticky top-0 z-40 flex items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 py-3.5 backdrop-blur-md sm:px-8">
     <div class="flex items-center gap-3">
       <a href="dashboard.html" class="flex items-center gap-2" title="Back to Dashboard">
         <img src="images/gyansetu-logo.jpg" alt="GyanSetu" class="h-8 w-auto rounded-lg object-contain shadow-xs border border-emerald-900/20" />

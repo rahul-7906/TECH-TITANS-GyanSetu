@@ -29,6 +29,28 @@
       color:#1f2328; cursor:pointer; transition:border-color .2s, box-shadow .2s;
     }
     .social-btn:hover { border-color:#B9F044; box-shadow:0 4px 16px -4px rgba(185,240,68,0.3); }
+    body {
+      background:
+        radial-gradient(circle at 8% 8%, rgba(37,211,102,.18), transparent 30%),
+        radial-gradient(circle at 92% 88%, rgba(185,240,68,.22), transparent 34%),
+        linear-gradient(135deg, #F7FBF2 0%, #EAF8EE 52%, #DDF7B9 100%);
+    }
+    .auth-shell {
+      border-color: rgba(215,235,221,.95) !important;
+      box-shadow: 0 28px 80px -34px rgba(11,31,23,.34) !important;
+    }
+    .auth-form-panel {
+      background: rgba(255,255,255,.92);
+    }
+    .auth-form-panel .input-field {
+      border-color: #D7EBDD;
+      background: #F7FBF8;
+    }
+    .auth-form-panel .input-field:focus {
+      border-color: #25D366;
+      box-shadow: 0 0 0 3px rgba(37,211,102,.14);
+      background: #fff;
+    }
   </style>
   <style>
     #page-transition { opacity: 0; transition: opacity .28s ease; pointer-events: none; background: rgba(247, 250, 243, .94); backdrop-filter: blur(8px); }
@@ -70,7 +92,7 @@
   </div>
 
   <div class="w-full max-w-6xl mx-auto my-6 px-4 sm:px-6">
-    <div class="grid min-h-[86vh] overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-soft lg:grid-cols-[1fr_1fr]">
+    <div class="auth-shell grid min-h-[86vh] overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-soft lg:grid-cols-[1fr_1fr]">
 
       <!-- LEFT: Branding Panel -->
       <div class="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-[#06130E] via-[#0B2A1E] to-[#14532D] p-10 lg:flex">
@@ -143,7 +165,7 @@
       </div>
 
       <!-- RIGHT: Auth Form -->
-      <div class="flex flex-col justify-center px-6 py-10 sm:px-10 lg:px-12">
+      <div class="auth-form-panel flex flex-col justify-center px-6 py-10 sm:px-10 lg:px-12">
 
         <!-- Mobile logo -->
         <a href="index.html" class="mb-8 flex items-center gap-2.5 lg:hidden">

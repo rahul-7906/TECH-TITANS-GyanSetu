@@ -2,13 +2,29 @@
    GyanSetu — Shared Base Styles
    ============================================= */
 
-/* Page background: soft green wash */
+:root {
+  --gs-forest: #0B1F17;
+  --gs-green: #168C45;
+  --gs-whatsapp: #25D366;
+  --gs-lime: #B9F044;
+  --gs-sage: #F4FBEA;
+  --gs-mint: #EAF8EE;
+  --gs-border: #D7EBDD;
+  --gs-muted: #5F7168;
+}
+
+/* Shared learning canvas: soft sage with a fresh mint highlight. */
 body {
   background:
-    radial-gradient(900px 500px at -10% 10%, rgba(185,240,68,0.18), transparent 60%),
-    radial-gradient(800px 500px at 110% 40%, rgba(185,240,68,0.12), transparent 60%),
-    #EEF6E4;
+    radial-gradient(900px 500px at -10% 0%, rgba(185,240,68,0.22), transparent 60%),
+    radial-gradient(800px 500px at 110% 35%, rgba(37,211,102,0.12), transparent 60%),
+    linear-gradient(135deg, #F7FBF2 0%, #EAF8EE 52%, #F4FBEA 100%);
   text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(37, 211, 102, 0.24);
+  color: var(--gs-forest);
 }
 
 /* =============================================
@@ -80,7 +96,15 @@ input[type="password"] {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible {
-  outline: 2px solid #B9F044;
+  outline: 3px solid rgba(22, 140, 69, 0.35);
+  outline-offset: 3px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  border-color: var(--gs-green);
+  box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.14);
   outline-offset: 2px;
 }
 
@@ -89,8 +113,8 @@ input:focus-visible {
    ============================================= */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+::-webkit-scrollbar-thumb { background: #B7D7BF; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #7DB58B; }
 
 /* =============================================
    REDUCED MOTION
