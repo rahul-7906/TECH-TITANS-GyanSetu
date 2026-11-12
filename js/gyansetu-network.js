@@ -39,8 +39,8 @@
 
   function saveRemoteNotification(recipientId, senderId, notif) {
     var sb = getSupabaseClient();
-    if (!sb || !recipientId) return;
-    sb.from('peer_notifications').insert({
+    if (!sb || !recipientId) return Promise.resolve({ skipped: true });
+    return sb.from('peer_notifications').insert({
       recipient_id: recipientId,
       sender_id: senderId || '',
       type: notif.type || 'network',
@@ -54,9 +54,32 @@
       is_read: false
     }).then(function (result) {
       if (result.error) console.warn('[GyanSetuNetwork] Remote notification sync warning:', result.error.message);
+      return result;
     }).catch(function (error) {
       console.warn('[GyanSetuNetwork] Remote notification sync warning:', error);
+      return { error: error };
     });
+  }
+
+  function resolveRegisteredPeer(peerName, peerId) {
+    var sb = getSupabaseClient();
+    var name = String(peerName || '').trim();
+    if (!sb || !name) return Promise.resolve(null);
+    var query = peerId
+      ? sb.from('profiles').select('id, full_name, email').eq('id', peerId).limit(1)
+      : sb.from('profiles').select('id, full_name, email').ilike('full_name', name).limit(1);
+    return query
+      .then(function (result) {
+        if (result.error) {
+          console.warn('[GyanSetuNetwork] Could not resolve invite recipient:', result.error.message);
+          return null;
+        }
+        return Array.isArray(result.data) ? (result.data[0] || null) : (result.data || null);
+      })
+      .catch(function (error) {
+        console.warn('[GyanSetuNetwork] Could not resolve invite recipient:', error);
+        return null;
+      });
   }
 
   function saveRemoteConnection(userId, peerId, peerName, status, requestedBy) {
@@ -313,12 +336,14 @@
     /**
      * Direct 1-Click Speed Race Arena Invitation
      */
-    inviteToArena: function (peerName, roomCode, team) {
+    inviteToArena: function (peerName, roomCode, team, peerId) {
       roomCode = roomCode || 'turbo-dsa-42';
       team = team || 'team1';
+      var displayName;
+      try { displayName = decodeURIComponent(String(peerName || 'Peer')); } catch (e) { displayName = String(peerName || 'Peer'); }
       var origin = window.location.origin;
       var path = window.location.pathname.replace(/\/[^/]*$/, '/arena.html');
-      var link = origin + path + '?room=' + encodeURIComponent(roomCode) + '&team=' + encodeURIComponent(team) + '&peer=' + encodeURIComponent(peerName || 'Peer');
+      var link = origin + path + '?room=' + encodeURIComponent(roomCode) + '&team=' + encodeURIComponent(team);
 
       var self = this;
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -335,9 +360,21 @@
         type: 'racing',
         icon: '🏎️',
         title: 'Arena Match Invite Dispatched',
-        desc: 'Direct invite link generated for ' + (peerName || 'Peer') + ' into Room: ' + roomCode,
+        desc: 'Direct invite link generated for ' + displayName + ' into Room: ' + roomCode,
         actionLabel: 'Open Arena 🏎️',
         actionUrl: link
+      });
+      var current = getCurrentProfile();
+      resolveRegisteredPeer(displayName, peerId).then(function (peer) {
+        if (!peer || peer.id === current?.id) return;
+        return saveRemoteNotification(peer.id, current?.id, {
+          type: 'arena_invite',
+          icon: '🏎️',
+          title: 'Arena match invitation',
+          desc: (current?.full_name || 'A campus peer') + ' invited you to join an Arena match.',
+          actionLabel: 'Join Arena',
+          actionUrl: link
+        });
       });
     },
 
@@ -346,9 +383,11 @@
      */
     inviteToRoom: function (peerName, roomCode) {
       roomCode = roomCode || 'study-collab-7';
+      var displayName;
+      try { displayName = decodeURIComponent(String(peerName || 'Peer')); } catch (e) { displayName = String(peerName || 'Peer'); }
       var origin = window.location.origin;
       var path = window.location.pathname.replace(/\/[^/]*$/, '/room.html');
-      var link = origin + path + '?room=' + encodeURIComponent(roomCode) + '&peer=' + encodeURIComponent(peerName || 'Peer');
+      var link = origin + path + '?room=' + encodeURIComponent(roomCode);
 
       var self = this;
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -360,6 +399,18 @@
       } else {
         self.showToast('⚡ Collab room link: ' + link);
       }
+      var current = getCurrentProfile();
+      resolveRegisteredPeer(displayName).then(function (peer) {
+        if (!peer || peer.id === current?.id) return;
+        return saveRemoteNotification(peer.id, current?.id, {
+          type: 'room_invite',
+          icon: '💻',
+          title: 'Study room invitation',
+          desc: (current?.full_name || 'A campus peer') + ' invited you to join a collaborative room.',
+          actionLabel: 'Join Room',
+          actionUrl: link
+        });
+      });
     },
 
     showToast: function (msg) {
@@ -797,6 +848,9 @@
     GyanSetuNetwork.announceActivity({ type: 'presence', title: 'is currently using GyanSetu' });
     GyanSetuNetwork.syncRemoteConnections();
     GyanSetuNotifications.syncRemoteNotifications();
+    window.setInterval(function () {
+      GyanSetuNotifications.syncRemoteNotifications();
+    }, 10000);
   }, 1200);
 
 })(window);

@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Local state ────────────────────────────────────────────────────────────
   let myName          = '';
+  let myUserId        = null;
+  let myProfile       = null;
   let myRole          = 'learner';   // 'learner' | 'mentor'
   let sessionId       = null;
   let sessionData     = null;
@@ -135,10 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const qTopic        = urlParams.get('topic');
   const qCredits      = urlParams.get('credits');
   const qRole         = urlParams.get('role');
+  const qSession      = urlParams.get('session');
 
   if (qMentor) {
     const el = document.getElementById('mentor-name-input');
-    if (el) el.value = decodeURIComponent(qMentor);
+    if (el) el.dataset.requestedMentor = decodeURIComponent(qMentor);
   }
   if (qTopic) {
     const el = document.getElementById('topic-input');
@@ -156,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Auto-detect logged-in user from Supabase auth session
   sb.auth.getSession().then(({ data: { session } }) => {
     if (session?.user) {
+      myUserId = session.user.id;
       const name = session.user.user_metadata?.full_name || session.user.email?.split('@')[0];
       const inputName = document.getElementById('input-name');
       if (inputName && name && !inputName.value) inputName.value = name;
@@ -163,8 +167,51 @@ document.addEventListener('DOMContentLoaded', () => {
         const mentorBtn = document.querySelector('.role-btn[data-role="mentor"]');
         mentorBtn?.click();
       }
+      populateMentorOptions();
     }
   }).catch(() => {});
+
+  async function populateMentorOptions() {
+    const select = document.getElementById('mentor-name-input');
+    const status = document.getElementById('mentor-options-status');
+    if (!select || !window.GyanSetuAuth?.getAllRegisteredUsers) return;
+    try {
+      const authData = await window.GyanSetuAuth.getCurrentUser();
+      if (authData?.user) myUserId = authData.user.id;
+      if (authData?.profile) myProfile = authData.profile;
+      const users = await window.GyanSetuAuth.getAllRegisteredUsers();
+      const mentors = users
+        .filter(user => user && user.id && user.id !== myUserId)
+        .filter(user => user.availability !== 'offline' && user.availability !== 'busy')
+        .sort((a, b) => String(a.full_name || '').localeCompare(String(b.full_name || '')));
+
+      select.innerHTML = '<option value="">Select a mentor</option>';
+      mentors.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.id;
+        option.textContent = `${user.full_name || user.email || 'Campus peer'}${user.department ? ` · ${user.department}` : ''}`;
+        option.dataset.name = user.full_name || user.email || 'Campus peer';
+        option.dataset.email = user.email || '';
+        select.appendChild(option);
+      });
+
+      const requested = select.dataset.requestedMentor;
+      if (requested) {
+        const match = mentors.find(user => user.id === requested || user.full_name === requested || user.email === requested);
+        if (match) select.value = match.id;
+      }
+      if (!mentors.length) {
+        select.innerHTML = '<option value="">No available mentors yet</option>';
+        if (status) status.textContent = 'Ask a peer to complete their profile and become available.';
+      } else if (status) {
+        status.textContent = `${mentors.length} available peer${mentors.length === 1 ? '' : 's'} found.`;
+      }
+    } catch (error) {
+      console.warn('Could not load mentor options:', error);
+      select.innerHTML = '<option value="">Mentor list unavailable</option>';
+      if (status) status.textContent = 'Could not load mentors. Please refresh and try again.';
+    }
+  }
 
   // ── Identity overlay ───────────────────────────────────────────────────────
   document.querySelectorAll('.role-btn').forEach(btn => {
@@ -188,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('identity-error').classList.add('hidden');
     await ensureCreditAccount();
     await refreshCreditDisplay();
+    await populateMentorOptions();
     enterApp();
   });
 
@@ -590,14 +638,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Step 1 → Request session
   document.getElementById('request-btn').addEventListener('click', async () => {
-    const mentorName = document.getElementById('mentor-name-input').value.trim();
+    const mentorSelect = document.getElementById('mentor-name-input');
+    const mentorId = mentorSelect.value.trim();
+    const mentorName = mentorSelect.selectedOptions[0]?.dataset.name || '';
     const topic      = document.getElementById('topic-input').value.trim();
     const credits    = parseInt(document.getElementById('credits-input').value, 10);
     const note       = document.getElementById('note-input').value.trim();
     const errEl      = document.getElementById('request-error');
 
-    if (!mentorName || !topic || !credits || credits < 1) {
-      errEl.textContent = 'Please fill in mentor name, topic and credits.';
+    if (!mentorId || !mentorName || !topic || !credits || credits < 1) {
+      errEl.textContent = 'Please choose an available mentor, topic and credits.';
       errEl.classList.remove('hidden');
       return;
     }
@@ -613,6 +663,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Insert session row into DB
     const { data: sess, error } = await sb.from('sessions').insert({
+      learner_id: myUserId || null,
+      mentor_id: mentorId,
       learner_name : myName,
       mentor_name  : mentorName,
       topic,
@@ -642,6 +694,21 @@ document.addEventListener('DOMContentLoaded', () => {
       mentor_name: mentorName,
       learner_name: myName
     });
+
+    const notification = await sb.from('peer_notifications').insert({
+      recipient_id: mentorId,
+      sender_id: myUserId || '',
+      type: 'session_request',
+      icon: '📅',
+      title: 'New session request',
+      description: `${myName} requested a 15-minute session about ${topic}.`,
+      action_label: 'Review request',
+      action_url: `session.html?role=mentor&session=${encodeURIComponent(sessionId)}`,
+      is_read: false
+    });
+    if (notification.error) {
+      console.warn('Mentor notification could not be saved:', notification.error.message);
+    }
   });
 
   // Cancel request
@@ -804,12 +871,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function fetchPendingRequests() {
-    const { data, error } = await sb
+    let requestQuery = sb
       .from('sessions')
       .select('*')
-      .or(`mentor_name.eq.${myName},mentor_name.ilike.%${myName}%`)
       .eq('status', 'pending')
       .order('created_at', { ascending: false });
+    if (myUserId) {
+      requestQuery = requestQuery.or(`mentor_id.eq.${myUserId},mentor_name.eq.${myName}`);
+    } else {
+      requestQuery = requestQuery.or(`mentor_name.eq.${myName},mentor_name.ilike.%${myName}%`);
+    }
+    if (qSession) requestQuery = requestQuery.eq('id', qSession);
+    const { data, error } = await requestQuery
 
     if (error) { console.warn('fetchPendingRequests:', error.message); return; }
 

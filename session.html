@@ -145,8 +145,11 @@
 
         <div class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-8 shadow-sm space-y-4 sm:space-y-5">
           <label class="block">
-            <span class="label-text">Mentor&rsquo;s Name or ID</span>
-            <input id="mentor-name-input" type="text" placeholder="e.g. Priya Sharma, Aarav Patel or Room ID" class="input-field" />
+            <span class="label-text">Choose an available mentor</span>
+            <select id="mentor-name-input" class="input-field">
+              <option value="">Loading available mentors...</option>
+            </select>
+            <p id="mentor-options-status" class="mt-1 text-[10px] text-slate-400">Only registered peers other than you are shown.</p>
           </label>
 
           <label class="block">

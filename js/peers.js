@@ -460,7 +460,7 @@
             </button>
 
             <!-- Race in Speed Arena -->
-            <button onclick="window.GyanSetuNetwork?.inviteToArena('${encodeURIComponent(peer.name)}')" class="inline-flex items-center gap-1 rounded-lg border border-[#B9F044]/40 bg-[#B9F044]/15 px-2 py-1.5 text-[11px] font-bold text-[#2F6F11] hover:bg-[#B9F044] hover:text-[#0B1F17] transition" title="Invite to Speed Race Arena">
+            <button onclick="window.GyanSetuNetwork?.inviteToArena('${encodeURIComponent(peer.name)}', undefined, undefined, '${peer.id}')" class="inline-flex items-center gap-1 rounded-lg border border-[#B9F044]/40 bg-[#B9F044]/15 px-2 py-1.5 text-[11px] font-bold text-[#2F6F11] hover:bg-[#B9F044] hover:text-[#0B1F17] transition" title="Invite to Speed Race Arena">
               🏎️ Race
             </button>
 

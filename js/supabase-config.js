@@ -21,6 +21,9 @@
     ? window.ENV_SUPABASE_ANON
     : (window.SUPABASE_ANON || fallbackAnon);
 
+  // Set this from the deployment environment after generating VAPID keys.
+  window.GYANSETU_VAPID_PUBLIC_KEY = window.ENV_GYANSETU_VAPID_PUBLIC_KEY || '';
+
   // Initialize global clients if supabase SDK is already loaded
   function initClient() {
     if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
